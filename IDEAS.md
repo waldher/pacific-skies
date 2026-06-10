@@ -32,6 +32,9 @@ the commit that shipped them.
 
 ## Done
 
+- Gun heat: holding fire ~4 s overheats the guns (1.5 s lockout,
+  amber HUD gauge, steam hiss + cowling smoke). Rewards trigger
+  discipline instead of pinning the space bar.
 - v0.1: first playable (single file).
 - v0.2: ES-module refactor, config.js tuning table, seeded RNG,
   playtest harness + CI, docs.

@@ -2,7 +2,7 @@
 import { CONFIG } from './config.js';
 import { game } from './state.js';
 import { keys, stick, fireTouch } from './input.js';
-import { sfxGun } from './audio.js';
+import { sfxGun, sfxOverheat } from './audio.js';
 import { explosion } from './particles.js';
 import { clamp, lerp, angDiff, rand } from './util.js';
 
@@ -30,9 +30,28 @@ export function updatePlayer(dt) {
   player.y += Math.sin(player.a) * player.speed * dt;
 
   player.fireCd -= dt;
+  player.heat = Math.max(0, player.heat - P.heatCoolRate * dt);
+  if (player.overheated) {
+    if (player.heat <= P.heatRecoverAt) player.overheated = false;
+    player.steamCd -= dt;
+    if (player.steamCd <= 0) {
+      player.steamCd = 0.07;
+      const nx = player.x + Math.cos(player.a) * 20, ny = player.y + Math.sin(player.a) * 20;
+      game.particles.push({
+        x: nx, y: ny, vx: rand(-12, 12), vy: rand(-12, 12),
+        life: rand(0.3, 0.5), max: 0.6, size: rand(2, 4), kind: 'smoke',
+      });
+    }
+  }
   const firing = keys['Space'] || fireTouch.active;
-  if (firing && player.fireCd <= 0) {
+  if (firing && player.fireCd <= 0 && !player.overheated) {
     player.fireCd = P.fireCooldown;
+    player.heat += P.heatPerShot;
+    if (player.heat >= 1) {
+      player.heat = 1;
+      player.overheated = true;
+      sfxOverheat();
+    }
     const nx = player.x + Math.cos(player.a) * 22, ny = player.y + Math.sin(player.a) * 22;
     for (const off of P.gunOffsets) {
       game.bullets.push({
