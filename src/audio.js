@@ -19,6 +19,18 @@ export function sfxGun() {
   o.connect(g).connect(AC.destination); o.start(t); o.stop(t + 0.08);
 }
 
+export function sfxOverheat() {
+  if (!AC) return;
+  const t = AC.currentTime, len = 0.5;
+  const buf = AC.createBuffer(1, AC.sampleRate * len, AC.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 1.5);
+  const src = AC.createBufferSource(); src.buffer = buf;
+  const f = AC.createBiquadFilter(); f.type = 'highpass'; f.frequency.setValueAtTime(3200, t);
+  const g = AC.createGain(); g.gain.setValueAtTime(0.12, t);
+  src.connect(f).connect(g).connect(AC.destination); src.start(t);
+}
+
 export function sfxBoom(big) {
   if (!AC) return;
   const t = AC.currentTime, len = big ? 0.7 : 0.4;

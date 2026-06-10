@@ -8,6 +8,9 @@ export const CONFIG = {
     speedBoost: 350,
     speedBrake: 160,
     fireCooldown: 0.13,
+    heatPerShot: 0.085,       // gun heat gauge (0..1) added per trigger pull
+    heatCoolRate: 0.4,        // gauge/s shed at all times (≈4s sustained fire to overheat)
+    heatRecoverAt: 0.35,      // overheated guns unlock once cooled below this
     bulletSpeed: 860,
     bulletLife: 0.9,
     gunOffsets: [-7, 7],      // wing gun positions

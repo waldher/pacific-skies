@@ -10,7 +10,7 @@ export function drawHud() {
   ctx.textAlign = 'left'; ctx.textBaseline = 'top';
   ctx.font = '700 15px "Courier New", monospace';
   ctx.fillStyle = 'rgba(10,30,45,0.55)';
-  rr(10, 10, 200, 58, 6);
+  rr(10, 10, 200, 70, 6);
   ctx.fillStyle = '#f2e8c9';
   ctx.fillText('SCORE ' + game.score, 22, 18);
   ctx.fillText('WAVE  ' + Math.max(1, game.waveNum), 22, 36);
@@ -18,6 +18,12 @@ export function drawHud() {
   ctx.fillStyle = '#1c3347'; rr(22, 54, 176, 8, 4);
   ctx.fillStyle = player.hp > 35 ? '#7fc36b' : '#d8554a';
   if (player.hp > 0) rr(22, 54, 176 * (player.hp / 100), 8, 4);
+  // gun heat bar (blinks red while overheated)
+  ctx.fillStyle = '#1c3347'; rr(22, 66, 176, 5, 2);
+  ctx.fillStyle = player.overheated
+    ? (Math.sin(game.time * 18) > 0 ? '#ff5b4a' : '#8a2f26')
+    : '#e8a33d';
+  if (player.heat > 0) rr(22, 66, 176 * player.heat, 5, 2);
 
   // wave banner
   if (game.waveBanner > 0) {

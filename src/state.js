@@ -22,7 +22,7 @@ export function startGame() {
   game.player = {
     x: 0, y: 0, a: -Math.PI / 2,
     speed: CONFIG.player.speedCruise, hp: CONFIG.player.hp,
-    fireCd: 0, hitFlash: 0, smokeCd: 0,
+    fireCd: 0, heat: 0, overheated: false, steamCd: 0, hitFlash: 0, smokeCd: 0,
   };
   game.bullets = []; game.ebullets = []; game.enemies = []; game.particles = [];
   game.cam = { x: 0, y: 0 };
