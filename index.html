@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Pacific Skies — 1942</title>
+<style>
+  html, body { margin:0; padding:0; height:100%; overflow:hidden; background:#0d2c40; }
+  canvas { display:block; touch-action:none; -webkit-user-select:none; user-select:none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+"use strict";
+// ============================================================
+// PACIFIC SKIES — 1942
+// Top-down free-roam dogfighter. Single file, zero dependencies.
+// Desktop: arrows/WASD steer & throttle, SPACE fires.
+// Mobile:  left thumb = virtual stick, right thumb = fire.
+// ============================================================
+
+const cvs = document.getElementById('c');
+const ctx = cvs.getContext('2d');
+let W = 0, H = 0, DPR = 1;
+
+function resize() {
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  W = window.innerWidth; H = window.innerHeight;
+  cvs.width = Math.round(W * DPR); cvs.height = Math.round(H * DPR);
+  cvs.style.width = W + 'px'; cvs.style.height = H + 'px';
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+}
+window.addEventListener('resize', resize);
+resize();
+
+// ---------- utils ----------
+const TAU = Math.PI * 2;
+const clamp = (v, a, b) => v < a ? a : (v > b ? b : v);
+const lerp = (a, b, t) => a + (b - a) * t;
+function angDiff(a, b) { let d = (b - a) % TAU; if (d > Math.PI) d -= TAU; if (d < -Math.PI) d += TAU; return d; }
+function hash2(x, y) { const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return s - Math.floor(s); }
+const rand = (a, b) => a + Math.random() * (b - a);
+
+// ---------- audio (tiny, procedural) ----------
+let AC = null;
+function audioInit() { if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} } if (AC && AC.state === 'suspended') AC.resume(); }
+function sfxGun() {
+  if (!AC) return;
+  const t = AC.currentTime, o = AC.createOscillator(), g = AC.createGain();
+  o.type = 'square'; o.frequency.setValueAtTime(rand(620, 700), t);
+  o.frequency.exponentialRampToValueAtTime(140, t + 0.06);
+  g.gain.setValueAtTime(0.05, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+  o.connect(g).connect(AC.destination); o.start(t); o.stop(t + 0.08);
+}
+function sfxBoom(big) {
+  if (!AC) return;
+  const t = AC.currentTime, len = big ? 0.7 : 0.4;
+  const buf = AC.createBuffer(1, AC.sampleRate * len, AC.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 2);
+  const src = AC.createBufferSource(); src.buffer = buf;
+  const f = AC.createBiquadFilter(); f.type = 'lowpass'; f.frequency.setValueAtTime(big ? 900 : 1400, t);
+  const g = AC.createGain(); g.gain.setValueAtTime(big ? 0.35 : 0.2, t);
+  src.connect(f).connect(g).connect(AC.destination); src.start(t);
+}
+
+// ---------- input ----------
+const keys = {};
+window.addEventListener('keydown', e => {
+  keys[e.code] = true;
+  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code)) e.preventDefault();
+  audioInit();
+  if (state !== 'play' && (e.code === 'Space' || e.code === 'Enter')) startGame();
+});
+window.addEventListener('keyup', e => { keys[e.code] = false; });
+
+// touch: left zone = stick, right zone = fire
+const stick = { active: false, id: -1, ax: 0, ay: 0, dx: 0, dy: 0 };
+const fireTouch = { active: false, id: -1 };
+const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+
+cvs.addEventListener('pointerdown', e => {
+  audioInit();
+  if (state !== 'play') { startGame(); return; }
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  if (e.clientX < W * 0.5 && !stick.active) {
+    stick.active = true; stick.id = e.pointerId;
+    stick.ax = e.clientX; stick.ay = e.clientY; stick.dx = 0; stick.dy = 0;
+  } else if (!fireTouch.active) {
+    fireTouch.active = true; fireTouch.id = e.pointerId;
+  }
+});
+cvs.addEventListener('pointermove', e => {
+  if (stick.active && e.pointerId === stick.id) {
+    stick.dx = e.clientX - stick.ax; stick.dy = e.clientY - stick.ay;
+    const m = Math.hypot(stick.dx, stick.dy), max = 70;
+    if (m > max) { stick.dx *= max / m; stick.dy *= max / m; }
+  }
+});
+function pointerEnd(e) {
+  if (e.pointerId === stick.id) { stick.active = false; stick.id = -1; stick.dx = stick.dy = 0; }
+  if (e.pointerId === fireTouch.id) { fireTouch.active = false; fireTouch.id = -1; }
+}
+cvs.addEventListener('pointerup', pointerEnd);
+cvs.addEventListener('pointercancel', pointerEnd);
+
+// ---------- game state ----------
+let state = 'title'; // title | play | over
+let player, bullets, ebullets, enemies, particles;
+let cam = { x: 0, y: 0 };
+let score = 0, best = 0, waveNum = 0, waveTimer = 0, waveBanner = 0;
+let shake = 0, overTimer = 0, time = 0;
+
+function startGame() {
+  player = {
+    x: 0, y: 0, a: -Math.PI / 2, speed: 250, hp: 100,
+    fireCd: 0, hitFlash: 0, smokeCd: 0
+  };
+  bullets = []; ebullets = []; enemies = []; particles = [];
+  cam = { x: 0, y: 0 };
+  score = 0; waveNum = 0; waveTimer = 1.5; waveBanner = 0;
+  shake = 0; overTimer = 0;
+  state = 'play';
+}
+
+function spawnWave() {
+  waveNum++;
+  waveBanner = 2.2;
+  const n = 2 + waveNum;
+  for (let i = 0; i < n; i++) {
+    const ace = waveNum >= 3 && i % 4 === 3;
+    const a = rand(0, TAU), d = rand(750, 1150);
+    enemies.push({
+      x: player.x + Math.cos(a) * d,
+      y: player.y + Math.sin(a) * d,
+      a: a + Math.PI,
+      speed: ace ? 290 : 245,
+      turn: ace ? 2.6 : 2.1,
+      hp: ace ? 4 : 2,
+      ace,
+      fireCd: rand(0.5, 1.6),
+      wobble: rand(0, TAU)
+    });
+  }
+}
+
+function explosion(x, y, big) {
+  const n = big ? 34 : 20;
+  for (let i = 0; i < n; i++) {
+    const a = rand(0, TAU), s = rand(40, big ? 320 : 220);
+    particles.push({
+      x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s,
+      life: rand(0.35, big ? 1.0 : 0.7), max: 1,
+      size: rand(2, big ? 7 : 5),
+      kind: Math.random() < 0.55 ? 'fire' : 'smoke'
+    });
+  }
+  particles.push({ x, y, vx: 0, vy: 0, life: 0.3, max: 0.3, size: big ? 46 : 30, kind: 'ring' });
+  sfxBoom(big);
+  shake = Math.min(shake + (big ? 10 : 5), 14);
+}
+
+// ---------- update ----------
+function update(dt) {
+  time += dt;
+  if (state !== 'play') return;
+
+  // --- player control ---
+  let turnIn = 0, throttleT = 250;
+  if (keys['ArrowLeft'] || keys['KeyA']) turnIn -= 1;
+  if (keys['ArrowRight'] || keys['KeyD']) turnIn += 1;
+  if (keys['ArrowUp'] || keys['KeyW']) throttleT = 350;
+  if (keys['ArrowDown'] || keys['KeyS']) throttleT = 160;
+
+  if (stick.active) {
+    const m = Math.hypot(stick.dx, stick.dy);
+    if (m > 10) {
+      const want = Math.atan2(stick.dy, stick.dx);
+      const d = angDiff(player.a, want);
+      turnIn = clamp(d * 4, -1, 1);
+      throttleT = 170 + clamp(m / 70, 0, 1) * 180;
+    }
+  }
+  player.a += turnIn * 3.1 * dt;
+  player.speed = lerp(player.speed, throttleT, 1 - Math.pow(0.02, dt));
+  player.x += Math.cos(player.a) * player.speed * dt;
+  player.y += Math.sin(player.a) * player.speed * dt;
+
+  // firing
+  player.fireCd -= dt;
+  const firing = keys['Space'] || fireTouch.active;
+  if (firing && player.fireCd <= 0) {
+    player.fireCd = 0.13;
+    const nx = player.x + Math.cos(player.a) * 22, ny = player.y + Math.sin(player.a) * 22;
+    for (const off of [-7, 7]) {
+      bullets.push({
+        x: nx + Math.cos(player.a + Math.PI / 2) * off,
+        y: ny + Math.sin(player.a + Math.PI / 2) * off,
+        vx: Math.cos(player.a) * 860, vy: Math.sin(player.a) * 860, life: 0.9
+      });
+    }
+    sfxGun();
+  }
+
+  // damage smoke
+  if (player.hp < 40) {
+    player.smokeCd -= dt;
+    if (player.smokeCd <= 0) {
+      player.smokeCd = 0.05;
+      particles.push({
+        x: player.x - Math.cos(player.a) * 16, y: player.y - Math.sin(player.a) * 16,
+        vx: rand(-15, 15), vy: rand(-15, 15), life: rand(0.5, 0.9), max: 1, size: rand(3, 6), kind: 'smoke'
+      });
+    }
+  }
+  player.hitFlash = Math.max(0, player.hitFlash - dt);
+
+  // --- enemies ---
+  for (const e of enemies) {
+    e.wobble += dt * 2;
+    const tx = player.x + Math.cos(e.wobble) * 60;
+    const ty = player.y + Math.sin(e.wobble * 1.3) * 60;
+    const want = Math.atan2(ty - e.y, tx - e.x);
+    const d = angDiff(e.a, want);
+    e.a += clamp(d, -e.turn * dt, e.turn * dt);
+    e.x += Math.cos(e.a) * e.speed * dt;
+    e.y += Math.sin(e.a) * e.speed * dt;
+
+    e.fireCd -= dt;
+    const dist = Math.hypot(player.x - e.x, player.y - e.y);
+    if (e.fireCd <= 0 && dist < 470 && Math.abs(d) < 0.22) {
+      e.fireCd = e.ace ? 0.8 : 1.2;
+      ebullets.push({
+        x: e.x + Math.cos(e.a) * 20, y: e.y + Math.sin(e.a) * 20,
+        vx: Math.cos(e.a) * 560, vy: Math.sin(e.a) * 560, life: 1.4
+      });
+    }
+    // ramming damage
+    if (dist < 26) {
+      e.hp = 0;
+      damagePlayer(30);
+      explosion(e.x, e.y, false);
+    }
+  }
+
+  // --- bullets ---
+  for (const b of bullets) { b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt; }
+  for (const b of ebullets) { b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt; }
+
+  for (const b of bullets) {
+    if (b.life <= 0) continue;
+    for (const e of enemies) {
+      if (e.hp <= 0) continue;
+      if (Math.hypot(b.x - e.x, b.y - e.y) < 18) {
+        b.life = 0; e.hp--;
+        particles.push({ x: b.x, y: b.y, vx: rand(-40, 40), vy: rand(-40, 40), life: 0.2, max: 0.2, size: 3, kind: 'fire' });
+        if (e.hp <= 0) {
+          score += e.ace ? 250 : 100;
+          explosion(e.x, e.y, false);
+        }
+        break;
+      }
+    }
+  }
+  for (const b of ebullets) {
+    if (b.life <= 0) continue;
+    if (Math.hypot(b.x - player.x, b.y - player.y) < 15) {
+      b.life = 0;
+      damagePlayer(9);
+    }
+  }
+
+  bullets = bullets.filter(b => b.life > 0);
+  ebullets = ebullets.filter(b => b.life > 0);
+  enemies = enemies.filter(e => e.hp > 0);
+
+  // --- particles ---
+  for (const p of particles) {
+    p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt;
+    p.vx *= Math.pow(0.2, dt); p.vy *= Math.pow(0.2, dt);
+  }
+  particles = particles.filter(p => p.life > 0);
+  if (particles.length > 400) particles.splice(0, particles.length - 400);
+
+  // --- waves ---
+  waveBanner = Math.max(0, waveBanner - dt);
+  if (enemies.length === 0) {
+    waveTimer -= dt;
+    if (waveTimer <= 0) {
+      if (waveNum > 0) { player.hp = Math.min(100, player.hp + 25); score += waveNum * 50; }
+      spawnWave();
+      waveTimer = 2.5;
+    }
+  }
+
+  // camera: lead slightly ahead of the nose
+  cam.x = lerp(cam.x, player.x + Math.cos(player.a) * 60, 1 - Math.pow(0.005, dt));
+  cam.y = lerp(cam.y, player.y + Math.sin(player.a) * 60, 1 - Math.pow(0.005, dt));
+  shake = Math.max(0, shake - 30 * dt);
+}
+
+function damagePlayer(amount) {
+  if (state !== 'play') return;
+  player.hp -= amount;
+  player.hitFlash = 0.25;
+  shake = Math.min(shake + 4, 14);
+  if (player.hp <= 0) {
+    player.hp = 0;
+    explosion(player.x, player.y, true);
+    best = Math.max(best, score);
+    state = 'over';
+    overTimer = 0;
+  }
+}
+
+// ---------- drawing ----------
+function w2s(x, y) { return [x - cam.x + W / 2, y - cam.y + H / 2]; }
+
+function drawOcean() {
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#155e8a'); g.addColorStop(1, '#0e4368');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+  // drifting wave glints
+  const cell = 84;
+  const x0 = Math.floor((cam.x - W / 2) / cell) - 1, x1 = Math.floor((cam.x + W / 2) / cell) + 1;
+  const y0 = Math.floor((cam.y - H / 2) / cell) - 1, y1 = Math.floor((cam.y + H / 2) / cell) + 1;
+  ctx.strokeStyle = 'rgba(255,255,255,0.0)';
+  ctx.lineWidth = 1.5; ctx.lineCap = 'round';
+  for (let gy = y0; gy <= y1; gy++) {
+    for (let gx = x0; gx <= x1; gx++) {
+      const h = hash2(gx, gy);
+      if (h < 0.5) continue;
+      const ph = (time * 0.6 + h * 7) % 1;
+      const a = 0.18 * Math.sin(ph * Math.PI);
+      if (a <= 0.01) continue;
+      const wx = gx * cell + h * 50, wy = gy * cell + hash2(gy, gx) * 50;
+      const [sx, sy] = w2s(wx, wy);
+      ctx.strokeStyle = `rgba(220,240,255,${a.toFixed(3)})`;
+      ctx.beginPath();
+      ctx.moveTo(sx - 9, sy);
+      ctx.quadraticCurveTo(sx, sy - 4, sx + 9, sy);
+      ctx.stroke();
+    }
+  }
+}
+
+function drawIslands() {
+  const cell = 1500;
+  const x0 = Math.floor((cam.x - W / 2 - 400) / cell), x1 = Math.floor((cam.x + W / 2 + 400) / cell);
+  const y0 = Math.floor((cam.y - H / 2 - 400) / cell), y1 = Math.floor((cam.y + H / 2 + 400) / cell);
+  for (let gy = y0; gy <= y1; gy++) {
+    for (let gx = x0; gx <= x1; gx++) {
+      const h = hash2(gx * 3 + 11, gy * 7 + 5);
+      if (h > 0.30) continue; // ~30% of cells host an island
+      const cx = gx * cell + cell * (0.25 + hash2(gx, gy * 2) * 0.5);
+      const cy = gy * cell + cell * (0.25 + hash2(gx * 2, gy) * 0.5);
+      const R = 90 + h * 600;
+      const [sx, sy] = w2s(cx, cy);
+      if (sx < -R - 60 || sx > W + R + 60 || sy < -R - 60 || sy > H + R + 60) continue;
+
+      // shallow water halo, sand, vegetation — irregular 9-point blobs
+      const blob = (rad, jit, seed) => {
+        ctx.beginPath();
+        for (let i = 0; i < 9; i++) {
+          const a = i / 9 * TAU;
+          const r = rad * (1 - jit + hash2(gx * 9 + i + seed, gy * 9 + i) * jit * 2);
+          const px = sx + Math.cos(a) * r, py = sy + Math.sin(a) * r * 0.85;
+          i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+        }
+        ctx.closePath(); ctx.fill();
+      };
+      ctx.fillStyle = 'rgba(120,200,210,0.35)'; blob(R * 1.25, 0.18, 1);
+      ctx.fillStyle = '#e3d49b'; blob(R, 0.22, 2);
+      ctx.fillStyle = '#4f8a4a'; blob(R * 0.62, 0.3, 3);
+      ctx.fillStyle = '#3b6e39';
+      for (let i = 0; i < 5; i++) {
+        const a = hash2(gx + i * 13, gy + i * 7) * TAU, r = hash2(gy + i, gx + i * 3) * R * 0.45;
+        ctx.beginPath();
+        ctx.arc(sx + Math.cos(a) * r, sy + Math.sin(a) * r * 0.8, R * 0.09, 0, TAU);
+        ctx.fill();
+      }
+    }
+  }
+}
+
+function drawStar(cx, cy, r) {
+  ctx.beginPath();
+  for (let i = 0; i < 5; i++) {
+    const a = -Math.PI / 2 + i * TAU / 5;
+    const b = a + TAU / 10;
+    ctx.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+    ctx.lineTo(cx + Math.cos(b) * r * 0.45, cy + Math.sin(b) * r * 0.45);
+  }
+  ctx.closePath(); ctx.fill();
+}
+
+// drawn nose-up; caller rotates
+function drawPlane(kind, flash) {
+  const us = kind === 'us';
+  const body = flash ? '#ffffff' : (us ? '#33597d' : '#d8d4bd');
+  const wing = flash ? '#ffffff' : (us ? '#2b4d6e' : '#c9c5ac');
+  const dark = us ? '#1f3a55' : '#a8a48c';
+
+  // shadow handled by caller
+  // tailplane
+  ctx.fillStyle = wing;
+  rr(-10, 12, 20, 6, 3);
+  // wings
+  rr(-24, -4, 48, 11, 5);
+  // fuselage
+  ctx.fillStyle = body;
+  rr(-5.5, -19, 11, 36, 5);
+  // fin
+  ctx.fillStyle = dark;
+  rr(-2, 10, 4, 8, 2);
+  // canopy
+  ctx.fillStyle = flash ? '#ffffff' : '#8fd4e8';
+  rr(-3, -7, 6, 9, 3);
+  // markings
+  if (us) {
+    ctx.fillStyle = '#1f3a55';
+    ctx.beginPath(); ctx.arc(-16, 1.5, 5.4, 0, TAU); ctx.arc(16, 1.5, 5.4, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#fff';
+    drawStar(-16, 1.5, 4); drawStar(16, 1.5, 4);
+  } else {
+    ctx.fillStyle = '#c43a2f';
+    ctx.beginPath(); ctx.arc(-16, 1.5, 4.6, 0, TAU); ctx.arc(16, 1.5, 4.6, 0, TAU); ctx.fill();
+    // cowl band
+    ctx.fillStyle = '#3a3a3a';
+    rr(-5.5, -19, 11, 5, 4);
+  }
+  // prop disc
+  ctx.fillStyle = 'rgba(200,200,200,0.25)';
+  ctx.beginPath(); ctx.ellipse(0, -19, 9, 2.5, 0, 0, TAU); ctx.fill();
+}
+function rr(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath(); ctx.fill();
+}
+
+function drawPlaneAt(x, y, a, kind, flash) {
+  const [sx, sy] = w2s(x, y);
+  // drop shadow on the sea
+  ctx.save();
+  ctx.translate(sx + 10, sy + 16);
+  ctx.rotate(a + Math.PI / 2);
+  ctx.globalAlpha = 0.22;
+  ctx.fillStyle = '#000';
+  rr(-24, -4, 48, 11, 5); rr(-5.5, -19, 11, 36, 5);
+  ctx.restore();
+  ctx.save();
+  ctx.translate(sx, sy);
+  ctx.rotate(a + Math.PI / 2);
+  drawPlane(kind, flash);
+  ctx.restore();
+}
+
+function drawHud() {
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  ctx.font = '700 15px "Courier New", monospace';
+  ctx.fillStyle = 'rgba(10,30,45,0.55)';
+  rr(10, 10, 200, 58, 6);
+  ctx.fillStyle = '#f2e8c9';
+  ctx.fillText('SCORE ' + score, 22, 18);
+  ctx.fillText('WAVE  ' + Math.max(1, waveNum), 22, 36);
+  // health bar
+  ctx.fillStyle = '#1c3347'; rr(22, 54, 176, 8, 4);
+  ctx.fillStyle = player.hp > 35 ? '#7fc36b' : '#d8554a';
+  if (player.hp > 0) rr(22, 54, 176 * (player.hp / 100), 8, 4);
+
+  // wave banner
+  if (waveBanner > 0) {
+    const a = Math.min(1, waveBanner / 0.4, (2.2 - waveBanner) / 0.3);
+    ctx.globalAlpha = clamp(a, 0, 1);
+    ctx.textAlign = 'center';
+    ctx.font = '700 34px "Courier New", monospace';
+    ctx.fillStyle = '#f2e8c9';
+    ctx.fillText('— WAVE ' + waveNum + ' —', W / 2, H * 0.22);
+    ctx.globalAlpha = 1;
+  }
+
+  // off-screen enemy arrows
+  ctx.fillStyle = 'rgba(255,120,90,0.9)';
+  for (const e of enemies) {
+    const [sx, sy] = w2s(e.x, e.y);
+    if (sx > -10 && sx < W + 10 && sy > -10 && sy < H + 10) continue;
+    const dx = sx - W / 2, dy = sy - H / 2;
+    const m = 26;
+    const t = Math.min(
+      Math.abs((dx > 0 ? W - m - W / 2 : m - W / 2) / (dx || 1e-6)),
+      Math.abs((dy > 0 ? H - m - H / 2 : m - H / 2) / (dy || 1e-6))
+    );
+    const px = W / 2 + dx * t, py = H / 2 + dy * t, a = Math.atan2(dy, dx);
+    ctx.save(); ctx.translate(px, py); ctx.rotate(a);
+    ctx.beginPath(); ctx.moveTo(10, 0); ctx.lineTo(-6, -6); ctx.lineTo(-6, 6); ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+
+  // touch controls
+  if (isTouchDevice) {
+    if (stick.active) {
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(stick.ax, stick.ay, 56, 0, TAU); ctx.stroke();
+      ctx.fillStyle = 'rgba(255,255,255,0.45)';
+      ctx.beginPath(); ctx.arc(stick.ax + stick.dx, stick.ay + stick.dy, 24, 0, TAU); ctx.fill();
+    }
+    const fx = W - 74, fy = H - 84;
+    ctx.fillStyle = fireTouch.active ? 'rgba(216,85,74,0.75)' : 'rgba(216,85,74,0.4)';
+    ctx.beginPath(); ctx.arc(fx, fy, 44, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.font = '700 14px "Courier New", monospace';
+    ctx.fillText('FIRE', fx, fy);
+  }
+}
+
+function drawCenterText(lines) {
+  ctx.fillStyle = 'rgba(8,24,38,0.62)';
+  ctx.fillRect(0, 0, W, H);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#f2e8c9';
+  let y = H / 2 - lines.length * 16;
+  for (const [txt, size] of lines) {
+    ctx.font = `700 ${size}px "Courier New", monospace`;
+    ctx.fillText(txt, W / 2, y);
+    y += size * 1.7;
+  }
+}
+
+function render() {
+  ctx.save();
+  if (shake > 0) ctx.translate(rand(-shake, shake) * 0.5, rand(-shake, shake) * 0.5);
+
+  drawOcean();
+  drawIslands();
+
+  if (player) {
+    // bullets under planes
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#ffe28a'; ctx.lineWidth = 3;
+    for (const b of bullets) {
+      const [sx, sy] = w2s(b.x, b.y);
+      ctx.beginPath(); ctx.moveTo(sx, sy);
+      ctx.lineTo(sx - b.vx * 0.016, sy - b.vy * 0.016); ctx.stroke();
+    }
+    ctx.strokeStyle = '#ff7b6b'; ctx.lineWidth = 3;
+    for (const b of ebullets) {
+      const [sx, sy] = w2s(b.x, b.y);
+      ctx.beginPath(); ctx.moveTo(sx, sy);
+      ctx.lineTo(sx - b.vx * 0.018, sy - b.vy * 0.018); ctx.stroke();
+    }
+
+    for (const e of enemies) drawPlaneAt(e.x, e.y, e.a, 'jp', false);
+    if (state === 'play') drawPlaneAt(player.x, player.y, player.a, 'us', player.hitFlash > 0.12);
+
+    // particles
+    for (const p of particles) {
+      const [sx, sy] = w2s(p.x, p.y);
+      const t = p.life / p.max;
+      if (p.kind === 'ring') {
+        ctx.strokeStyle = `rgba(255,220,150,${(t * 0.9).toFixed(3)})`;
+        ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(sx, sy, p.size * (1.6 - t), 0, TAU); ctx.stroke();
+      } else {
+        ctx.fillStyle = p.kind === 'fire'
+          ? `rgba(255,${Math.floor(120 + t * 110)},60,${t.toFixed(3)})`
+          : `rgba(90,90,95,${(t * 0.7).toFixed(3)})`;
+        ctx.beginPath(); ctx.arc(sx, sy, p.size * (p.kind === 'smoke' ? (2 - t) : t + 0.4), 0, TAU); ctx.fill();
+      }
+    }
+    drawHud();
+  }
+  ctx.restore();
+
+  if (state === 'title') {
+    drawCenterText([
+      ['PACIFIC SKIES', 42],
+      ['· 1942 ·', 18],
+      ['', 8],
+      [isTouchDevice ? 'LEFT THUMB STEERS — RIGHT THUMB FIRES' : 'WASD / ARROWS TO FLY — SPACE TO FIRE', 14],
+      ['', 8],
+      [isTouchDevice ? 'TAP TO SCRAMBLE' : 'PRESS SPACE TO SCRAMBLE', 16],
+    ]);
+  } else if (state === 'over') {
+    drawCenterText([
+      ['SHOT DOWN', 38],
+      ['', 6],
+      ['SCORE ' + score + '   ·   BEST ' + best, 18],
+      ['WAVE ' + waveNum, 14],
+      ['', 8],
+      [isTouchDevice ? 'TAP TO FLY AGAIN' : 'PRESS SPACE TO FLY AGAIN', 15],
+    ]);
+  }
+}
+
+// ---------- loop ----------
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.033, (now - last) / 1000);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
