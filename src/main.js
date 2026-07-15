@@ -1,10 +1,13 @@
-// Game loop: orchestrates updates, collisions, waves, camera, render.
+// Game loop: orchestrates updates, collisions, capture/win logic,
+// camera, render order.
 import { CONFIG } from './config.js';
 import { game, startGame } from './state.js';
 import { cvs, ctx, view, w2s } from './canvas.js';
 import { keys, stick, fireTouch, initInput } from './input.js';
 import { updatePlayer, damagePlayer } from './player.js';
-import { spawnWave, updateEnemies } from './enemies.js';
+import { updateEnemies } from './enemies.js';
+import { updateCarrier, drawCarrier } from './carrier.js';
+import { updateIslands, drawKeyIslands, captureIsland } from './islands.js';
 import { explosion, updateParticles, drawParticles } from './particles.js';
 import { drawOcean, drawIslands } from './world.js';
 import { drawPlaneAt } from './sprites.js';
@@ -16,9 +19,12 @@ initInput(cvs);
 function update(dt) {
   game.time += dt;
   if (game.mode !== 'play') return;
+  game.runTime += dt;
 
   updatePlayer(dt);
   updateEnemies(dt);
+  updateCarrier(dt);
+  updateIslands(dt);
 
   // bullets
   for (const b of game.bullets) { b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt; }
@@ -38,12 +44,33 @@ function update(dt) {
         break;
       }
     }
+    if (b.life <= 0) continue;
+    // strafing island defenses
+    for (const isl of game.islands) {
+      if (isl.owner !== 'enemy') continue;
+      if (Math.hypot(b.x - isl.x, b.y - isl.y) > isl.r + 80) continue;
+      for (const s of isl.structures) {
+        if (s.hp <= 0) continue;
+        const sx = isl.x + s.dx, sy = isl.y + s.dy;
+        if (Math.hypot(b.x - sx, b.y - sy) < 16) {
+          b.life = 0; s.hp--;
+          game.particles.push({ x: b.x, y: b.y, vx: rand(-40, 40), vy: rand(-40, 40), life: 0.2, max: 0.2, size: 3, kind: 'fire' });
+          if (s.hp <= 0) {
+            game.score += CONFIG.score.structure;
+            explosion(sx, sy, false);
+            if (isl.structures.every(q => q.hp <= 0)) captureIsland(isl);
+          }
+          break;
+        }
+      }
+      if (b.life <= 0) break;
+    }
   }
   for (const b of game.ebullets) {
     if (b.life <= 0) continue;
-    if (Math.hypot(b.x - game.player.x, b.y - game.player.y) < 15) {
+    if (game.player.phase === 'air' && Math.hypot(b.x - game.player.x, b.y - game.player.y) < 15) {
       b.life = 0;
-      damagePlayer(CONFIG.enemy.bulletDamage);
+      damagePlayer(b.dmg || CONFIG.enemy.bulletDamage);
     }
   }
 
@@ -53,18 +80,13 @@ function update(dt) {
 
   updateParticles(dt);
 
-  // waves
-  game.waveBanner = Math.max(0, game.waveBanner - dt);
-  if (game.enemies.length === 0) {
-    game.waveTimer -= dt;
-    if (game.waveTimer <= 0) {
-      if (game.waveNum > 0) {
-        game.player.hp = Math.min(CONFIG.player.hp, game.player.hp + CONFIG.waves.healBetween);
-        game.score += game.waveNum * CONFIG.waves.clearBonusPerWave;
-      }
-      spawnWave();
-      game.waveTimer = CONFIG.waves.delay;
-    }
+  game.banner.t = Math.max(0, game.banner.t - dt);
+
+  // victory: the whole front line flies your flag
+  if (game.mode === 'play' && game.islands.every(i => i.owner === 'player')) {
+    game.score += CONFIG.score.win;
+    game.best = Math.max(game.best, game.score);
+    game.mode = 'win';
   }
 
   // camera: lead slightly ahead of the nose
@@ -82,6 +104,9 @@ function render() {
   drawIslands();
 
   if (game.player) {
+    drawKeyIslands();
+    drawCarrier();
+
     // bullets under planes
     ctx.lineCap = 'round';
     ctx.strokeStyle = '#ffe28a'; ctx.lineWidth = 3;

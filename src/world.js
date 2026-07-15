@@ -2,7 +2,14 @@
 // world is infinite and stable without storing anything.
 import { ctx, view, w2s } from './canvas.js';
 import { game } from './state.js';
+import { CONFIG } from './config.js';
 import { hash2, TAU } from './util.js';
+
+// background islands keep clear of the key islands and the carrier
+const KEEP_CLEAR = [
+  ...CONFIG.islands.map(i => ({ x: i.x, y: i.y, r: i.r * 1.6 })),
+  { x: CONFIG.carrier.x, y: CONFIG.carrier.y, r: 260 },
+];
 
 export function drawOcean() {
   const { W, H } = view;
@@ -45,6 +52,11 @@ export function drawIslands() {
       const cx = gx * cell + cell * (0.25 + hash2(gx, gy * 2) * 0.5);
       const cy = gy * cell + cell * (0.25 + hash2(gx * 2, gy) * 0.5);
       const R = 90 + h * 600;
+      let blocked = false;
+      for (const k of KEEP_CLEAR) {
+        if (Math.hypot(cx - k.x, cy - k.y) < R + k.r + 200) { blocked = true; break; }
+      }
+      if (blocked) continue;
       const [sx, sy] = w2s(cx, cy);
       if (sx < -R - 60 || sx > W + R + 60 || sy < -R - 60 || sy > H + R + 60) continue;
 

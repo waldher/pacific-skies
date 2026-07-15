@@ -31,6 +31,38 @@ export function sfxOverheat() {
   src.connect(f).connect(g).connect(AC.destination); src.start(t);
 }
 
+// bright two-note chirp: capture, touch down, rearm complete
+export function sfxDing() {
+  if (!AC) return;
+  const t = AC.currentTime;
+  [523, 784].forEach((hz, i) => {
+    const o = AC.createOscillator(), g = AC.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(hz, t + i * 0.09);
+    g.gain.setValueAtTime(0.0001, t + i * 0.09);
+    g.gain.exponentialRampToValueAtTime(0.09, t + i * 0.09 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.09 + 0.22);
+    o.connect(g).connect(AC.destination);
+    o.start(t + i * 0.09); o.stop(t + i * 0.09 + 0.25);
+  });
+}
+
+// low two-tone klaxon: raid inbound, island lost
+export function sfxAlarm() {
+  if (!AC) return;
+  const t = AC.currentTime;
+  [0, 0.18].forEach(off => {
+    const o = AC.createOscillator(), g = AC.createGain();
+    o.type = 'square';
+    o.frequency.setValueAtTime(196, t + off);
+    o.frequency.setValueAtTime(147, t + off + 0.09);
+    g.gain.setValueAtTime(0.0001, t + off);
+    g.gain.exponentialRampToValueAtTime(0.07, t + off + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.001, t + off + 0.17);
+    o.connect(g).connect(AC.destination);
+    o.start(t + off); o.stop(t + off + 0.2);
+  });
+}
+
 export function sfxBoom(big) {
   if (!AC) return;
   const t = AC.currentTime, len = big ? 0.7 : 0.4;

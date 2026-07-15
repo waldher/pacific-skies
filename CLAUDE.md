@@ -1,7 +1,11 @@
 # Pacific Skies — 1942
 
-Top-down free-roam arcade dogfighter over the Pacific. Pure HTML5
-canvas, native ES modules, zero dependencies, no build step.
+Top-down free-roam arcade dogfighter over the Pacific. Take off from
+your carrier, capture the four key islands by strafing their
+defenses, defend them from recapture raids, and land on the deck to
+repair and rearm (ammo is limited). Capturing all four wins the run;
+getting shot down ends it. Pure HTML5 canvas, native ES modules,
+zero dependencies, no build step.
 Deployed via GitHub Pages straight from `main` — every push to main
 is live at https://waldher.github.io/pacific-skies/ within minutes.
 
@@ -20,24 +24,26 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 
 | File | Responsibility |
 |---|---|
-| `main.js` | game loop, bullet movement/collisions, waves, camera, render order, debug handle |
-| `state.js` | the shared mutable `game` object + `startGame()` |
-| `config.js` | **all** gameplay tuning constants |
+| `main.js` | game loop, bullet movement/collisions, win check, camera, render order, debug handle |
+| `state.js` | the shared mutable `game` object, island construction, `startGame()`, `setBanner()` |
+| `config.js` | **all** gameplay tuning constants (incl. carrier geometry, island layout) |
 | `util.js` | math helpers, hash noise, seedable RNG (`setSeed`/`rand`) |
 | `canvas.js` | canvas/ctx, resize, `view {W,H}`, world→screen `w2s` |
 | `input.js` | keyboard + touch (virtual stick left half, fire right half) |
-| `player.js` | flight model, firing, damage, death |
-| `enemies.js` | wave spawning, pursuit AI, enemy fire, ramming |
+| `player.js` | flight model, deck ops (takeoff/landing/rearm), firing, ammo, damage, death |
+| `enemies.js` | enemy roles (defender/raider/hunter), garrison upkeep, raids, patrols, pursuit AI |
+| `carrier.js` | deck geometry helpers, flak, carrier + landing-guide drawing |
+| `islands.js` | key-island capture state, AA fire, resupply zones, island drawing |
 | `particles.js` | explosions, smoke, particle sim/draw |
-| `world.js` | procedural ocean + islands |
+| `world.js` | procedural ocean + background islands (clear of key islands) |
 | `sprites.js` | vector plane sprites, `rr` rounded-rect helper |
-| `hud.js` | HUD, wave banner, off-screen arrows, touch UI, menus |
+| `hud.js` | HUD, banners, off-screen arrows, deck prompts, touch UI, menus |
 | `audio.js` | procedural sfx |
 
 Conventions:
 
 - Game state mutations go through the shared `game` object from
-  `state.js`. `game.mode` is `title | play | over`.
+  `state.js`. `game.mode` is `title | play | over | win`.
 - Tuning numbers belong in `config.js`, never inline. A balance
   change should be a one-line diff there.
 - Gameplay randomness must use `rand()` from `util.js` (seedable for
