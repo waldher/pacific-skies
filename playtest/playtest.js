@@ -41,7 +41,7 @@ function check(name, ok, detail) {
 (async () => {
   // tiny static server; ephemeral port avoids collisions
   const server = http.createServer((req, res) => {
-    const rel = decodeURIComponent(req.url.split('?')[0]);
+    const rel = decodeURIComponent(req.url.split('?')[0]).replace(/^\/pacific-skies(?=\/)/, '');
     const file = path.join(ROOT, rel === '/' ? 'index.html' : rel);
     if (!file.startsWith(ROOT) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
       res.writeHead(404); res.end('not found'); return;
@@ -52,13 +52,17 @@ function check(name, ok, detail) {
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const port = server.address().port;
 
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({ args: ['--enable-unsafe-swiftshader'] });
   const page = await browser.newPage({ viewport: { width: 900, height: 600 } });
   page.on('pageerror', e => results.errors.push(String(e)));
   page.on('console', m => { if (m.type() === 'error') results.errors.push(m.text()); });
 
-  await page.goto(`http://127.0.0.1:${port}/`);
-  await page.waitForTimeout(500);
+  await page.goto(`http://127.0.0.1:${port}/pacific-skies/`);
+  await page.waitForFunction(() => window.__game?.rendering?.ready || window.__game?.rendering?.error,
+    null, { timeout: 30000 });
+  check('3D assets and renderer initialize', await page.evaluate(() => window.__game.rendering.ready),
+    await page.evaluate(() => window.__game.rendering.error));
+  await page.waitForTimeout(200);
 
   const snap = () => page.evaluate(() => {
     const g = window.__game.game;
@@ -80,10 +84,49 @@ function check(name, ok, detail) {
   await page.waitForTimeout(200);
   s = await snap();
   check('Space starts the game', s.mode === 'play');
+  const modelChecks = await page.evaluate(async () => {
+    const THREE = await import(new URL('vendor/three/three.module.min.js', location.href).href);
+    const { graphics, game, view, CONFIG } = window.__game;
+    const visual = graphics.aircraft.get(game.player);
+    const original = game.player.a;
+    let aligned = true;
+    for (const a of [0, Math.PI / 2, Math.PI, -Math.PI / 2]) {
+      game.player.a = a;
+      graphics.render(game, view, 0, 0, 0);
+      const nose = new THREE.Vector3(0, 0, -1).applyQuaternion(visual.root.quaternion);
+      aligned &&= Math.abs(nose.x - Math.cos(a)) < 1e-6 && Math.abs(nose.z - Math.sin(a)) < 1e-6;
+    }
+    game.player.a = original;
+    graphics.render(game, view, 0, 0, 0);
+    const size = new THREE.Box3().setFromObject(visual.model).getSize(new THREE.Vector3());
+    return {
+      name: visual.model.name,
+      propeller: !!visual.propeller,
+      aligned,
+      scale: Math.abs(size.x - CONFIG.render.aircraftWingspan) < 1,
+      orthographic: graphics.camera.isOrthographicCamera,
+    };
+  });
+  check('player uses Corsair GLB with propeller', modelChecks.name === 'F4U_Corsair' && modelChecks.propeller);
+  check('model noses match all four flight headings', modelChecks.aligned);
+  check('orthographic camera preserves aircraft scale', modelChecks.orthographic && modelChecks.scale);
+  const propAngle = await page.evaluate(() => window.__game.graphics.aircraft.get(window.__game.game.player).propeller.rotation.z);
+  await page.keyboard.down('KeyD');
+  await page.waitForTimeout(350);
+  check('right turn banks the 3D aircraft', await page.evaluate(() => window.__game.graphics.aircraft.get(window.__game.game.player).bank < -.1));
+  check('propeller animates', await page.evaluate(old => window.__game.graphics.aircraft.get(window.__game.game.player).propeller.rotation.z !== old, propAngle));
+  await page.keyboard.up('KeyD');
+  await page.screenshot({ path: path.join(SHOT_DIR, '02-bank.png') });
+  // Reset after the renderer probe so the gameplay bot retains its seeded setup.
+  await page.evaluate(seed => { window.__game.setSeed(seed); window.__game.startGame(); }, SEED);
 
   await page.waitForTimeout(3000);
   s = await snap();
   check('wave 1 spawns enemies', s.enemies > 0, `${s.enemies} enemies`);
+  check('enemies use Zero GLBs', await page.evaluate(() => {
+    const { game, graphics } = window.__game;
+    return game.enemies.every(e => graphics.aircraft.get(e)?.model.name === 'Mitsubishi_Zero');
+  }));
   await page.screenshot({ path: path.join(SHOT_DIR, '02-wave1.png') });
 
   // ---- bot plays the game ----
@@ -145,7 +188,27 @@ function check(name, ok, detail) {
     check('restart after death works', s.mode === 'play' && s.hp === 100);
   }
 
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForTimeout(200);
+  check('3D camera and HUD resize together', await page.evaluate(() => {
+    const { view, graphics } = window.__game;
+    return view.W === 390 && graphics.camera.right - graphics.camera.left === 390
+      && document.getElementById('world').width === Math.round(390 * view.DPR);
+  }));
+  await page.screenshot({ path: path.join(SHOT_DIR, '05-mobile.png') });
+  await page.evaluate(() => window.__game.startGame());
+  await page.waitForTimeout(200);
+  check('restart removes old aircraft instances', await page.evaluate(() => window.__game.graphics.aircraft.size === 1));
   check('no JS errors during play', results.errors.length === 0, results.errors[0]);
+
+  const failedPage = await browser.newPage();
+  await failedPage.route('**/F4U_Corsair.glb', route => route.fulfill({ status: 503, body: 'unavailable' }));
+  await failedPage.goto(`http://127.0.0.1:${port}/pacific-skies/`);
+  await failedPage.waitForFunction(() => window.__game?.rendering?.error, null, { timeout: 30000 });
+  check('asset failure shows recovery UI', await failedPage.getByRole('button', { name: 'Retry' }).isVisible());
+  await failedPage.keyboard.press('Space');
+  check('failed loading does not start an invisible game', await failedPage.evaluate(() => window.__game.game.mode === 'title'));
+  await failedPage.close();
 
   console.log('\n--- gameplay metrics ---');
   for (const [k, v] of Object.entries(results.metrics)) console.log(`${k}: ${v}`);

@@ -1,7 +1,7 @@
 # Pacific Skies — 1942
 
-Top-down free-roam arcade dogfighter over the Pacific. Pure HTML5
-canvas, native ES modules, zero dependencies, no build step.
+Top-down free-roam arcade dogfighter over the Pacific. Three.js / WebGL 2
+scene, Canvas HUD overlay, native ES modules, no build step.
 Deployed via GitHub Pages straight from `main` — every push to main
 is live at https://waldher.github.io/pacific-skies/ within minutes.
 
@@ -9,9 +9,9 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 
 - **Arcade, not sim.** Sessions are 1–5 minutes, restart is instant,
   one input scheme per platform (keyboard / two thumbs).
-- **Zero tooling.** No bundler, no framework, no assets — graphics
-  are canvas vectors, audio is WebAudio synthesis, world is hash
-  noise. Keep it that way unless a feature truly demands more.
+- **No build step.** Three.js and GLB aircraft are checked in. Keep runtime
+  imports local so GitHub Pages works without a CDN. Audio is WebAudio
+  synthesis and the world is deterministic hash noise.
 - **main is production.** It must always be a playable game.
 
 ## Architecture
@@ -28,11 +28,14 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 | `input.js` | keyboard + touch (virtual stick left half, fire right half) |
 | `player.js` | flight model, firing, damage, death |
 | `enemies.js` | wave spawning, pursuit AI, enemy fire, ramming |
-| `particles.js` | explosions, smoke, particle sim/draw |
-| `world.js` | procedural ocean + islands |
-| `sprites.js` | vector plane sprites, `rr` rounded-rect helper |
+| `particles.js` | explosions, smoke, particle simulation |
+| `world.js` | Three.js ocean + bounded island chunks |
+| `sprites.js` | HUD `rr` rounded-rect helper |
 | `hud.js` | HUD, wave banner, off-screen arrows, touch UI, menus |
 | `audio.js` | procedural sfx |
+| `renderer.js` | Three.js scene, orthographic camera, lighting, instance lifecycle |
+| `aircraft.js` | GLB loading, geometry batching, banking, propeller animation |
+| `effects.js` | instanced tracers and batched particles |
 
 Conventions:
 

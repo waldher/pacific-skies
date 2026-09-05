@@ -1,6 +1,13 @@
 // All gameplay tuning lives here. Balance experiments should be
 // one-line diffs in this file, never edits to system logic.
 export const CONFIG = {
+  render: {
+    aircraftWingspan: 48,    // world units; 1 unit = 1 CSS pixel at this camera scale
+    flightHeight: 32,
+    bankAngle: Math.PI / 5,  // maximum visual bank, independent of flight physics
+    bankResponse: 8,
+    propellerSpeed: 55,      // radians/s
+  },
   player: {
     hp: 100,
     turnRate: 3.1,            // rad/s
