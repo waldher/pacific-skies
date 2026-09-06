@@ -44,8 +44,10 @@ export async function loadAircraft() {
     prop.name = 'Propeller';
     prop.position.copy(propeller.position);
     template.add(prop);
-    // Preserve the original ~48px wingspan so hitboxes and aiming still agree.
-    template.scale.setScalar(CONFIG.render.aircraftWingspan / (kind === 'us' ? 12.5 : 11));
+    // Models are built in metres (tools/build-aircraft.mjs); scale each to the
+    // shared 48-unit wingspan so hitboxes and aiming still agree.
+    const span = new THREE.Box3().setFromObject(template);
+    template.scale.setScalar(CONFIG.render.aircraftWingspan / (span.max.x - span.min.x));
     templates[kind] = template;
     const oldGeometries = new Set();
     scene.traverse(node => { if (node.isMesh) oldGeometries.add(node.geometry); });

@@ -5,7 +5,9 @@
   "description": "Pacific Skies — 1942: top-down arcade dogfighter over the Pacific",
   "scripts": {
     "test": "node playtest/playtest.js",
-    "serve": "npx http-server -c-1 -p 8080 ."
+    "serve": "npx http-server -c-1 -p 8080 .",
+    "build:aircraft": "node --no-warnings tools/build-aircraft.mjs",
+    "views": "node tools/render-views.js F4U_Corsair Mitsubishi_Zero"
   },
   "devDependencies": {
     "playwright": "1.56.1"
