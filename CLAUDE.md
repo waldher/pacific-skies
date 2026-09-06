@@ -49,6 +49,21 @@ Conventions:
   `game` state, `CONFIG`, `startGame`, `setSeed`, `keys`. The
   playtest harness depends on it — keep it working.
 
+## Tools
+
+`tools/` holds the asset pipeline; none of it runs in the game.
+
+| File | Purpose |
+|---|---|
+| `build-aircraft.mjs` | Generates `assets/aircraft/F4U_Corsair.glb` from a dimensioned spec (metres). Edit numbers there, never the GLB. `npm run build:aircraft` |
+| `render-views.js` | Top/side/front orthographic renders of a GLB over a 1 m grid → `tools/views/`. `npm run views` |
+| `glb-info.mjs` | Node tree, materials and world-space bounding boxes of a GLB, for checking dimensions |
+| `measure-drawing.js` | Scans a three-view drawing's silhouette and prints station tables in metres |
+| `reference/` | Reference dimensions and the drawing they came from (`F4U-1.md`) |
+
+After regenerating a model, run the playtest and look at the screenshots;
+the loader requires `Airframe` and `Propeller` nodes and indexed meshes.
+
 ## Running
 
 Serve over HTTP (ES modules don't load from `file://`):

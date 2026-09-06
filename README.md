@@ -34,6 +34,10 @@ context loss pauses the simulation until recovery.
 loads and animates models, `src/world.js` streams islands, and `src/effects.js`
 batches tracers and particles. Visual tuning lives in `CONFIG.render`.
 
+The Corsair GLB is generated from real dimensions by `tools/build-aircraft.mjs`
+(`npm run build:aircraft`); the reference measurements and the three-view
+drawing they came from are in `tools/reference/`.
+
 The playtest checks GLB loading, heading alignment, banking, propellers, resize,
 instance cleanup, and the existing combat loop. Run `npx playwright install chromium`
 after installing the test dependencies. Headless checks use software WebGL;
