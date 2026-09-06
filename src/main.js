@@ -5,7 +5,7 @@ import { cvs, ctx, view } from './canvas.js';
 import { keys, stick, fireTouch, initInput } from './input.js';
 import { updatePlayer, damagePlayer } from './player.js';
 import { spawnWave, updateEnemies } from './enemies.js';
-import { explosion, updateParticles } from './particles.js';
+import { explosion, updateParticles, splash } from './particles.js';
 import { createRenderer } from './renderer.js';
 import { drawHud, drawMenus } from './hud.js';
 import { lerp, angDiff, rand, setSeed } from './util.js';
@@ -23,6 +23,9 @@ function update(dt) {
   // bullets
   for (const b of game.bullets) { b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt; }
   for (const b of game.ebullets) { b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt; }
+  // Rounds that run out of range hit the sea.
+  for (const b of game.bullets) if (b.life <= 0) splash(b.x, b.y);
+  for (const b of game.ebullets) if (b.life <= 0) splash(b.x, b.y);
 
   for (const b of game.bullets) {
     if (b.life <= 0) continue;

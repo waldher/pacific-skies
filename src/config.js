@@ -7,6 +7,17 @@ export const CONFIG = {
     bankAngle: Math.PI / 5,  // maximum visual bank, independent of flight physics
     bankResponse: 8,
     propellerSpeed: 55,      // radians/s
+    sunOffset: [-240, 800, -320], // sun position relative to the camera; shadows and ocean lighting share it
+    ocean: {
+      wind: [14, 6],           // ripple drift, world units/s
+      cloudSpeed: 2.5,         // cloud shadows drift at wind × this
+      cloudStrength: .2,       // how much cloud shadows darken the sea (0..1)
+      glitter: .6,             // sun sparkle intensity
+      foam: .7,                // whitecap density
+      surf: .55,               // shoreline foam ring opacity
+      deep: '#0f4468', mid: '#1c6b8a', shallows: '#39aeb0',
+      shallowsRadius: 1.9,     // lagoon fade-out distance, in island radii
+    },
   },
   player: {
     hp: 100,

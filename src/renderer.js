@@ -53,7 +53,8 @@ export async function createRenderer(canvas) {
       resize(view);
       camera.position.set(game.cam.x - shakeX, 1000, game.cam.y - shakeY);
       camera.lookAt(game.cam.x - shakeX, 0, game.cam.y - shakeY);
-      sun.position.set(game.cam.x - 240, 800, game.cam.y - 320);
+      const [sx, sy, sz] = CONFIG.render.sunOffset;
+      sun.position.set(game.cam.x + sx, sy, game.cam.y + sz);
       sun.target.position.set(game.cam.x, 0, game.cam.y);
       world.update(game.cam, view, game.time);
       const live = new Set(game.enemies);

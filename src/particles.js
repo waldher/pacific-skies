@@ -19,6 +19,11 @@ export function explosion(x, y, big) {
   game.shake = Math.min(game.shake + (big ? 10 : 5), 14);
 }
 
+/** Ring of spray where a bullet hits the sea. */
+export function splash(x, y) {
+  game.particles.push({ x, y, vx: 0, vy: 0, life: 0.35, max: 0.35, size: 7, kind: 'splash' });
+}
+
 export function updateParticles(dt) {
   for (const p of game.particles) {
     p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt;
