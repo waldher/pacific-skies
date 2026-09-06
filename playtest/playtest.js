@@ -57,7 +57,9 @@ function check(name, ok, detail) {
   page.on('pageerror', e => results.errors.push(String(e)));
   page.on('console', m => { if (m.type() === 'error') results.errors.push(m.text()); });
 
-  await page.goto(`http://127.0.0.1:${port}/pacific-skies/`);
+  // Pin the quality level: under software rendering the adaptive ladder would
+  // otherwise step down and change what the screenshots show.
+  await page.goto(`http://127.0.0.1:${port}/pacific-skies/?quality=1`);
   await page.waitForFunction(() => window.__game?.rendering?.ready || window.__game?.rendering?.error,
     null, { timeout: 30000 });
   check('3D assets and renderer initialize', await page.evaluate(() => window.__game.rendering.ready),
@@ -110,6 +112,20 @@ function check(name, ok, detail) {
   check('player uses Corsair GLB with propeller', modelChecks.name === 'F4U_Corsair' && modelChecks.propeller);
   check('model noses match all four flight headings', modelChecks.aligned);
   check('orthographic camera preserves aircraft scale', modelChecks.orthographic && modelChecks.scale);
+  const qualityChecks = await page.evaluate(() => {
+    const { graphics, game, view, CONFIG } = window.__game;
+    const results = [];
+    for (let i = CONFIG.render.quality.levels.length - 1; i >= 0; i--) {
+      graphics.quality.set(i);
+      graphics.render(game, view, 0, 0, 0);
+      const L = CONFIG.render.quality.levels[i];
+      results.push(graphics.diagnostics.quality === i && graphics.renderer.shadowMap.enabled === L.shadows
+        && graphics.diagnostics.pixelRatio === Math.min(view.DPR, L.pixelRatio));
+    }
+    graphics.quality.set(1);
+    return results;
+  });
+  check('every quality level renders', qualityChecks.every(Boolean), qualityChecks.join(','));
   const propAngle = await page.evaluate(() => window.__game.graphics.aircraft.get(window.__game.game.player).propeller.rotation.z);
   await page.keyboard.down('KeyD');
   await page.waitForTimeout(350);

@@ -28,6 +28,13 @@ The sea is a single shader: hash-noise ripples lit by the sun, sparse whitecaps,
 sun glitter, drifting cloud shadows, turquoise shallows and surf around islands,
 and splash rings where rounds hit the water. Tuning is in `CONFIG.render.ocean`.
 
+Quality adapts to the device: the renderer times its own frames and steps down
+`CONFIG.render.quality.levels` (pixel ratio, then ocean detail, then shadows)
+while frames stay slow, stepping back up only into levels that never failed.
+Aircraft shadows use a small receiver quad per aircraft rather than a
+full-screen plane, and fall back to a soft blob on the lowest tier. Append
+`?quality=N` (0 best … 4 lowest) to the URL to pin a level when testing.
+
 Three.js 0.185.1 and its loader are vendored under `vendor/three/`, so GitHub Pages
 can still serve this repository directly without a build or third-party CDN.
 A browser with WebGL 2 is required. Loading failures show a retry screen; graphics

@@ -8,6 +8,26 @@ export const CONFIG = {
     bankResponse: 8,
     propellerSpeed: 55,      // radians/s
     sunOffset: [-240, 800, -320], // sun position relative to the camera; shadows and ocean lighting share it
+    quality: {
+      // Adaptive quality ladder, best first. The renderer steps down while
+      // frames stay slow and back up only into levels that never failed.
+      // pixelRatio caps the device ratio; ocean is the shader detail
+      // (2 full, 1 no glitter/whitecaps, 0 two octaves, no clouds).
+      // Pin a level for testing with ?quality=N in the URL.
+      levels: [
+        { pixelRatio: 2, ocean: 2, shadows: true },
+        { pixelRatio: 1.5, ocean: 2, shadows: true },
+        { pixelRatio: 1.25, ocean: 1, shadows: true },
+        { pixelRatio: 1, ocean: 1, shadows: true },
+        { pixelRatio: 1, ocean: 0, shadows: false },
+      ],
+      start: 1,
+      slowFrame: .024,         // s; frames longer than this count as slow (≈42 fps)
+      fastFrame: .0175,        // s; frames shorter than this count as fast (holds 60 fps)
+      settle: 2,               // s of net slow frames before stepping down
+      recover: 12,             // s of fast frames before stepping up
+      hold: 3,                 // s to ignore after a change (shader compiles cause hitches)
+    },
     ocean: {
       wind: [14, 6],           // ripple drift, world units/s
       cloudSpeed: 2.5,         // cloud shadows drift at wind × this

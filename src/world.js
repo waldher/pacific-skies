@@ -9,8 +9,10 @@
 //   whitecaps crests gated by a noise stretched along the wind
 //   shallows  a turquoise fade around each visible island (positions are
 //             uniforms; the loop is at most 12 distance checks)
-//   clouds    two low-frequency octaves darkening the sea as they drift
-// Tuning lives in CONFIG.render.ocean.
+//   clouds    a low-frequency layer darkening the sea as it drifts
+// The `detail` uniform drops glitter, whitecaps, the finest octave and the
+// clouds on slow devices (see CONFIG.render.quality). Tuning lives in
+// CONFIG.render.ocean.
 import * as THREE from 'three';
 import { CONFIG } from './config.js';
 import { hash2, TAU } from './util.js';
@@ -30,7 +32,7 @@ export function createWorld(scene) {
   const sun = new THREE.Vector3(...CONFIG.render.sunOffset).normalize();
   const oceanMaterial = new THREE.ShaderMaterial({
     uniforms: {
-      time: { value: 0 }, dpr: { value: 1 },
+      time: { value: 0 }, dpr: { value: 1 }, detail: { value: 2 },
       wind: { value: new THREE.Vector2(...O.wind) },
       sunDir: { value: sun },
       cloudSpeed: { value: O.cloudSpeed }, cloudStrength: { value: O.cloudStrength },
@@ -46,7 +48,7 @@ export function createWorld(scene) {
         gl_Position = projectionMatrix * viewMatrix * world;
       }`,
     fragmentShader: `varying vec2 worldXZ;
-      uniform float time, dpr, cloudSpeed, cloudStrength, glitter, foam, shallowRadius;
+      uniform float time, dpr, detail, cloudSpeed, cloudStrength, glitter, foam, shallowRadius;
       uniform vec2 wind; uniform vec3 sunDir, deepColor, midColor, shallowColor;
       uniform vec4 islands[${MAX_ISLANDS}]; uniform int islandCount;
       ${NOISE}
@@ -57,8 +59,8 @@ export function createWorld(scene) {
         // Ripples: three ridged octaves, each rotated so the noise grid never lines up.
         float h1 = ridge((p + drift) * .011);
         float h2 = ridge(R1 * (p - drift * .7) * .026);
-        float h3 = ridge(R2 * (p + drift * 1.6) * .058);
-        float h = h1 * .45 + h2 * .33 + h3 * .22;
+        float h = h1 * .55 + h2 * .45;
+        if (detail > .5) h = h1 * .45 + h2 * .33 + ridge(R2 * (p + drift * 1.6) * .058) * .22;
         // Shallows around islands.
         float shallow = 0.0;
         for (int i = 0; i < ${MAX_ISLANDS}; i++) {
@@ -70,16 +72,20 @@ export function createWorld(scene) {
         float k = 10.0 * dpr;
         vec3 n = normalize(vec3(-dFdx(h) * k, 1.0, -dFdy(h) * k));
         water *= .82 + .3 * max(dot(n, sunDir), 0.0);
-        vec3 halfway = normalize(sunDir + vec3(0.0, 1.0, 0.0));
-        float sparkle = smoothstep(.9, .99, vnoise((p + drift * 2.0) * .09 + time * .7));
-        water += glitter * pow(max(dot(n, halfway), 0.0), 400.0) * sparkle * vec3(1.0, .96, .85);
-        // Whitecaps: sparse flecks stretched along the wind, clustered on the big swell crests (h1).
-        vec2 w = normalize(wind), along = vec2(dot(p, w), dot(p, vec2(-w.y, w.x)));
-        float fleck = vnoise(along * vec2(.045, .16) + vec2(-time * .3, 0.0));
-        water = mix(water, vec3(.9, .95, .97), foam * smoothstep(.9, .96, fleck) * smoothstep(.7, .95, h1));
-        // Cloud shadows drifting over everything.
-        float cloud = vnoise((p + drift * cloudSpeed) * .0011);
-        water *= 1.0 - smoothstep(.5, .78, cloud) * cloudStrength;
+        if (detail > 1.5) {
+          vec3 halfway = normalize(sunDir + vec3(0.0, 1.0, 0.0));
+          float sparkle = smoothstep(.9, .99, vnoise((p + drift * 2.0) * .09 + time * .7));
+          water += glitter * pow(max(dot(n, halfway), 0.0), 400.0) * sparkle * vec3(1.0, .96, .85);
+          // Whitecaps: sparse flecks stretched along the wind, clustered on the big swell crests (h1).
+          vec2 w = normalize(wind), along = vec2(dot(p, w), dot(p, vec2(-w.y, w.x)));
+          float fleck = vnoise(along * vec2(.045, .16) + vec2(-time * .3, 0.0));
+          water = mix(water, vec3(.9, .95, .97), foam * smoothstep(.9, .96, fleck) * smoothstep(.7, .95, h1));
+        }
+        if (detail > .5) {
+          // Cloud shadows drifting over everything.
+          float cloud = vnoise((p + drift * cloudSpeed) * .0011);
+          water *= 1.0 - smoothstep(.5, .78, cloud) * cloudStrength;
+        }
         gl_FragColor = vec4(water, 1.0);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
@@ -88,12 +94,6 @@ export function createWorld(scene) {
   const ocean = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), oceanMaterial);
   ocean.rotation.x = -Math.PI / 2;
   scene.add(ocean);
-  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1),
-    new THREE.ShadowMaterial({ opacity: .24, depthWrite: false }));
-  shadow.rotation.x = -Math.PI / 2;
-  shadow.position.y = .1;
-  shadow.receiveShadow = true;
-  scene.add(shadow);
 
   // Surf: a foam ring hugging each shoreline, pulsing and broken up by noise.
   const surfMaterial = new THREE.ShaderMaterial({
@@ -163,13 +163,12 @@ export function createWorld(scene) {
     return group;
   }
   return {
-    update(cam, view, time) {
+    setDetail(level) { oceanMaterial.uniforms.detail.value = level; },
+    update(cam, view, time, pixelRatio) {
       ocean.position.set(cam.x, 0, cam.y);
-      shadow.position.set(cam.x, .1, cam.y);
       ocean.scale.set(view.W + 1000, view.H + 1000, 1);
-      shadow.scale.copy(ocean.scale);
       oceanMaterial.uniforms.time.value = time;
-      oceanMaterial.uniforms.dpr.value = view.DPR;
+      oceanMaterial.uniforms.dpr.value = pixelRatio;
       surfMaterial.uniforms.time.value = time;
       const needed = new Set();
       for (let gy = Math.floor((cam.y - view.H / 2 - 500) / 1500); gy <= Math.floor((cam.y + view.H / 2 + 500) / 1500); gy++) {
