@@ -8,10 +8,17 @@ checked station by station against three-view drawings (`tools/reference/`).
 
 - `F4U_Corsair.glb`: F4U-1 — span 12.50 m, length 10.16 m, 4.06 m
   propeller, 5.0 m stabiliser, wing planted right behind the cowl, gull
-  joint at 2.5 m, star-and-bar insignia. 2,801 triangles.
+  joint at 2.5 m. Blue Gray over Light Gray, star-and-bars insignia to
+  the AN-I-9b proportions, starboard walkway. ≈2,850 triangles.
 - `Mitsubishi_Zero.glb`: A6M2 Model 21 — span 12.00 m, length 9.06 m,
-  2.9 m propeller, long greenhouse canopy, dark cowl, hinomaru.
-  2,593 triangles.
+  2.9 m propeller, long greenhouse canopy. Overall grey-green with a
+  blue-black cowl and anti-glare panel, plain hinomaru, single red
+  fuselage band, port walkway, bare-metal propeller. ≈2,575 triangles.
+
+Paint is applied by rules in each spec (`paint.*` functions split a
+surface's triangles by colour; insignia, walkways and bands are placed
+from the same dimension tables), so a scheme change is a few numbers, and
+each choice is written up in `tools/reference/*.md` under "Paint scheme".
 
 GLB / glTF 2.0; +Y up, nose -Z, metres, origin at the mid-point of the
 length. Embedded PBR materials, no external textures. The `Airframe` and

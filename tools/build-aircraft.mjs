@@ -34,10 +34,22 @@ const CORSAIR = {
   length: 10.16,
   span: 12.50,
   markings: 'us',
-  cowlMaterial: 'airframe',
+  // 1942–early 1943 US Navy scheme: non-specular Blue Gray (M-485, ≈FS 35189)
+  // over Light Gray (M-495, ≈FS 36440), black walkway on the starboard wing
+  // root, black Hamilton Standard blades with yellow tips. See
+  // tools/reference/F4U-1.md "Paint scheme".
   colors: {
-    airframe: '#24476b', seam: '#527b99', hub: '#c0cbd0', roundel: '#102b41',
-    glass: '#67b9cc', star: '#eee9d5', cylinder: '#25372f', dark: '#161d24', tip: '#e5b945',
+    upper: '#556878', lower: '#bcbfb8', seam: '#6b7d8d', walkway: '#1f2225', roundel: '#1c2b48',
+    star: '#f0eee6', glass: '#67b9cc', cylinder: '#25372f', dark: '#161d24', hub: '#9aa0a6',
+    blade: '#161d24', tip: '#e0b03a',
+  },
+  paint: {
+    fuselage: c => (c.y > -0.32 + 0.02 * c.x ? 'upper' : 'lower'),   // demarcation low on the sides
+    cowl: c => (c.y > -0.32 ? 'upper' : 'lower'),
+    wing: (c, st) => (c.y > st.h ? 'upper' : 'lower'),
+    tailplane: (c, st) => (c.y > st.h ? 'upper' : 'lower'),
+    fin: () => 'upper',
+    frames: 'upper',
   },
   // Fuselage cross-sections: x, half-width, top, bottom (heights vs thrust line).
   fuselage: [
@@ -92,7 +104,14 @@ const CORSAIR = {
   foldLine: 2.55,                 // outer panels fold here (also the gull joint)
   aileron: { y0: 3.30, y1: 6.00, chord: 0.22 },
   guns: { spans: [2.85, 3.20, 3.55], protrude: 0.22, r: 0.045 },
-  insignia: { y: 4.25, r: 0.51, starR: 0.44, bar: [1.70, 0.30], sides: [-1, 1] },
+  walkways: [{ side: 1, y0: 0.80, y1: 2.30, c0: 0.45, c1: 0.85 }],
+  // National insignia to the AN-I-9b proportions: star inscribed in a disc
+  // of radius r; with `bars`, white bars one radius long and half a radius
+  // tall on each side and a blue outline one eighth of a radius wide
+  // (the August 1943 form everyone recognises). `bars: false` gives the
+  // plain star-in-disc carried in 1942. Both upper wings for readability;
+  // the 1943 rule was upper-left wing only.
+  insignia: { y: 4.25, r: 0.55, bars: true, sides: [-1, 1] },
   // Horizontal stabiliser half-span stations.
   tailplane: [
     { y: 0.00, le: 8.50, te: 9.90, h: 0.28, t: 0.16 },
@@ -129,10 +148,24 @@ const ZERO = {
   length: 9.06,
   span: 12.00,
   markings: 'jp',
-  cowlMaterial: 'cowl',
+  // 1942 Mitsubishi factory finish: overall J3 grey-green ("ame-iro"),
+  // blue-black cowling carried back over the nose as an anti-glare panel,
+  // hinomaru without white borders, single red fuselage band (Akagi, 1st
+  // Carrier Division), polished-metal propeller and spinner. See
+  // tools/reference/A6M2.md "Paint scheme".
   colors: {
-    airframe: '#eee9d5', seam: '#577263', hub: '#c0cbd0', border: '#c0cbd0', hinomaru: '#ba2632',
-    glass: '#67b9cc', cylinder: '#25372f', dark: '#161d24', cowl: '#161d24', tip: '#e5b945',
+    airframe: '#a19f88', seam: '#8a8873', walkway: '#2b2d30', cowl: '#1b1d24', band: '#b3282e',
+    hinomaru: '#b3282e', glass: '#67b9cc', cylinder: '#25372f', dark: '#161d24', hub: '#bfc3c8',
+    blade: '#b3b7bd', tip: '#e0b03a',
+  },
+  paint: {
+    fuselage: c => (c.x < 2.25 && c.y > 0.55 && Math.abs(c.z) < 0.4 ? 'cowl'
+      : c.x > 6.30 && c.x < 6.55 ? 'band' : 'airframe'),
+    cowl: () => 'cowl',
+    wing: () => 'airframe',
+    tailplane: () => 'airframe',
+    fin: () => 'airframe',
+    frames: 'airframe',
   },
   fuselage: [
     { x: 1.50, w: 0.57, top: 0.62, bot: -0.66 },
@@ -145,7 +178,8 @@ const ZERO = {
     { x: 4.55, w: 0.48, top: 0.70, bot: -0.57 },
     { x: 5.20, w: 0.455, top: 0.62, bot: -0.54 },
     { x: 5.80, w: 0.42, top: 0.56, bot: -0.50 },
-    { x: 6.40, w: 0.37, top: 0.52, bot: -0.45 },
+    { x: 6.30, w: 0.38, top: 0.53, bot: -0.46 },   // fuselage band edges
+    { x: 6.55, w: 0.36, top: 0.52, bot: -0.44 },
     { x: 7.00, w: 0.31, top: 0.52, bot: -0.40 },
     { x: 7.60, w: 0.24, top: 0.48, bot: -0.32 },
     { x: 8.20, w: 0.15, top: 0.40, bot: -0.22 },
@@ -161,7 +195,7 @@ const ZERO = {
   cylinders: { count: 7, ring: 0.29, r: 0.075, x0: 0.50, x1: 0.64 },
   hub: [{ x: 0.00, r: 0.03 }, { x: 0.15, r: 0.12 }, { x: 0.35, r: 0.19 }, { x: 0.55, r: 0.20 }],
   propeller: {
-    pivot: 0.48, disc: 0.42, diameter: 2.90, blades: 3, yellowTip: 0.10,
+    pivot: 0.48, disc: 0.42, diameter: 2.90, blades: 3, yellowTip: 0,
     planform: [[0.19, 0.05], [0.40, 0.09], [0.75, 0.11], [1.10, 0.10], [1.35, 0.075], [1.45, 0.02]],
   },
   wing: [
@@ -178,7 +212,8 @@ const ZERO = {
   ],
   aileron: { y0: 3.40, y1: 5.75, chord: 0.24 },
   guns: { spans: [1.95], protrude: 0.28, r: 0.05 },
-  insignia: { y: 4.05, r: 0.66, innerR: 0.58, sides: [-1, 1] },
+  walkways: [{ side: -1, y0: 0.60, y1: 0.95, c0: 0.15, c1: 0.95 }],
+  insignia: { y: 4.05, r: 0.60, sides: [-1, 1] },
   tailplane: [
     { y: 0.00, le: 6.85, te: 8.20, h: 0.12, t: 0.14 },
     { y: 1.00, le: 7.02, te: 8.14, h: 0.12, t: 0.12 },
@@ -262,12 +297,65 @@ function circleRing(x, r, segments, y0 = 0, z0 = 0) {
   return ring(pts);
 }
 
+/** Upper-surface height of the lens airfoil, as a fraction of thickness, at chord fraction f. */
+const UPPER = [[0, 0], [0.12, 0.40], [0.30, 0.50], [0.70, 0.45], [1, 0]];
+function upperAt(f) {
+  for (let i = 0; i < UPPER.length - 1; i++) {
+    const [f0, h0] = UPPER[i], [f1, h1] = UPPER[i + 1];
+    if (f >= f0 && f <= f1) return lerp(h0, h1, (f - f0) / (f1 - f0));
+  }
+  return 0;
+}
+
 /** Lens-shaped airfoil ring at a spanwise station; `side` = ±1 (starboard +). */
 function airfoilRing(st, side) {
   const c = st.te - st.le, t = st.t, z = st.y * side;
   const at = (f, hf) => [st.le + c * f, st.h + t * hf, z];
   return ring([at(0, 0), at(0.12, 0.40), at(0.30, 0.50), at(0.70, 0.45), at(1, 0),
     at(0.70, -0.30), at(0.30, -0.50), at(0.12, -0.40)]);
+}
+
+/** A decal strip lying on the wing's upper surface between two span stations and two chord fractions. */
+function surfaceStrip(stations, side, y0, y1, c0, c1, lift = 0.015, segments = 4) {
+  const positions = [], indices = [];
+  for (let j = 0; j <= segments; j++) {
+    const f = lerp(c0, c1, j / segments);
+    for (const y of [y0, y1]) {
+      const st = wingAt(stations, y);
+      positions.push(st.le + (st.te - st.le) * f, st.h + st.t * upperAt(f) + lift, y * side);
+    }
+  }
+  for (let j = 0; j < segments; j++) { const o = j * 2; indices.push(o, o + 2, o + 1, o + 1, o + 2, o + 3); }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  g.setIndex(indices); g.computeVertexNormals();
+  return g;
+}
+
+/** Partition a geometry's triangles by the material key `paint(centroid)` returns. */
+function splitByPaint(geometry, paint) {
+  const pos = geometry.attributes.position, nor = geometry.attributes.normal;
+  const index = geometry.index ? geometry.index.array : [...Array(pos.count).keys()];
+  const parts = new Map(), centroid = new THREE.Vector3();
+  for (let i = 0; i < index.length; i += 3) {
+    const tri = [index[i], index[i + 1], index[i + 2]];
+    centroid.set(0, 0, 0);
+    for (const v of tri) centroid.add(new THREE.Vector3(pos.getX(v), pos.getY(v), pos.getZ(v)));
+    centroid.multiplyScalar(1 / 3);
+    const key = paint(centroid);
+    if (!parts.has(key)) parts.set(key, { p: [], n: [] });
+    const part = parts.get(key);
+    for (const v of tri) { part.p.push(pos.getX(v), pos.getY(v), pos.getZ(v)); part.n.push(nor.getX(v), nor.getY(v), nor.getZ(v)); }
+  }
+  const out = new Map();
+  for (const [key, { p, n }] of parts) {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(p, 3));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(n, 3));
+    g.setIndex([...Array(p.length / 3).keys()]);
+    out.set(key, g);
+  }
+  return out;
 }
 
 function lofted(stations, side, opts) {
@@ -301,11 +389,12 @@ function extrudeProfile(outline, thickness) {
   return g;
 }
 
-function star(r, points = 5) {
+/** Regular five-point star; the 0.382 inner ratio is the true pentagram. */
+function star(r, points = 5, inner = 0.382) {
   const pts = [];
   for (let i = 0; i < points * 2; i++) {
     const a = Math.PI / 2 + (i / (points * 2)) * Math.PI * 2;
-    const rr = i % 2 === 0 ? r : r * 0.40;
+    const rr = i % 2 === 0 ? r : r * inner;
     pts.push(new THREE.Vector2(Math.cos(a) * rr, Math.sin(a) * rr));
   }
   return new THREE.ShapeGeometry(new THREE.Shape(pts));
@@ -321,14 +410,20 @@ function buildAircraft(S) {
   const airframe = new THREE.Group(); airframe.name = 'Airframe';
   const propeller = new THREE.Group(); propeller.name = 'Propeller';
   const add = (parent, name, geometry, material) => {
+    if (!materials[material]) throw new Error(`${S.name}: no colour named "${material}"`);
     const mesh = new THREE.Mesh(geometry, materials[material]); mesh.name = name; parent.add(mesh); return mesh;
   };
+  // Paint a surface: split its triangles by the spec's paint rule for that part.
+  const addPainted = (name, geometry, paint) => {
+    for (const [material, part] of splitByPaint(geometry, paint)) add(airframe, name, part, material);
+  };
+  const stationAt = (stations, c) => wingAt(stations, Math.min(Math.abs(c.z), stations[stations.length - 1].y));
   const SEG = 20;
 
   // Fuselage and cowling.
-  add(airframe, 'Fuselage', loft(S.fuselage.map(s => fuselageRing(s.x, s.w, s.top, s.bot, S.fuselageExponent, SEG)),
-    { capStart: true, capEnd: true }), 'airframe');
-  add(airframe, 'Radial_cowling', loft(S.cowl.map(s => circleRing(s.x, s.r, SEG)), { capStart: true, capEnd: true }), S.cowlMaterial);
+  addPainted('Fuselage', loft(S.fuselage.map(s => fuselageRing(s.x, s.w, s.top, s.bot, S.fuselageExponent, SEG)),
+    { capStart: true, capEnd: true }), S.paint.fuselage);
+  addPainted('Radial_cowling', loft(S.cowl.map(s => circleRing(s.x, s.r, SEG)), { capStart: true, capEnd: true }), S.paint.cowl);
   const face = new THREE.CircleGeometry(S.engineFace.r, SEG); face.rotateY(-Math.PI / 2); face.translate(S.engineFace.x, 0, 0);
   add(airframe, 'Engine_face', face, 'dark');
   for (let i = 0; i < S.cylinders.count; i++) {
@@ -341,7 +436,7 @@ function buildAircraft(S) {
   // Wings, fold line, ailerons, guns.
   for (const side of [-1, 1]) {
     const name = side > 0 ? 'Right' : 'Left';
-    add(airframe, `${name}_wing`, lofted(S.wing, side), 'airframe');
+    addPainted(`${name}_wing`, lofted(S.wing, side), c => S.paint.wing(c, stationAt(S.wing, c)));
     if (S.foldLine) {
       const fold = wingAt(S.wing, S.foldLine);
       add(airframe, 'Wing_fold_seam', box(fold.le + 0.05, fold.te - 0.05, fold.h + fold.t * 0.5 - 0.01, fold.h + fold.t * 0.5 + 0.012,
@@ -362,9 +457,12 @@ function buildAircraft(S) {
     }
   }
 
+  // Walkways (non-slip panels on the wing root the pilot boards from).
+  for (const w of S.walkways || []) add(airframe, 'Walkway', surfaceStrip(S.wing, w.side, w.y0, w.y1, w.c0, w.c1), 'walkway');
+
   // Tail.
-  for (const side of [-1, 1]) add(airframe, 'Tailplane', lofted(S.tailplane, side), 'airframe');
-  add(airframe, 'Vertical_tail', extrudeProfile(S.fin.outline, S.fin.thickness), 'airframe');
+  for (const side of [-1, 1]) addPainted('Tailplane', lofted(S.tailplane, side), c => S.paint.tailplane(c, stationAt(S.tailplane, c)));
+  addPainted('Vertical_tail', extrudeProfile(S.fin.outline, S.fin.thickness), S.paint.fin);
 
   // Canopy: glass shell, hoops, spine.
   const canopyRing = s => {
@@ -385,10 +483,10 @@ function buildAircraft(S) {
       hoop.push(new THREE.Vector3(x, s.sill + Math.sin(a) * (s.top - s.sill) + 0.01, Math.cos(a) * (s.w + 0.01)));
     }
     const curve = new THREE.CatmullRomCurve3(hoop);
-    add(airframe, 'Canopy_frame', new THREE.TubeGeometry(curve, 12, 0.03, 5, false), 'airframe');
+    add(airframe, 'Canopy_frame', new THREE.TubeGeometry(curve, 12, 0.03, 5, false), S.paint.frames);
   }
   const spine = S.canopy.map(s => new THREE.Vector3(s.x, s.top + 0.01, 0));
-  add(airframe, 'Canopy_spine', new THREE.TubeGeometry(new THREE.CatmullRomCurve3(spine), 8, 0.028, 5, false), 'airframe');
+  add(airframe, 'Canopy_spine', new THREE.TubeGeometry(new THREE.CatmullRomCurve3(spine), 8, 0.028, 5, false), S.paint.frames);
 
   // Antenna mast ahead of the windscreen.
   const mast = box(-0.03, 0.03, 0, S.antenna.h1 - S.antenna.h0, -0.015, 0.015);
@@ -400,19 +498,23 @@ function buildAircraft(S) {
     const w = wingAt(S.wing, S.insignia.y);
     const place = (geometry, name, material, lift) => {
       geometry.rotateX(-Math.PI / 2);               // lie flat, facing +y
-      geometry.rotateY(Math.PI / 2);                // shape x → aft, shape y → span
+      geometry.rotateY(Math.PI / 2);                // shape x → span, shape y → forward
       geometry.rotateX(-Math.atan(w.slope) * side); // follow dihedral
       geometry.translate((w.le + w.te) / 2, w.h + w.t * 0.5 + lift, S.insignia.y * side);
       add(airframe, name, geometry, material);
     };
     if (S.markings === 'us') {
-      place(new THREE.CircleGeometry(S.insignia.r, 30), 'US_roundel', 'roundel', 0.02);
-      place(box(-S.insignia.bar[0] / 2, S.insignia.bar[0] / 2, -0.001, 0.001, -S.insignia.bar[1] / 2, S.insignia.bar[1] / 2)
-        .rotateX(Math.PI / 2), 'Insignia_bar', 'star', 0.03);
-      place(star(S.insignia.starR), 'US_star', 'star', 0.04);
+      const R = S.insignia.r, edge = S.insignia.bars ? R / 8 : 0;
+      place(new THREE.CircleGeometry(R + edge, 36), 'US_roundel', 'roundel', 0.02);
+      if (S.insignia.bars) {
+        place(box(-(2 * R + edge), 2 * R + edge, -0.001, 0.001, -(R / 4 + edge), R / 4 + edge).rotateX(Math.PI / 2),
+          'Insignia_outline', 'roundel', 0.02);
+        place(box(-2 * R, 2 * R, -0.001, 0.001, -R / 4, R / 4).rotateX(Math.PI / 2), 'Insignia_bar', 'star', 0.03);
+      }
+      place(star(R), 'US_star', 'star', 0.04);
     } else {
-      place(new THREE.CircleGeometry(S.insignia.r, 30), 'Roundel_border', 'border', 0.02);
-      place(new THREE.CircleGeometry(S.insignia.innerR, 30), 'Hinomaru', 'hinomaru', 0.03);
+      if (S.insignia.borderR) place(new THREE.CircleGeometry(S.insignia.borderR, 30), 'Roundel_border', 'border', 0.02);
+      place(new THREE.CircleGeometry(S.insignia.r, 30), 'Hinomaru', 'hinomaru', 0.03);
     }
   }
 
@@ -444,8 +546,8 @@ function buildAircraft(S) {
       g.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3)); g.setIndex(indices); g.computeVertexNormals();
       return g;
     };
-    add(propeller, `Propeller_blade_${b}`, strip(blade, discX), 'dark');
-    add(propeller, `Yellow_blade_tip_${b}`, strip(tip, discX - 0.005), 'tip');
+    add(propeller, `Propeller_blade_${b}`, strip(blade, discX), 'blade');
+    if (P.yellowTip > 0) add(propeller, `Yellow_blade_tip_${b}`, strip(tip, discX - 0.005), 'tip');
   }
 
   const root = new THREE.Group(); root.name = S.name;
