@@ -33,8 +33,8 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 | `sprites.js` | HUD `rr` rounded-rect helper |
 | `hud.js` | HUD, wave banner, off-screen arrows, touch UI, menus |
 | `audio.js` | procedural sfx |
-| `renderer.js` | Three.js scene, orthographic camera, lighting, instance lifecycle |
-| `aircraft.js` | GLB loading, geometry batching, banking, propeller animation |
+| `renderer.js` | Three.js scene, orthographic camera, lighting, instance lifecycle, adaptive quality ladder (`?quality=N` pins a level) |
+| `aircraft.js` | GLB loading, geometry batching, banking, propeller animation, per-aircraft shadow receiver / blob |
 | `effects.js` | instanced tracers and batched particles |
 
 Conventions:

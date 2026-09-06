@@ -56,11 +56,43 @@ export async function loadAircraft() {
   return templates;
 }
 
-export function createAircraft(template, entity) {
+// Each aircraft carries its own small shadow receiver under it, so the
+// shadow map is only sampled over a few thousand pixels rather than the
+// whole screen. When shadows are off (lowest quality) the same quad draws
+// a soft dark blob instead, keeping the altitude cue.
+const receiverGeometry = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
+const shadowMaterial = new THREE.ShadowMaterial({ opacity: .24, depthWrite: false });
+const blobMaterial = new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false,
+  vertexShader: `varying vec2 vUv;
+    void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: `varying vec2 vUv;
+    void main() {
+      float d = length((vUv - .5) * vec2(2.3, 3.4));
+      gl_FragColor = vec4(0.0, 0.0, 0.0, .22 * (1.0 - smoothstep(.35, 1.0, d)));
+    }`,
+});
+const RECEIVER_SIZE = 140, BLOB_SIZE = 64;
+// Where a point at flight height casts its shadow, from the shared sun offset.
+const [sunX, sunY, sunZ] = CONFIG.render.sunOffset;
+const shadowShift = [-sunX * CONFIG.render.flightHeight / sunY, -sunZ * CONFIG.render.flightHeight / sunY];
+
+export function setShadowMode(visual, shadows) {
+  visual.shadow.material = shadows ? shadowMaterial : blobMaterial;
+  visual.shadow.receiveShadow = shadows;
+  const size = shadows ? RECEIVER_SIZE : BLOB_SIZE;
+  visual.shadow.scale.set(size, 1, size);
+}
+
+export function createAircraft(template, entity, shadows = true) {
   const root = new THREE.Group();
   const model = template.clone(true);
   root.add(model);
-  return { root, model, propeller: model.getObjectByName('Propeller'), heading: entity.a, bank: 0 };
+  const shadow = new THREE.Mesh(receiverGeometry, shadowMaterial);
+  shadow.position.y = .1;
+  const visual = { root, model, shadow, propeller: model.getObjectByName('Propeller'), heading: entity.a, bank: 0 };
+  setShadowMode(visual, shadows);
+  return visual;
 }
 
 export function updateAircraft(visual, entity, dt, turnRate, flash = false) {
@@ -71,6 +103,8 @@ export function updateAircraft(visual, entity, dt, turnRate, flash = false) {
   visual.heading = entity.a;
   visual.root.position.set(entity.x, R.flightHeight, entity.y);
   visual.root.rotation.y = -entity.a - Math.PI / 2;
+  visual.shadow.position.set(entity.x + shadowShift[0], .1, entity.y + shadowShift[1]);
+  visual.shadow.rotation.y = visual.root.rotation.y;
   visual.model.rotation.z = visual.bank;
   visual.propeller.rotation.z = (visual.propeller.rotation.z + dt * R.propellerSpeed) % (Math.PI * 2);
   // Only the single player uses the US template; enemy materials stay shared.

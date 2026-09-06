@@ -1,7 +1,13 @@
 // Three.js scene. Simulation (x,y) maps to Three (x, altitude, z).
+//
+// Adaptive quality: frames are timed here (the game loop's dt is capped,
+// so it can't see slow frames). While frames stay slow the renderer steps
+// down CONFIG.render.quality.levels: pixel ratio first, then ocean detail,
+// then shadows. It steps back up only into levels that never failed, so a
+// device settles rather than oscillates. ?quality=N in the URL pins a level.
 import * as THREE from 'three';
 import { CONFIG } from './config.js';
-import { loadAircraft, createAircraft, updateAircraft } from './aircraft.js';
+import { loadAircraft, createAircraft, updateAircraft, setShadowMode } from './aircraft.js';
 import { createWorld } from './world.js';
 import { createEffects } from './effects.js';
 
@@ -29,12 +35,62 @@ export async function createRenderer(canvas) {
   const effects = createEffects(scene, renderer);
   const templates = await loadAircraft();
   const aircraft = new Map();
-  let lastW = 0, lastH = 0, lastDPR = 0;
-  const diagnostics = { ready: true, engine: 'Three.js', revision: THREE.REVISION, aircraft: 0, drawCalls: 0, triangles: 0, chunks: 0 };
+  let lastW = 0, lastH = 0, lastRatio = 0;
+  const diagnostics = {
+    ready: true, engine: 'Three.js', revision: THREE.REVISION,
+    aircraft: 0, drawCalls: 0, triangles: 0, chunks: 0,
+    quality: 0, pixelRatio: 1, frameMs: 0,
+  };
+
+  const Q = CONFIG.render.quality;
+  const pinned = new URLSearchParams(location.search).get('quality');
+  const state = {
+    level: Q.start, locked: false, failed: new Set(),
+    slow: 0, fast: 0, hold: 0, lastFrame: 0,
+  };
+  if (pinned !== null && Q.levels[Number(pinned)]) { state.level = Number(pinned); state.locked = true; }
+  const level = () => Q.levels[state.level];
+
+  function applyLevel(index) {
+    state.level = index;
+    const L = level();
+    world.setDetail(L.ocean);
+    if (renderer.shadowMap.enabled !== L.shadows) {
+      renderer.shadowMap.enabled = L.shadows;
+      // Shadow support is compiled into materials; make them rebuild.
+      scene.traverse(node => { if (node.isMesh) node.material.needsUpdate = true; });
+    }
+    for (const visual of aircraft.values()) setShadowMode(visual, L.shadows);
+    lastRatio = 0;
+    state.hold = Q.hold; state.slow = 0; state.fast = 0;
+    diagnostics.quality = index;
+  }
+
+  function adapt() {
+    const now = performance.now();
+    const interval = state.lastFrame ? (now - state.lastFrame) / 1000 : 0;
+    state.lastFrame = now;
+    if (interval <= 0 || interval > .25) return;      // first frame, or the tab was hidden
+    diagnostics.frameMs = diagnostics.frameMs * .9 + interval * 100;
+    if (state.locked) return;
+    if (state.hold > 0) { state.hold -= interval; return; }
+    if (interval > Q.slowFrame) { state.slow += interval; state.fast = 0; }
+    else {
+      state.slow = Math.max(0, state.slow - interval);
+      if (interval < Q.fastFrame) state.fast += interval;
+    }
+    if (state.slow > Q.settle && state.level < Q.levels.length - 1) {
+      state.failed.add(state.level);
+      applyLevel(state.level + 1);
+    } else if (state.fast > Q.recover && state.level > 0 && !state.failed.has(state.level - 1)) {
+      applyLevel(state.level - 1);
+    }
+  }
 
   function resize(view) {
-    if (view.W === lastW && view.H === lastH && view.DPR === lastDPR) return;
-    renderer.setPixelRatio(view.DPR);
+    const ratio = Math.min(view.DPR, level().pixelRatio);
+    if (view.W === lastW && view.H === lastH && ratio === lastRatio) return;
+    renderer.setPixelRatio(ratio);
     renderer.setSize(view.W, view.H, false);
     camera.left = -view.W / 2; camera.right = view.W / 2;
     camera.top = view.H / 2; camera.bottom = -view.H / 2;
@@ -42,34 +98,45 @@ export async function createRenderer(canvas) {
     const range = Math.max(view.W, view.H) / 2 + 220;
     Object.assign(sun.shadow.camera, { left: -range, right: range, top: range, bottom: -range });
     sun.shadow.camera.updateProjectionMatrix();
-    lastW = view.W; lastH = view.H; lastDPR = view.DPR;
+    lastW = view.W; lastH = view.H; lastRatio = ratio;
+    diagnostics.pixelRatio = ratio;
   }
+
+  applyLevel(state.level);
+  state.hold = 0;
 
   return {
     diagnostics,
     // Exposed via __game for meaningful renderer checks and visual inspection.
     scene, camera, aircraft, renderer,
+    quality: {
+      get level() { return state.level; },
+      get locked() { return state.locked; },
+      set(index) { if (Q.levels[index]) { applyLevel(index); state.locked = true; } },
+      unlock() { state.locked = false; state.failed.clear(); },
+    },
     render(game, view, dt, shakeX, shakeY) {
+      adapt();
       resize(view);
       camera.position.set(game.cam.x - shakeX, 1000, game.cam.y - shakeY);
       camera.lookAt(game.cam.x - shakeX, 0, game.cam.y - shakeY);
       const [sx, sy, sz] = CONFIG.render.sunOffset;
       sun.position.set(game.cam.x + sx, sy, game.cam.y + sz);
       sun.target.position.set(game.cam.x, 0, game.cam.y);
-      world.update(game.cam, view, game.time);
+      world.update(game.cam, view, game.time, lastRatio);
       const live = new Set(game.enemies);
       if (game.player && game.mode === 'play') live.add(game.player);
       for (const [entity, visual] of aircraft) {
         if (live.has(entity)) continue;
-        scene.remove(visual.root);
+        scene.remove(visual.root, visual.shadow);
         // Geometry and materials belong to templates, not to each clone.
         aircraft.delete(entity);
       }
       for (const entity of live) {
         const player = entity === game.player;
         if (!aircraft.has(entity)) {
-          const visual = createAircraft(templates[player ? 'us' : 'jp'], entity);
-          aircraft.set(entity, visual); scene.add(visual.root);
+          const visual = createAircraft(templates[player ? 'us' : 'jp'], entity, level().shadows);
+          aircraft.set(entity, visual); scene.add(visual.root, visual.shadow);
         }
         updateAircraft(aircraft.get(entity), entity, dt,
           player ? CONFIG.player.turnRate : entity.turn,
