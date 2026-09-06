@@ -1,6 +1,5 @@
 // Explosions, smoke, and particle simulation/drawing.
 import { game } from './state.js';
-import { ctx, w2s } from './canvas.js';
 import { rand, TAU } from './util.js';
 import { sfxBoom } from './audio.js';
 
@@ -27,21 +26,4 @@ export function updateParticles(dt) {
   }
   game.particles = game.particles.filter(p => p.life > 0);
   if (game.particles.length > 400) game.particles.splice(0, game.particles.length - 400);
-}
-
-export function drawParticles() {
-  for (const p of game.particles) {
-    const [sx, sy] = w2s(p.x, p.y);
-    const t = p.life / p.max;
-    if (p.kind === 'ring') {
-      ctx.strokeStyle = `rgba(255,220,150,${(t * 0.9).toFixed(3)})`;
-      ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.arc(sx, sy, p.size * (1.6 - t), 0, TAU); ctx.stroke();
-    } else {
-      ctx.fillStyle = p.kind === 'fire'
-        ? `rgba(255,${Math.floor(120 + t * 110)},60,${t.toFixed(3)})`
-        : `rgba(90,90,95,${(t * 0.7).toFixed(3)})`;
-      ctx.beginPath(); ctx.arc(sx, sy, p.size * (p.kind === 'smoke' ? (2 - t) : t + 0.4), 0, TAU); ctx.fill();
-    }
-  }
 }

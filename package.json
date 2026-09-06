@@ -8,6 +8,6 @@
     "serve": "npx http-server -c-1 -p 8080 ."
   },
   "devDependencies": {
-    "playwright": "^1.56.1"
+    "playwright": "1.56.1"
   }
 }

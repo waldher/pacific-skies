@@ -1,17 +1,17 @@
 // Game loop: orchestrates updates, collisions, waves, camera, render.
 import { CONFIG } from './config.js';
 import { game, startGame } from './state.js';
-import { cvs, ctx, view, w2s } from './canvas.js';
+import { cvs, ctx, view } from './canvas.js';
 import { keys, stick, fireTouch, initInput } from './input.js';
 import { updatePlayer, damagePlayer } from './player.js';
 import { spawnWave, updateEnemies } from './enemies.js';
-import { explosion, updateParticles, drawParticles } from './particles.js';
-import { drawOcean, drawIslands } from './world.js';
-import { drawPlaneAt } from './sprites.js';
+import { explosion, updateParticles } from './particles.js';
+import { createRenderer } from './renderer.js';
 import { drawHud, drawMenus } from './hud.js';
 import { lerp, angDiff, rand, setSeed } from './util.js';
 
-initInput(cvs);
+let graphics;
+let contextLost = false;
 
 function update(dt) {
   game.time += dt;
@@ -74,37 +74,15 @@ function update(dt) {
   game.shake = Math.max(0, game.shake - 30 * dt);
 }
 
-function render() {
+function render(dt) {
+  const shakeX = game.shake > 0 ? rand(-game.shake, game.shake) * .5 : 0;
+  const shakeY = game.shake > 0 ? rand(-game.shake, game.shake) * .5 : 0;
+  graphics.render(game, view, dt, shakeX, shakeY);
+  ctx.clearRect(0, 0, view.W, view.H);
   ctx.save();
-  if (game.shake > 0) ctx.translate(rand(-game.shake, game.shake) * 0.5, rand(-game.shake, game.shake) * 0.5);
-
-  drawOcean();
-  drawIslands();
-
-  if (game.player) {
-    // bullets under planes
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = '#ffe28a'; ctx.lineWidth = 3;
-    for (const b of game.bullets) {
-      const [sx, sy] = w2s(b.x, b.y);
-      ctx.beginPath(); ctx.moveTo(sx, sy);
-      ctx.lineTo(sx - b.vx * 0.016, sy - b.vy * 0.016); ctx.stroke();
-    }
-    ctx.strokeStyle = '#ff7b6b'; ctx.lineWidth = 3;
-    for (const b of game.ebullets) {
-      const [sx, sy] = w2s(b.x, b.y);
-      ctx.beginPath(); ctx.moveTo(sx, sy);
-      ctx.lineTo(sx - b.vx * 0.018, sy - b.vy * 0.018); ctx.stroke();
-    }
-
-    for (const e of game.enemies) drawPlaneAt(e.x, e.y, e.a, 'jp', false);
-    if (game.mode === 'play') drawPlaneAt(game.player.x, game.player.y, game.player.a, 'us', game.player.hitFlash > 0.12);
-
-    drawParticles();
-    drawHud();
-  }
+  ctx.translate(shakeX, shakeY);
+  if (game.player) drawHud();
   ctx.restore();
-
   drawMenus();
 }
 
@@ -112,12 +90,52 @@ let last = performance.now();
 function frame(now) {
   const dt = Math.min(0.033, (now - last) / 1000);
   last = now;
-  update(dt);
-  render();
+  if (!contextLost) {
+    update(dt);
+    render(dt);
+  }
   requestAnimationFrame(frame);
 }
-requestAnimationFrame(frame);
-
 // Debug/test API: the playtest harness (and console tinkering) reads
 // live state and drives input through this handle.
 window.__game = { game, CONFIG, startGame, setSeed, keys, stick, fireTouch, view, angDiff };
+
+
+const status = document.getElementById('loading');
+const statusText = document.getElementById('loading-text');
+const retry = document.getElementById('retry');
+retry.addEventListener('click', () => location.reload());
+window.__game.rendering = { ready: false, error: null };
+const worldCanvas = document.getElementById('world');
+worldCanvas.addEventListener('webglcontextlost', event => {
+  event.preventDefault();
+  contextLost = true;
+  for (const key of Object.keys(keys)) keys[key] = false;
+  stick.active = fireTouch.active = false;
+  statusText.textContent = 'Graphics paused. Waiting for your device to recover…';
+  status.hidden = false;
+  retry.hidden = false;
+});
+worldCanvas.addEventListener('webglcontextrestored', () => {
+  contextLost = false;
+  status.hidden = true;
+  retry.hidden = true;
+});
+
+async function boot() {
+  try {
+    graphics = await createRenderer(worldCanvas);
+    window.__game.graphics = graphics;
+    window.__game.rendering = graphics.diagnostics;
+    status.hidden = true;
+    initInput(cvs);
+    last = performance.now();
+    requestAnimationFrame(frame);
+  } catch (error) {
+    window.__game.rendering.error = String(error);
+    statusText.textContent = 'Unable to load the 3D game. Check your connection and that WebGL 2 is enabled, then retry.';
+    retry.hidden = false;
+    console.error('Pacific Skies could not start:', error);
+  }
+}
+boot();
