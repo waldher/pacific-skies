@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 // Procedural aircraft asset builder.
 //
-// Rebuilds assets/aircraft/F4U_Corsair.glb from a dimensioned spec so the
-// model can be checked against real three-view drawings and adjusted with a
-// number change instead of hand-editing binary geometry.
+// Rebuilds the aircraft GLBs in assets/aircraft/ from dimensioned specs so
+// each model can be checked against real three-view drawings and adjusted
+// with a number change instead of hand-editing binary geometry.
 //
-//   node tools/build-aircraft.mjs            # writes assets/aircraft/F4U_Corsair.glb
+//   node tools/build-aircraft.mjs            # writes F4U_Corsair.glb and Mitsubishi_Zero.glb
 //
 // Units are metres, matching the real aircraft. Fuselage stations ("x" in
 // the spec) are measured aft from the propeller spinner tip; heights are
@@ -33,6 +33,8 @@ const CORSAIR = {
   name: 'F4U_Corsair',
   length: 10.16,
   span: 12.50,
+  markings: 'us',
+  cowlMaterial: 'airframe',
   colors: {
     airframe: '#24476b', seam: '#527b99', hub: '#c0cbd0', roundel: '#102b41',
     glass: '#67b9cc', star: '#eee9d5', cylinder: '#25372f', dark: '#161d24', tip: '#e5b945',
@@ -115,6 +117,90 @@ const CORSAIR = {
   ],
   canopyFrames: [4.30, 4.85, 5.20],
   antenna: { x: 2.85, h0: 0.78, h1: 1.55, rake: 0.12 },
+};
+
+// ---------------------------------------------------------------------------
+// Mitsubishi A6M2 Zero (Model 21, the 1942 carrier fighter). Sources:
+// published dimensions (span 12.0 m, length 9.06 m, wing area 22.44 m²,
+// Sumitomo-Hamilton 2.9 m three-blade propeller) and a scaled A6M2
+// three-view drawing for the station data; see tools/reference/A6M2.md.
+const ZERO = {
+  name: 'Mitsubishi_Zero',
+  length: 9.06,
+  span: 12.00,
+  markings: 'jp',
+  cowlMaterial: 'cowl',
+  colors: {
+    airframe: '#eee9d5', seam: '#577263', hub: '#c0cbd0', border: '#c0cbd0', hinomaru: '#ba2632',
+    glass: '#67b9cc', cylinder: '#25372f', dark: '#161d24', cowl: '#161d24', tip: '#e5b945',
+  },
+  fuselage: [
+    { x: 1.50, w: 0.57, top: 0.62, bot: -0.66 },
+    { x: 1.95, w: 0.56, top: 0.64, bot: -0.62 },
+    { x: 2.25, w: 0.55, top: 0.70, bot: -0.61 },
+    { x: 2.60, w: 0.54, top: 0.72, bot: -0.61 },
+    { x: 3.20, w: 0.52, top: 0.72, bot: -0.61 },
+    { x: 3.90, w: 0.51, top: 0.72, bot: -0.59 },
+    { x: 4.20, w: 0.50, top: 0.76, bot: -0.58 },
+    { x: 4.55, w: 0.48, top: 0.70, bot: -0.57 },
+    { x: 5.20, w: 0.455, top: 0.62, bot: -0.54 },
+    { x: 5.80, w: 0.42, top: 0.56, bot: -0.50 },
+    { x: 6.40, w: 0.37, top: 0.52, bot: -0.45 },
+    { x: 7.00, w: 0.31, top: 0.52, bot: -0.40 },
+    { x: 7.60, w: 0.24, top: 0.48, bot: -0.32 },
+    { x: 8.20, w: 0.15, top: 0.40, bot: -0.22 },
+    { x: 8.70, w: 0.07, top: 0.30, bot: -0.14 },
+    { x: 9.00, w: 0.02, top: 0.22, bot: -0.10 },
+  ],
+  fuselageExponent: 2.2,
+  cowl: [
+    { x: 0.58, r: 0.50 }, { x: 0.66, r: 0.56 }, { x: 0.85, r: 0.585 },
+    { x: 1.30, r: 0.585 }, { x: 1.55, r: 0.57 },
+  ],
+  engineFace: { x: 0.60, r: 0.46 },
+  cylinders: { count: 7, ring: 0.29, r: 0.075, x0: 0.50, x1: 0.64 },
+  hub: [{ x: 0.00, r: 0.03 }, { x: 0.15, r: 0.12 }, { x: 0.35, r: 0.19 }, { x: 0.55, r: 0.20 }],
+  propeller: {
+    pivot: 0.48, disc: 0.42, diameter: 2.90, blades: 3, yellowTip: 0.10,
+    planform: [[0.19, 0.05], [0.40, 0.09], [0.75, 0.11], [1.10, 0.10], [1.35, 0.075], [1.45, 0.02]],
+  },
+  wing: [
+    { y: 0.00, le: 1.72, te: 4.30, h: -0.30, t: 0.36 },
+    { y: 0.60, le: 1.72, te: 4.27, h: -0.28, t: 0.36 },
+    { y: 1.60, le: 1.80, te: 4.10, h: -0.23, t: 0.33 },
+    { y: 2.60, le: 1.87, te: 3.93, h: -0.17, t: 0.29 },
+    { y: 3.55, le: 1.94, te: 3.77, h: -0.10, t: 0.24 },
+    { y: 4.50, le: 2.01, te: 3.59, h: -0.02, t: 0.19 },
+    { y: 5.20, le: 2.07, te: 3.46, h: 0.04, t: 0.14 },
+    { y: 5.55, le: 2.16, te: 3.32, h: 0.07, t: 0.10 },
+    { y: 5.85, le: 2.38, te: 3.08, h: 0.10, t: 0.06 },
+    { y: 6.00, le: 2.66, te: 2.84, h: 0.11, t: 0.02 },
+  ],
+  aileron: { y0: 3.40, y1: 5.75, chord: 0.24 },
+  guns: { spans: [1.95], protrude: 0.28, r: 0.05 },
+  insignia: { y: 4.05, r: 0.66, innerR: 0.58, sides: [-1, 1] },
+  tailplane: [
+    { y: 0.00, le: 6.85, te: 8.20, h: 0.12, t: 0.14 },
+    { y: 1.00, le: 7.02, te: 8.14, h: 0.12, t: 0.12 },
+    { y: 1.80, le: 7.25, te: 8.04, h: 0.12, t: 0.09 },
+    { y: 2.15, le: 7.45, te: 7.92, h: 0.12, t: 0.06 },
+    { y: 2.32, le: 7.68, te: 7.80, h: 0.12, t: 0.02 },
+  ],
+  fin: {
+    outline: [[6.95, 0.45], [7.25, 0.95], [7.60, 1.40], [7.95, 1.62], [8.25, 1.60], [8.55, 1.42],
+      [8.85, 0.95], [9.06, 0.35], [9.06, 0.05], [8.50, 0.00]],
+    thickness: 0.09,
+  },
+  canopy: [
+    { x: 2.25, w: 0.27, top: 0.72, sill: 0.68 },
+    { x: 2.60, w: 0.35, top: 0.98, sill: 0.69 },
+    { x: 3.10, w: 0.36, top: 1.01, sill: 0.70 },
+    { x: 3.60, w: 0.35, top: 0.97, sill: 0.70 },
+    { x: 4.00, w: 0.32, top: 0.88, sill: 0.71 },
+    { x: 4.25, w: 0.28, top: 0.78, sill: 0.73 },
+  ],
+  canopyFrames: [2.60, 3.10, 3.60, 4.00],
+  antenna: { x: 4.20, h0: 0.74, h1: 1.48, rake: -0.10 },
 };
 
 // ---------------------------------------------------------------------------
@@ -227,7 +313,7 @@ function star(r, points = 5) {
 
 // ---------------------------------------------------------------------------
 
-function buildCorsair(S) {
+function buildAircraft(S) {
   const materials = {};
   for (const [key, hex] of Object.entries(S.colors)) {
     materials[key] = new THREE.MeshStandardMaterial({ color: hex, metalness: 0.12, roughness: 0.58, side: THREE.DoubleSide, name: hex });
@@ -242,7 +328,7 @@ function buildCorsair(S) {
   // Fuselage and cowling.
   add(airframe, 'Fuselage', loft(S.fuselage.map(s => fuselageRing(s.x, s.w, s.top, s.bot, S.fuselageExponent, SEG)),
     { capStart: true, capEnd: true }), 'airframe');
-  add(airframe, 'Radial_cowling', loft(S.cowl.map(s => circleRing(s.x, s.r, SEG)), { capStart: true, capEnd: true }), 'airframe');
+  add(airframe, 'Radial_cowling', loft(S.cowl.map(s => circleRing(s.x, s.r, SEG)), { capStart: true, capEnd: true }), S.cowlMaterial);
   const face = new THREE.CircleGeometry(S.engineFace.r, SEG); face.rotateY(-Math.PI / 2); face.translate(S.engineFace.x, 0, 0);
   add(airframe, 'Engine_face', face, 'dark');
   for (let i = 0; i < S.cylinders.count; i++) {
@@ -256,10 +342,11 @@ function buildCorsair(S) {
   for (const side of [-1, 1]) {
     const name = side > 0 ? 'Right' : 'Left';
     add(airframe, `${name}_wing`, lofted(S.wing, side), 'airframe');
-    const fold = wingAt(S.wing, S.foldLine);
-    add(airframe, 'Wing_fold_seam', box(fold.le + 0.05, fold.te - 0.05, fold.h + fold.t * 0.5 - 0.01, fold.h + fold.t * 0.5 + 0.012,
-      (S.foldLine - 0.02) * side, (S.foldLine + 0.02) * side), 'seam');
-    const a0 = wingAt(S.wing, S.aileron.y0), a1 = wingAt(S.wing, S.aileron.y1);
+    if (S.foldLine) {
+      const fold = wingAt(S.wing, S.foldLine);
+      add(airframe, 'Wing_fold_seam', box(fold.le + 0.05, fold.te - 0.05, fold.h + fold.t * 0.5 - 0.01, fold.h + fold.t * 0.5 + 0.012,
+        (S.foldLine - 0.02) * side, (S.foldLine + 0.02) * side), 'seam');
+    }
     const hinge = y => { const w = wingAt(S.wing, y); return { x: w.te - (w.te - w.le) * S.aileron.chord, y: w.h + w.t * 0.45 + 0.012, z: y * side }; };
     const h0 = hinge(S.aileron.y0), h1 = hinge(S.aileron.y1);
     const seam = new THREE.BufferGeometry();
@@ -273,7 +360,6 @@ function buildCorsair(S) {
       g.rotateZ(Math.PI / 2); g.translate(w.le - S.guns.protrude / 2 + 0.15, w.h - w.t * 0.1, y * side);
       add(airframe, 'Gun_barrel', g, 'dark');
     }
-    void a0; void a1;
   }
 
   // Tail.
@@ -309,7 +395,7 @@ function buildCorsair(S) {
   mast.rotateZ(-Math.atan2(S.antenna.rake, S.antenna.h1 - S.antenna.h0)); mast.translate(S.antenna.x, S.antenna.h0, 0);
   add(airframe, 'Antenna', mast, 'dark');
 
-  // National insignia on the upper wings.
+  // National insignia on the upper wings: US star-and-bars or hinomaru.
   for (const side of S.insignia.sides) {
     const w = wingAt(S.wing, S.insignia.y);
     const place = (geometry, name, material, lift) => {
@@ -319,10 +405,15 @@ function buildCorsair(S) {
       geometry.translate((w.le + w.te) / 2, w.h + w.t * 0.5 + lift, S.insignia.y * side);
       add(airframe, name, geometry, material);
     };
-    place(new THREE.CircleGeometry(S.insignia.r, 30), 'US_roundel', 'roundel', 0.02);
-    place(box(-S.insignia.bar[0] / 2, S.insignia.bar[0] / 2, -0.001, 0.001, -S.insignia.bar[1] / 2, S.insignia.bar[1] / 2)
-      .rotateX(Math.PI / 2), 'Insignia_bar', 'star', 0.03);
-    place(star(S.insignia.starR), 'US_star', 'star', 0.04);
+    if (S.markings === 'us') {
+      place(new THREE.CircleGeometry(S.insignia.r, 30), 'US_roundel', 'roundel', 0.02);
+      place(box(-S.insignia.bar[0] / 2, S.insignia.bar[0] / 2, -0.001, 0.001, -S.insignia.bar[1] / 2, S.insignia.bar[1] / 2)
+        .rotateX(Math.PI / 2), 'Insignia_bar', 'star', 0.03);
+      place(star(S.insignia.starR), 'US_star', 'star', 0.04);
+    } else {
+      place(new THREE.CircleGeometry(S.insignia.r, 30), 'Roundel_border', 'border', 0.02);
+      place(new THREE.CircleGeometry(S.insignia.innerR, 30), 'Hinomaru', 'hinomaru', 0.03);
+    }
   }
 
   // Propeller: hub, cuffed blades, yellow tips. Built relative to the pivot.
@@ -463,8 +554,10 @@ function writeGLB(root, file) {
   return { triangles, bytes: 12 + 8 + jsonBuf.length + 8 + bin.length };
 }
 
-const corsair = buildCorsair(CORSAIR);
-toModel(corsair, CORSAIR);
-const out = path.join(OUT_DIR, `${CORSAIR.name}.glb`);
-const info = writeGLB(corsair, out);
-console.log(`${path.relative(process.cwd(), out)}: ${info.triangles} triangles, ${(info.bytes / 1024).toFixed(0)} KB`);
+for (const spec of [CORSAIR, ZERO]) {
+  const aircraft = buildAircraft(spec);
+  toModel(aircraft, spec);
+  const out = path.join(OUT_DIR, `${spec.name}.glb`);
+  const info = writeGLB(aircraft, out);
+  console.log(`${path.relative(process.cwd(), out)}: ${info.triangles} triangles, ${(info.bytes / 1024).toFixed(0)} KB`);
+}
