@@ -35,11 +35,11 @@ const CORSAIR = {
   span: 12.50,
   markings: 'us',
   // 1942–early 1943 US Navy scheme: non-specular Blue Gray (M-485, ≈FS 35189)
-  // over Light Gray (M-495, ≈FS 36440), black walkway on the starboard wing
-  // root, black Hamilton Standard blades with yellow tips. See
+  // over Light Gray (M-495, ≈FS 36440), dark grey walkway panels on both
+  // inner wings, black Hamilton Standard blades with yellow tips. See
   // tools/reference/F4U-1.md "Paint scheme".
   colors: {
-    upper: '#556878', lower: '#bcbfb8', seam: '#6b7d8d', walkway: '#1f2225', roundel: '#1c2b48',
+    upper: '#556878', lower: '#bcbfb8', seam: '#6b7d8d', walkway: '#3a3f46', roundel: '#1c2b48',
     star: '#f0eee6', glass: '#67b9cc', cylinder: '#25372f', dark: '#161d24', hub: '#9aa0a6',
     blade: '#161d24', tip: '#e0b03a',
   },
@@ -104,7 +104,8 @@ const CORSAIR = {
   foldLine: 2.55,                 // outer panels fold here (also the gull joint)
   aileron: { y0: 3.30, y1: 6.00, chord: 0.22 },
   guns: { spans: [2.85, 3.20, 3.55], protrude: 0.22, r: 0.045 },
-  walkways: [{ side: 1, y0: 0.80, y1: 2.30, c0: 0.45, c1: 0.85 }],
+  // Non-slip walkway panels on both wings just inboard of the fold, mid-chord to the trailing edge over the flap, per the NASM F4U-1D.
+  walkways: [{ side: 1, y0: 1.90, y1: 2.45, c0: 0.40, c1: 1.00 }, { side: -1, y0: 1.90, y1: 2.45, c0: 0.40, c1: 1.00 }],
   // National insignia to the AN-I-9b proportions: star inscribed in a disc
   // of radius r, white bars one radius long and half a radius tall on each
   // side, blue outline one eighth of a radius wide. Both upper wings.
