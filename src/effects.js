@@ -69,10 +69,12 @@ export function createEffects(scene, renderer) {
       const n = Math.min(400, game.particles.length);
       for (let i = 0; i < n; i++) {
         const p = game.particles[i], t = p.life / p.max;
-        positions.set([p.x, CONFIG.render.flightHeight + 8, p.y], i * 3);
-        rings[i] = p.kind === 'ring' ? 1 : 0;
-        sizes[i] = 2 * p.size * (p.kind === 'ring' ? 1.6 - t : p.kind === 'smoke' ? 2 - t : t + .4);
+        const splash = p.kind === 'splash';
+        positions.set([p.x, splash ? 1.5 : CONFIG.render.flightHeight + 8, p.y], i * 3);
+        rings[i] = p.kind === 'ring' || splash ? 1 : 0;
+        sizes[i] = 2 * p.size * (splash ? 1.8 - t : p.kind === 'ring' ? 1.6 - t : p.kind === 'smoke' ? 2 - t : t + .4);
         if (p.kind === 'smoke') colors.set([.20, .20, .23, t * .7], i * 4);
+        else if (splash) colors.set([.85, .95, 1, t * .8], i * 4);
         else colors.set([1, .3 + t * .45, .08, t], i * 4);
       }
       geometry.setDrawRange(0, n);

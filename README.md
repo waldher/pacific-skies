@@ -24,6 +24,9 @@ The Corsair and Zero load directly from local GLB files with lighting, shadows,
 animated propellers, and banking in turns. An orthographic camera preserves the
 original screen-to-world scale, controls, and combat tuning. The ocean, islands,
 tracers, and particles render in Three.js; gameplay remains a top-down XY simulation.
+The sea is a single shader: hash-noise ripples lit by the sun, sparse whitecaps,
+sun glitter, drifting cloud shadows, turquoise shallows and surf around islands,
+and splash rings where rounds hit the water. Tuning is in `CONFIG.render.ocean`.
 
 Three.js 0.185.1 and its loader are vendored under `vendor/three/`, so GitHub Pages
 can still serve this repository directly without a build or third-party CDN.

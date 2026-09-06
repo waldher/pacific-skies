@@ -29,7 +29,7 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 | `player.js` | flight model, firing, damage, death |
 | `enemies.js` | wave spawning, pursuit AI, enemy fire, ramming |
 | `particles.js` | explosions, smoke, particle simulation |
-| `world.js` | Three.js ocean + bounded island chunks |
+| `world.js` | ocean shader (ripples, glitter, whitecaps, cloud shadows, shallows), surf rings, bounded island chunks |
 | `sprites.js` | HUD `rr` rounded-rect helper |
 | `hud.js` | HUD, wave banner, off-screen arrows, touch UI, menus |
 | `audio.js` | procedural sfx |

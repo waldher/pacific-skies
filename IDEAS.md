@@ -26,7 +26,7 @@ the commit that shipped them.
 - **Persistence:** localStorage for best score; daily-seed mode so
   everyone fights the same waves.
 - **Feel:** prop sound loop pitched by throttle; engine smoke
-  trails at full boost; water splash rings when bullets miss low.
+  trails at full boost; ship wakes once there are ships.
 - **Mobile polish:** real-device touch testing, haptics on hit
   (navigator.vibrate), safe-area insets for notched phones.
 
