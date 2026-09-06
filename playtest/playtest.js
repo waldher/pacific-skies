@@ -120,7 +120,11 @@ function check(name, ok, detail) {
   // Reset after the renderer probe so the gameplay bot retains its seeded setup.
   await page.evaluate(seed => { window.__game.setSeed(seed); window.__game.startGame(); }, SEED);
 
-  await page.waitForTimeout(3000);
+  // The first wave is timed in simulated seconds, and the simulation runs
+  // slower than wall-clock under software rendering (frame dt is capped),
+  // so wait on game time rather than a fixed real-time delay.
+  const startTime = await page.evaluate(() => window.__game.game.time);
+  await page.waitForFunction(t0 => window.__game.game.time > t0 + 3, startTime, { timeout: 20000 });
   s = await snap();
   check('wave 1 spawns enemies', s.enemies > 0, `${s.enemies} enemies`);
   check('enemies use Zero GLBs', await page.evaluate(() => {

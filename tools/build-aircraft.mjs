@@ -106,12 +106,9 @@ const CORSAIR = {
   guns: { spans: [2.85, 3.20, 3.55], protrude: 0.22, r: 0.045 },
   walkways: [{ side: 1, y0: 0.80, y1: 2.30, c0: 0.45, c1: 0.85 }],
   // National insignia to the AN-I-9b proportions: star inscribed in a disc
-  // of radius r; with `bars`, white bars one radius long and half a radius
-  // tall on each side and a blue outline one eighth of a radius wide
-  // (the August 1943 form everyone recognises). `bars: false` gives the
-  // plain star-in-disc carried in 1942. Both upper wings for readability;
-  // the 1943 rule was upper-left wing only.
-  insignia: { y: 4.25, r: 0.55, bars: true, sides: [-1, 1] },
+  // of radius r, white bars one radius long and half a radius tall on each
+  // side, blue outline one eighth of a radius wide. Both upper wings.
+  insignia: { y: 4.25, r: 0.55, sides: [-1, 1] },
   // Horizontal stabiliser half-span stations.
   tailplane: [
     { y: 0.00, le: 8.50, te: 9.90, h: 0.28, t: 0.16 },
@@ -389,6 +386,11 @@ function extrudeProfile(outline, thickness) {
   return g;
 }
 
+/** Disc with radial subdivisions so it can be draped over a curved wing. */
+function disc(r, segments = 24, rings = 2) {
+  return new THREE.RingGeometry(0, r, segments, rings);
+}
+
 /** Regular five-point star; the 0.382 inner ratio is the true pentagram. */
 function star(r, points = 5, inner = 0.382) {
   const pts = [];
@@ -494,27 +496,43 @@ function buildAircraft(S) {
   add(airframe, 'Antenna', mast, 'dark');
 
   // National insignia on the upper wings: US star-and-bars or hinomaru.
+  // Markings are draped onto the wing's upper surface (thickness and
+  // dihedral both vary along the span, so a flat decal would clip through).
+  const tipY = S.wing[S.wing.length - 1].y;
+  const drape = (geometry, lift) => {
+    const p = geometry.attributes.position;
+    for (let i = 0; i < p.count; i++) {
+      const st = wingAt(S.wing, Math.min(Math.abs(p.getZ(i)), tipY));
+      const f = Math.min(Math.max((p.getX(i) - st.le) / (st.te - st.le), 0), 1);
+      p.setY(i, st.h + st.t * upperAt(f) + lift);
+    }
+    geometry.computeVertexNormals();
+    return geometry;
+  };
   for (const side of S.insignia.sides) {
-    const w = wingAt(S.wing, S.insignia.y);
-    const place = (geometry, name, material, lift) => {
-      geometry.rotateX(-Math.PI / 2);               // lie flat, facing +y
-      geometry.rotateY(Math.PI / 2);                // shape x → span, shape y → forward
-      geometry.rotateX(-Math.atan(w.slope) * side); // follow dihedral
-      geometry.translate((w.le + w.te) / 2, w.h + w.t * 0.5 + lift, S.insignia.y * side);
-      add(airframe, name, geometry, material);
+    const w = wingAt(S.wing, S.insignia.y), cx = (w.le + w.te) / 2, cz = S.insignia.y * side;
+    // A flat shape drawn in XY (y = forward) laid on the wing at the insignia centre.
+    const placeShape = (geometry, name, material, lift) => {
+      geometry.rotateX(-Math.PI / 2); geometry.rotateY(Math.PI / 2);   // shape x → span, shape y → forward
+      geometry.translate(cx, 0, cz);
+      add(airframe, name, drape(geometry, lift), material);
+    };
+    // A rectangle `halfSpan` × `halfChord`, subdivided along the span so it follows the wing.
+    const placeRect = (name, material, halfSpan, halfChord, lift) => {
+      const g = new THREE.PlaneGeometry(halfChord * 2, halfSpan * 2, 1, 8);
+      g.rotateX(-Math.PI / 2); g.translate(cx, 0, cz);
+      add(airframe, name, drape(g, lift), material);
     };
     if (S.markings === 'us') {
-      const R = S.insignia.r, edge = S.insignia.bars ? R / 8 : 0;
-      place(new THREE.CircleGeometry(R + edge, 36), 'US_roundel', 'roundel', 0.02);
-      if (S.insignia.bars) {
-        place(box(-(2 * R + edge), 2 * R + edge, -0.001, 0.001, -(R / 4 + edge), R / 4 + edge).rotateX(Math.PI / 2),
-          'Insignia_outline', 'roundel', 0.02);
-        place(box(-2 * R, 2 * R, -0.001, 0.001, -R / 4, R / 4).rotateX(Math.PI / 2), 'Insignia_bar', 'star', 0.03);
-      }
-      place(star(R), 'US_star', 'star', 0.04);
+      // Layered bottom-up: blue outline, white bars, blue disc (covers the
+      // bars' inner ends), white star.
+      const R = S.insignia.r, edge = R / 8;
+      placeRect('Insignia_outline', 'roundel', 2 * R + edge, R / 4 + edge, 0.015);
+      placeRect('Insignia_bar', 'star', 2 * R, R / 4, 0.025);
+      placeShape(disc(R + edge), 'US_roundel', 'roundel', 0.035);
+      placeShape(star(R), 'US_star', 'star', 0.045);
     } else {
-      if (S.insignia.borderR) place(new THREE.CircleGeometry(S.insignia.borderR, 30), 'Roundel_border', 'border', 0.02);
-      place(new THREE.CircleGeometry(S.insignia.r, 30), 'Hinomaru', 'hinomaru', 0.03);
+      placeShape(disc(S.insignia.r), 'Hinomaru', 'hinomaru', 0.03);
     }
   }
 
