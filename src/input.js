@@ -12,7 +12,16 @@ export const fireTouch = { active: false, id: -1 };
 export const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 
 export function initInput(cvs) {
-  document.getElementById('torpedo-action').addEventListener('click', launchTorpedo);
+  const torpedoButton = document.getElementById('torpedo-action');
+  // Secondary touches do not reliably generate clicks while the steering thumb
+  // remains down. Fire on pointerdown, without stealing the stick's capture.
+  torpedoButton.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    e.preventDefault();
+    launchTorpedo();
+  });
+  // Keep keyboard/assistive activation, but ignore the pointer's follow-up click.
+  torpedoButton.addEventListener('click', e => { if (e.detail === 0) launchTorpedo(); });
   document.getElementById('carrier-action').addEventListener('click', () => requestCarrier(game));
   window.addEventListener('blur', () => {
     for (const key of Object.keys(keys)) keys[key] = false;

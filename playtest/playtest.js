@@ -239,6 +239,25 @@ function check(name, ok, detail) {
     return view.W === 390 && graphics.camera.right - graphics.camera.left === 390
       && document.getElementById('world').width === Math.round(390 * view.DPR);
   }));
+  // Real simultaneous touch contacts: the torpedo thumb is non-primary.
+  await page.evaluate(() => window.__game.startGame());
+  await page.waitForTimeout(100);
+  const touch = await page.context().newCDPSession(page);
+  const steering = { x: 75, y: 700, id: 1 };
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [steering] });
+  steering.x = 110;
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [steering] });
+  const torpedoBox = await page.locator('#torpedo-action').boundingBox();
+  const trigger = { x: torpedoBox.x + torpedoBox.width / 2, y: torpedoBox.y + torpedoBox.height / 2, id: 2 };
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [steering, trigger] });
+  check('secondary thumb fires torpedo while steering stays held', await page.evaluate(() => {
+    const { game, stick } = window.__game;
+    return game.player.torpedoAmmo === 1 && stick.active && stick.dx > 20;
+  }));
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [trigger] });
+  check('releasing torpedo thumb preserves steering and does not fire twice', await page.evaluate(() => window.__game.stick.active && window.__game.game.player.torpedoAmmo === 1));
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await touch.detach();
   // Show a landing and its actual touch control at narrow-screen size.
   await page.evaluate(() => {
     const { game, requestCarrier, update, keys } = window.__game;

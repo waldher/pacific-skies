@@ -3,7 +3,6 @@ import { CONFIG } from './config.js';
 import { game } from './state.js';
 import { view } from './canvas.js';
 import { clamp, angDiff, rand, TAU } from './util.js';
-import { notify } from './campaign.js';
 
 export function updateAirWar(dt) {
   const A = CONFIG.airWar;
@@ -14,7 +13,6 @@ export function updateAirWar(dt) {
       a: angle + Math.PI, hp: CONFIG.enemy.hp, speed: A.raidSpeed, turn: CONFIG.enemy.turn,
       raider: true, ace: false, fireCd: 1, wobble: rand(0, TAU) });
     game.raidTimer = rand(A.raidMin, A.raidMax);
-    notify(game, 'Roaming Zero inbound');
   }
   for (const f of game.allies) {
     if (f.hp <= 0) continue;
