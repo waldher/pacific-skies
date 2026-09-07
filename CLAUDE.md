@@ -30,6 +30,8 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 | `enemies.js` | territory defenders, patrol/pursuit AI, enemy fire, ramming |
 | `campaign.js` | territory ownership, finite defenders, capture and victory |
 | `carrier.js` | manual approach, aligned deck landing, deck repair and takeoff |
+| `airwar.js` | independent friendly patrols and occasional roaming Zero interceptors |
+| `torpedoes.js` | two-round loadout, surface runs, ship impacts and cooldown |
 | `ships.js` | naval patrols, gunfire and swept hull hits |
 | `naval-scene.js` | ship meshes, wakes, sinking and territory markers |
 | `particles.js` | explosions, smoke, particle simulation |

@@ -3,6 +3,7 @@
 import { view } from './canvas.js';
 import { audioInit } from './audio.js';
 import { game, startGame } from './state.js';
+import { launchTorpedo } from './torpedoes.js';
 import { requestCarrier } from './carrier.js';
 
 export const keys = {};
@@ -11,12 +12,14 @@ export const fireTouch = { active: false, id: -1 };
 export const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 
 export function initInput(cvs) {
+  document.getElementById('torpedo-action').addEventListener('click', launchTorpedo);
   document.getElementById('carrier-action').addEventListener('click', () => requestCarrier(game));
   window.addEventListener('blur', () => {
     for (const key of Object.keys(keys)) keys[key] = false;
     stick.active = fireTouch.active = false;
   });
   window.addEventListener('keydown', e => {
+    if (game.mode === 'play' && e.code === 'KeyT' && !e.repeat) launchTorpedo();
     if (game.mode === 'play' && e.code === 'KeyL' && !e.repeat) requestCarrier(game);
     keys[e.code] = true;
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) e.preventDefault();

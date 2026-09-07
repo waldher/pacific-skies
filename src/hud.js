@@ -47,6 +47,11 @@ export function drawHud() {
     ctx.fillStyle = '#f2e8c9'; ctx.fillText(game.message, W / 2, H - 139, W - 42);
   }
 
+  for (const ally of game.allies) {
+    const [x, y] = w2s(ally.x, ally.y);
+    ctx.textAlign = 'center'; ctx.font = '700 10px monospace'; ctx.fillStyle = '#86ebd1';
+    ctx.fillText(ally.name, x, y + 28);
+  }
   // off-screen enemy arrows
   ctx.fillStyle = 'rgba(255,120,90,0.9)';
   for (const e of game.enemies) {
@@ -102,7 +107,8 @@ function drawNavigation() {
   ctx.beginPath(); ctx.moveTo(5, 0); ctx.lineTo(-3, -3); ctx.lineTo(-3, 3); ctx.closePath(); ctx.fill(); ctx.restore();
   const nearby = game.territories.find(t => Math.hypot(t.x - p.x, t.y - p.y) < CONFIG.conquest.captureRadius);
   ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.font = '12px monospace'; ctx.fillStyle = '#f2e8c9';
-  if (p.flight === 'landed') ctx.fillText(`Repairing ${Math.ceil(p.hp)} / ${CONFIG.player.hp} · L / TAKE OFF`, W / 2, 112, W - 24);
+  if (p.flight === 'landed') ctx.fillText(`Repairing ${Math.ceil(p.hp)} / ${CONFIG.player.hp} · TORP ${p.torpedoAmmo}/${CONFIG.torpedo.capacity}`, W / 2, 112, W - 24);
+  else if (p.landingHint) ctx.fillText(p.landingHint, W / 2, 112, W - 24);
   else if (nearby) {
     const remaining = defenders(game, nearby);
     const label = nearby.owner === 'us' ? 'Secured' : remaining ? `${remaining} defenders remaining` : `Capturing · ${Math.ceil(CONFIG.conquest.captureSeconds - nearby.progress)}s`;
@@ -130,11 +136,18 @@ function drawCenterText(lines) {
 }
 
 export function drawMenus() {
-  document.getElementById('flight-controls').hidden = game.mode !== 'play' || game.player?.flight !== 'landed';
+  document.getElementById('flight-controls').hidden = game.mode !== 'play';
   if (game.mode === 'play') {
     const action = carrierAction(game), button = document.getElementById('carrier-action');
     button.textContent = (isTouchDevice ? '' : 'L · ') + action.label;
     button.disabled = !action.enabled;
+    button.hidden = game.player.flight !== 'landed';
+    const torpedo = document.getElementById('torpedo-action');
+    torpedo.hidden = game.player.flight !== 'flying';
+    torpedo.disabled = game.player.torpedoCd > 0 || game.player.torpedoAmmo === 0;
+    torpedo.textContent = game.player.torpedoAmmo === 0 ? '0 TORPEDO · REARM'
+      : game.player.torpedoCd > 0 ? `${game.player.torpedoAmmo} TORPEDO · ${Math.ceil(game.player.torpedoCd)}s`
+      : (isTouchDevice ? '' : 'T · ') + `TORPEDO ×${game.player.torpedoAmmo}`;
   }
   if (game.mode === 'title') {
     drawCenterText([
@@ -144,7 +157,7 @@ export function drawMenus() {
       ['Line up with the carrier stern to land.', 13],
       ['', 8],
       [isTouchDevice ? 'LEFT THUMB STEERS — RIGHT THUMB FIRES' : 'WASD / ARROWS TO FLY — SPACE TO FIRE', 14],
-      ['', 8],
+      [isTouchDevice ? 'TORPEDO BUTTON — SINK SHIPS' : 'T — DROP TORPEDO', 12],
       [isTouchDevice ? 'TAP TO SCRAMBLE' : 'PRESS SPACE TO SCRAMBLE', 16],
     ]);
   } else if (game.mode === 'victory') {

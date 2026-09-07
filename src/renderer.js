@@ -126,23 +126,24 @@ export async function createRenderer(canvas) {
       sun.position.set(game.cam.x + sx, sy, game.cam.y + sz);
       sun.target.position.set(game.cam.x, 0, game.cam.y);
       world.update(game.cam, view, game.time, lastRatio);
-      const live = new Set(game.enemies);
+      const live = new Set([...game.enemies, ...game.allies]);
       if (game.player && game.mode === 'play') live.add(game.player);
       for (const [entity, visual] of aircraft) {
         if (live.has(entity)) continue;
         scene.remove(visual.root, visual.shadow);
-        // Geometry and materials belong to templates, not to each clone.
+        // Geometry stays shared; friendly flash materials belong to each instance.
+        for (const material of visual.ownedMaterials) material.dispose();
         aircraft.delete(entity);
       }
       for (const entity of live) {
         const player = entity === game.player;
         if (!aircraft.has(entity)) {
-          const visual = createAircraft(templates[player ? 'us' : 'jp'], entity, level().shadows);
+          const visual = createAircraft(templates[player || entity.team === 'us' ? 'us' : 'jp'], entity, level().shadows);
           aircraft.set(entity, visual); scene.add(visual.root, visual.shadow);
         }
         updateAircraft(aircraft.get(entity), entity, dt,
           player ? CONFIG.player.turnRate : entity.turn,
-          player && entity.hitFlash > .12);
+          (player || entity.team === 'us') && entity.hitFlash > .12);
       }
       naval.update(game);
       effects.update(game);

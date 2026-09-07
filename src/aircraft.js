@@ -87,10 +87,19 @@ export function setShadowMode(visual, shadows) {
 export function createAircraft(template, entity, shadows = true) {
   const root = new THREE.Group();
   const model = template.clone(true);
+  const ownedMaterials = [];
+  if (template.name === 'F4U_Corsair') {
+    const copies = new Map();
+    model.traverse(node => {
+      if (!node.isMesh) return;
+      if (!copies.has(node.material)) { const copy = node.material.clone(); copies.set(node.material, copy); ownedMaterials.push(copy); }
+      node.material = copies.get(node.material);
+    });
+  }
   root.add(model);
   const shadow = new THREE.Mesh(receiverGeometry, shadowMaterial);
   shadow.position.y = .1;
-  const visual = { root, model, shadow, propeller: model.getObjectByName('Propeller'), heading: entity.a, bank: 0 };
+  const visual = { root, model, shadow, ownedMaterials, propeller: model.getObjectByName('Propeller'), heading: entity.a, bank: 0 };
   setShadowMode(visual, shadows);
   return visual;
 }
@@ -108,7 +117,7 @@ export function updateAircraft(visual, entity, dt, turnRate, flash = false) {
   visual.shadow.visible = entity.flight !== 'landed';
   visual.model.rotation.z = visual.bank;
   visual.propeller.rotation.z = (visual.propeller.rotation.z + dt * R.propellerSpeed * (entity.flight === 'landed' ? .12 : 1)) % (Math.PI * 2);
-  // Only the single player uses the US template; enemy materials stay shared.
+  // Friendly aircraft own their flash materials; enemy materials stay shared.
   if (visual.flash !== flash) {
     visual.model.traverse(node => {
       if (node.isMesh) node.material.emissive.setHex(flash ? 0xffffff : 0x000000);

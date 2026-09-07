@@ -8,6 +8,8 @@ import { spawnDefenders, updateEnemies } from './enemies.js';
 import { explosion, updateParticles, splash } from './particles.js';
 import { updateCampaign } from './campaign.js';
 import { updateShips, hitsShip, damageShip } from './ships.js';
+import { updateAirWar } from './airwar.js';
+import { updateTorpedoes, launchTorpedo } from './torpedoes.js';
 import { requestCarrier } from './carrier.js';
 import { createRenderer } from './renderer.js';
 import { drawHud, drawMenus } from './hud.js';
@@ -21,8 +23,10 @@ function update(dt) {
   if (game.mode !== 'play') return;
 
   updatePlayer(dt);
+  updateAirWar(dt);
   updateEnemies(dt);
   updateShips(dt);
+  updateTorpedoes(dt);
   game.messageTime = Math.max(0, game.messageTime - dt);
 
   // bullets
@@ -60,11 +64,18 @@ function update(dt) {
       b.life = 0;
       damagePlayer(b.damage ?? CONFIG.enemy.bulletDamage);
     }
+    if (b.life > 0) for (const ally of game.allies) {
+      if (ally.hp <= 0 || Math.hypot(b.x - ally.x, b.y - ally.y) >= 15) continue;
+      b.life = 0; ally.hp -= b.damage ?? CONFIG.enemy.bulletDamage; ally.hitFlash = .25;
+      if (ally.hp <= 0) explosion(ally.x, ally.y, false);
+      break;
+    }
   }
 
   game.bullets = game.bullets.filter(b => b.life > 0);
   game.ebullets = game.ebullets.filter(b => b.life > 0);
   game.enemies = game.enemies.filter(e => e.hp > 0);
+  game.allies = game.allies.filter(f => f.hp > 0);
 
   updateParticles(dt);
 
@@ -101,7 +112,7 @@ function frame(now) {
 }
 // Debug/test API: the playtest harness (and console tinkering) reads
 // live state and drives input through this handle.
-window.__game = { game, CONFIG, startGame, setSeed, keys, stick, fireTouch, view, angDiff, update, requestCarrier: () => requestCarrier(game) };
+window.__game = { game, CONFIG, startGame, setSeed, keys, stick, fireTouch, view, angDiff, update, launchTorpedo, requestCarrier: () => requestCarrier(game) };
 
 
 const status = document.getElementById('loading');

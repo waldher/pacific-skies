@@ -80,10 +80,17 @@ export const CONFIG = {
   },
   carrier: {
     x: 0, y: 200, length: 240, width: 68, deckHeight: 15,
-    headingTolerance: Math.PI / 15, lateralTolerance: 12, descentDistance: 180,
+    headingTolerance: Math.PI * 25 / 180, lateralTolerance: 24, descentDistance: 180,
+    catchWindow: 105,
     landingSeconds: 1, rolloutDistance: 75, takeoffSeconds: 2.5, launchDistance: 300,
     repairPerSecond: 20, defenseRange: 500, fireCooldown: .3,
   },
+  airWar: {
+    raidFirst: 40, raidMin: 35, raidMax: 55, raidSpeed: 270, raidSpawnDistance: 850,
+    allyCount: 2, allyHp: 36, allySpeed: 235, allyTurn: 2.3,
+    allyRange: 600, allyFireCooldown: .45, waypointRadius: 150,
+  },
+  torpedo: { capacity: 2, rearmSeconds: 2, speed: 220, range: 1100, damage: 20, cooldown: 5, armingDistance: 45 },
   ship: {
     length: 115, width: 28, hp: 20, speed: 22, patrolOffset: 155,
     gunRange: 500, fireCooldown: 1.8, bulletSpeed: 400, bulletDamage: 6, score: 200,

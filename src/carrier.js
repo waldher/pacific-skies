@@ -38,6 +38,7 @@ export function updateCarrierFlight(game, dt) {
     p.speed = p.arrival.speed * (1 - u);
     if (t >= 1) {
       p.parked = { x: p.x, y: p.y };
+      p.rearmTime = 0;
       p.flight = 'landed'; p.a = c.a; p.speed = 0;
       notify(game, 'On deck — repairing. L / TAKE OFF to launch');
     }
@@ -45,6 +46,8 @@ export function updateCarrierFlight(game, dt) {
     p.x = p.parked.x; p.y = p.parked.y; p.altitude = C.deckHeight; p.speed = 0;
     p.hp = Math.min(CONFIG.player.hp, p.hp + C.repairPerSecond * dt);
     p.heat = 0; p.overheated = false;
+    p.rearmTime += dt;
+    if (p.rearmTime >= CONFIG.torpedo.rearmSeconds) p.torpedoAmmo = CONFIG.torpedo.capacity;
   } else if (p.flight === 'takeoff') {
     p.flightTime += dt;
     const t = clamp(p.flightTime / C.takeoffSeconds, 0, 1);
@@ -68,10 +71,13 @@ export function checkDeckLanding(game, previous) {
   const distance = stern - now;
   const inCorridor = aligned && Math.abs(lateral(p)) <= C.lateralTolerance && distance >= 0 && distance < C.descentDistance;
   p.altitude = inCorridor ? lerp(C.deckHeight, CONFIG.render.flightHeight, distance / C.descentDistance) : CONFIG.render.flightHeight;
-  if (!(before < stern && now >= stern && aligned)) return;
-  const fraction = (stern - before) / (now - before);
-  const cross = lerp(lateral(previous), lateral(p), fraction);
-  if (Math.abs(cross) > C.lateralTolerance) return;
+  // Crossing the stern opens a whole aft-deck window for last-second corrections.
+  if (before < stern && now >= stern && now > before) p.deckApproach = true;
+  if (now < stern || now > stern + C.catchWindow || Math.abs(lateral(p)) > c.width) p.deckApproach = false;
+  p.landingHint = distance > -C.catchWindow && distance < C.descentDistance && Math.abs(lateral(p)) < c.width * 2
+    ? aligned && Math.abs(lateral(p)) <= C.lateralTolerance ? 'ALIGNED — hold your heading' : 'Line up with the deck, toward the bow' : '';
+  if (!p.deckApproach || !aligned || Math.abs(lateral(p)) > C.lateralTolerance) return;
+  p.deckApproach = false; p.landingHint = '';
   p.flight = 'landing'; p.flightTime = 0;
   p.arrival = { x: p.x, y: p.y, a: p.a, speed: p.speed };
   p.altitude = C.deckHeight;

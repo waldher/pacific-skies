@@ -1,6 +1,6 @@
 // Runs through the real simulation in-browser with deterministic setups.
 export async function campaignChecks(api) {
-  const { game, startGame, update, keys, CONFIG, requestCarrier } = api;
+  const { game, startGame, update, keys, CONFIG, requestCarrier, launchTorpedo } = api;
   const { defenders } = await import('../src/campaign.js');
   const { damageShip, hitsShip } = await import('../src/ships.js');
   const checks = [];
@@ -53,7 +53,7 @@ export async function campaignChecks(api) {
   const c = game.ships[0];
   const approach = (x, y, a) => {
     game.player.x = x; game.player.y = y; game.player.a = a;
-    game.player.speed = CONFIG.player.speedCruise;
+    game.player.speed = CONFIG.player.speedCruise; game.player.deckApproach = false;
   };
   approach(c.x + CONFIG.carrier.lateralTolerance + 10, c.y + c.length / 2 + 10, c.a);
   step(.2);
@@ -61,7 +61,7 @@ export async function campaignChecks(api) {
   approach(c.x, c.y - c.length / 2 - 10, c.a + Math.PI);
   step(1.2);
   check('reverse-direction deck pass does not land', game.player.flight === 'flying');
-  approach(c.x, c.y + c.length / 2 + 10, c.a + .4);
+  approach(c.x, c.y + c.length / 2 + 10, c.a + .8);
   step(.2);
   check('crossing the stern at a bad angle does not land', game.player.flight === 'flying');
   approach(c.x, c.y, c.a);
@@ -72,12 +72,23 @@ export async function campaignChecks(api) {
   check('aligned final approach keeps manual flight control', game.player.flight === 'flying' && game.player.altitude < CONFIG.render.flightHeight);
   keys.KeyD = true; step(.15); keys.KeyD = false;
   check('pilot can steer away from the approach', game.player.flight === 'flying' && game.player.a > c.a + .2);
+  approach(c.x + 16, c.y + c.length / 2 + 10, c.a + .3);
+  step(.08);
+  check('small offset and heading errors are accepted', game.player.flight === 'landing');
+  game.player.flight = 'flying';
+  approach(c.x + 30, c.y + c.length / 2 + 10, c.a);
+  step(.08);
+  check('stern crossing leaves time for a deck correction', game.player.flight === 'flying' && game.player.deckApproach);
+  game.player.x = c.x + 22;
+  update(.02);
+  check('correcting alignment after the stern still catches a wire', game.player.flight === 'landing');
+  game.player.flight = 'flying';
   approach(c.x + 6, c.y + c.length / 2 + 40, c.a);
   for (let i = 0; i < 300 && game.player.flight !== 'landed'; i++) update(.02);
   check('aligned stern crossing lands without requesting assistance', game.player.flight === 'landed'
     && Math.abs(game.player.x - c.x - 6) < 1 && game.player.altitude === CONFIG.carrier.deckHeight);
   keys.Space = true; step(.1);
-  check('guns stay safe on deck', game.bullets.length === 0);
+  check('guns stay safe on deck', game.bullets.every(b => b.fromAlly || b.fromShip));
   step(1);
   check('deck repairs restore health over time', game.player.hp > 35 && game.player.hp < CONFIG.player.hp);
   step(10);
@@ -87,6 +98,23 @@ export async function campaignChecks(api) {
   step(CONFIG.carrier.takeoffSeconds + .1);
   check('takeoff restores normal flight at cruising altitude', game.player.flight === 'flying'
     && game.player.altitude === CONFIG.render.flightHeight && game.player.y < c.y - c.length / 2);
+  reset();
+  check('sortie starts with exactly two torpedoes', game.player.torpedoAmmo === 2);
+  check('torpedo launches and consumes one round', launchTorpedo() && game.torpedoes.length === 1 && game.player.torpedoAmmo === 1);
+  check('torpedo cooldown prevents duplicate launches', !launchTorpedo() && game.player.torpedoAmmo === 1);
+  const torp = game.torpedoes[0], patrol = game.ships.find(s => s.team === 'jp');
+  torp.x = patrol.x - 50; torp.y = patrol.y; torp.vx = CONFIG.torpedo.speed; torp.vy = 0; torp.distance = 100;
+  step(.3);
+  check('armed torpedo sinks a destroyer through real collisions', patrol.hp === 0 && game.torpedoes.length === 0);
+  step(CONFIG.torpedo.cooldown);
+  check('second torpedo consumes the last round', launchTorpedo() && game.player.torpedoAmmo === 0);
+  step(CONFIG.torpedo.range / CONFIG.torpedo.speed + .1);
+  check('empty loadout stays empty in flight and spent torpedoes expire', !launchTorpedo() && game.player.torpedoAmmo === 0 && game.torpedoes.length === 0);
+  game.player.x = game.ships[0].x; game.player.y = game.ships[0].y + CONFIG.carrier.length / 2 + 30; game.player.a = game.ships[0].a;
+  for (let i = 0; i < 300 && game.player.flight !== 'landed'; i++) update(.02);
+  check('torpedoes cannot launch on deck', !launchTorpedo());
+  step(CONFIG.torpedo.rearmSeconds + .1);
+  check('carrier rearms both torpedoes', game.player.torpedoAmmo === 2);
   reset();
   for (let i = 0; i < game.territories.length; i++) {
     const island = game.territories[i];
@@ -102,5 +130,26 @@ export async function campaignChecks(api) {
   check('new campaign resets territory ownership, fleet and flight state', game.mode === 'play'
     && game.territories.every(t => t.owner === 'enemy' && !t.activated) && game.player.flight === 'flying'
     && game.ships.every(s => s.hp === s.maxHp));
+  check('two friendly patrols start each sortie', game.allies.length === 2 && game.allies.every(f => f.team === 'us'));
+  game.player.x = 20000; game.player.y = 20000;
+  const friendStart = game.allies.map(f => ({ x: f.x, y: f.y }));
+  game.raidTimer = 0; update(.02);
+  const raider = game.enemies.find(e => e.raider);
+  check('roaming Zero can spawn far from all territories', !!raider && raider.territory === undefined);
+  const raidDistance = Math.hypot(raider.x - game.player.x, raider.y - game.player.y);
+  check('roaming Zero arrives outside the viewport', raidDistance > Math.hypot(api.view.W, api.view.H) / 2);
+  game.raidTimer = 0; update(.02);
+  check('roaming interceptors do not stack', game.enemies.filter(e => e.raider).length === 1);
+  step(2);
+  check('roaming Zero pursues outside island defense boundaries', Math.hypot(raider.x - game.player.x, raider.y - game.player.y) < raidDistance);
+  check('allies patrol independently of the distant player', game.allies.every((f, i) => Math.hypot(f.x - friendStart[i].x, f.y - friendStart[i].y) > 100 && Math.hypot(f.x - game.player.x, f.y - game.player.y) > 10000));
+  const friendly = game.allies[0]; friendly.x = 0; friendly.y = 0; friendly.a = 0; friendly.fireCd = 0;
+  raider.x = 200; raider.y = 0;
+  update(.02);
+  check('allies fire at nearby enemy fighters', game.bullets.some(b => b.fromAlly));
+  const hp = friendly.hp;
+  game.ebullets.push({ x: friendly.x, y: friendly.y, vx: 0, vy: 0, life: 1 }); update(.02);
+  check('friendly fighters can be damaged by hostile fire', friendly.hp < hp);
+  reset();
   return checks;
 }

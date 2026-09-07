@@ -23,13 +23,16 @@ export function spawnDefenders(territory) {
 export function updateEnemies(dt) {
   const E = CONFIG.enemy, player = game.player;
   for (const e of game.enemies) {
+    if (e.hp <= 0) continue;
     e.wobble += dt * 2;
-    const home = game.territories[e.territory];
-    const chase = player.flight !== 'landed'
-      && Math.hypot(player.x - home.x, player.y - home.y) < CONFIG.conquest.pursuitRadius
-      && Math.hypot(player.x - e.x, player.y - e.y) < CONFIG.conquest.engageRadius;
-    const tx = chase ? player.x + Math.cos(e.wobble) * 60 : home.x + Math.cos(e.wobble * .2) * CONFIG.conquest.patrolRadius;
-    const ty = chase ? player.y + Math.sin(e.wobble * 1.3) * 60 : home.y + Math.sin(e.wobble * .2) * CONFIG.conquest.patrolRadius;
+    const home = e.raider ? game.ships[0] : game.territories[e.territory];
+    const candidates = [player, ...game.allies].filter(f => f.hp > 0 && f.flight !== 'landed');
+    const target = e.raider && player.flight !== 'landed' ? player : candidates.sort((a, b) =>
+      Math.hypot(a.x - e.x, a.y - e.y) - Math.hypot(b.x - e.x, b.y - e.y))[0];
+    const chase = target && (e.raider || (Math.hypot(target.x - home.x, target.y - home.y) < CONFIG.conquest.pursuitRadius
+      && Math.hypot(target.x - e.x, target.y - e.y) < CONFIG.conquest.engageRadius));
+    const tx = chase ? target.x + Math.cos(e.wobble) * 60 : home.x + Math.cos(e.wobble * .2) * CONFIG.conquest.patrolRadius;
+    const ty = chase ? target.y + Math.sin(e.wobble * 1.3) * 60 : home.y + Math.sin(e.wobble * .2) * CONFIG.conquest.patrolRadius;
     const want = Math.atan2(ty - e.y, tx - e.x);
     const d = angDiff(e.a, want);
     e.a += clamp(d, -e.turn * dt, e.turn * dt);
@@ -37,7 +40,7 @@ export function updateEnemies(dt) {
     e.y += Math.sin(e.a) * e.speed * dt;
 
     e.fireCd -= dt;
-    const dist = Math.hypot(player.x - e.x, player.y - e.y);
+    const dist = target ? Math.hypot(target.x - e.x, target.y - e.y) : Infinity;
     if (chase && e.fireCd <= 0 && dist < E.engageDist && Math.abs(d) < E.aimCone) {
       e.fireCd = e.ace ? E.ace.fireCooldown : E.fireCooldown;
       game.ebullets.push({
@@ -46,7 +49,7 @@ export function updateEnemies(dt) {
         life: E.bulletLife,
       });
     }
-    if (player.flight !== 'landed' && dist < E.ramDist) {
+    if (player.flight !== 'landed' && Math.hypot(player.x - e.x, player.y - e.y) < E.ramDist) {
       e.hp = 0;
       damagePlayer(E.ramDamage);
       explosion(e.x, e.y, false);

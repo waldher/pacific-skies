@@ -86,7 +86,12 @@ function check(name, ok, detail) {
   await page.waitForTimeout(200);
   s = await snap();
   check('Space starts the game', s.mode === 'play');
-  check('target and landing-request controls are absent in flight', await page.evaluate(() => !document.getElementById('target-action') && document.getElementById('flight-controls').hidden));
+  check('target and landing-request controls are absent in flight', await page.evaluate(() => !document.getElementById('target-action') && document.getElementById('carrier-action').hidden));
+  await page.getByRole('button', { name: /TORPEDO/ }).click();
+  check('torpedo button drops one round', await page.evaluate(() => window.__game.game.player.torpedoAmmo === 1));
+  await page.keyboard.press('t');
+  check('keyboard torpedo respects cooldown', await page.evaluate(() => window.__game.game.player.torpedoAmmo === 1));
+  await page.screenshot({ path: path.join(SHOT_DIR, '02-torpedo.png') });
   const modelChecks = await page.evaluate(async () => {
     const THREE = await import(new URL('vendor/three/three.module.min.js', location.href).href);
     const { graphics, game, view, CONFIG } = window.__game;
@@ -110,6 +115,12 @@ function check(name, ok, detail) {
       orthographic: graphics.camera.isOrthographicCamera,
     };
   });
+  check('friendly patrols use Corsair models', await page.evaluate(() => window.__game.game.allies.every(f => window.__game.graphics.aircraft.get(f)?.model.name === 'F4U_Corsair')));
+  check('friendly aircraft have independent damage flash materials', await page.evaluate(() => {
+    const { graphics, game } = window.__game;
+    const p = graphics.aircraft.get(game.player), f = graphics.aircraft.get(game.allies[0]);
+    return p.ownedMaterials.length > 0 && f.ownedMaterials.length > 0 && p.ownedMaterials[0] !== f.ownedMaterials[0];
+  }));
   check('player uses Corsair GLB with propeller', modelChecks.name === 'F4U_Corsair' && modelChecks.propeller);
   check('model noses match all four flight headings', modelChecks.aligned);
   check('orthographic camera preserves aircraft scale', modelChecks.orthographic && modelChecks.scale);
@@ -244,7 +255,7 @@ function check(name, ok, detail) {
   check('on-screen carrier control launches the aircraft', await page.evaluate(() => window.__game.game.player.flight === 'takeoff'));
   await page.evaluate(() => window.__game.startGame());
   await page.waitForTimeout(200);
-  check('restart removes old aircraft instances', await page.evaluate(() => window.__game.graphics.aircraft.size === 1));
+  check('restart removes old aircraft instances', await page.evaluate(() => window.__game.graphics.aircraft.size === 1 + window.__game.game.allies.length));
   check('no JS errors during play', results.errors.length === 0, results.errors[0]);
 
   const failedPage = await browser.newPage();
