@@ -40,7 +40,7 @@ export async function campaignChecks(api) {
   check('leaving the zone resets an unfinished capture', t.progress === 0);
   game.player.x = t.x; game.player.y = t.y;
   step(CONFIG.conquest.captureSeconds + .2);
-  check('holding cleared airspace captures territory and selects the next objective', t.owner === 'us' && game.target !== t.id);
+  check('holding cleared airspace captures territory', t.owner === 'us');
   const capturedScore = game.score;
   step(1);
   check('captured territory stays captured without awarding points repeatedly', t.owner === 'us' && game.score === capturedScore);
@@ -48,19 +48,36 @@ export async function campaignChecks(api) {
   game.player.hp = 35; step(.5);
   check('flying no longer repairs health automatically', game.player.hp === 35);
   game.player.x = 4000; requestCarrier();
-  check('distant carrier action sets navigation without teleporting', game.target === 'carrier' && game.player.flight === 'flying' && game.player.x === 4000);
+  check('takeoff action has no effect in flight', game.player.flight === 'flying' && game.player.x === 4000);
+  check('campaign has no selected target', !('target' in game));
   const c = game.ships[0];
-  game.player.x = c.x; game.player.y = c.y + CONFIG.carrier.approachDistance + 65;
-  game.player.a = c.a; game.player.speed = CONFIG.carrier.approachSpeed;
-  requestCarrier();
-  check('carrier request starts a guided approach', game.player.flight === 'approach');
-  requestCarrier();
-  check('approach can be cancelled', game.player.flight === 'flying');
-  requestCarrier(); keys.Space = true;
-  for (let i = 0; i < 1000 && game.player.flight !== 'landed'; i++) update(.02);
-  check('assisted approach lands on the physical carrier deck', game.player.flight === 'landed'
-    && Math.abs(game.player.x - c.x) < 1 && game.player.altitude === CONFIG.carrier.deckHeight);
-  check('approach and landing inhibit firing', game.bullets.length === 0);
+  const approach = (x, y, a) => {
+    game.player.x = x; game.player.y = y; game.player.a = a;
+    game.player.speed = CONFIG.player.speedCruise;
+  };
+  approach(c.x + CONFIG.carrier.lateralTolerance + 10, c.y + c.length / 2 + 10, c.a);
+  step(.2);
+  check('off-center pass does not land', game.player.flight === 'flying');
+  approach(c.x, c.y - c.length / 2 - 10, c.a + Math.PI);
+  step(1.2);
+  check('reverse-direction deck pass does not land', game.player.flight === 'flying');
+  approach(c.x, c.y + c.length / 2 + 10, c.a + .4);
+  step(.2);
+  check('crossing the stern at a bad angle does not land', game.player.flight === 'flying');
+  approach(c.x, c.y, c.a);
+  step(.1);
+  check('being over the deck without a stern approach does not land', game.player.flight === 'flying');
+  approach(c.x, c.y + c.length / 2 + 70, c.a);
+  step(.1);
+  check('aligned final approach keeps manual flight control', game.player.flight === 'flying' && game.player.altitude < CONFIG.render.flightHeight);
+  keys.KeyD = true; step(.15); keys.KeyD = false;
+  check('pilot can steer away from the approach', game.player.flight === 'flying' && game.player.a > c.a + .2);
+  approach(c.x + 6, c.y + c.length / 2 + 40, c.a);
+  for (let i = 0; i < 300 && game.player.flight !== 'landed'; i++) update(.02);
+  check('aligned stern crossing lands without requesting assistance', game.player.flight === 'landed'
+    && Math.abs(game.player.x - c.x - 6) < 1 && game.player.altitude === CONFIG.carrier.deckHeight);
+  keys.Space = true; step(.1);
+  check('guns stay safe on deck', game.bullets.length === 0);
   step(1);
   check('deck repairs restore health over time', game.player.hp > 35 && game.player.hp < CONFIG.player.hp);
   step(10);

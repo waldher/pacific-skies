@@ -80,8 +80,8 @@ export const CONFIG = {
   },
   carrier: {
     x: 0, y: 200, length: 240, width: 68, deckHeight: 15,
-    callRadius: 650, approachDistance: 280, approachTolerance: 55, approachSpeed: 130,
-    landingSeconds: 4, takeoffSeconds: 2.5, parkOffset: 45, launchDistance: 300,
+    headingTolerance: Math.PI / 15, lateralTolerance: 12, descentDistance: 180,
+    landingSeconds: 1, rolloutDistance: 75, takeoffSeconds: 2.5, launchDistance: 300,
     repairPerSecond: 20, defenseRange: 500, fireCooldown: .3,
   },
   ship: {

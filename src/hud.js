@@ -4,7 +4,7 @@ import { game } from './state.js';
 import { stick, fireTouch, isTouchDevice } from './input.js';
 import { rr } from './sprites.js';
 import { carrierAction } from './carrier.js';
-import { defenders, getTarget } from './campaign.js';
+import { defenders } from './campaign.js';
 import { CONFIG } from './config.js';
 import { clamp, TAU } from './util.js';
 
@@ -94,40 +94,25 @@ function drawNavigation() {
     const [x, y] = project(t);
     ctx.fillStyle = t.owner === 'us' ? '#6de4b3' : '#ef816b';
     ctx.beginPath(); ctx.arc(x, y, 4, 0, TAU); ctx.fill();
-    if (game.target === t.id) { ctx.strokeStyle = '#fff1bc'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(x, y, 7, 0, TAU); ctx.stroke(); }
   }
   const [cx, cy] = project(game.ships[0]);
   ctx.fillStyle = '#6de4b3'; ctx.fillRect(cx - 3, cy - 5, 6, 10);
   const [px, py] = project(p);
   ctx.save(); ctx.translate(px, py); ctx.rotate(p.a); ctx.fillStyle = '#ffffff';
   ctx.beginPath(); ctx.moveTo(5, 0); ctx.lineTo(-3, -3); ctx.lineTo(-3, 3); ctx.closePath(); ctx.fill(); ctx.restore();
-  const target = getTarget(game);
-  if (!target) return;
-  const distance = Math.round(Math.hypot(target.x - p.x, target.y - p.y));
-  const name = target.kind === 'carrier' ? 'HOME CARRIER' : target.name;
-  ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.font = '700 13px monospace';
-  ctx.fillStyle = '#f2e8c9'; ctx.fillText(`${name} · ${distance} m`, W / 2, 111);
-  let instruction;
-  if (p.flight === 'landed') instruction = `Repairing ${Math.ceil(p.hp)} / ${CONFIG.player.hp} · L / TAKE OFF`;
-  else if (p.flight !== 'flying') instruction = p.flight === 'approach' ? 'Assisted approach · L / ABORT' : p.flight === 'landing' ? 'Final approach' : 'Launching';
-  else if (target.kind === 'carrier') instruction = distance <= CONFIG.carrier.callRadius ? 'L / LAND for repairs' : 'Return to carrier for repairs';
-  else if (target.owner === 'us') instruction = 'Secured';
-  else if (!target.activated) instruction = 'Fly to this island to engage its defenders';
-  else if (defenders(game, target)) instruction = `${game.enemies.filter(e => e.territory === target.id && e.hp > 0).length} fighters · ${game.ships.filter(s => s.territory === target.id && s.hp > 0).length} patrol ships remaining`;
-  else instruction = distance < CONFIG.conquest.captureRadius ? `Capturing · ${Math.ceil(CONFIG.conquest.captureSeconds - target.progress)}s` : 'Defenses cleared · enter the ring';
-  ctx.font = '12px monospace'; ctx.fillText(instruction, W / 2, 132, W - 24);
-  if (target.progress > 0 && target.owner !== 'us') {
-    ctx.fillStyle = '#153747'; rr(W / 2 - 80, 151, 160, 5, 2);
-    ctx.fillStyle = '#77e8ba'; rr(W / 2 - 80, 151, 160 * target.progress / CONFIG.conquest.captureSeconds, 5, 2);
+  const nearby = game.territories.find(t => Math.hypot(t.x - p.x, t.y - p.y) < CONFIG.conquest.captureRadius);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.font = '12px monospace'; ctx.fillStyle = '#f2e8c9';
+  if (p.flight === 'landed') ctx.fillText(`Repairing ${Math.ceil(p.hp)} / ${CONFIG.player.hp} · L / TAKE OFF`, W / 2, 112, W - 24);
+  else if (nearby) {
+    const remaining = defenders(game, nearby);
+    const label = nearby.owner === 'us' ? 'Secured' : remaining ? `${remaining} defenders remaining` : `Capturing · ${Math.ceil(CONFIG.conquest.captureSeconds - nearby.progress)}s`;
+    ctx.fillText(`${nearby.name} · ${label}`, W / 2, 112, W - 24);
+    if (nearby.progress > 0 && nearby.owner !== 'us') {
+      ctx.fillStyle = '#153747'; rr(W / 2 - 80, 135, 160, 5, 2);
+      ctx.fillStyle = '#77e8ba'; rr(W / 2 - 80, 135, 160 * nearby.progress / CONFIG.conquest.captureSeconds, 5, 2);
+    }
   }
-  const [sx, sy] = w2s(target.x, target.y);
-  if (sx < 35 || sx > W - 35 || sy < 170 || sy > H - 40) {
-    const dx = sx - W / 2, dy = sy - H / 2;
-    const factor = Math.min((W / 2 - 32) / Math.max(.001, Math.abs(dx)), (H / 2 - 170) / Math.max(.001, Math.abs(dy)));
-    ctx.save(); ctx.translate(W / 2 + dx * Math.max(.1, factor), H / 2 + dy * Math.max(.1, factor));
-    ctx.rotate(Math.atan2(dy, dx)); ctx.fillStyle = target.kind === 'carrier' ? '#70edc4' : '#ffe192';
-    ctx.beginPath(); ctx.moveTo(13, 0); ctx.lineTo(-7, -7); ctx.lineTo(-3, 0); ctx.lineTo(-7, 7); ctx.closePath(); ctx.fill(); ctx.restore();
-  }
+
 }
 
 function drawCenterText(lines) {
@@ -145,19 +130,18 @@ function drawCenterText(lines) {
 }
 
 export function drawMenus() {
-  document.getElementById('flight-controls').hidden = game.mode !== 'play';
+  document.getElementById('flight-controls').hidden = game.mode !== 'play' || game.player?.flight !== 'landed';
   if (game.mode === 'play') {
     const action = carrierAction(game), button = document.getElementById('carrier-action');
     button.textContent = (isTouchDevice ? '' : 'L · ') + action.label;
     button.disabled = !action.enabled;
-    document.getElementById('target-action').textContent = isTouchDevice ? 'NEXT TARGET' : 'TAB · TARGET';
   }
   if (game.mode === 'title') {
     drawCenterText([
       ['PACIFIC SKIES', 42],
       ['· ISLAND CONQUEST ·', 18],
       ['Clear fighters & ships. Hold the islands.', 13],
-      ['Land on your carrier to repair.', 13],
+      ['Line up with the carrier stern to land.', 13],
       ['', 8],
       [isTouchDevice ? 'LEFT THUMB STEERS — RIGHT THUMB FIRES' : 'WASD / ARROWS TO FLY — SPACE TO FIRE', 14],
       ['', 8],

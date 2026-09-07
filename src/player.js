@@ -1,5 +1,5 @@
 // Player flight model, firing, damage smoke, and death.
-import { updateCarrierFlight } from './carrier.js';
+import { updateCarrierFlight, checkDeckLanding } from './carrier.js';
 import { CONFIG } from './config.js';
 import { game } from './state.js';
 import { keys, stick, fireTouch } from './input.js';
@@ -26,10 +26,14 @@ export function updatePlayer(dt) {
       throttleT = 170 + clamp(m / 70, 0, 1) * 180;
     }
   }
+  const previous = { x: player.x, y: player.y };
   player.a += turnIn * P.turnRate * dt;
   player.speed = lerp(player.speed, throttleT, 1 - Math.pow(0.02, dt));
   player.x += Math.cos(player.a) * player.speed * dt;
   player.y += Math.sin(player.a) * player.speed * dt;
+
+  checkDeckLanding(game, previous);
+  if (player.flight !== 'flying') return;
 
   player.fireCd -= dt;
   player.heat = Math.max(0, player.heat - P.heatCoolRate * dt);

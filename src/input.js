@@ -4,7 +4,6 @@ import { view } from './canvas.js';
 import { audioInit } from './audio.js';
 import { game, startGame } from './state.js';
 import { requestCarrier } from './carrier.js';
-import { nextTarget } from './campaign.js';
 
 export const keys = {};
 export const stick = { active: false, id: -1, ax: 0, ay: 0, dx: 0, dy: 0 };
@@ -13,14 +12,12 @@ export const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoi
 
 export function initInput(cvs) {
   document.getElementById('carrier-action').addEventListener('click', () => requestCarrier(game));
-  document.getElementById('target-action').addEventListener('click', () => nextTarget(game));
   window.addEventListener('blur', () => {
     for (const key of Object.keys(keys)) keys[key] = false;
     stick.active = fireTouch.active = false;
   });
   window.addEventListener('keydown', e => {
     if (game.mode === 'play' && e.code === 'KeyL' && !e.repeat) requestCarrier(game);
-    if (game.mode === 'play' && e.code === 'Tab') { e.preventDefault(); if (!e.repeat) nextTarget(game); }
     keys[e.code] = true;
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) e.preventDefault();
     audioInit();

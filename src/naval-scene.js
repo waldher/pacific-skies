@@ -95,7 +95,7 @@ export function createNavalScene(scene) {
         }
         const group = zones.get(t), mat = t.owner === 'us' ? friend : hostile;
         group.children[0].material = mat; group.children[2].material = mat;
-        group.children[0].visible = t.owner !== 'us' || game.target === t.id;
+        group.children[0].visible = t.owner !== 'us';
       }
     },
   };

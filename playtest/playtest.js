@@ -86,6 +86,7 @@ function check(name, ok, detail) {
   await page.waitForTimeout(200);
   s = await snap();
   check('Space starts the game', s.mode === 'play');
+  check('target and landing-request controls are absent in flight', await page.evaluate(() => !document.getElementById('target-action') && document.getElementById('flight-controls').hidden));
   const modelChecks = await page.evaluate(async () => {
     const THREE = await import(new URL('vendor/three/three.module.min.js', location.href).href);
     const { graphics, game, view, CONFIG } = window.__game;
@@ -233,7 +234,7 @@ function check(name, ok, detail) {
     for (const key of Object.keys(keys)) keys[key] = false;
     window.__game.startGame();
     const c = game.ships[0]; game.player.x = c.x; game.player.y = c.y + 330;
-    game.player.a = c.a; game.player.hp = 40; requestCarrier();
+    game.player.a = c.a; game.player.hp = 40;
     for (let i = 0; i < 900 && game.player.flight !== 'landed'; i++) update(.02);
     game.cam.x = c.x; game.cam.y = c.y;
   });

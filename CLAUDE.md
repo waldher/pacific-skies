@@ -29,7 +29,7 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 | `player.js` | flight model, firing, damage, death |
 | `enemies.js` | territory defenders, patrol/pursuit AI, enemy fire, ramming |
 | `campaign.js` | territory ownership, finite defenders, capture and victory |
-| `carrier.js` | assisted approach, landing, deck repair and takeoff |
+| `carrier.js` | manual approach, aligned deck landing, deck repair and takeoff |
 | `ships.js` | naval patrols, gunfire and swept hull hits |
 | `naval-scene.js` | ship meshes, wakes, sinking and territory markers |
 | `particles.js` | explosions, smoke, particle simulation |

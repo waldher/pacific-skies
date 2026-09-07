@@ -5,16 +5,18 @@ modules, no build step. A transparent Canvas overlay draws the HUD and touch con
 
 **Play it:** https://waldher.github.io/pacific-skies/
 
-- Desktop: WASD/arrows to fly, Space to fire, Tab to cycle objectives, L for carrier recovery
-- Mobile: left thumb steers, right thumb fires; use the TARGET and LAND / TAKE OFF buttons.
+- Desktop: WASD/arrows to fly, Space to fire, L to take off from the carrier
+- Mobile: left thumb steers, right thumb fires; use TAKE OFF when on deck.
 
 Clear each island’s fighters and patrol destroyers, then hold its marked airspace
 for six seconds to capture it. Secure all four territories to win. Ownership lasts
 until you restart; defenders do not respawn in waves. Strafe destroyers with your guns.
 
-Return to the friendly carrier and request landing within range. Assisted recovery
-brings you onto the deck, where repairs restore health over time. Launch when ready.
-The carrier provides anti-aircraft cover; repairs only happen on deck.
+Return to the friendly carrier from behind its stern, aligned with the deck centerline
+and pointing toward the bow. Crossing the stern within 12 units of center and 12° of
+the deck heading catches the wire automatically. You fly and steer the entire approach;
+there is no landing request or assisted turn. Repairs restore health while parked.
+Press L or TAKE OFF to launch when ready. The minimap shows islands and your carrier.
 
 ## Develop
 

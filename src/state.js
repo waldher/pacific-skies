@@ -12,7 +12,7 @@ export const game = {
   cam: { x: 0, y: 0 },
   score: 0,
   best: 0,
-  territories: [], ships: [], target: 0,
+  territories: [], ships: [],
   message: '', messageTime: 0,
   shake: 0,
   time: 0,
@@ -29,7 +29,7 @@ export function startGame() {
   game.cam = { x: 0, y: 0 };
   game.score = 0;
   Object.assign(game, createCampaign());
-  game.target = 0; game.message = 'Clear fighters and ships, then hold each island';
+  game.message = 'Clear fighters and ships, then hold each island';
   game.messageTime = CONFIG.conquest.messageDuration;
   game.shake = 0;
   game.mode = 'play';

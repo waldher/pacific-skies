@@ -52,11 +52,6 @@ export function updateCampaign(game, dt, activate) {
         t.owner = 'us';
         game.score += C.captureScore;
         notify(game, `${t.name} secured`);
-        if (game.target === t.id) {
-          const next = game.territories.filter(s => s.owner !== 'us').sort((a, b) =>
-            Math.hypot(a.x - t.x, a.y - t.y) - Math.hypot(b.x - t.x, b.y - t.y))[0];
-          game.target = next?.id ?? 'carrier';
-        }
       }
     } else t.progress = 0;
   }
@@ -64,14 +59,4 @@ export function updateCampaign(game, dt, activate) {
     game.mode = 'victory';
     game.best = Math.max(game.best, game.score);
   }
-}
-
-export function getTarget(game) {
-  return game.target === 'carrier' ? game.ships.find(s => s.kind === 'carrier')
-    : game.territories.find(t => t.id === game.target);
-}
-
-export function nextTarget(game) {
-  const choices = ['carrier', ...game.territories.filter(t => t.owner !== 'us').map(t => t.id)];
-  game.target = choices[(choices.indexOf(game.target) + 1) % choices.length];
 }
