@@ -9,6 +9,7 @@ import * as THREE from 'three';
 import { CONFIG } from './config.js';
 import { loadAircraft, createAircraft, updateAircraft, setShadowMode } from './aircraft.js';
 import { createWorld } from './world.js';
+import { createNavalScene } from './naval-scene.js';
 import { createEffects } from './effects.js';
 
 export async function createRenderer(canvas) {
@@ -33,6 +34,7 @@ export async function createRenderer(canvas) {
   scene.add(sun, sun.target);
   const world = createWorld(scene);
   const effects = createEffects(scene, renderer);
+  const naval = createNavalScene(scene);
   const templates = await loadAircraft();
   const aircraft = new Map();
   let lastW = 0, lastH = 0, lastRatio = 0;
@@ -108,7 +110,7 @@ export async function createRenderer(canvas) {
   return {
     diagnostics,
     // Exposed via __game for meaningful renderer checks and visual inspection.
-    scene, camera, aircraft, renderer,
+    scene, camera, aircraft, renderer, naval,
     quality: {
       get level() { return state.level; },
       get locked() { return state.locked; },
@@ -142,6 +144,7 @@ export async function createRenderer(canvas) {
           player ? CONFIG.player.turnRate : entity.turn,
           player && entity.hitFlash > .12);
       }
+      naval.update(game);
       effects.update(game);
       renderer.render(scene, camera);
       diagnostics.aircraft = aircraft.size;

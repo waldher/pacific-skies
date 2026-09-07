@@ -3,6 +3,8 @@
 import { view } from './canvas.js';
 import { audioInit } from './audio.js';
 import { game, startGame } from './state.js';
+import { requestCarrier } from './carrier.js';
+import { nextTarget } from './campaign.js';
 
 export const keys = {};
 export const stick = { active: false, id: -1, ax: 0, ay: 0, dx: 0, dy: 0 };
@@ -10,7 +12,15 @@ export const fireTouch = { active: false, id: -1 };
 export const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 
 export function initInput(cvs) {
+  document.getElementById('carrier-action').addEventListener('click', () => requestCarrier(game));
+  document.getElementById('target-action').addEventListener('click', () => nextTarget(game));
+  window.addEventListener('blur', () => {
+    for (const key of Object.keys(keys)) keys[key] = false;
+    stick.active = fireTouch.active = false;
+  });
   window.addEventListener('keydown', e => {
+    if (game.mode === 'play' && e.code === 'KeyL' && !e.repeat) requestCarrier(game);
+    if (game.mode === 'play' && e.code === 'Tab') { e.preventDefault(); if (!e.repeat) nextTarget(game); }
     keys[e.code] = true;
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) e.preventDefault();
     audioInit();
@@ -22,6 +32,7 @@ export function initInput(cvs) {
     audioInit();
     if (game.mode !== 'play') { startGame(); return; }
     if (e.pointerType === 'mouse' && e.button !== 0) return;
+    cvs.setPointerCapture(e.pointerId);
     if (e.clientX < view.W * 0.5 && !stick.active) {
       stick.active = true; stick.id = e.pointerId;
       stick.ax = e.clientX; stick.ay = e.clientY; stick.dx = 0; stick.dy = 0;

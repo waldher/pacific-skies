@@ -98,15 +98,16 @@ export function createAircraft(template, entity, shadows = true) {
 export function updateAircraft(visual, entity, dt, turnRate, flash = false) {
   const R = CONFIG.render;
   const rate = dt > 0 ? angDiff(visual.heading, entity.a) / dt : 0;
-  const target = -clamp(rate / turnRate, -1, 1) * R.bankAngle;
+  const target = entity.flight && entity.flight !== 'flying' ? 0 : -clamp(rate / turnRate, -1, 1) * R.bankAngle;
   visual.bank += (target - visual.bank) * (1 - Math.exp(-R.bankResponse * dt));
   visual.heading = entity.a;
-  visual.root.position.set(entity.x, R.flightHeight, entity.y);
+  visual.root.position.set(entity.x, entity.altitude ?? R.flightHeight, entity.y);
   visual.root.rotation.y = -entity.a - Math.PI / 2;
   visual.shadow.position.set(entity.x + shadowShift[0], .1, entity.y + shadowShift[1]);
   visual.shadow.rotation.y = visual.root.rotation.y;
+  visual.shadow.visible = entity.flight !== 'landed';
   visual.model.rotation.z = visual.bank;
-  visual.propeller.rotation.z = (visual.propeller.rotation.z + dt * R.propellerSpeed) % (Math.PI * 2);
+  visual.propeller.rotation.z = (visual.propeller.rotation.z + dt * R.propellerSpeed * (entity.flight === 'landed' ? .12 : 1)) % (Math.PI * 2);
   // Only the single player uses the US template; enemy materials stay shared.
   if (visual.flash !== flash) {
     visual.model.traverse(node => {

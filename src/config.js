@@ -60,8 +60,8 @@ export const CONFIG = {
     hp: 2,
     fireCooldown: 1.2,
     ace: { speed: 290, turn: 2.6, hp: 4, fireCooldown: 0.8 },
-    aceFromWave: 3,           // first wave that can include aces
-    aceEvery: 4,              // every Nth enemy in a wave is an ace
+    aceFromTerritory: 2,           // first wave that can include aces
+    aceEvery: 3,              // every Nth enemy in a wave is an ace
     bulletSpeed: 560,
     bulletLife: 1.4,
     bulletDamage: 9,
@@ -72,13 +72,22 @@ export const CONFIG = {
     spawnDistMin: 750,
     spawnDistMax: 1150,
   },
-  waves: {
-    baseCount: 2,             // enemies in wave N = baseCount + perWave * N
-    perWave: 1,
-    healBetween: 25,
-    firstDelay: 1.5,
-    delay: 2.5,
-    clearBonusPerWave: 50,
+  conquest: {
+    islands: [['CORAL', -1, -1], ['PALM', 1, -1], ['LAGOON', -2, -1], ['NORTH REEF', 1, -2]],
+    fighters: [2, 2, 3, 3], destroyers: [1, 1, 1, 2],
+    activateRadius: 850, captureRadius: 330, captureSeconds: 6, captureScore: 500,
+    patrolRadius: 290, pursuitRadius: 750, engageRadius: 620, messageDuration: 4,
+  },
+  carrier: {
+    x: 0, y: 200, length: 240, width: 68, deckHeight: 15,
+    callRadius: 650, approachDistance: 280, approachTolerance: 55, approachSpeed: 130,
+    landingSeconds: 4, takeoffSeconds: 2.5, parkOffset: 45, launchDistance: 300,
+    repairPerSecond: 20, defenseRange: 500, fireCooldown: .3,
+  },
+  ship: {
+    length: 115, width: 28, hp: 20, speed: 22, patrolOffset: 155,
+    gunRange: 500, fireCooldown: 1.8, bulletSpeed: 400, bulletDamage: 6, score: 200,
+    sinkingSeconds: 4,
   },
   score: { kill: 100, aceKill: 250 },
   camera: { lead: 60 },       // px the camera leads ahead of the nose

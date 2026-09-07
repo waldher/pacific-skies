@@ -5,8 +5,16 @@ modules, no build step. A transparent Canvas overlay draws the HUD and touch con
 
 **Play it:** https://waldher.github.io/pacific-skies/
 
-- Desktop: WASD/arrows to fly, Space to fire
-- Mobile: left thumb steers, right thumb fires
+- Desktop: WASD/arrows to fly, Space to fire, Tab to cycle objectives, L for carrier recovery
+- Mobile: left thumb steers, right thumb fires; use the TARGET and LAND / TAKE OFF buttons.
+
+Clear each island’s fighters and patrol destroyers, then hold its marked airspace
+for six seconds to capture it. Secure all four territories to win. Ownership lasts
+until you restart; defenders do not respawn in waves. Strafe destroyers with your guns.
+
+Return to the friendly carrier and request landing within range. Assisted recovery
+brings you onto the deck, where repairs restore health over time. Launch when ready.
+The carrier provides anti-aircraft cover; repairs only happen on deck.
 
 ## Develop
 
@@ -49,6 +57,6 @@ Both aircraft GLBs are generated from real dimensions by `tools/build-aircraft.m
 drawings they came from are in `tools/reference/`.
 
 The playtest checks GLB loading, heading alignment, banking, propellers, resize,
-instance cleanup, and the existing combat loop. Run `npx playwright install chromium`
+instance cleanup, naval combat, capture persistence, victory, and carrier recovery. Run `npx playwright install chromium`
 after installing the test dependencies. Headless checks use software WebGL;
 check performance on physical mobile devices before a release.

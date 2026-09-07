@@ -1,4 +1,4 @@
-// Wave spawning and enemy AI: pursue with wobble, fire when
+// Territory defense and enemy AI: pursue with wobble, fire when
 // aligned, deal ram damage up close.
 import { CONFIG } from './config.js';
 import { game } from './state.js';
@@ -6,24 +6,16 @@ import { damagePlayer } from './player.js';
 import { explosion } from './particles.js';
 import { clamp, angDiff, rand, TAU } from './util.js';
 
-export function spawnWave() {
-  const E = CONFIG.enemy, player = game.player;
-  game.waveNum++;
-  game.waveBanner = 2.2;
-  const n = CONFIG.waves.baseCount + CONFIG.waves.perWave * game.waveNum;
-  for (let i = 0; i < n; i++) {
-    const ace = game.waveNum >= E.aceFromWave && i % E.aceEvery === E.aceEvery - 1;
-    const a = rand(0, TAU), d = rand(E.spawnDistMin, E.spawnDistMax);
+export function spawnDefenders(territory) {
+  const E = CONFIG.enemy;
+  for (let i = 0; i < territory.fighters; i++) {
+    const ace = territory.id >= E.aceFromTerritory && i % E.aceEvery === E.aceEvery - 1;
+    const a = i * TAU / territory.fighters, radius = CONFIG.conquest.patrolRadius;
     game.enemies.push({
-      x: player.x + Math.cos(a) * d,
-      y: player.y + Math.sin(a) * d,
-      a: a + Math.PI,
-      speed: ace ? E.ace.speed : E.speed,
-      turn: ace ? E.ace.turn : E.turn,
-      hp: ace ? E.ace.hp : E.hp,
-      ace,
-      fireCd: rand(0.5, 1.6),
-      wobble: rand(0, TAU),
+      x: territory.x + Math.cos(a) * radius, y: territory.y + Math.sin(a) * radius,
+      a: a + Math.PI / 2, territory: territory.id,
+      speed: ace ? E.ace.speed : E.speed, turn: ace ? E.ace.turn : E.turn,
+      hp: ace ? E.ace.hp : E.hp, ace, fireCd: rand(.5, 1.6), wobble: rand(0, TAU),
     });
   }
 }
@@ -32,8 +24,12 @@ export function updateEnemies(dt) {
   const E = CONFIG.enemy, player = game.player;
   for (const e of game.enemies) {
     e.wobble += dt * 2;
-    const tx = player.x + Math.cos(e.wobble) * 60;
-    const ty = player.y + Math.sin(e.wobble * 1.3) * 60;
+    const home = game.territories[e.territory];
+    const chase = player.flight !== 'landed'
+      && Math.hypot(player.x - home.x, player.y - home.y) < CONFIG.conquest.pursuitRadius
+      && Math.hypot(player.x - e.x, player.y - e.y) < CONFIG.conquest.engageRadius;
+    const tx = chase ? player.x + Math.cos(e.wobble) * 60 : home.x + Math.cos(e.wobble * .2) * CONFIG.conquest.patrolRadius;
+    const ty = chase ? player.y + Math.sin(e.wobble * 1.3) * 60 : home.y + Math.sin(e.wobble * .2) * CONFIG.conquest.patrolRadius;
     const want = Math.atan2(ty - e.y, tx - e.x);
     const d = angDiff(e.a, want);
     e.a += clamp(d, -e.turn * dt, e.turn * dt);
@@ -42,7 +38,7 @@ export function updateEnemies(dt) {
 
     e.fireCd -= dt;
     const dist = Math.hypot(player.x - e.x, player.y - e.y);
-    if (e.fireCd <= 0 && dist < E.engageDist && Math.abs(d) < E.aimCone) {
+    if (chase && e.fireCd <= 0 && dist < E.engageDist && Math.abs(d) < E.aimCone) {
       e.fireCd = e.ace ? E.ace.fireCooldown : E.fireCooldown;
       game.ebullets.push({
         x: e.x + Math.cos(e.a) * 20, y: e.y + Math.sin(e.a) * 20,
@@ -50,7 +46,7 @@ export function updateEnemies(dt) {
         life: E.bulletLife,
       });
     }
-    if (dist < E.ramDist) {
+    if (player.flight !== 'landed' && dist < E.ramDist) {
       e.hp = 0;
       damagePlayer(E.ramDamage);
       explosion(e.x, e.y, false);

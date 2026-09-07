@@ -1,11 +1,14 @@
-// Game loop: orchestrates updates, collisions, waves, camera, render.
+// Game loop: flight, combat, surface patrols, conquest, camera and rendering.
 import { CONFIG } from './config.js';
 import { game, startGame } from './state.js';
 import { cvs, ctx, view } from './canvas.js';
 import { keys, stick, fireTouch, initInput } from './input.js';
 import { updatePlayer, damagePlayer } from './player.js';
-import { spawnWave, updateEnemies } from './enemies.js';
+import { spawnDefenders, updateEnemies } from './enemies.js';
 import { explosion, updateParticles, splash } from './particles.js';
+import { updateCampaign } from './campaign.js';
+import { updateShips, hitsShip, damageShip } from './ships.js';
+import { requestCarrier } from './carrier.js';
 import { createRenderer } from './renderer.js';
 import { drawHud, drawMenus } from './hud.js';
 import { lerp, angDiff, rand, setSeed } from './util.js';
@@ -19,10 +22,12 @@ function update(dt) {
 
   updatePlayer(dt);
   updateEnemies(dt);
+  updateShips(dt);
+  game.messageTime = Math.max(0, game.messageTime - dt);
 
   // bullets
-  for (const b of game.bullets) { b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt; }
-  for (const b of game.ebullets) { b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt; }
+  for (const b of game.bullets) { b.prevX = b.x; b.prevY = b.y; b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt; }
+  for (const b of game.ebullets) { b.prevX = b.x; b.prevY = b.y; b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt; }
   // Rounds that run out of range hit the sea.
   for (const b of game.bullets) if (b.life <= 0) splash(b.x, b.y);
   for (const b of game.ebullets) if (b.life <= 0) splash(b.x, b.y);
@@ -42,11 +47,18 @@ function update(dt) {
       }
     }
   }
+  for (const b of game.bullets) {
+    if (b.life <= 0 || b.fromShip) continue;
+    for (const ship of game.ships) {
+      if (ship.team !== 'jp' || ship.hp <= 0 || !hitsShip(b, ship)) continue;
+      b.life = 0; damageShip(ship); break;
+    }
+  }
   for (const b of game.ebullets) {
     if (b.life <= 0) continue;
     if (Math.hypot(b.x - game.player.x, b.y - game.player.y) < 15) {
       b.life = 0;
-      damagePlayer(CONFIG.enemy.bulletDamage);
+      damagePlayer(b.damage ?? CONFIG.enemy.bulletDamage);
     }
   }
 
@@ -56,22 +68,10 @@ function update(dt) {
 
   updateParticles(dt);
 
-  // waves
-  game.waveBanner = Math.max(0, game.waveBanner - dt);
-  if (game.enemies.length === 0) {
-    game.waveTimer -= dt;
-    if (game.waveTimer <= 0) {
-      if (game.waveNum > 0) {
-        game.player.hp = Math.min(CONFIG.player.hp, game.player.hp + CONFIG.waves.healBetween);
-        game.score += game.waveNum * CONFIG.waves.clearBonusPerWave;
-      }
-      spawnWave();
-      game.waveTimer = CONFIG.waves.delay;
-    }
-  }
+  if (game.mode === 'play') updateCampaign(game, dt, spawnDefenders);
 
   // camera: lead slightly ahead of the nose
-  const lead = CONFIG.camera.lead, player = game.player;
+  const player = game.player, lead = player.flight === 'flying' ? CONFIG.camera.lead : 0;
   game.cam.x = lerp(game.cam.x, player.x + Math.cos(player.a) * lead, 1 - Math.pow(0.005, dt));
   game.cam.y = lerp(game.cam.y, player.y + Math.sin(player.a) * lead, 1 - Math.pow(0.005, dt));
   game.shake = Math.max(0, game.shake - 30 * dt);
@@ -101,7 +101,7 @@ function frame(now) {
 }
 // Debug/test API: the playtest harness (and console tinkering) reads
 // live state and drives input through this handle.
-window.__game = { game, CONFIG, startGame, setSeed, keys, stick, fireTouch, view, angDiff };
+window.__game = { game, CONFIG, startGame, setSeed, keys, stick, fireTouch, view, angDiff, update, requestCarrier: () => requestCarrier(game) };
 
 
 const status = document.getElementById('loading');

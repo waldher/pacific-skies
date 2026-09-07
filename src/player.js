@@ -1,4 +1,5 @@
 // Player flight model, firing, damage smoke, and death.
+import { updateCarrierFlight } from './carrier.js';
 import { CONFIG } from './config.js';
 import { game } from './state.js';
 import { keys, stick, fireTouch } from './input.js';
@@ -8,6 +9,7 @@ import { clamp, lerp, angDiff, rand } from './util.js';
 
 export function updatePlayer(dt) {
   const P = CONFIG.player, player = game.player;
+  if (updateCarrierFlight(game, dt)) return;
 
   let turnIn = 0, throttleT = P.speedCruise;
   if (keys['ArrowLeft'] || keys['KeyA']) turnIn -= 1;
@@ -79,7 +81,7 @@ export function updatePlayer(dt) {
 }
 
 export function damagePlayer(amount) {
-  if (game.mode !== 'play') return;
+  if (game.mode !== 'play' || game.player.flight === 'landed') return;
   const player = game.player;
   player.hp -= amount;
   player.hitFlash = 0.25;
