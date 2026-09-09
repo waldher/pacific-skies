@@ -125,11 +125,11 @@ export async function createRenderer(canvas) {
       const [sx, sy, sz] = CONFIG.render.sunOffset;
       sun.position.set(game.cam.x + sx, sy, game.cam.y + sz);
       sun.target.position.set(game.cam.x, 0, game.cam.y);
-      world.update(game.cam, view, game.time, lastRatio);
+      world.update(game.cam, view, game.time, lastRatio, game.territories);
       const live = new Set([...game.enemies, ...game.allies]);
       if (game.player && game.mode === 'play') live.add(game.player);
       for (const [entity, visual] of aircraft) {
-        if (live.has(entity)) continue;
+        if (live.has(entity) && visual.aircraftType === (entity.aircraft || (entity === game.player || entity.team === 'us' ? 'us' : 'jp'))) continue;
         scene.remove(visual.root, visual.shadow);
         // Geometry stays shared; friendly flash materials belong to each instance.
         for (const material of visual.ownedMaterials) material.dispose();
@@ -138,7 +138,9 @@ export async function createRenderer(canvas) {
       for (const entity of live) {
         const player = entity === game.player;
         if (!aircraft.has(entity)) {
-          const visual = createAircraft(templates[player || entity.team === 'us' ? 'us' : 'jp'], entity, level().shadows);
+          const kind = entity.aircraft || (player || entity.team === 'us' ? 'us' : 'jp');
+          const visual = createAircraft(templates[kind] || templates.us, entity, level().shadows);
+          visual.aircraftType = kind;
           aircraft.set(entity, visual); scene.add(visual.root, visual.shadow);
         }
         updateAircraft(aircraft.get(entity), entity, dt,

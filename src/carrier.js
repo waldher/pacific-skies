@@ -2,6 +2,7 @@
 import { CONFIG } from './config.js';
 import { clamp, angDiff, lerp } from './util.js';
 import { notify } from './campaign.js';
+import { availableBases, canUseAircraft, resolveBase } from './bases.js';
 
 export function carrierAction(game) {
   const p = game.player;
@@ -23,7 +24,9 @@ export function requestCarrier(game) {
 export function updateCarrierFlight(game, dt) {
   const p = game.player, C = CONFIG.carrier;
   if (p.flight === 'flying') return false;
-  const c = game.ships.find(s => s.kind === 'carrier');
+  const c = resolveBase(game);
+  if (!c) { p.flight = 'flying'; p.altitude = CONFIG.render.flightHeight; return false; }
+  const groundHeight = c.kind === 'carrier' ? C.deckHeight : CONFIG.airfield.deckHeight;
   p.heat = Math.max(0, p.heat - CONFIG.player.heatCoolRate * dt);
   if (p.heat <= CONFIG.player.heatRecoverAt) p.overheated = false;
   p.hitFlash = Math.max(0, p.hitFlash - dt);
@@ -34,52 +37,70 @@ export function updateCarrierFlight(game, dt) {
     p.x = lerp(p.arrival.x, p.arrival.x + Math.cos(c.a) * C.rolloutDistance, u);
     p.y = lerp(p.arrival.y, p.arrival.y + Math.sin(c.a) * C.rolloutDistance, u);
     p.a = p.arrival.a + angDiff(p.arrival.a, c.a) * Math.min(1, t * 3);
-    p.altitude = C.deckHeight;
+    p.altitude = groundHeight;
     p.speed = p.arrival.speed * (1 - u);
     if (t >= 1) {
       p.parked = { x: p.x, y: p.y };
+      p.parkedOffset = {
+        along: (p.x - c.x) * Math.cos(c.a) + (p.y - c.y) * Math.sin(c.a),
+        lateral: -(p.x - c.x) * Math.sin(c.a) + (p.y - c.y) * Math.cos(c.a),
+      };
       p.rearmTime = 0;
       p.flight = 'landed'; p.a = c.a; p.speed = 0;
-      notify(game, 'On deck — repairing and rearming');
+      notify(game, 'Landed — repairing and rearming');
     }
   } else if (p.flight === 'landed') {
-    p.x = p.parked.x; p.y = p.parked.y; p.altitude = C.deckHeight; p.speed = 0;
+    if (p.parkedOffset) {
+      p.parked = {
+        x: c.x + Math.cos(c.a) * p.parkedOffset.along - Math.sin(c.a) * p.parkedOffset.lateral,
+        y: c.y + Math.sin(c.a) * p.parkedOffset.along + Math.cos(c.a) * p.parkedOffset.lateral,
+      };
+    }
+    p.x = p.parked.x; p.y = p.parked.y; p.a = c.a; p.altitude = groundHeight; p.speed = 0;
     p.hp = Math.min(CONFIG.player.hp, p.hp + C.repairPerSecond * dt);
     p.heat = 0; p.overheated = false;
-    p.rearmTime += dt;
+    p.rearmTime = (p.rearmTime || 0) + dt;
     if (p.rearmTime >= CONFIG.torpedo.rearmSeconds) p.torpedoAmmo = CONFIG.torpedo.capacity;
+    if (p.rearmTime >= (CONFIG.bomb?.rearmSeconds ?? CONFIG.torpedo.rearmSeconds)) p.bombAmmo = CONFIG.bomb?.capacity ?? CONFIG.torpedo.capacity;
   } else if (p.flight === 'takeoff') {
     p.flightTime += dt;
     const t = clamp(p.flightTime / C.takeoffSeconds, 0, 1);
-    p.x = p.departure.x; p.y = p.departure.y - C.launchDistance * t * t;
-    p.a = c.a; p.altitude = lerp(C.deckHeight, CONFIG.render.flightHeight, t);
-    p.speed = CONFIG.player.speedCruise * t;
+    p.x = p.departure.x + Math.cos(c.a) * C.launchDistance * t * t;
+    p.y = p.departure.y + Math.sin(c.a) * C.launchDistance * t * t;
+    p.a = c.a; p.altitude = lerp(groundHeight, CONFIG.render.flightHeight, t);
+    p.speed = (CONFIG.aircraft?.[p.aircraft]?.speedCruise ?? CONFIG.player.speedCruise) * t;
     if (t >= 1) { p.flight = 'flying'; p.altitude = CONFIG.render.flightHeight; }
   }
   return true;
 }
 
 export function checkDeckLanding(game, previous) {
-  const p = game.player, c = game.ships.find(s => s.kind === 'carrier'), C = CONFIG.carrier;
+  const p = game.player, C = CONFIG.carrier;
   if (p.flight !== 'flying') return;
-  const ca = Math.cos(c.a), sa = Math.sin(c.a);
-  const along = q => (q.x - c.x) * ca + (q.y - c.y) * sa;
-  const lateral = q => -(q.x - c.x) * sa + (q.y - c.y) * ca;
-  const stern = -C.length / 2, now = along(p), before = along(previous);
-  const aligned = Math.abs(angDiff(p.a, c.a)) <= C.headingTolerance;
-  // A short visual descent follows your own approach; steering is always yours.
-  const distance = stern - now;
-  const inCorridor = aligned && Math.abs(lateral(p)) <= C.lateralTolerance && distance >= 0 && distance < C.descentDistance;
-  p.altitude = inCorridor ? lerp(C.deckHeight, CONFIG.render.flightHeight, distance / C.descentDistance) : CONFIG.render.flightHeight;
-  // Crossing the stern opens a whole aft-deck window for last-second corrections.
-  if (before < stern && now >= stern && now > before) p.deckApproach = true;
-  if (now < stern || now > stern + C.catchWindow || Math.abs(lateral(p)) > c.width) p.deckApproach = false;
-  p.landingHint = distance > -C.catchWindow && distance < C.descentDistance && Math.abs(lateral(p)) < c.width * 2
-    ? aligned && Math.abs(lateral(p)) <= C.lateralTolerance ? 'ALIGNED — hold your heading' : 'Line up with the deck, toward the bow' : '';
-  if (!p.deckApproach || !aligned || Math.abs(lateral(p)) > C.lateralTolerance) return;
-  p.deckApproach = false; p.landingHint = '';
-  p.flight = 'landing'; p.flightTime = 0;
-  p.arrival = { x: p.x, y: p.y, a: p.a, speed: p.speed };
-  p.altitude = C.deckHeight;
-  notify(game, 'Wire caught — landing');
+  p.altitude = CONFIG.render.flightHeight; p.landingHint = '';
+  for (const candidate of availableBases(game)) {
+    if (!canUseAircraft(game, candidate, p.aircraft || 'corsair')) continue;
+    const c = resolveBase(game, candidate.id);
+    const groundHeight = c.kind === 'carrier' ? C.deckHeight : CONFIG.airfield.deckHeight;
+    const ca = Math.cos(c.a), sa = Math.sin(c.a);
+    const along = q => (q.x - c.x) * ca + (q.y - c.y) * sa;
+    const lateral = q => -(q.x - c.x) * sa + (q.y - c.y) * ca;
+    const tolerance = c.kind === 'airfield' ? Math.max(C.lateralTolerance, c.width / 2) : C.lateralTolerance;
+    const stern = -c.length / 2, now = along(p), before = along(previous);
+    const aligned = Math.abs(angDiff(p.a, c.a)) <= C.headingTolerance;
+    const distance = stern - now;
+    const inCorridor = aligned && Math.abs(lateral(p)) <= tolerance && distance >= 0 && distance < C.descentDistance;
+    if (inCorridor) p.altitude = lerp(groundHeight, CONFIG.render.flightHeight, distance / C.descentDistance);
+    if (before < stern && now >= stern && now > before) p.deckApproach = c.id;
+    if (p.deckApproach === c.id && (now < stern || now > stern + C.catchWindow || Math.abs(lateral(p)) > c.width)) p.deckApproach = false;
+    if (distance > -C.catchWindow && distance < C.descentDistance && Math.abs(lateral(p)) < c.width * 2)
+      p.landingHint = aligned && Math.abs(lateral(p)) <= tolerance ? 'ALIGNED — hold your heading' : `Line up with ${c.kind === 'carrier' ? 'the deck, toward the bow' : 'the runway arrow'}`;
+    if (p.deckApproach !== c.id || !aligned || Math.abs(lateral(p)) > tolerance) continue;
+    p.baseId = c.id; p.deckApproach = false; p.landingHint = '';
+    p.flight = 'landing'; p.flightTime = 0;
+    p.arrival = { x: p.x, y: p.y, a: p.a, speed: p.speed };
+    p.altitude = groundHeight;
+    notify(game, c.kind === 'carrier' ? 'Wire caught — landing' : 'Runway reached — landing');
+    return;
+  }
 }

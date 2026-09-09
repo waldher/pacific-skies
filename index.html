@@ -29,7 +29,7 @@
   #score-value { display:block; font-size:23px; line-height:1.15; font-weight:700; letter-spacing:-.04em; font-variant-numeric:tabular-nums; }
   .island-progress { text-align:right; }
   #islands-value { font-size:12px; font-weight:650; font-variant-numeric:tabular-nums; color:var(--ink); }
-  #island-pips { display:flex; justify-content:flex-end; gap:4px; margin-top:5px; }
+  #island-pips { display:flex; flex-wrap:wrap; max-width:80px; justify-content:flex-end; gap:3px; margin-top:5px; }
   #island-pips i { width:7px; height:7px; border-radius:2px; background:#36505c; box-shadow:inset 0 0 0 1px #adc6ca33; }
   .gauges { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px; }
   .gauge-heading { display:flex; justify-content:space-between; color:var(--muted); font-size:9px; margin-bottom:3px; line-height:1; }
@@ -38,7 +38,7 @@
   .track i { display:block; height:100%; background:var(--accent); border-radius:3px; }
   #objective, #toast { position:absolute; left:50%; transform:translateX(-50%); width:max-content; max-width:calc(100% - 32px);
     box-sizing:border-box; text-align:center; background:var(--panel); border:1px solid #adc6ca26; border-radius:10px; padding:9px 14px; }
-  #objective { top:108px; } #objective strong { display:block; font-weight:650; }
+  #objective { top:145px; } #objective strong { display:block; font-weight:650; }
   #objective-detail { color:var(--muted); font-size:12px; }
   #capture-track { margin-top:7px; height:4px; }
   #toast { bottom:124px; font-size:12px; }
@@ -55,7 +55,34 @@
     background:var(--panel); color:var(--ink); box-shadow:inset 0 1px 0 #ffffff0c; }
   #fire-indicator { position:fixed; right:18px; bottom:56px; display:grid; place-content:center; pointer-events:none; }
   #fire-indicator[data-firing="true"] { background:#953f34db; border-color:#f0a18d; }
-  @media(max-height:450px) { #menu { padding:12px; } #menu-kicker { margin-bottom:7px; } #menu-title { font-size:28px; margin-bottom:10px; } #menu-summary { margin-bottom:10px; } #menu-instructions { gap:3px; margin-bottom:12px; } #objective { top:104px; padding:6px 12px; } #toast { bottom:14px; } }
+  #campaign-status { position:absolute; left:12px; top:102px; font-size:10px; color:var(--muted); background:var(--panel); border-radius:7px; padding:4px 8px; max-width:160px; }
+  #rank-value { color:var(--accent); } #carrier-status { margin-top:2px; }
+  #sortie-panel { position:fixed; left:12px; bottom:18px; width:min(300px,calc(100% - 156px)); max-height:calc(100% - 220px); overflow:auto; box-sizing:border-box; z-index:1;
+    padding:10px; background:linear-gradient(135deg,#132f3af2,#081b27f2); border:1px solid #adc6ca33; border-radius:14px; pointer-events:auto; scrollbar-width:thin; }
+  #sortie-panel h2 { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.16em; margin:0 0 8px; font-weight:600; }
+  .sortie-options { display:grid; gap:5px; min-width:0; }
+  .sortie-options + .sortie-options { margin-top:7px; }
+  .sortie-card { display:flex; align-items:center; gap:8px; width:100%; min-width:0; box-sizing:border-box; border:1px solid transparent; border-radius:10px; padding:5px; color:var(--ink); background:transparent; text-align:left; font:inherit; }
+  .sortie-art { flex:0 0 36px; height:36px; display:grid; place-items:center; color:#adc6ca; }
+  .sortie-art svg { width:100%; height:100%; fill:currentColor; }
+  .icon-cut { fill:#132e3c; } .icon-line { stroke:currentColor; stroke-width:2; fill:none; }
+  .sortie-copy { min-width:0; } .sortie-copy strong { display:block; font-size:12px; line-height:1.2; overflow-wrap:anywhere; }
+  .sortie-copy small { display:block; margin-top:3px; font-size:10px; color:var(--muted); line-height:1.25; }
+  #sortie-aircraft .sortie-art { flex-basis:58px; height:52px; color:var(--accent); }
+  .has-choices { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .has-choices .sortie-card { flex-direction:column; gap:3px; text-align:center; padding:7px 4px; background:#ffffff05; border-color:#adc6ca33; cursor:pointer; touch-action:manipulation; }
+  .has-choices .sortie-art { flex-basis:auto; width:38px; height:32px; }
+  #sortie-aircraft.has-choices .sortie-art { flex-basis:auto; width:58px; height:45px; }
+  .has-choices .selected { background:#82dfbc15; border-color:#82dfbc99; }
+  .has-choices .selected .sortie-art { color:var(--accent); }
+  .sortie-card:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  @media(hover:hover) { button.sortie-card:hover { background:#82dfbc22; } }
+  @media(max-height:450px) {
+    #sortie-panel { width:min(620px,calc(100% - 156px)); max-height:calc(100% - 155px); display:grid; grid-template-columns:1.1fr 1fr 1fr; gap:0 10px; }
+    #sortie-panel h2 { grid-column:1/-1; }
+    .sortie-options + .sortie-options { margin-top:0; }
+    body:has(#sortie-panel:not([hidden])) #objective { top:14px; max-width:calc(100% - 380px); }
+ #menu { padding:12px; } #menu-kicker { margin-bottom:7px; } #menu-title { font-size:28px; margin-bottom:10px; } #menu-summary { margin-bottom:10px; } #menu-instructions { gap:3px; margin-bottom:12px; } #objective { top:145px; padding:6px 12px; } #toast { bottom:14px; } }
 </style>
 </head>
 <body>
@@ -68,10 +95,17 @@
     <div class="gauges"><div><div class="gauge-heading"><span>Hull</span><span id="hull-value">100%</span></div><div class="track"><i id="health-fill"></i></div></div>
       <div><div class="gauge-heading"><span>Gun heat</span></div><div class="track"><i id="heat-fill"></i></div></div></div>
   </div>
+  <div id="campaign-status"><span id="rank-value">Cadet</span><span id="rank-progress"></span><div id="carrier-status" hidden></div></div>
   <div id="objective" hidden><strong id="objective-title"></strong><span id="objective-detail"></span><div id="capture-track" class="track" hidden><i id="capture-fill"></i></div></div>
   <div id="toast" hidden></div>
 </div>
 <div id="menu" class="readout" hidden><div id="menu-card"><p id="menu-kicker"></p><h1 id="menu-title"></h1><p id="menu-summary"></p><div id="menu-instructions"></div><p id="menu-start"></p></div></div>
+<section id="sortie-panel" class="readout" aria-label="Plan next sortie" hidden>
+<h2>Your sortie</h2>
+<div id="sortie-aircraft" class="sortie-options" role="group" aria-label="Aircraft"></div>
+<div id="sortie-loadout" class="sortie-options" role="group" aria-label="Ordnance"></div>
+<div id="sortie-base" class="sortie-options" role="group" aria-label="Departure base"></div>
+</section>
 <div id="flight-controls" hidden><button id="torpedo-action">TORPEDO</button><button id="carrier-action">CARRIER</button></div>
 <div id="fire-indicator" class="readout" hidden>Fire</div>
 <div id="loading" role="status"><p id="loading-text">Loading aircraft…</p><button id="retry" hidden>Retry</button></div>

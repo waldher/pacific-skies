@@ -121,11 +121,11 @@ export function createWorld(scene) {
     hill: new THREE.MeshStandardMaterial({ color: '#3b6e39', roughness: 1, flatShading: true }),
   };
   const chunks = new Map();
-  function island(gx, gy, h) {
+  function island(territory) {
     const group = new THREE.Group();
-    group.position.set(gx * 1500 + 1500 * (.25 + hash2(gx, gy * 2) * .5), 0,
-      gy * 1500 + 1500 * (.25 + hash2(gx * 2, gy) * .5));
-    const radius = 90 + h * 600;
+    const gx = territory.seed ?? territory.id, gy = territory.id;
+    group.position.set(territory.x, 0, territory.y);
+    const radius = territory.radius;
     const outline = (rad, jitter, seed) => {
       const points = [];
       for (let i = 0; i < 9; i++) {
@@ -150,10 +150,10 @@ export function createWorld(scene) {
     surf.holes.push(new THREE.Path(outline(radius * .97, .22, 2)));
     place(new THREE.ShapeGeometry(surf), surfMaterial, .3, false);
     layer(radius, .22, 2, 3, materials.sand, .5);
-    layer(radius * .62, .3, 3, 5, materials.grass, 3.5);
+    layer(radius * .86, .12, 2, 5, materials.grass, 3.5);
     for (let i = 0; i < 5; i++) {
       const a = hash2(gx + i * 13, gy + i * 7) * TAU;
-      const r = hash2(gy + i, gx + i * 3) * radius * .45;
+      const r = (.65 + hash2(gy + i, gx + i * 3) * .1) * radius;
       const hill = new THREE.Mesh(new THREE.ConeGeometry(radius * .09, 9, 7), materials.hill);
       hill.position.set(Math.cos(a) * r, 12, Math.sin(a) * r * .8);
       hill.receiveShadow = true;
@@ -164,23 +164,21 @@ export function createWorld(scene) {
   }
   return {
     setDetail(level) { oceanMaterial.uniforms.detail.value = level; },
-    update(cam, view, time, pixelRatio) {
+    update(cam, view, time, pixelRatio, territories = []) {
       ocean.position.set(cam.x, 0, cam.y);
       ocean.scale.set(view.W + 1000, view.H + 1000, 1);
       oceanMaterial.uniforms.time.value = time;
       oceanMaterial.uniforms.dpr.value = pixelRatio;
       surfMaterial.uniforms.time.value = time;
       const needed = new Set();
-      for (let gy = Math.floor((cam.y - view.H / 2 - 500) / 1500); gy <= Math.floor((cam.y + view.H / 2 + 500) / 1500); gy++) {
-        for (let gx = Math.floor((cam.x - view.W / 2 - 500) / 1500); gx <= Math.floor((cam.x + view.W / 2 + 500) / 1500); gx++) {
-          const h = hash2(gx * 3 + 11, gy * 7 + 5);
-          if (h > .30) continue;
-          const key = `${gx},${gy}`;
-          needed.add(key);
-          if (!chunks.has(key)) {
-            const mesh = island(gx, gy, h);
-            chunks.set(key, mesh); scene.add(mesh);
-          }
+      for (const territory of territories) {
+        const margin = territory.radius * 1.4 + 150;
+        if (Math.abs(territory.x - cam.x) > view.W / 2 + margin ||
+            Math.abs(territory.y - cam.y) > view.H / 2 + margin) continue;
+        needed.add(territory);
+        if (!chunks.has(territory)) {
+          const mesh = island(territory);
+          chunks.set(territory, mesh); scene.add(mesh);
         }
       }
       for (const [key, group] of chunks) {

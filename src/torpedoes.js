@@ -6,7 +6,7 @@ import { splash } from './particles.js';
 
 export function launchTorpedo() {
   const p = game.player, T = CONFIG.torpedo;
-  if (game.mode !== 'play' || p.flight !== 'flying' || p.torpedoCd > 0 || p.torpedoAmmo <= 0) return false;
+  if (p?.loadout !== 'torpedoes' || game.mode !== 'play' || p.flight !== 'flying' || p.torpedoCd > 0 || p.torpedoAmmo <= 0) return false;
   p.torpedoCd = T.cooldown; p.torpedoAmmo--;
   game.torpedoes.push({ x: p.x, y: p.y, vx: Math.cos(p.a) * T.speed,
     vy: Math.sin(p.a) * T.speed, distance: 0, life: T.range / T.speed, wakeCd: 0 });

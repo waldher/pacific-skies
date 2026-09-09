@@ -1,4 +1,4 @@
-// Surface patrols and carrier defensive fire. Player guns can strafe destroyers.
+// Surface patrols and carrier defensive fire. Ships require explosive ordnance.
 import { CONFIG } from './config.js';
 import { game } from './state.js';
 import { explosion, splash } from './particles.js';
@@ -6,11 +6,13 @@ import { notify } from './campaign.js';
 
 export function updateShips(dt) {
   for (const s of game.ships) {
+    if (s.active === false) continue;
     if (s.hp <= 0) { s.sinking = (s.sinking || 0) + dt; continue; }
     if (s.team === 'jp') {
       const t = game.territories[s.territory];
       s.angle += CONFIG.ship.speed / s.orbit * dt;
-      s.x = t.x + Math.cos(s.angle) * s.orbit; s.y = t.y + Math.sin(s.angle) * s.orbit;
+      const x = t?.x ?? s.anchorX, y = t?.y ?? s.anchorY;
+      s.x = x + Math.cos(s.angle) * s.orbit; s.y = y + Math.sin(s.angle) * s.orbit;
       s.a = s.angle + Math.PI / 2;
     }
     s.fireCd -= dt;
@@ -53,6 +55,6 @@ export function damageShip(s, amount = 1) {
     s.sinking = 0;
     game.score += CONFIG.ship.score;
     explosion(s.x, s.y, true); splash(s.x, s.y);
-    notify(game, 'Patrol destroyer sunk');
+    notify(game, s.kind === 'carrier' ? 'Enemy carrier sunk · flight deck silenced' : 'Patrol destroyer sunk');
   }
 }

@@ -8,7 +8,7 @@ import { explosion } from './particles.js';
 import { clamp, lerp, angDiff, rand } from './util.js';
 
 export function updatePlayer(dt) {
-  const P = CONFIG.player, player = game.player;
+  const player = game.player, P = { ...CONFIG.player, ...CONFIG.aircraft[player.aircraft] };
   if (updateCarrierFlight(game, dt)) return;
 
   let turnIn = 0, throttleT = P.speedCruise;

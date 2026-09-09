@@ -7,7 +7,7 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 
 ## Design pillars
 
-- **Arcade, not sim.** Sessions are 1–5 minutes, restart is instant,
+- **Arcade, not sim.** Individual sorties are a few minutes, restart is instant,
   one input scheme per platform (keyboard / two thumbs).
 - **No build step.** Three.js and GLB aircraft are checked in. Keep runtime
   imports local so GitHub Pages works without a CDN. Audio is WebAudio
@@ -28,7 +28,10 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 | `input.js` | keyboard + touch (virtual stick left half, fire right half) |
 | `player.js` | flight model, firing, damage, death |
 | `enemies.js` | territory defenders, patrol/pursuit AI, enemy fire, ramming |
-| `campaign.js` | territory ownership, finite defenders, capture and victory |
+| `campaign.js` | seeded island chains, territory ownership, carrier rescue, rank and victory |
+| `bases.js` | landed base transfer and aircraft/loadout compatibility |
+| `bombs.js` | two-bomb loadout, delayed impact and airfield/ship damage |
+| `strikes.js` | launch-site strike groups, base attacks and field repair |
 | `carrier.js` | manual approach, aligned deck landing, deck repair and takeoff |
 | `airwar.js` | independent friendly patrols and occasional roaming Zero interceptors |
 | `torpedoes.js` | two-round loadout, surface runs, ship impacts and cooldown |
@@ -61,7 +64,7 @@ Conventions:
 
 | File | Purpose |
 |---|---|
-| `build-aircraft.mjs` | Generates both GLBs in `assets/aircraft/` from dimensioned specs (metres). Edit numbers there, never the GLBs. `npm run build:aircraft` |
+| `build-aircraft.mjs` | Generates aircraft GLBs in `assets/aircraft/` from dimensioned specs (metres). Edit numbers there, never the GLBs. `npm run build:aircraft` |
 | `render-views.js` | Top/side/front orthographic renders of a GLB over a 1 m grid → `tools/views/`. `npm run views` |
 | `glb-info.mjs` | Node tree, materials and world-space bounding boxes of a GLB, for checking dimensions |
 | `measure-drawing.js` | Scans a three-view drawing's silhouette and prints station tables in metres |

@@ -5,26 +5,41 @@ modules, no build step. Responsive HTML readouts show status and instructions; a
 
 **Play it:** https://waldher.github.io/pacific-skies/
 
-- Desktop: WASD/arrows to fly, Space to fire, T to drop a torpedo, L to take off from the carrier
-- Mobile: left thumb steers, right thumb fires; use TORPEDO in flight and TAKE OFF when on deck.
+- Desktop: WASD/arrows to fly, Space to fire, T to release ordnance, L to take off.
+- Mobile: left thumb steers, right thumb fires; tap Bomb/Torpedo in flight and Take Off while parked.
 
-Clear each island’s fighters and patrol destroyers, then hold its marked airspace
-for six seconds to capture it. Secure all four territories to win. Ownership lasts
-until you restart; defenders do not respawn in waves. Ships require torpedoes; bullets only damage aircraft.
+Start in a P-38 Lightning at a friendly airfield. Every campaign generates a new
+chain of five to seven enemy islands. Clear fighters and patrol ships, bomb any
+airfield facilities, then hold the island for six seconds to capture it. Captured
+airfields become departure bases. Capture all islands and sink the enemy fleet to win.
 
-Return to the friendly carrier from behind its stern, aligned with the deck centerline
-and pointing toward the bow. Landing accepts up to 25° of heading error and 24 units of lateral offset. You can
-correct your alignment over the rear half of the deck after crossing the stern;
-you still steer the approach yourself. Repairs restore health while parked.
-Press L or TAKE OFF to launch when ready. The minimap shows islands and your carrier.
+Enemy airfields and a patrolling enemy carrier launch interceptable strike groups
+at your home airfield, then at your active carrier. Destroying the launch site stops
+future launches. Protect base health: your home airfield falling ends the campaign.
+Landing there repairs its facilities as well as your plane.
 
-Carry two torpedoes per sortie. T / TORPEDO drops a straight-running surface weapon;
-a hit sinks a destroyer. There is a five-second release cooldown, a short arming run,
-and limited range. Empty means return to the carrier: two seconds on deck reloads both.
+At 600 points, a friendly carrier needs rescue. Its rescue attack starts when you approach,
+so earning rank far away does not waste the mission. Intercept at least two of its three
+attackers, clear the rescue group, and rendezvous near the carrier to unlock the
+Corsair and naval operations. Failed rescues can be retried after 45 seconds.
 
-Two friendly Corsairs fly their own patrol routes, engage nearby enemies and can be
-shot down. Occasional roaming Zeros pursue you anywhere on the map, one at a time;
-they do not count as island defenders or undo captured territory.
+Land by aligning with a friendly runway's painted arrow, or with a carrier's bow.
+The approach stays manual, with a forgiving heading/offset window. P-38s use
+land airfields; Corsairs can use either base type. While safely landed, the sortie
+panel lets you choose a friendly departure base, unlocked aircraft, and loadout.
+Take off when ready; base transfer is unavailable in flight.
+
+Each loadout has two bombs or two torpedoes. Bombs drift forward before impact
+and can hit airfields or ships; torpedoes run on the surface and only hit ships.
+Bullets only damage aircraft. Two seconds parked reloads both weapons. P-38s
+carry bombs; Corsairs can select either loadout. Aircraft unlocks and territory
+ownership last for the current campaign; restarting creates a new campaign.
+
+Two allied P-38s patrol independently and engage enemies. Occasional roaming
+Zeros still pursue you anywhere, without incoming-fighter announcements.
+
+This campaign stage includes the P-38 and Corsair. Dauntless, Avenger, and P-51
+roles remain future additions rather than placeholder aircraft choices.
 
 ## Develop
 
@@ -38,7 +53,7 @@ backlog.
 
 ## 3D rendering
 
-The Corsair and Zero load directly from local GLB files with lighting, shadows,
+The P-38, Corsair and Zero load directly from local GLB files with lighting, shadows,
 animated propellers, and banking in turns. An orthographic camera preserves the
 original screen-to-world scale, controls, and combat tuning. The ocean, islands,
 tracers, and particles render in Three.js; gameplay remains a top-down XY simulation.

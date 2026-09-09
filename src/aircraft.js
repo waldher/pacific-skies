@@ -31,19 +31,22 @@ function batchMeshes(source, relativeTo) {
 export async function loadAircraft() {
   const loader = new GLTFLoader();
   const templates = {};
-  await Promise.all([['us', 'F4U_Corsair'], ['jp', 'Mitsubishi_Zero']].map(async ([kind, name]) => {
+  await Promise.all([['corsair', 'F4U_Corsair'], ['p38', 'P38_Lightning'], ['jp', 'Mitsubishi_Zero']].map(async ([kind, name]) => {
     const { scene } = await loader.loadAsync(new URL(`../assets/aircraft/${name}.glb`, import.meta.url).href);
     scene.updateMatrixWorld(true);
     const airframe = scene.getObjectByName('Airframe');
-    const propeller = scene.getObjectByName('Propeller');
+    const propellers = scene.children.flatMap(root => root.children).filter(node => node.name.startsWith('Propeller'));
+    const propeller = propellers[0];
     if (!airframe || !propeller) throw new Error(`${name} is missing its airframe or propeller.`);
     const template = new THREE.Group();
     template.name = name;
     template.add(batchMeshes(airframe, scene));
-    const prop = batchMeshes(propeller, propeller);
-    prop.name = 'Propeller';
-    prop.position.copy(propeller.position);
-    template.add(prop);
+    for (const source of propellers) {
+      const prop = batchMeshes(source, source);
+      prop.name = source.name;
+      prop.position.copy(source.position);
+      template.add(prop);
+    }
     // Models are built in metres (tools/build-aircraft.mjs); scale each to the
     // shared 48-unit wingspan so hitboxes and aiming still agree.
     const span = new THREE.Box3().setFromObject(template);
@@ -53,6 +56,7 @@ export async function loadAircraft() {
     scene.traverse(node => { if (node.isMesh) oldGeometries.add(node.geometry); });
     oldGeometries.forEach(geometry => geometry.dispose());
   }));
+  templates.us = templates.corsair;
   return templates;
 }
 
@@ -88,7 +92,7 @@ export function createAircraft(template, entity, shadows = true) {
   const root = new THREE.Group();
   const model = template.clone(true);
   const ownedMaterials = [];
-  if (template.name === 'F4U_Corsair') {
+  if (template.name !== 'Mitsubishi_Zero') {
     const copies = new Map();
     model.traverse(node => {
       if (!node.isMesh) return;
@@ -99,7 +103,7 @@ export function createAircraft(template, entity, shadows = true) {
   root.add(model);
   const shadow = new THREE.Mesh(receiverGeometry, shadowMaterial);
   shadow.position.y = .1;
-  const visual = { root, model, shadow, ownedMaterials, propeller: model.getObjectByName('Propeller'), heading: entity.a, bank: 0 };
+  const visual = { root, model, shadow, ownedMaterials, propeller: model.getObjectByName('Propeller'), propellers: model.children.filter(node => node.name.startsWith('Propeller')), heading: entity.a, bank: 0 };
   setShadowMode(visual, shadows);
   return visual;
 }
@@ -116,7 +120,9 @@ export function updateAircraft(visual, entity, dt, turnRate, flash = false) {
   visual.shadow.rotation.y = visual.root.rotation.y;
   visual.shadow.visible = entity.flight !== 'landed';
   visual.model.rotation.z = visual.bank;
-  visual.propeller.rotation.z = (visual.propeller.rotation.z + dt * R.propellerSpeed * (entity.flight === 'landed' ? .12 : 1)) % (Math.PI * 2);
+  visual.propellers.forEach((prop, i) => {
+    prop.rotation.z = (prop.rotation.z + (i ? -1 : 1) * dt * R.propellerSpeed * (entity.flight === 'landed' ? .12 : 1)) % (Math.PI * 2);
+  });
   // Friendly aircraft own their flash materials; enemy materials stay shared.
   if (visual.flash !== flash) {
     visual.model.traverse(node => {

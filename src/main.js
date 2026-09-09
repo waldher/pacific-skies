@@ -10,6 +10,9 @@ import { updateCampaign } from './campaign.js';
 import { updateShips } from './ships.js';
 import { updateAirWar } from './airwar.js';
 import { updateTorpedoes, launchTorpedo } from './torpedoes.js';
+import { launchBomb, updateBombs } from './bombs.js';
+import { updateStrikes } from './strikes.js';
+import { selectSortie } from './bases.js';
 import { requestCarrier } from './carrier.js';
 import { createRenderer } from './renderer.js';
 import { drawHud, drawMenus } from './hud.js';
@@ -25,8 +28,10 @@ function update(dt) {
   updatePlayer(dt);
   updateAirWar(dt);
   updateEnemies(dt);
+  updateStrikes(game, dt);
   updateShips(dt);
   updateTorpedoes(dt);
+  updateBombs(game, dt);
   game.messageTime = Math.max(0, game.messageTime - dt);
 
   // bullets
@@ -44,6 +49,7 @@ function update(dt) {
         b.life = 0; e.hp--;
         game.particles.push({ x: b.x, y: b.y, vx: rand(-40, 40), vy: rand(-40, 40), life: 0.2, max: 0.2, size: 3, kind: 'fire' });
         if (e.hp <= 0) {
+          if (e.rescue) game.rescue.intercepts = (game.rescue.intercepts || 0) + 1;
           game.score += e.ace ? CONFIG.score.aceKill : CONFIG.score.kill;
           explosion(e.x, e.y, false);
         }
@@ -105,7 +111,7 @@ function frame(now) {
 }
 // Debug/test API: the playtest harness (and console tinkering) reads
 // live state and drives input through this handle.
-window.__game = { game, CONFIG, startGame, setSeed, keys, stick, fireTouch, view, angDiff, update, launchTorpedo, requestCarrier: () => requestCarrier(game) };
+window.__game = { game, CONFIG, startGame, setSeed, keys, stick, fireTouch, view, angDiff, update, launchTorpedo, launchBomb: () => launchBomb(game), selectSortie: options => selectSortie(game, options), requestCarrier: () => requestCarrier(game) };
 
 
 const status = document.getElementById('loading');

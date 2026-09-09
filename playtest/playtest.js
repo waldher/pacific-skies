@@ -86,11 +86,16 @@ function check(name, ok, detail) {
   await page.waitForTimeout(200);
   s = await snap();
   check('Space starts the game', s.mode === 'play');
+  check('single-choice sortie is a visual summary without false controls', await page.locator('#sortie-panel button, #sortie-panel select').count() === 0);
+  check('starting airfield exposes sortie planning', await page.locator('#sortie-panel').isVisible());
+  await page.screenshot({ path: path.join(SHOT_DIR, '01-airfield.png') });
+  await page.getByRole('button', { name: /TAKE OFF/ }).click();
+  await page.waitForFunction(() => window.__game.game.player.flight === 'flying');
   check('target and landing-request controls are absent in flight', await page.evaluate(() => !document.getElementById('target-action') && document.getElementById('carrier-action').hidden));
-  await page.getByRole('button', { name: /TORPEDO/i }).click();
-  check('torpedo button drops one round', await page.evaluate(() => window.__game.game.player.torpedoAmmo === 1));
+  await page.getByRole('button', { name: /BOMB/i }).click();
+  check('bomb button drops one round', await page.evaluate(() => window.__game.game.player.bombAmmo === 1));
   await page.keyboard.press('t');
-  check('keyboard torpedo respects cooldown', await page.evaluate(() => window.__game.game.player.torpedoAmmo === 1));
+  check('keyboard ordnance respects cooldown', await page.evaluate(() => window.__game.game.player.bombAmmo === 1));
   await page.screenshot({ path: path.join(SHOT_DIR, '02-torpedo.png') });
   const modelChecks = await page.evaluate(async () => {
     const THREE = await import(new URL('vendor/three/three.module.min.js', location.href).href);
@@ -115,13 +120,13 @@ function check(name, ok, detail) {
       orthographic: graphics.camera.isOrthographicCamera,
     };
   });
-  check('friendly patrols use Corsair models', await page.evaluate(() => window.__game.game.allies.every(f => window.__game.graphics.aircraft.get(f)?.model.name === 'F4U_Corsair')));
+  check('friendly patrols use P38 models', await page.evaluate(() => window.__game.game.allies.every(f => window.__game.graphics.aircraft.get(f)?.model.name === 'P38_Lightning')));
   check('friendly aircraft have independent damage flash materials', await page.evaluate(() => {
     const { graphics, game } = window.__game;
     const p = graphics.aircraft.get(game.player), f = graphics.aircraft.get(game.allies[0]);
     return p.ownedMaterials.length > 0 && f.ownedMaterials.length > 0 && p.ownedMaterials[0] !== f.ownedMaterials[0];
   }));
-  check('player uses Corsair GLB with propeller', modelChecks.name === 'F4U_Corsair' && modelChecks.propeller);
+  check('player starts with a P38 model with animated propeller', modelChecks.name === 'P38_Lightning' && modelChecks.propeller);
   check('model noses match all four flight headings', modelChecks.aligned);
   check('orthographic camera preserves aircraft scale', modelChecks.orthographic && modelChecks.scale);
   const qualityChecks = await page.evaluate(() => {
@@ -154,7 +159,8 @@ function check(name, ok, detail) {
   });
   for (const result of campaign) check(result.name, result.ok);
   await page.evaluate(() => {
-    const { game } = window.__game, t = game.territories[0];
+    const { game, CONFIG } = window.__game, t = game.territories.find(t => t.owner === 'enemy');
+    game.player.flight = 'flying'; game.player.altitude = CONFIG.render.flightHeight;
     game.player.x = t.x + 300; game.player.y = t.y + 100;
     game.cam.x = game.player.x; game.cam.y = game.player.y;
   });
@@ -240,7 +246,7 @@ function check(name, ok, detail) {
       && document.getElementById('world').width === Math.round(390 * view.DPR);
   }));
   // Real simultaneous touch contacts: the torpedo thumb is non-primary.
-  await page.evaluate(() => window.__game.startGame());
+  await page.evaluate(() => { window.__game.startGame(); const p = window.__game.game.player; p.flight = 'flying'; p.aircraft = 'corsair'; p.loadout = 'torpedoes'; });
   await page.waitForTimeout(100);
   const touch = await page.context().newCDPSession(page);
   const steering = { x: 75, y: 700, id: 1 };
@@ -263,13 +269,26 @@ function check(name, ok, detail) {
     const { game, requestCarrier, update, keys } = window.__game;
     for (const key of Object.keys(keys)) keys[key] = false;
     window.__game.startGame();
-    const c = game.ships[0]; game.player.x = c.x; game.player.y = c.y + 330;
+    game.rank = 2; game.rescue.status = 'complete';
+    const c = game.ships[0]; c.active = true; c.hp = c.maxHp;
+    game.bases.find(b => b.kind === 'carrier').available = true;
+    game.player.flight = 'flying'; game.player.aircraft = 'corsair'; game.player.loadout = 'torpedoes';
+    game.player.x = c.x; game.player.y = c.y + 330;
     game.player.a = c.a; game.player.hp = 40;
     for (let i = 0; i < 900 && game.player.flight !== 'landed'; i++) update(.02);
     game.cam.x = c.x; game.cam.y = c.y;
   });
   await page.waitForFunction(() => document.getElementById('carrier-action').textContent.includes('TAKE OFF'));
   await page.screenshot({ path: path.join(SHOT_DIR, '05-carrier.png') });
+  await page.locator('#sortie-base button[data-value=\"home-airfield\"]').click();
+  await page.locator('#sortie-aircraft button[data-value=\"p38\"]').click();
+  await page.waitForFunction(() => window.__game.graphics.aircraft.get(window.__game.game.player)?.model.name === 'P38_Lightning');
+  check('native sortie selectors transfer home and switch the rendered aircraft', await page.evaluate(() => { const p = window.__game.game.player; return p.baseId === 'home-airfield' && p.aircraft === 'p38' && p.altitude === window.__game.CONFIG.airfield.deckHeight && p.loadout === 'bombs'; }));
+  await page.locator('#sortie-base button[data-value=\"fleet-carrier\"]').click();
+  await page.locator('#sortie-loadout button[data-value=\"torpedoes\"]').click();
+  await page.waitForFunction(() => window.__game.graphics.aircraft.get(window.__game.game.player)?.model.name === 'F4U_Corsair');
+  check('native carrier transfer selects compatible Corsair at deck height', await page.evaluate(() => { const p = window.__game.game.player; return p.baseId === 'fleet-carrier' && p.aircraft === 'corsair' && p.loadout === 'torpedoes' && p.altitude === window.__game.CONFIG.carrier.deckHeight; }));
+
   await page.getByRole('button', { name: /TAKE OFF/ }).click();
   check('on-screen carrier control launches the aircraft', await page.evaluate(() => window.__game.game.player.flight === 'takeoff'));
   await page.evaluate(() => window.__game.startGame());
@@ -282,9 +301,23 @@ function check(name, ok, detail) {
   await mobile.goto(`http://127.0.0.1:${port}/pacific-skies/?quality=1`);
   await mobile.waitForFunction(() => window.__game?.rendering?.ready);
   await mobile.waitForTimeout(150);
-  check('phone title shows touch instructions without keyboard shortcuts', await mobile.locator('#menu').innerText().then(t => t.includes('Tap to fly') && !/Space|WASD|Arrows|T to|L to/.test(t)));
+  check('phone title shows touch instructions without keyboard shortcuts', await mobile.locator('#menu').innerText().then(t => t.includes('Tap to begin') && !/Space|WASD|Arrows|T to|L to/.test(t)));
   await mobile.screenshot({ path: path.join(SHOT_DIR, '06-phone-title.png') });
   await mobile.touchscreen.tap(190, 600);
+  await mobile.screenshot({ path: path.join(SHOT_DIR, '06-phone-sortie.png') });
+  check('phone sortie selector fits its panel', await mobile.evaluate(() => { const p = document.getElementById('sortie-panel'); return p.scrollWidth <= p.clientWidth; }));
+  for (const [width,height,name] of [[320,568,'small-phone'],[844,390,'landscape']]) {
+    await mobile.setViewportSize({ width,height }); await mobile.waitForTimeout(100);
+    check(`${name} sortie panel fits without overlapping the HUD`, await mobile.evaluate(() => {
+      const p = document.getElementById('sortie-panel'), r = p.getBoundingClientRect();
+      const ids = ['stats','objective','campaign-status','flight-controls'];
+      return r.x >= 0 && r.right <= innerWidth && r.y >= 0 && r.bottom <= innerHeight && p.scrollWidth <= p.clientWidth
+        && ids.every(id => { const e = document.getElementById(id); if (!e || e.hidden) return true; const b = e.getBoundingClientRect(); return r.right <= b.x || r.x >= b.right || r.bottom <= b.y || r.y >= b.bottom; });
+    }));
+    await mobile.screenshot({ path: path.join(SHOT_DIR, `06-${name}-sortie.png`) });
+  }
+  await mobile.getByRole('button', { name: /TAKE OFF/ }).tap();
+  await mobile.waitForFunction(() => window.__game.game.player.flight === 'flying');
   await mobile.waitForTimeout(100);
   check('phone torpedo control has no keyboard prefix', await mobile.locator('#torpedo-action').innerText().then(t => !t.startsWith('T ·')));
   for (const [width, height, name] of [[320,568,'small-phone'], [844,390,'landscape'], [768,1024,'tablet']]) {
@@ -305,7 +338,7 @@ function check(name, ok, detail) {
   await mobile.touchscreen.tap(90, 500);
   await mobile.evaluate(() => { window.__game.game.mode = 'over'; });
   await mobile.waitForTimeout(100);
-  check('touch input restores touch restart hint', await mobile.locator('#menu-start').innerText().then(t => t === 'Tap to fly'));
+  check('touch input restores touch restart hint', await mobile.locator('#menu-start').innerText().then(t => t === 'Tap to begin'));
   check('responsive HUD has no runtime errors', results.errors.length === 0, results.errors[0]);
   await mobile.close();
 
