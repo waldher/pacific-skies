@@ -5,8 +5,26 @@ modules, no build step. A transparent Canvas overlay draws the HUD and touch con
 
 **Play it:** https://waldher.github.io/pacific-skies/
 
-- Desktop: WASD/arrows to fly, Space to fire
-- Mobile: left thumb steers, right thumb fires
+- Desktop: WASD/arrows to fly, Space to fire, T to drop a torpedo, L to take off from the carrier
+- Mobile: left thumb steers, right thumb fires; use TORPEDO in flight and TAKE OFF when on deck.
+
+Clear each island’s fighters and patrol destroyers, then hold its marked airspace
+for six seconds to capture it. Secure all four territories to win. Ownership lasts
+until you restart; defenders do not respawn in waves. Strafe destroyers with your guns.
+
+Return to the friendly carrier from behind its stern, aligned with the deck centerline
+and pointing toward the bow. Landing accepts up to 25° of heading error and 24 units of lateral offset. You can
+correct your alignment over the rear half of the deck after crossing the stern;
+you still steer the approach yourself. Repairs restore health while parked.
+Press L or TAKE OFF to launch when ready. The minimap shows islands and your carrier.
+
+Carry two torpedoes per sortie. T / TORPEDO drops a straight-running surface weapon;
+a hit sinks a destroyer. There is a five-second release cooldown, a short arming run,
+and limited range. Empty means return to the carrier: two seconds on deck reloads both.
+
+Two friendly Corsairs fly their own patrol routes, engage nearby enemies and can be
+shot down. Occasional roaming Zeros pursue you anywhere on the map, one at a time;
+they do not count as island defenders or undo captured territory.
 
 ## Develop
 
@@ -49,6 +67,6 @@ Both aircraft GLBs are generated from real dimensions by `tools/build-aircraft.m
 drawings they came from are in `tools/reference/`.
 
 The playtest checks GLB loading, heading alignment, banking, propellers, resize,
-instance cleanup, and the existing combat loop. Run `npx playwright install chromium`
+instance cleanup, naval combat, capture persistence, victory, and carrier recovery. Run `npx playwright install chromium`
 after installing the test dependencies. Headless checks use software WebGL;
 check performance on physical mobile devices before a release.

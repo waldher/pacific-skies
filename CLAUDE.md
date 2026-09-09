@@ -20,18 +20,24 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 
 | File | Responsibility |
 |---|---|
-| `main.js` | game loop, bullet movement/collisions, waves, camera, render order, debug handle |
+| `main.js` | game loop, bullet movement/collisions, campaign, camera, render order, debug handle |
 | `state.js` | the shared mutable `game` object + `startGame()` |
 | `config.js` | **all** gameplay tuning constants |
 | `util.js` | math helpers, hash noise, seedable RNG (`setSeed`/`rand`) |
 | `canvas.js` | canvas/ctx, resize, `view {W,H}`, world→screen `w2s` |
 | `input.js` | keyboard + touch (virtual stick left half, fire right half) |
 | `player.js` | flight model, firing, damage, death |
-| `enemies.js` | wave spawning, pursuit AI, enemy fire, ramming |
+| `enemies.js` | territory defenders, patrol/pursuit AI, enemy fire, ramming |
+| `campaign.js` | territory ownership, finite defenders, capture and victory |
+| `carrier.js` | manual approach, aligned deck landing, deck repair and takeoff |
+| `airwar.js` | independent friendly patrols and occasional roaming Zero interceptors |
+| `torpedoes.js` | two-round loadout, surface runs, ship impacts and cooldown |
+| `ships.js` | naval patrols, gunfire and swept hull hits |
+| `naval-scene.js` | ship meshes, wakes, sinking and territory markers |
 | `particles.js` | explosions, smoke, particle simulation |
 | `world.js` | ocean shader (ripples, glitter, whitecaps, cloud shadows, shallows), surf rings, bounded island chunks |
 | `sprites.js` | HUD `rr` rounded-rect helper |
-| `hud.js` | HUD, wave banner, off-screen arrows, touch UI, menus |
+| `hud.js` | HUD, minimap, objectives, off-screen arrows, touch UI, menus |
 | `audio.js` | procedural sfx |
 | `renderer.js` | Three.js scene, orthographic camera, lighting, instance lifecycle, adaptive quality ladder (`?quality=N` pins a level) |
 | `aircraft.js` | GLB loading, geometry batching, banking, propeller animation, per-aircraft shadow receiver / blob |
@@ -40,7 +46,7 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 Conventions:
 
 - Game state mutations go through the shared `game` object from
-  `state.js`. `game.mode` is `title | play | over`.
+  `state.js`. `game.mode` is `title | play | over | victory`.
 - Tuning numbers belong in `config.js`, never inline. A balance
   change should be a one-line diff there.
 - Gameplay randomness must use `rand()` from `util.js` (seedable for
@@ -80,7 +86,7 @@ local `npm install`, plain `npm test` works.)
 
 `playtest/playtest.js` boots the game headless, runs functional
 checks (load, start, spawn, score, death, restart, zero JS errors),
-then a bot plays with a seeded RNG while sampling hp/score/wave per
+then a bot plays with a seeded RNG while sampling hp/score/territories per
 second. Screenshots land in `playtest/shots/` (gitignored). Exit
 code is nonzero on any failed check — run it before every push, and
 compare its metrics before/after when changing anything in

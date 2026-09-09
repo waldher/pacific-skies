@@ -42,7 +42,7 @@ export function createEffects(scene, renderer) {
   scene.add(particles);
   return {
     update(game) {
-      const count = game.bullets.length + game.ebullets.length;
+      const count = game.bullets.length + game.ebullets.length + game.torpedoes.length;
       if (count > capacity) {
         if (tracers) { scene.remove(tracers); tracers.dispose(); }
         capacity = Math.max(64, 2 ** Math.ceil(Math.log2(count)));
@@ -53,11 +53,11 @@ export function createEffects(scene, renderer) {
       }
       if (tracers) {
         let i = 0;
-        for (const [bullets, color] of [[game.bullets, ally], [game.ebullets, enemy]]) {
+        for (const [bullets, color] of [[game.bullets, ally], [game.ebullets, enemy], [game.torpedoes, ally]]) {
           for (const b of bullets) {
-            dummy.position.set(b.x - b.vx * .008, CONFIG.render.flightHeight - 1, b.y - b.vy * .008);
+            dummy.position.set(b.x - b.vx * .008, b.distance !== undefined ? 2 : CONFIG.render.flightHeight - 1, b.y - b.vy * .008);
             dummy.rotation.set(0, -Math.atan2(b.vy, b.vx), 0);
-            dummy.scale.set(Math.hypot(b.vx, b.vy) * .016, 1, 2.5);
+            dummy.scale.set(b.distance !== undefined ? 24 : Math.hypot(b.vx, b.vy) * .016, 1, b.distance !== undefined ? 4 : 2.5);
             dummy.updateMatrix();
             tracers.setMatrixAt(i, dummy.matrix); tracers.setColorAt(i++, color);
           }

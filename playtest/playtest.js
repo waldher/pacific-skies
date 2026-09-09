@@ -52,7 +52,7 @@ function check(name, ok, detail) {
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const port = server.address().port;
 
-  const browser = await chromium.launch({ args: ['--enable-unsafe-swiftshader'] });
+  const browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH, args: ['--enable-unsafe-swiftshader'] });
   const page = await browser.newPage({ viewport: { width: 900, height: 600 } });
   page.on('pageerror', e => results.errors.push(String(e)));
   page.on('console', m => { if (m.type() === 'error') results.errors.push(m.text()); });
@@ -69,7 +69,7 @@ function check(name, ok, detail) {
   const snap = () => page.evaluate(() => {
     const g = window.__game.game;
     return {
-      mode: g.mode, score: g.score, waveNum: g.waveNum,
+      mode: g.mode, score: g.score, captured: g.territories.filter(t => t.owner === 'us').length,
       hp: g.player ? g.player.hp : null,
       enemies: g.enemies.length, bullets: g.bullets.length,
     };
@@ -86,6 +86,12 @@ function check(name, ok, detail) {
   await page.waitForTimeout(200);
   s = await snap();
   check('Space starts the game', s.mode === 'play');
+  check('target and landing-request controls are absent in flight', await page.evaluate(() => !document.getElementById('target-action') && document.getElementById('carrier-action').hidden));
+  await page.getByRole('button', { name: /TORPEDO/ }).click();
+  check('torpedo button drops one round', await page.evaluate(() => window.__game.game.player.torpedoAmmo === 1));
+  await page.keyboard.press('t');
+  check('keyboard torpedo respects cooldown', await page.evaluate(() => window.__game.game.player.torpedoAmmo === 1));
+  await page.screenshot({ path: path.join(SHOT_DIR, '02-torpedo.png') });
   const modelChecks = await page.evaluate(async () => {
     const THREE = await import(new URL('vendor/three/three.module.min.js', location.href).href);
     const { graphics, game, view, CONFIG } = window.__game;
@@ -109,6 +115,12 @@ function check(name, ok, detail) {
       orthographic: graphics.camera.isOrthographicCamera,
     };
   });
+  check('friendly patrols use Corsair models', await page.evaluate(() => window.__game.game.allies.every(f => window.__game.graphics.aircraft.get(f)?.model.name === 'F4U_Corsair')));
+  check('friendly aircraft have independent damage flash materials', await page.evaluate(() => {
+    const { graphics, game } = window.__game;
+    const p = graphics.aircraft.get(game.player), f = graphics.aircraft.get(game.allies[0]);
+    return p.ownedMaterials.length > 0 && f.ownedMaterials.length > 0 && p.ownedMaterials[0] !== f.ownedMaterials[0];
+  }));
   check('player uses Corsair GLB with propeller', modelChecks.name === 'F4U_Corsair' && modelChecks.propeller);
   check('model noses match all four flight headings', modelChecks.aligned);
   check('orthographic camera preserves aircraft scale', modelChecks.orthographic && modelChecks.scale);
@@ -136,18 +148,22 @@ function check(name, ok, detail) {
   // Reset after the renderer probe so the gameplay bot retains its seeded setup.
   await page.evaluate(seed => { window.__game.setSeed(seed); window.__game.startGame(); }, SEED);
 
-  // The first wave is timed in simulated seconds, and the simulation runs
-  // slower than wall-clock under software rendering (frame dt is capped),
-  // so wait on game time rather than a fixed real-time delay.
-  const startTime = await page.evaluate(() => window.__game.game.time);
-  await page.waitForFunction(t0 => window.__game.game.time > t0 + 3, startTime, { timeout: 20000 });
-  s = await snap();
-  check('wave 1 spawns enemies', s.enemies > 0, `${s.enemies} enemies`);
+  const campaign = await page.evaluate(async () => {
+    const { campaignChecks } = await import(new URL('playtest/campaign-checks.js', location.href).href);
+    return campaignChecks(window.__game);
+  });
+  for (const result of campaign) check(result.name, result.ok);
+  await page.evaluate(() => {
+    const { game } = window.__game, t = game.territories[0];
+    game.player.x = t.x + 300; game.player.y = t.y + 100;
+    game.cam.x = game.player.x; game.cam.y = game.player.y;
+  });
+  await page.waitForFunction(() => window.__game.game.enemies.length > 0);
   check('enemies use Zero GLBs', await page.evaluate(() => {
     const { game, graphics } = window.__game;
     return game.enemies.every(e => graphics.aircraft.get(e)?.model.name === 'Mitsubishi_Zero');
   }));
-  await page.screenshot({ path: path.join(SHOT_DIR, '02-wave1.png') });
+  await page.screenshot({ path: path.join(SHOT_DIR, '02-territory.png') });
 
   // ---- bot plays the game ----
   // Steering happens in the page: a tick interval turns toward the
@@ -155,7 +171,7 @@ function check(name, ok, detail) {
   await page.evaluate(() => {
     const { game, keys, angDiff } = window.__game;
     window.__bot = setInterval(() => {
-      if (game.mode !== 'play' || !game.enemies.length) {
+      if (game.mode !== 'play') {
         keys['KeyA'] = keys['KeyD'] = keys['Space'] = false; return;
       }
       const p = game.player;
@@ -164,6 +180,14 @@ function check(name, ok, detail) {
         const d = Math.hypot(e.x - p.x, e.y - p.y);
         if (d < bd) { bd = d; best = e; }
       }
+      if (!best) {
+        for (const ship of game.ships) {
+          if (ship.team !== 'jp' || ship.hp <= 0) continue;
+          const d = Math.hypot(ship.x - p.x, ship.y - p.y);
+          if (d < bd) { bd = d; best = ship; }
+        }
+      }
+      if (!best) best = game.territories.find(t => t.owner !== 'us') ?? game.ships[0];
       const want = Math.atan2(best.y - p.y, best.x - p.x);
       const d = angDiff(p.a, want);
       keys['KeyA'] = d < -0.05; keys['KeyD'] = d > 0.05;
@@ -193,13 +217,13 @@ function check(name, ok, detail) {
     seed: SEED,
     botSurvivedSeconds: survived,
     finalScore: last.score,
-    waveReached: last.waveNum,
+    territoriesCaptured: last.captured,
     finalHp: last.hp,
     died,
-    hpOverTime: samples.map(x => `${x.t}s:${x.hp}hp/w${x.waveNum}`).join(' '),
+    hpOverTime: samples.map(x => `${x.t}s:${Math.ceil(x.hp)}hp/${x.captured} sectors`).join(' '),
   };
   check('bot can score points', last.score > 0, `score ${last.score}`);
-  check('waves progress under play', last.waveNum >= 1, `reached wave ${last.waveNum}`);
+  check('territory combat remains active during free flight', last.score > 0);
   if (died) {
     await page.screenshot({ path: path.join(SHOT_DIR, '04-gameover.png') });
     await page.keyboard.press('Space');
@@ -215,10 +239,42 @@ function check(name, ok, detail) {
     return view.W === 390 && graphics.camera.right - graphics.camera.left === 390
       && document.getElementById('world').width === Math.round(390 * view.DPR);
   }));
-  await page.screenshot({ path: path.join(SHOT_DIR, '05-mobile.png') });
+  // Real simultaneous touch contacts: the torpedo thumb is non-primary.
+  await page.evaluate(() => window.__game.startGame());
+  await page.waitForTimeout(100);
+  const touch = await page.context().newCDPSession(page);
+  const steering = { x: 75, y: 700, id: 1 };
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [steering] });
+  steering.x = 110;
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [steering] });
+  const torpedoBox = await page.locator('#torpedo-action').boundingBox();
+  const trigger = { x: torpedoBox.x + torpedoBox.width / 2, y: torpedoBox.y + torpedoBox.height / 2, id: 2 };
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [steering, trigger] });
+  check('secondary thumb fires torpedo while steering stays held', await page.evaluate(() => {
+    const { game, stick } = window.__game;
+    return game.player.torpedoAmmo === 1 && stick.active && stick.dx > 20;
+  }));
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [trigger] });
+  check('releasing torpedo thumb preserves steering and does not fire twice', await page.evaluate(() => window.__game.stick.active && window.__game.game.player.torpedoAmmo === 1));
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await touch.detach();
+  // Show a landing and its actual touch control at narrow-screen size.
+  await page.evaluate(() => {
+    const { game, requestCarrier, update, keys } = window.__game;
+    for (const key of Object.keys(keys)) keys[key] = false;
+    window.__game.startGame();
+    const c = game.ships[0]; game.player.x = c.x; game.player.y = c.y + 330;
+    game.player.a = c.a; game.player.hp = 40;
+    for (let i = 0; i < 900 && game.player.flight !== 'landed'; i++) update(.02);
+    game.cam.x = c.x; game.cam.y = c.y;
+  });
+  await page.waitForFunction(() => document.getElementById('carrier-action').textContent.includes('TAKE OFF'));
+  await page.screenshot({ path: path.join(SHOT_DIR, '05-carrier.png') });
+  await page.getByRole('button', { name: /TAKE OFF/ }).click();
+  check('on-screen carrier control launches the aircraft', await page.evaluate(() => window.__game.game.player.flight === 'takeoff'));
   await page.evaluate(() => window.__game.startGame());
   await page.waitForTimeout(200);
-  check('restart removes old aircraft instances', await page.evaluate(() => window.__game.graphics.aircraft.size === 1));
+  check('restart removes old aircraft instances', await page.evaluate(() => window.__game.graphics.aircraft.size === 1 + window.__game.game.allies.length));
   check('no JS errors during play', results.errors.length === 0, results.errors[0]);
 
   const failedPage = await browser.newPage();

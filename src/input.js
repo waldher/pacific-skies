@@ -3,6 +3,8 @@
 import { view } from './canvas.js';
 import { audioInit } from './audio.js';
 import { game, startGame } from './state.js';
+import { launchTorpedo } from './torpedoes.js';
+import { requestCarrier } from './carrier.js';
 
 export const keys = {};
 export const stick = { active: false, id: -1, ax: 0, ay: 0, dx: 0, dy: 0 };
@@ -10,7 +12,24 @@ export const fireTouch = { active: false, id: -1 };
 export const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 
 export function initInput(cvs) {
+  const torpedoButton = document.getElementById('torpedo-action');
+  // Secondary touches do not reliably generate clicks while the steering thumb
+  // remains down. Fire on pointerdown, without stealing the stick's capture.
+  torpedoButton.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    e.preventDefault();
+    launchTorpedo();
+  });
+  // Keep keyboard/assistive activation, but ignore the pointer's follow-up click.
+  torpedoButton.addEventListener('click', e => { if (e.detail === 0) launchTorpedo(); });
+  document.getElementById('carrier-action').addEventListener('click', () => requestCarrier(game));
+  window.addEventListener('blur', () => {
+    for (const key of Object.keys(keys)) keys[key] = false;
+    stick.active = fireTouch.active = false;
+  });
   window.addEventListener('keydown', e => {
+    if (game.mode === 'play' && e.code === 'KeyT' && !e.repeat) launchTorpedo();
+    if (game.mode === 'play' && e.code === 'KeyL' && !e.repeat) requestCarrier(game);
     keys[e.code] = true;
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) e.preventDefault();
     audioInit();
@@ -22,6 +41,7 @@ export function initInput(cvs) {
     audioInit();
     if (game.mode !== 'play') { startGame(); return; }
     if (e.pointerType === 'mouse' && e.button !== 0) return;
+    cvs.setPointerCapture(e.pointerId);
     if (e.clientX < view.W * 0.5 && !stick.active) {
       stick.active = true; stick.id = e.pointerId;
       stick.ax = e.clientX; stick.ay = e.clientY; stick.dx = 0; stick.dy = 0;
