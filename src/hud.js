@@ -53,12 +53,7 @@ export function drawHud() {
       ctx.fillStyle = 'rgba(255,255,255,0.45)';
       ctx.beginPath(); ctx.arc(stick.ax + stick.dx, stick.ay + stick.dy, 24, 0, TAU); ctx.fill();
     }
-    const fx = W - 74, fy = H - 84;
-    ctx.fillStyle = fireTouch.active ? 'rgba(216,85,74,0.75)' : 'rgba(216,85,74,0.4)';
-    ctx.beginPath(); ctx.arc(fx, fy, 44, 0, TAU); ctx.fill();
-    ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.font = '700 14px "Courier New", monospace';
-    ctx.fillText('FIRE', fx, fy);
+
   }
 }
 
@@ -92,8 +87,13 @@ export function drawMenus() {
   el('flight-hud').hidden = !playing;
   el('flight-controls').hidden = !playing;
   el('menu').hidden = playing;
+  el('fire-indicator').hidden = !playing || !isTouchDevice || p?.flight !== 'flying';
+  el('fire-indicator').dataset.firing = String(fireTouch.active);
   if (playing) {
     text('score-value', game.score.toLocaleString());
+    text('hull-value', `${Math.ceil(p.hp)}%`);
+    el('hull-value').style.color = p.hp > 35 ? '#82dfbc' : '#f18f7c';
+    Array.from(el('island-pips').children).forEach((pip, i) => { pip.style.background = game.territories[i]?.owner === 'us' ? '#82dfbc' : '#36505c'; });
     text('islands-value', `${game.territories.filter(t => t.owner === 'us').length} / ${game.territories.length}`);
     el('health-fill').style.width = `${clamp(p.hp / CONFIG.player.hp, 0, 1) * 100}%`;
     el('health-fill').style.background = p.hp > 35 ? '#82dfbc' : '#f18f7c';
