@@ -1,7 +1,7 @@
 # Pacific Skies — 1942
 
 Top-down arcade dogfighter over the Pacific. Three.js / WebGL 2, native ES
-modules, no build step. A transparent Canvas overlay draws the HUD and touch controls.
+modules, no build step. Responsive HTML readouts show status and instructions; a transparent Canvas overlay draws world markers and touch controls.
 
 **Play it:** https://waldher.github.io/pacific-skies/
 
@@ -10,7 +10,7 @@ modules, no build step. A transparent Canvas overlay draws the HUD and touch con
 
 Clear each island’s fighters and patrol destroyers, then hold its marked airspace
 for six seconds to capture it. Secure all four territories to win. Ownership lasts
-until you restart; defenders do not respawn in waves. Strafe destroyers with your guns.
+until you restart; defenders do not respawn in waves. Ships require torpedoes; bullets only damage aircraft.
 
 Return to the friendly carrier from behind its stern, aligned with the deck centerline
 and pointing toward the bow. Landing accepts up to 25° of heading error and 24 units of lateral offset. You can

@@ -1,7 +1,7 @@
 # Pacific Skies — 1942
 
 Top-down free-roam arcade dogfighter over the Pacific. Three.js / WebGL 2
-scene, Canvas HUD overlay, native ES modules, no build step.
+scene, HTML readouts and Canvas markers/touch controls, native ES modules, no build step.
 Deployed via GitHub Pages straight from `main` — every push to main
 is live at https://waldher.github.io/pacific-skies/ within minutes.
 
@@ -37,7 +37,7 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 | `particles.js` | explosions, smoke, particle simulation |
 | `world.js` | ocean shader (ripples, glitter, whitecaps, cloud shadows, shallows), surf rings, bounded island chunks |
 | `sprites.js` | HUD `rr` rounded-rect helper |
-| `hud.js` | HUD, minimap, objectives, off-screen arrows, touch UI, menus |
+| `hud.js` | responsive HTML readouts/menus, canvas minimap and markers, touch UI |
 | `audio.js` | procedural sfx |
 | `renderer.js` | Three.js scene, orthographic camera, lighting, instance lifecycle, adaptive quality ladder (`?quality=N` pins a level) |
 | `aircraft.js` | GLB loading, geometry batching, banking, propeller animation, per-aircraft shadow receiver / blob |

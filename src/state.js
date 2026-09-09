@@ -38,7 +38,7 @@ export function startGame() {
   game.cam = { x: 0, y: 0 };
   game.score = 0;
   Object.assign(game, createCampaign());
-  game.message = 'Clear fighters and ships, then hold each island';
+  game.message = 'Guns for fighters. Torpedoes for ships.';
   game.messageTime = CONFIG.conquest.messageDuration;
   game.shake = 0;
   game.mode = 'play';

@@ -9,9 +9,15 @@ import { requestCarrier } from './carrier.js';
 export const keys = {};
 export const stick = { active: false, id: -1, ax: 0, ay: 0, dx: 0, dy: 0 };
 export const fireTouch = { active: false, id: -1 };
-export const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+const touchMedia = window.matchMedia?.('(any-pointer: coarse)');
+export let isTouchDevice = navigator.maxTouchPoints > 0 || ('ontouchstart' in window)
+  || !!touchMedia?.matches || /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent || '');
 
 export function initInput(cvs) {
+  // Resolve hints from actual input too: tablets and embedded browsers may hide
+  // their touch capabilities until the first contact.
+  window.addEventListener('pointerdown', e => { if (e.pointerType === 'touch' || e.pointerType === 'pen') isTouchDevice = true; }, true);
+  touchMedia?.addEventListener('change', e => { if (e.matches) isTouchDevice = true; });
   const torpedoButton = document.getElementById('torpedo-action');
   // Secondary touches do not reliably generate clicks while the steering thumb
   // remains down. Fire on pointerdown, without stealing the stick's capture.
@@ -28,6 +34,7 @@ export function initInput(cvs) {
     stick.active = fireTouch.active = false;
   });
   window.addEventListener('keydown', e => {
+    if (['KeyW','KeyA','KeyS','KeyD','KeyT','KeyL','Space','Enter','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) isTouchDevice = false;
     if (game.mode === 'play' && e.code === 'KeyT' && !e.repeat) launchTorpedo();
     if (game.mode === 'play' && e.code === 'KeyL' && !e.repeat) requestCarrier(game);
     keys[e.code] = true;
