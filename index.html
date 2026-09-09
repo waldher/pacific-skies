@@ -27,8 +27,8 @@
   .mission-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
   .eyebrow { font-size:8px; letter-spacing:.16em; color:var(--muted); text-transform:uppercase; }
   #score-value { display:block; font-size:23px; line-height:1.15; font-weight:700; letter-spacing:-.04em; font-variant-numeric:tabular-nums; }
-  .island-progress { text-align:right; }
-  #islands-value { font-size:12px; font-weight:650; font-variant-numeric:tabular-nums; color:var(--ink); }
+  .island-progress { flex-shrink:0; text-align:right; }
+  #islands-value { letter-spacing:0; white-space:nowrap; font-size:12px; font-weight:650; font-variant-numeric:tabular-nums; color:var(--ink); }
   #island-pips { display:flex; flex-wrap:wrap; max-width:80px; justify-content:flex-end; gap:3px; margin-top:5px; }
   #island-pips i { width:7px; height:7px; border-radius:2px; background:#36505c; box-shadow:inset 0 0 0 1px #adc6ca33; }
   .gauges { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px; }
@@ -60,25 +60,31 @@
   #sortie-panel { position:fixed; left:12px; bottom:18px; width:min(300px,calc(100% - 156px)); max-height:calc(100% - 220px); overflow:auto; box-sizing:border-box; z-index:1;
     padding:10px; background:linear-gradient(135deg,#132f3af2,#081b27f2); border:1px solid #adc6ca33; border-radius:14px; pointer-events:auto; scrollbar-width:thin; }
   #sortie-panel h2 { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.16em; margin:0 0 8px; font-weight:600; }
-  .sortie-options { display:grid; gap:5px; min-width:0; }
+  #sortie-unlock { grid-column:1/-1; margin:8px 5px 0; font-size:10px; line-height:1.3; color:var(--muted); }
+  .sortie-options { display:grid; align-content:start; gap:5px; min-width:0; }
   .sortie-options + .sortie-options { margin-top:7px; }
   .sortie-card { display:flex; align-items:center; gap:8px; width:100%; min-width:0; box-sizing:border-box; border:1px solid transparent; border-radius:10px; padding:5px; color:var(--ink); background:transparent; text-align:left; font:inherit; }
   .sortie-art { flex:0 0 36px; height:36px; display:grid; place-items:center; color:#adc6ca; }
+  .sortie-art img { width:100%; height:100%; object-fit:contain; }
   .sortie-art svg { width:100%; height:100%; fill:currentColor; }
   .icon-cut { fill:#132e3c; } .icon-line { stroke:currentColor; stroke-width:2; fill:none; }
   .sortie-copy { min-width:0; } .sortie-copy strong { display:block; font-size:12px; line-height:1.2; overflow-wrap:anywhere; }
   .sortie-copy small { display:block; margin-top:3px; font-size:10px; color:var(--muted); line-height:1.25; }
-  #sortie-aircraft .sortie-art { flex-basis:58px; height:52px; color:var(--accent); }
+  #sortie-aircraft .sortie-art { flex-basis:84px; height:58px; color:var(--accent); }
   .has-choices { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .has-choices .sortie-card { flex-direction:column; gap:3px; text-align:center; padding:7px 4px; background:#ffffff05; border-color:#adc6ca33; cursor:pointer; touch-action:manipulation; }
   .has-choices .sortie-art { flex-basis:auto; width:38px; height:32px; }
-  #sortie-aircraft.has-choices .sortie-art { flex-basis:auto; width:58px; height:45px; }
+  #sortie-aircraft.has-choices .sortie-art { flex-basis:auto; width:100%; height:62px; }
   .has-choices .selected { background:#82dfbc15; border-color:#82dfbc99; }
   .has-choices .selected .sortie-art { color:var(--accent); }
   .sortie-card:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  @media(max-width:380px) {
+    #sortie-aircraft .sortie-card { flex-direction:column; text-align:center; }
+    #sortie-aircraft .sortie-art { flex-basis:auto; width:100%; height:62px; }
+  }
   @media(hover:hover) { button.sortie-card:hover { background:#82dfbc22; } }
   @media(max-height:450px) {
-    #sortie-panel { width:min(620px,calc(100% - 156px)); max-height:calc(100% - 155px); display:grid; grid-template-columns:1.1fr 1fr 1fr; gap:0 10px; }
+    #sortie-panel { width:min(620px,calc(100% - 156px)); max-height:calc(100% - 174px); display:grid; grid-template-columns:1.1fr 1fr 1fr; gap:0 10px; }
     #sortie-panel h2 { grid-column:1/-1; }
     .sortie-options + .sortie-options { margin-top:0; }
     body:has(#sortie-panel:not([hidden])) #objective { top:14px; max-width:calc(100% - 380px); }
@@ -105,6 +111,7 @@
 <div id="sortie-aircraft" class="sortie-options" role="group" aria-label="Aircraft"></div>
 <div id="sortie-loadout" class="sortie-options" role="group" aria-label="Ordnance"></div>
 <div id="sortie-base" class="sortie-options" role="group" aria-label="Departure base"></div>
+<p id="sortie-unlock" hidden></p>
 </section>
 <div id="flight-controls" hidden><button id="torpedo-action">TORPEDO</button><button id="carrier-action">CARRIER</button></div>
 <div id="fire-indicator" class="readout" hidden>Fire</div>

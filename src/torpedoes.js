@@ -8,7 +8,7 @@ export function launchTorpedo() {
   const p = game.player, T = CONFIG.torpedo;
   if (p?.loadout !== 'torpedoes' || game.mode !== 'play' || p.flight !== 'flying' || p.torpedoCd > 0 || p.torpedoAmmo <= 0) return false;
   p.torpedoCd = T.cooldown; p.torpedoAmmo--;
-  game.torpedoes.push({ x: p.x, y: p.y, vx: Math.cos(p.a) * T.speed,
+  game.torpedoes.push({ damage: CONFIG.aircraft[p.aircraft]?.torpedoDamage ?? T.damage, x: p.x, y: p.y, vx: Math.cos(p.a) * T.speed,
     vy: Math.sin(p.a) * T.speed, distance: 0, life: T.range / T.speed, wakeCd: 0 });
   splash(p.x, p.y);
   return true;
@@ -29,7 +29,7 @@ export function updateTorpedoes(dt) {
     if (t.distance < CONFIG.torpedo.armingDistance) continue;
     for (const s of game.ships) {
       if (s.team !== 'jp' || s.hp <= 0 || !hitsShip(t, s)) continue;
-      damageShip(s, CONFIG.torpedo.damage); splash(t.x, t.y); t.life = 0; break;
+      damageShip(s, t.damage ?? CONFIG.torpedo.damage); splash(t.x, t.y); t.life = 0; break;
     }
   }
   game.torpedoes = game.torpedoes.filter(t => t.life > 0);

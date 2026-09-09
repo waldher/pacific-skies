@@ -1,3 +1,4 @@
+import { AIRCRAFT, aircraftUnlocked } from './aircraft-types.js';
 import { CONFIG } from './config.js';
 
 export function availableBases(game) {
@@ -7,8 +8,7 @@ export function availableBases(game) {
 }
 
 export function canUseAircraft(game, base, aircraft) {
-  return Boolean(base && (aircraft === 'p38' && base.kind === 'airfield' ||
-    aircraft === 'corsair' && game.rank >= 2));
+  return Boolean(base && aircraftUnlocked(game, aircraft) && (base.kind === 'airfield' || AIRCRAFT[aircraft].carrierCompatible));
 }
 
 export function resolveBase(game, baseId = game.player?.baseId) {
@@ -24,8 +24,7 @@ export function selectSortie(game, { baseId, aircraft, loadout }) {
   const p = game.player;
   if (!p || game.mode !== 'play' || p.flight !== 'landed') return false;
   const base = availableBases(game).find(b => b.id === baseId);
-  if (!canUseAircraft(game, base, aircraft) || !['bombs', 'torpedoes'].includes(loadout) ||
-    (aircraft === 'p38' && loadout === 'torpedoes')) return false;
+  if (!canUseAircraft(game, base, aircraft) || !AIRCRAFT[aircraft]?.loadouts.includes(loadout)) return false;
   resolveBase(game, base.id);
   p.baseId = base.id; p.aircraft = aircraft; p.loadout = loadout;
   p.x = base.x; p.y = base.y; p.a = base.a;

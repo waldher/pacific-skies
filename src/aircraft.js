@@ -31,7 +31,7 @@ function batchMeshes(source, relativeTo) {
 export async function loadAircraft() {
   const loader = new GLTFLoader();
   const templates = {};
-  await Promise.all([['corsair', 'F4U_Corsair'], ['p38', 'P38_Lightning'], ['jp', 'Mitsubishi_Zero']].map(async ([kind, name]) => {
+  await Promise.all([['corsair', 'F4U_Corsair'], ['p38', 'P38_Lightning'], ['dauntless', 'SBD_Dauntless'], ['avenger', 'TBF_Avenger'], ['p51', 'P51_Mustang'], ['jp', 'Mitsubishi_Zero']].map(async ([kind, name]) => {
     const { scene } = await loader.loadAsync(new URL(`../assets/aircraft/${name}.glb`, import.meta.url).href);
     scene.updateMatrixWorld(true);
     const airframe = scene.getObjectByName('Airframe');

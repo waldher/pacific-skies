@@ -23,7 +23,7 @@ export function updatePlayer(dt) {
       const want = Math.atan2(stick.dy, stick.dx);
       const d = angDiff(player.a, want);
       turnIn = clamp(d * 4, -1, 1);
-      throttleT = 170 + clamp(m / 70, 0, 1) * 180;
+      throttleT = lerp(P.speedBrake, P.speedBoost, clamp(m / 70, 0, 1));
     }
   }
   const previous = { x: player.x, y: player.y };

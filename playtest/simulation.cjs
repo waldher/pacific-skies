@@ -12,7 +12,9 @@ async function load(file) {
   if (cache.has(file)) return cache.get(file);
   const code = file === path.join(root, 'src/renderer.js')
     ? 'export async function createRenderer() { return { diagnostics: { ready: true } }; }'
-    : fs.readFileSync(file, 'utf8');
+    : file === path.join(root, 'src/aircraft-previews.js')
+      ? 'export const aircraftPreviews = {}; export function renderAircraftPreviews() {}'
+      : fs.readFileSync(file, 'utf8');
   const mod = new vm.SourceTextModule(code, { context, identifier: file,
     importModuleDynamically: async (specifier, parent) => {
       const child = await load(path.resolve(path.dirname(parent.identifier), specifier));
