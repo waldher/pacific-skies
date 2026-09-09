@@ -86,6 +86,7 @@ function check(name, ok, detail) {
   await page.waitForTimeout(200);
   s = await snap();
   check('Space starts the game', s.mode === 'play');
+  check('single-choice sortie is a visual summary without false controls', await page.locator('#sortie-panel button, #sortie-panel select').count() === 0);
   check('starting airfield exposes sortie planning', await page.locator('#sortie-panel').isVisible());
   await page.screenshot({ path: path.join(SHOT_DIR, '01-airfield.png') });
   await page.getByRole('button', { name: /TAKE OFF/ }).click();
@@ -279,12 +280,12 @@ function check(name, ok, detail) {
   });
   await page.waitForFunction(() => document.getElementById('carrier-action').textContent.includes('TAKE OFF'));
   await page.screenshot({ path: path.join(SHOT_DIR, '05-carrier.png') });
-  await page.locator('#sortie-base').selectOption('home-airfield');
-  await page.locator('#sortie-aircraft').selectOption('p38');
+  await page.locator('#sortie-base button[data-value=\"home-airfield\"]').click();
+  await page.locator('#sortie-aircraft button[data-value=\"p38\"]').click();
   await page.waitForFunction(() => window.__game.graphics.aircraft.get(window.__game.game.player)?.model.name === 'P38_Lightning');
   check('native sortie selectors transfer home and switch the rendered aircraft', await page.evaluate(() => { const p = window.__game.game.player; return p.baseId === 'home-airfield' && p.aircraft === 'p38' && p.altitude === window.__game.CONFIG.airfield.deckHeight && p.loadout === 'bombs'; }));
-  await page.locator('#sortie-base').selectOption('fleet-carrier');
-  await page.locator('#sortie-loadout').selectOption('torpedoes');
+  await page.locator('#sortie-base button[data-value=\"fleet-carrier\"]').click();
+  await page.locator('#sortie-loadout button[data-value=\"torpedoes\"]').click();
   await page.waitForFunction(() => window.__game.graphics.aircraft.get(window.__game.game.player)?.model.name === 'F4U_Corsair');
   check('native carrier transfer selects compatible Corsair at deck height', await page.evaluate(() => { const p = window.__game.game.player; return p.baseId === 'fleet-carrier' && p.aircraft === 'corsair' && p.loadout === 'torpedoes' && p.altitude === window.__game.CONFIG.carrier.deckHeight; }));
 

@@ -101,39 +101,64 @@ const text = (id, value) => { const node = el(id); if (node.textContent !== valu
 let menuState = '';
 let sortieBound = false;
 const aircraftIds = Object.keys(AIRCRAFT);
-function options(node, entries, value) {
+const icons = {
+  p38: '<path d="M28 12h6v50l-3 9-3-9zm34 0h6v50l-3 9-3-9zM45 17h6l3 29-6 23-6-23z"/><path d="m12 35 30-5h12l30 5v6H12zm14 25h44v5H26z"/><path class="icon-line" d="M22 15h18m16 0h18"/>',
+  corsair: '<path d="m45 10 6 0 4 26 29 9-1 7-22-3-8-5-2 18 12 7v5l-15-3-15 3v-5l12-7-2-18-8 5-22 3-1-7 29-9z"/><path class="icon-line" d="M35 16h26"/>',
+  airfield: '<path d="M35 9h26v62H35z"/><path class="icon-cut" d="M47 14h2v9h-2zm0 16h2v9h-2zm0 16h2v9h-2zm0 16h2v5h-2z"/><path d="M14 23h13v13H14zm55 19h13v13H69z"/>',
+  carrier: '<path d="m35 9 26 0 7 45-12 17H40L28 54z"/><path class="icon-cut" d="M46 17h3v42h-3z"/><path d="M64 25h10v20H64z"/>',
+  bombs: '<path d="m41 12 7 5 7-5v16c13 17 13 31-7 42-20-11-20-25-7-42z"/><path class="icon-cut" d="M45 34h3v21h-3z"/>',
+  torpedoes: '<path d="m48 8 8 13v39l8 10-16-5-16 5 8-10V21z"/><path class="icon-cut" d="M45 23h3v30h-3z"/>',
+};
+function choiceCards(node, entries, selected, kind) {
   const signature = JSON.stringify(entries);
   if (node.dataset.options !== signature) {
-    node.replaceChildren(...entries.map(([id, label]) => { const option = document.createElement('option'); option.value = id; option.textContent = label; return option; }));
+    node.replaceChildren(...entries.map(entry => {
+      const card = document.createElement(entries.length > 1 ? 'button' : 'div');
+      card.className = 'sortie-card'; card.dataset.value = entry.id;
+      if (entries.length > 1) { card.type = 'button'; card.dataset.choice = kind; }
+      const art = document.createElement('span'); art.className = 'sortie-art';
+      art.innerHTML = `<svg viewBox="0 0 96 80" aria-hidden="true">${icons[entry.icon]}</svg>`;
+      const copy = document.createElement('span'); copy.className = 'sortie-copy';
+      const name = document.createElement('strong'); name.textContent = entry.name;
+      const detail = document.createElement('small'); detail.textContent = entry.detail;
+      copy.append(name, detail); card.append(art, copy); return card;
+    }));
     node.dataset.options = signature;
   }
-  node.value = value;
+  for (const card of node.children) {
+    const active = card.dataset.value === selected;
+    card.classList.toggle('selected', active);
+    if (card.tagName === 'BUTTON') card.setAttribute('aria-pressed', String(active));
+  }
+  node.classList.toggle('has-choices', entries.length > 1);
 }
 function drawSortie(p, playing) {
   const panel = el('sortie-panel');
   panel.hidden = !playing || p?.flight !== 'landed';
   if (panel.hidden) return;
   if (!sortieBound) {
-    // Native selection stays local to this panel; arrows and Space must not fly/fire.
     panel.addEventListener('keydown', e => e.stopPropagation());
     panel.addEventListener('keyup', e => e.stopPropagation());
     panel.addEventListener('pointerdown', e => e.stopPropagation());
-    panel.addEventListener('change', () => {
-      const baseId = el('sortie-base').value, base = availableBases(game).find(b => b.id === baseId);
-      if (!base) return;
-      let aircraft = el('sortie-aircraft').value;
+    panel.addEventListener('click', event => {
+      const card = event.target.closest('button[data-choice]');
+      if (!card) return;
+      const current = game.player;
+      const baseId = card.dataset.choice === 'base' ? card.dataset.value : current.baseId;
+      const base = availableBases(game).find(b => b.id === baseId);
+      let aircraft = card.dataset.choice === 'aircraft' ? card.dataset.value : current.aircraft;
       if (!canUseAircraft(game, base, aircraft)) aircraft = aircraftIds.find(a => canUseAircraft(game, base, a));
-      const loadout = aircraft === 'p38' ? 'bombs' : el('sortie-loadout').value;
+      const loadout = aircraft === 'p38' ? 'bombs' : card.dataset.choice === 'loadout' ? card.dataset.value : current.loadout;
       selectSortie(game, { baseId, aircraft, loadout });
     });
     sortieBound = true;
   }
   const bases = availableBases(game), base = bases.find(b => b.id === p.baseId) || bases[0];
-  options(el('sortie-base'), bases.map(b => [b.id, b.name]), base?.id);
-  options(el('sortie-aircraft'), aircraftIds.filter(a => base && canUseAircraft(game, base, a)).map(a => [a, AIRCRAFT[a].shortName]), p.aircraft);
-  options(el('sortie-loadout'), p.aircraft === 'p38' ? [['bombs', 'Bombs']] : [['bombs', 'Bombs'], ['torpedoes', 'Torpedoes']], p.loadout);
-  text('sortie-note', game.rank < 2 ? 'Rescue the carrier to unlock naval aviation.' : 'Transfer between friendly bases while landed.');
+  choiceCards(el('sortie-base'), bases.map(b => ({ id:b.id, name:b.name, icon:b.kind, detail:b.kind === 'carrier' ? 'Flight deck' : 'Runway' })), base?.id, 'base');
+  choiceCards(el('sortie-aircraft'), aircraftIds.filter(a => base && canUseAircraft(game, base, a)).map(a => ({ id:a, name:AIRCRAFT[a].shortName, icon:a, detail:AIRCRAFT[a].role })), p.aircraft, 'aircraft');
+  choiceCards(el('sortie-loadout'), (p.aircraft === 'p38' ? ['bombs'] : ['bombs', 'torpedoes']).map(id => ({ id, icon:id, name:id === 'bombs' ? '2 bombs' : '2 torpedoes', detail:id === 'bombs' ? 'Airfields & ships' : 'Ship hunter' })), p.loadout, 'loadout');
 }
+
 
 
 export function drawMenus() {
