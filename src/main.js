@@ -7,7 +7,7 @@ import { updatePlayer, damagePlayer } from './player.js';
 import { spawnDefenders, updateEnemies } from './enemies.js';
 import { explosion, updateParticles, splash } from './particles.js';
 import { updateCampaign } from './campaign.js';
-import { updateShips, hitsShip, damageShip } from './ships.js';
+import { updateShips } from './ships.js';
 import { updateAirWar } from './airwar.js';
 import { updateTorpedoes, launchTorpedo } from './torpedoes.js';
 import { requestCarrier } from './carrier.js';
@@ -49,13 +49,6 @@ function update(dt) {
         }
         break;
       }
-    }
-  }
-  for (const b of game.bullets) {
-    if (b.life <= 0 || b.fromShip) continue;
-    for (const ship of game.ships) {
-      if (ship.team !== 'jp' || ship.hp <= 0 || !hitsShip(b, ship)) continue;
-      b.life = 0; damageShip(ship); break;
     }
   }
   for (const b of game.ebullets) {

@@ -17,11 +17,45 @@
   #flight-controls button { border:1px solid #83b5bc; background:#102f40e8; color:#f2e8c9; border-radius:7px;
     font:700 12px monospace; min-width:106px; min-height:44px; padding:10px; touch-action:manipulation; }
   #flight-controls button:disabled { opacity:.6; }
+  :root { --panel:rgba(8,27,39,.88); --ink:#f2eee1; --muted:#adc6ca; --accent:#82dfbc; }
+  .readout { color:var(--ink); font:500 13px/1.4 system-ui,sans-serif; pointer-events:none; user-select:none; }
+  .readout [hidden], .readout[hidden] { display:none !important; }
+  #flight-hud { position:fixed; inset:0; }
+  #stats { box-sizing:border-box; position:absolute; top:12px; left:12px; width:156px; height:84px;
+    background:var(--panel); border:1px solid #adc6ca26; border-radius:10px; padding:10px 12px; }
+  .stat-line { display:flex; justify-content:space-between; gap:12px; font-size:12px; color:var(--muted); }
+  .stat-line strong { color:var(--ink); font-variant-numeric:tabular-nums; font-weight:650; }
+  .gauge { display:flex; align-items:center; gap:8px; font-size:10px; color:var(--muted); margin-top:4px; }
+  .gauge span { width:30px; } .track { flex:1; height:4px; background:#36505c; border-radius:3px; overflow:hidden; }
+  .track i { display:block; height:100%; background:var(--accent); border-radius:3px; }
+  #objective, #toast { position:absolute; left:50%; transform:translateX(-50%); width:max-content; max-width:calc(100% - 32px);
+    box-sizing:border-box; text-align:center; background:var(--panel); border:1px solid #adc6ca26; border-radius:10px; padding:9px 14px; }
+  #objective { top:108px; } #objective strong { display:block; font-weight:650; }
+  #objective-detail { color:var(--muted); font-size:12px; }
+  #capture-track { margin-top:7px; height:4px; }
+  #toast { bottom:124px; font-size:12px; }
+  #menu { position:fixed; inset:0; display:grid; place-items:center; padding:20px; box-sizing:border-box;
+    background:radial-gradient(ellipse at center, #09232ddb, #061925ef); }
+  #menu-card { width:min(100%,420px); text-align:center; }
+  #menu-kicker { text-transform:uppercase; letter-spacing:.2em; color:var(--accent); font-size:11px; margin:0 0 12px; }
+  #menu-title { font-size:clamp(26px,7vw,42px); letter-spacing:-.04em; line-height:1.05; margin:0 0 14px; font-weight:750; }
+  #menu-summary { color:var(--muted); margin:0 auto 18px; max-width:32ch; font-size:14px; }
+  #menu-instructions { display:grid; gap:7px; margin:0 auto 22px; width:max-content; max-width:100%; font-size:13px; }
+  #menu-start { display:inline-block; margin:0; padding:11px 20px; border:1px solid #82dfbc77; border-radius:8px; color:var(--accent); font-weight:650; }
+  #flight-controls button { font:650 12px/1.25 system-ui,sans-serif; border-radius:10px; background:var(--panel); }
+  @media(max-height:450px) { #menu { padding:12px; } #menu-kicker { margin-bottom:7px; } #menu-title { font-size:28px; margin-bottom:10px; } #menu-summary { margin-bottom:10px; } #menu-instructions { gap:3px; margin-bottom:12px; } #objective { top:104px; padding:6px 12px; } #toast { bottom:14px; } }
 </style>
 </head>
 <body>
 <canvas id="world" aria-hidden="true"></canvas>
 <canvas id="c" aria-label="Pacific Skies game and controls"></canvas>
+<div id="flight-hud" class="readout" hidden>
+  <div id="stats"><div class="stat-line"><span>Score</span><strong id="score-value">0</strong></div><div class="stat-line"><span>Islands</span><strong id="islands-value">0 / 4</strong></div>
+  <div class="gauge"><span>Hull</span><div class="track"><i id="health-fill"></i></div></div><div class="gauge"><span>Heat</span><div class="track"><i id="heat-fill"></i></div></div></div>
+  <div id="objective" hidden><strong id="objective-title"></strong><span id="objective-detail"></span><div id="capture-track" class="track" hidden><i id="capture-fill"></i></div></div>
+  <div id="toast" hidden></div>
+</div>
+<div id="menu" class="readout" hidden><div id="menu-card"><p id="menu-kicker"></p><h1 id="menu-title"></h1><p id="menu-summary"></p><div id="menu-instructions"></div><p id="menu-start"></p></div></div>
 <div id="flight-controls" hidden><button id="torpedo-action">TORPEDO</button><button id="carrier-action">CARRIER</button></div>
 <div id="loading" role="status"><p id="loading-text">Loading aircraft…</p><button id="retry" hidden>Retry</button></div>
 <script type="importmap">

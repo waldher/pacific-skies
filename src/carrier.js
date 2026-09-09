@@ -40,7 +40,7 @@ export function updateCarrierFlight(game, dt) {
       p.parked = { x: p.x, y: p.y };
       p.rearmTime = 0;
       p.flight = 'landed'; p.a = c.a; p.speed = 0;
-      notify(game, 'On deck — repairing. L / TAKE OFF to launch');
+      notify(game, 'On deck — repairing and rearming');
     }
   } else if (p.flight === 'landed') {
     p.x = p.parked.x; p.y = p.parked.y; p.altitude = C.deckHeight; p.speed = 0;

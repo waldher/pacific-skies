@@ -24,7 +24,9 @@ export async function campaignChecks(api) {
   const hullHp = ship.hp;
   game.bullets.push({ x: ship.x, y: ship.y, vx: 0, vy: 0, life: 1 });
   update(.02);
-  check('player rounds damage ship hulls through the combat loop', ship.hp === hullHp - 1);
+  check('bullets cannot damage ship hulls', ship.hp === hullHp);
+  for (let i = 0; i < 40; i++) { game.bullets.push({ x: ship.x, y: ship.y, vx: 0, vy: 0, life: .1 }); update(.02); }
+  check('sustained gunfire cannot sink a ship', ship.hp === hullHp);
   const before = game.score;
   damageShip(ship, ship.hp);
   damageShip(ship, 5);

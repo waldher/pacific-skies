@@ -87,7 +87,7 @@ function check(name, ok, detail) {
   s = await snap();
   check('Space starts the game', s.mode === 'play');
   check('target and landing-request controls are absent in flight', await page.evaluate(() => !document.getElementById('target-action') && document.getElementById('carrier-action').hidden));
-  await page.getByRole('button', { name: /TORPEDO/ }).click();
+  await page.getByRole('button', { name: /TORPEDO/i }).click();
   check('torpedo button drops one round', await page.evaluate(() => window.__game.game.player.torpedoAmmo === 1));
   await page.keyboard.press('t');
   check('keyboard torpedo respects cooldown', await page.evaluate(() => window.__game.game.player.torpedoAmmo === 1));
@@ -276,6 +276,38 @@ function check(name, ok, detail) {
   await page.waitForTimeout(200);
   check('restart removes old aircraft instances', await page.evaluate(() => window.__game.graphics.aircraft.size === 1 + window.__game.game.allies.length));
   check('no JS errors during play', results.errors.length === 0, results.errors[0]);
+
+  const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  mobile.on('pageerror', e => results.errors.push(String(e)));
+  await mobile.goto(`http://127.0.0.1:${port}/pacific-skies/?quality=1`);
+  await mobile.waitForFunction(() => window.__game?.rendering?.ready);
+  await mobile.waitForTimeout(150);
+  check('phone title shows touch instructions without keyboard shortcuts', await mobile.locator('#menu').innerText().then(t => t.includes('Tap to fly') && !/Space|WASD|Arrows|T to|L to/.test(t)));
+  await mobile.screenshot({ path: path.join(SHOT_DIR, '06-phone-title.png') });
+  await mobile.touchscreen.tap(190, 600);
+  await mobile.waitForTimeout(100);
+  check('phone torpedo control has no keyboard prefix', await mobile.locator('#torpedo-action').innerText().then(t => !t.startsWith('T ·')));
+  for (const [width, height, name] of [[320,568,'small-phone'], [844,390,'landscape'], [768,1024,'tablet']]) {
+    await mobile.setViewportSize({ width, height });
+    await mobile.evaluate(() => { window.__game.game.message = 'Patrol destroyer sunk'; window.__game.game.messageTime = 10; });
+    await mobile.waitForTimeout(100);
+    check(`${name} readouts fit the viewport`, await mobile.evaluate(() => {
+      const ids = ['stats','toast','flight-controls'];
+      return ids.every(id => { const e = document.getElementById(id), r = e.getBoundingClientRect(); return r.x >= 0 && r.right <= innerWidth && r.y >= 0 && r.bottom <= innerHeight && e.scrollWidth <= e.clientWidth; });
+    }));
+    check(`${name} notice sizes to its text`, await mobile.evaluate(() => document.getElementById('toast').getBoundingClientRect().width < innerWidth - 40));
+    await mobile.screenshot({ path: path.join(SHOT_DIR, `07-${name}.png`) });
+  }
+  await mobile.keyboard.press('t');
+  await mobile.evaluate(() => { window.__game.game.mode = 'over'; });
+  await mobile.waitForTimeout(100);
+  check('keyboard input switches to keyboard restart hint', await mobile.locator('#menu-start').innerText().then(t => t.includes('Space')));
+  await mobile.touchscreen.tap(90, 500);
+  await mobile.evaluate(() => { window.__game.game.mode = 'over'; });
+  await mobile.waitForTimeout(100);
+  check('touch input restores touch restart hint', await mobile.locator('#menu-start').innerText().then(t => t === 'Tap to fly'));
+  check('responsive HUD has no runtime errors', results.errors.length === 0, results.errors[0]);
+  await mobile.close();
 
   const failedPage = await browser.newPage();
   await failedPage.route('**/F4U_Corsair.glb', route => route.fulfill({ status: 503, body: 'unavailable' }));

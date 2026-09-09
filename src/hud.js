@@ -1,4 +1,4 @@
-// HUD, wave banner, off-screen arrows, touch controls, menus.
+// Responsive text readouts; world markers and touch controls stay on canvas.
 import { ctx, view, w2s } from './canvas.js';
 import { game } from './state.js';
 import { stick, fireTouch, isTouchDevice } from './input.js';
@@ -10,24 +10,6 @@ import { clamp, TAU } from './util.js';
 
 export function drawHud() {
   const { W, H } = view, player = game.player;
-  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
-  ctx.font = '700 15px "Courier New", monospace';
-  ctx.fillStyle = 'rgba(10,30,45,0.55)';
-  rr(10, 10, 174, 70, 6);
-  ctx.fillStyle = '#f2e8c9';
-  ctx.fillText('SCORE ' + game.score, 22, 18);
-  ctx.fillText('SECTORS ' + game.territories.filter(t => t.owner === 'us').length + '/' + game.territories.length, 22, 36);
-  // health bar
-  ctx.fillStyle = '#1c3347'; rr(22, 54, 150, 8, 4);
-  ctx.fillStyle = player.hp > 35 ? '#7fc36b' : '#d8554a';
-  if (player.hp > 0) rr(22, 54, 150 * (player.hp / 100), 8, 4);
-  // gun heat bar (blinks red while overheated)
-  ctx.fillStyle = '#1c3347'; rr(22, 66, 150, 5, 2);
-  ctx.fillStyle = player.overheated
-    ? (Math.sin(game.time * 18) > 0 ? '#ff5b4a' : '#8a2f26')
-    : '#e8a33d';
-  if (player.heat > 0) rr(22, 66, 150 * player.heat, 5, 2);
-
   drawNavigation();
   for (const ship of game.ships) {
     if (ship.hp <= 0) continue;
@@ -41,12 +23,6 @@ export function drawHud() {
       ctx.fillStyle = '#ed876c'; rr(sx - 23, sy + 26, 46 * ship.hp / ship.maxHp, 4, 2);
     }
   }
-  if (game.messageTime > 0) {
-    ctx.textAlign = 'center'; ctx.font = '700 12px monospace';
-    ctx.fillStyle = 'rgba(9,29,40,.85)'; rr(12, H - 150, W - 24, 35, 5);
-    ctx.fillStyle = '#f2e8c9'; ctx.fillText(game.message, W / 2, H - 139, W - 42);
-  }
-
   for (const ally of game.allies) {
     const [x, y] = w2s(ally.x, ally.y);
     ctx.textAlign = 'center'; ctx.font = '700 10px monospace'; ctx.fillStyle = '#86ebd1';
@@ -88,8 +64,8 @@ export function drawHud() {
 
 function drawNavigation() {
   const { W, H } = view, p = game.player;
-  const mx = W - 150, my = 10, mw = 140, mh = 88;
-  ctx.fillStyle = 'rgba(8,27,39,.85)'; rr(mx, my, mw, mh, 6);
+  const mw = Math.min(140, Math.max(100, W * .3)), mh = 84, mx = W - mw - 12, my = 12;
+  ctx.fillStyle = 'rgba(8,27,39,.88)'; rr(mx, my, mw, mh, 10);
   const all = [...game.territories, game.ships[0]];
   const minX = Math.min(...all.map(t => t.x)) - 450, maxX = Math.max(...all.map(t => t.x)) + 450;
   const minY = Math.min(...all.map(t => t.y)) - 450, maxY = Math.max(...all.map(t => t.y)) + 450;
@@ -105,75 +81,57 @@ function drawNavigation() {
   const [px, py] = project(p);
   ctx.save(); ctx.translate(px, py); ctx.rotate(p.a); ctx.fillStyle = '#ffffff';
   ctx.beginPath(); ctx.moveTo(5, 0); ctx.lineTo(-3, -3); ctx.lineTo(-3, 3); ctx.closePath(); ctx.fill(); ctx.restore();
-  const nearby = game.territories.find(t => Math.hypot(t.x - p.x, t.y - p.y) < CONFIG.conquest.captureRadius);
-  ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.font = '12px monospace'; ctx.fillStyle = '#f2e8c9';
-  if (p.flight === 'landed') ctx.fillText(`Repairing ${Math.ceil(p.hp)} / ${CONFIG.player.hp} · TORP ${p.torpedoAmmo}/${CONFIG.torpedo.capacity}`, W / 2, 112, W - 24);
-  else if (p.landingHint) ctx.fillText(p.landingHint, W / 2, 112, W - 24);
-  else if (nearby) {
-    const remaining = defenders(game, nearby);
-    const label = nearby.owner === 'us' ? 'Secured' : remaining ? `${remaining} defenders remaining` : `Capturing · ${Math.ceil(CONFIG.conquest.captureSeconds - nearby.progress)}s`;
-    ctx.fillText(`${nearby.name} · ${label}`, W / 2, 112, W - 24);
-    if (nearby.progress > 0 && nearby.owner !== 'us') {
-      ctx.fillStyle = '#153747'; rr(W / 2 - 80, 135, 160, 5, 2);
-      ctx.fillStyle = '#77e8ba'; rr(W / 2 - 80, 135, 160 * nearby.progress / CONFIG.conquest.captureSeconds, 5, 2);
-    }
-  }
-
 }
 
-function drawCenterText(lines) {
-  const { W, H } = view;
-  ctx.fillStyle = 'rgba(8,24,38,0.62)';
-  ctx.fillRect(0, 0, W, H);
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#f2e8c9';
-  let y = H / 2 - lines.length * 16;
-  for (const [txt, size] of lines) {
-    ctx.font = `700 ${size}px "Courier New", monospace`;
-    ctx.fillText(txt, W / 2, y, W - 30);
-    y += size * 1.7;
-  }
-}
+const el = id => document.getElementById(id);
+const text = (id, value) => { const node = el(id); if (node.textContent !== value) node.textContent = value; };
+let menuState = '';
 
 export function drawMenus() {
-  document.getElementById('flight-controls').hidden = game.mode !== 'play';
-  if (game.mode === 'play') {
-    const action = carrierAction(game), button = document.getElementById('carrier-action');
+  const playing = game.mode === 'play', p = game.player;
+  el('flight-hud').hidden = !playing;
+  el('flight-controls').hidden = !playing;
+  el('menu').hidden = playing;
+  if (playing) {
+    text('score-value', game.score.toLocaleString());
+    text('islands-value', `${game.territories.filter(t => t.owner === 'us').length} / ${game.territories.length}`);
+    el('health-fill').style.width = `${clamp(p.hp / CONFIG.player.hp, 0, 1) * 100}%`;
+    el('health-fill').style.background = p.hp > 35 ? '#82dfbc' : '#f18f7c';
+    el('heat-fill').style.width = `${p.heat * 100}%`;
+    el('heat-fill').style.background = p.overheated ? '#f18f7c' : '#e5b76f';
+    const nearby = game.territories.find(t => Math.hypot(t.x - p.x, t.y - p.y) < CONFIG.conquest.captureRadius);
+    let title = '', detail = '';
+    if (p.flight === 'landed') { title = p.hp < CONFIG.player.hp ? 'Repairing' : 'Ready for takeoff'; detail = `Hull ${Math.ceil(p.hp)}% · Torpedoes ${p.torpedoAmmo}/${CONFIG.torpedo.capacity}`; }
+    else if (p.landingHint) { title = 'Carrier approach'; detail = p.landingHint; }
+    else if (nearby) {
+      title = nearby.name;
+      const remaining = defenders(game, nearby);
+      detail = nearby.owner === 'us' ? 'Secured' : remaining ? `${remaining} defenders remaining` : `Securing island · ${Math.ceil(CONFIG.conquest.captureSeconds - nearby.progress)}s`;
+    }
+    el('objective').hidden = !title; text('objective-title', title); text('objective-detail', detail);
+    el('capture-track').hidden = !nearby || nearby.progress <= 0 || nearby.owner === 'us' || p.flight !== 'flying';
+    el('capture-fill').style.width = `${(nearby?.progress || 0) / CONFIG.conquest.captureSeconds * 100}%`;
+    // Avoid repeating the deck status in a second panel.
+    el('toast').hidden = game.messageTime <= 0 || p.flight === 'landed'; text('toast', game.message);
+    const action = carrierAction(game), button = el('carrier-action');
     button.textContent = (isTouchDevice ? '' : 'L · ') + action.label;
-    button.disabled = !action.enabled;
-    button.hidden = game.player.flight !== 'landed';
-    const torpedo = document.getElementById('torpedo-action');
-    torpedo.hidden = game.player.flight !== 'flying';
-    torpedo.disabled = game.player.torpedoCd > 0 || game.player.torpedoAmmo === 0;
-    torpedo.textContent = game.player.torpedoAmmo === 0 ? '0 TORPEDO · REARM'
-      : game.player.torpedoCd > 0 ? `${game.player.torpedoAmmo} TORPEDO · ${Math.ceil(game.player.torpedoCd)}s`
-      : (isTouchDevice ? '' : 'T · ') + `TORPEDO ×${game.player.torpedoAmmo}`;
+    button.disabled = !action.enabled; button.hidden = p.flight !== 'landed';
+    const torpedo = el('torpedo-action'); torpedo.hidden = p.flight !== 'flying';
+    torpedo.disabled = p.torpedoCd > 0 || p.torpedoAmmo === 0;
+    torpedo.textContent = p.torpedoAmmo === 0 ? 'Torpedoes 0/2'
+      : p.torpedoCd > 0 ? `Torpedo ${p.torpedoAmmo}/2 · ${Math.ceil(p.torpedoCd)}s`
+      : (isTouchDevice ? '' : 'T · ') + `Torpedo ${p.torpedoAmmo}/2`;
+    return;
   }
-  if (game.mode === 'title') {
-    drawCenterText([
-      ['PACIFIC SKIES', 42],
-      ['· ISLAND CONQUEST ·', 18],
-      ['Clear fighters & ships. Hold the islands.', 13],
-      ['Line up with the carrier stern to land.', 13],
-      ['', 8],
-      [isTouchDevice ? 'LEFT THUMB STEERS — RIGHT THUMB FIRES' : 'WASD / ARROWS TO FLY — SPACE TO FIRE', 14],
-      [isTouchDevice ? 'TORPEDO BUTTON — SINK SHIPS' : 'T — DROP TORPEDO', 12],
-      [isTouchDevice ? 'TAP TO SCRAMBLE' : 'PRESS SPACE TO SCRAMBLE', 16],
-    ]);
-  } else if (game.mode === 'victory') {
-    drawCenterText([
-      ['PACIFIC SECURED', 32], ['ALL ISLANDS UNDER YOUR CONTROL', 13],
-      ['SCORE ' + game.score, 22], ['', 8],
-      [isTouchDevice ? 'TAP FOR A NEW CAMPAIGN' : 'SPACE FOR A NEW CAMPAIGN', 14],
-    ]);
-  } else if (game.mode === 'over') {
-    drawCenterText([
-      ['SHOT DOWN', 38],
-      ['', 6],
-      ['SCORE ' + game.score + '   ·   BEST ' + game.best, 18],
-      ['SECTORS ' + game.territories.filter(t => t.owner === 'us').length + ' / ' + game.territories.length, 14],
-      ['', 8],
-      [isTouchDevice ? 'TAP TO FLY AGAIN' : 'PRESS SPACE TO FLY AGAIN', 15],
-    ]);
-  }
+  const key = `${game.mode}:${isTouchDevice}:${game.score}:${game.best}`;
+  if (key === menuState) return;
+  menuState = key;
+  text('menu-kicker', 'Pacific theater · 1942');
+  text('menu-title', game.mode === 'title' ? 'Pacific Skies' : game.mode === 'victory' ? 'Pacific secured' : 'Shot down');
+  text('menu-summary', game.mode === 'title' ? 'Clear the defenders. Capture the islands. Return to your carrier to repair and rearm.' : `Score ${game.score.toLocaleString()} · Best ${game.best.toLocaleString()}`);
+  const instructions = game.mode === 'title' ? (isTouchDevice
+    ? ['Left thumb steers · Right thumb fires', 'Tap Torpedo to sink ships', 'Line up with the carrier deck to land']
+    : ['WASD / Arrows to fly · Space to fire', 'T to drop a torpedo · L to take off', 'Line up with the carrier deck to land']) : [`${game.territories.filter(t => t.owner === 'us').length} of ${game.territories.length} islands secured`];
+  el('menu-instructions').replaceChildren(...instructions.map(line => { const node = document.createElement('div'); node.textContent = line; return node; }));
+  text('menu-start', isTouchDevice ? 'Tap to fly' : 'Press Space to fly');
 }
