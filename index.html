@@ -29,7 +29,7 @@
   #score-value { display:block; font-size:23px; line-height:1.15; font-weight:700; letter-spacing:-.04em; font-variant-numeric:tabular-nums; }
   .island-progress { text-align:right; }
   #islands-value { font-size:12px; font-weight:650; font-variant-numeric:tabular-nums; color:var(--ink); }
-  #island-pips { display:flex; justify-content:flex-end; gap:4px; margin-top:5px; }
+  #island-pips { display:flex; flex-wrap:wrap; max-width:80px; justify-content:flex-end; gap:3px; margin-top:5px; }
   #island-pips i { width:7px; height:7px; border-radius:2px; background:#36505c; box-shadow:inset 0 0 0 1px #adc6ca33; }
   .gauges { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px; }
   .gauge-heading { display:flex; justify-content:space-between; color:var(--muted); font-size:9px; margin-bottom:3px; line-height:1; }
@@ -38,7 +38,7 @@
   .track i { display:block; height:100%; background:var(--accent); border-radius:3px; }
   #objective, #toast { position:absolute; left:50%; transform:translateX(-50%); width:max-content; max-width:calc(100% - 32px);
     box-sizing:border-box; text-align:center; background:var(--panel); border:1px solid #adc6ca26; border-radius:10px; padding:9px 14px; }
-  #objective { top:108px; } #objective strong { display:block; font-weight:650; }
+  #objective { top:145px; } #objective strong { display:block; font-weight:650; }
   #objective-detail { color:var(--muted); font-size:12px; }
   #capture-track { margin-top:7px; height:4px; }
   #toast { bottom:124px; font-size:12px; }
@@ -55,7 +55,20 @@
     background:var(--panel); color:var(--ink); box-shadow:inset 0 1px 0 #ffffff0c; }
   #fire-indicator { position:fixed; right:18px; bottom:56px; display:grid; place-content:center; pointer-events:none; }
   #fire-indicator[data-firing="true"] { background:#953f34db; border-color:#f0a18d; }
-  @media(max-height:450px) { #menu { padding:12px; } #menu-kicker { margin-bottom:7px; } #menu-title { font-size:28px; margin-bottom:10px; } #menu-summary { margin-bottom:10px; } #menu-instructions { gap:3px; margin-bottom:12px; } #objective { top:104px; padding:6px 12px; } #toast { bottom:14px; } }
+  #campaign-status { position:absolute; left:12px; top:102px; font-size:10px; color:var(--muted); background:var(--panel); border-radius:7px; padding:4px 8px; max-width:160px; }
+  #rank-value { color:var(--accent); } #carrier-status { margin-top:2px; }
+  #sortie-panel { position:fixed; left:12px; bottom:18px; width:min(260px,calc(100% - 156px)); box-sizing:border-box; z-index:1;
+    padding:12px; background:var(--panel); border:1px solid #adc6ca33; border-radius:12px; pointer-events:auto; }
+  #sortie-panel h2 { font-size:14px; margin:0 0 8px; font-weight:650; } #sortie-panel label { display:block; color:var(--muted); font-size:10px; margin-top:7px; }
+  #sortie-panel select { display:block; box-sizing:border-box; width:100%; min-height:36px; padding:6px; margin-top:3px; border:1px solid #adc6ca44; border-radius:7px; background:#132e3c; color:var(--ink); font:500 12px system-ui,sans-serif; touch-action:manipulation; }
+  #sortie-note { margin:8px 0 0; font-size:10px; color:var(--muted); }
+  @media(max-width:380px) { #sortie-panel { padding:9px; } }
+  @media(max-height:450px) {
+    #sortie-panel { width:min(620px,calc(100% - 156px)); display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0 10px; }
+    #sortie-panel h2, #sortie-note { grid-column:1/-1; }
+    #sortie-panel h2 { margin-bottom:0; }
+    body:has(#sortie-panel:not([hidden])) #objective { top:14px; max-width:calc(100% - 380px); }
+ #menu { padding:12px; } #menu-kicker { margin-bottom:7px; } #menu-title { font-size:28px; margin-bottom:10px; } #menu-summary { margin-bottom:10px; } #menu-instructions { gap:3px; margin-bottom:12px; } #objective { top:145px; padding:6px 12px; } #toast { bottom:14px; } }
 </style>
 </head>
 <body>
@@ -68,10 +81,18 @@
     <div class="gauges"><div><div class="gauge-heading"><span>Hull</span><span id="hull-value">100%</span></div><div class="track"><i id="health-fill"></i></div></div>
       <div><div class="gauge-heading"><span>Gun heat</span></div><div class="track"><i id="heat-fill"></i></div></div></div>
   </div>
+  <div id="campaign-status"><span id="rank-value">Cadet</span><span id="rank-progress"></span><div id="carrier-status" hidden></div></div>
   <div id="objective" hidden><strong id="objective-title"></strong><span id="objective-detail"></span><div id="capture-track" class="track" hidden><i id="capture-fill"></i></div></div>
   <div id="toast" hidden></div>
 </div>
 <div id="menu" class="readout" hidden><div id="menu-card"><p id="menu-kicker"></p><h1 id="menu-title"></h1><p id="menu-summary"></p><div id="menu-instructions"></div><p id="menu-start"></p></div></div>
+<section id="sortie-panel" class="readout" aria-label="Plan next sortie" hidden>
+<h2>Next sortie</h2>
+<label for="sortie-base">Launch from<select id="sortie-base"></select></label>
+<label for="sortie-aircraft">Aircraft<select id="sortie-aircraft"></select></label>
+<label for="sortie-loadout">Ordnance<select id="sortie-loadout"></select></label>
+<p id="sortie-note">Repair and rearm before takeoff.</p>
+</section>
 <div id="flight-controls" hidden><button id="torpedo-action">TORPEDO</button><button id="carrier-action">CARRIER</button></div>
 <div id="fire-indicator" class="readout" hidden>Fire</div>
 <div id="loading" role="status"><p id="loading-text">Loading aircraft…</p><button id="retry" hidden>Retry</button></div>

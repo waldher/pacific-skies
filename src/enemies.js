@@ -23,7 +23,7 @@ export function spawnDefenders(territory) {
 export function updateEnemies(dt) {
   const E = CONFIG.enemy, player = game.player;
   for (const e of game.enemies) {
-    if (e.hp <= 0) continue;
+    if (e.hp <= 0 || e.strike) continue;
     e.wobble += dt * 2;
     const home = e.raider ? game.ships[0] : game.territories[e.territory];
     const candidates = [player, ...game.allies].filter(f => f.hp > 0 && f.flight !== 'landed');

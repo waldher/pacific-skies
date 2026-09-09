@@ -3,6 +3,7 @@
 import { view } from './canvas.js';
 import { audioInit } from './audio.js';
 import { game, startGame } from './state.js';
+import { launchBomb } from './bombs.js';
 import { launchTorpedo } from './torpedoes.js';
 import { requestCarrier } from './carrier.js';
 
@@ -12,6 +13,8 @@ export const fireTouch = { active: false, id: -1 };
 const touchMedia = window.matchMedia?.('(any-pointer: coarse)');
 export let isTouchDevice = navigator.maxTouchPoints > 0 || ('ontouchstart' in window)
   || !!touchMedia?.matches || /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent || '');
+
+export function launchOrdnance() { return game.player?.loadout === 'bombs' ? launchBomb(game) : launchTorpedo(); }
 
 export function initInput(cvs) {
   // Resolve hints from actual input too: tablets and embedded browsers may hide
@@ -24,10 +27,10 @@ export function initInput(cvs) {
   torpedoButton.addEventListener('pointerdown', e => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     e.preventDefault();
-    launchTorpedo();
+    launchOrdnance();
   });
   // Keep keyboard/assistive activation, but ignore the pointer's follow-up click.
-  torpedoButton.addEventListener('click', e => { if (e.detail === 0) launchTorpedo(); });
+  torpedoButton.addEventListener('click', e => { if (e.detail === 0) launchOrdnance(); });
   document.getElementById('carrier-action').addEventListener('click', () => requestCarrier(game));
   window.addEventListener('blur', () => {
     for (const key of Object.keys(keys)) keys[key] = false;
@@ -35,14 +38,14 @@ export function initInput(cvs) {
   });
   window.addEventListener('keydown', e => {
     if (['KeyW','KeyA','KeyS','KeyD','KeyT','KeyL','Space','Enter','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) isTouchDevice = false;
-    if (game.mode === 'play' && e.code === 'KeyT' && !e.repeat) launchTorpedo();
+    if (game.mode === 'play' && e.code === 'KeyT' && !e.repeat) launchOrdnance();
     if (game.mode === 'play' && e.code === 'KeyL' && !e.repeat) requestCarrier(game);
     keys[e.code] = true;
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) e.preventDefault();
     audioInit();
     if (game.mode !== 'play' && (e.code === 'Space' || e.code === 'Enter')) startGame();
   });
-  window.addEventListener('keyup', e => { keys[e.code] = false; });
+  window.addEventListener('keyup', e => { keys[e.code] = false; }, true);
 
   cvs.addEventListener('pointerdown', e => {
     audioInit();

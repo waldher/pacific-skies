@@ -575,6 +575,50 @@ function buildAircraft(S) {
 }
 
 // ---------------------------------------------------------------------------
+// P-38: dimensioned arcade model, with a short cockpit pod and two engine
+// booms joined by the horizontal stabilizer. Overall span/length from NMUSAF:
+// https://www.nationalmuseum.af.mil/Visit/Museum-Exhibits/Fact-Sheets/Display/article/196280/lockheed-p-38l-lightning/
+// Stations below are an artistic approximation, not surveyed engineering data.
+const LIGHTNING = { name: 'P38_Lightning', length: 11.5316, span: 15.8496 };
+function buildLightning() {
+  const root = new THREE.Group(); root.name = LIGHTNING.name;
+  const body = new THREE.Group(); body.name = 'Airframe'; root.add(body);
+  const colors = { olive: '#69705b', lower: '#b1b6aa', dark: '#273033', glass: '#66b7c8', metal: '#aeb4b5', yellow: '#ddb849', white: '#f1eee1', blue: '#23394d' };
+  const mats = Object.fromEntries(Object.entries(colors).map(([k,color]) => [k,new THREE.MeshStandardMaterial({color, roughness:.58, metalness:.15, side:THREE.DoubleSide})]));
+  const add = (name, g, mat='olive', parent=body) => { const m=new THREE.Mesh(g,mats[mat]);m.name=name;parent.add(m);return m; };
+  const hull = (name, stations, offset=0, mat='olive') => {
+    const g=loft(stations.map(([x,w,top,bot])=>fuselageRing(x,w,top,bot,2,20)),{capStart:true,capEnd:true});
+    g.translate(0,0,offset); add(name,g,mat);
+  };
+  const wing=[{y:0,le:3.35,te:5.85,h:0,t:.38},{y:2.55,le:3.5,te:5.8,h:.05,t:.35},{y:5.6,le:3.9,te:5.45,h:.24,t:.23},{y:7.65,le:4.35,te:5.12,h:.39,t:.09},{y:7.9248,le:4.62,te:4.88,h:.42,t:.025}];
+  for(const side of [-1,1]) {
+    add('Main_wing',lofted(wing,side));
+    add('Aileron',surfaceStrip(wing,side,4.5,7.55,.8,.82),'dark');
+    const z=side*2.45;
+    hull('Engine_boom',[[.38,.12,.12,-.12],[.9,.4,.48,-.4],[2,.48,.6,-.66],[3.7,.43,.5,-.56],[5.3,.32,.36,-.35],[7,.21,.25,-.18],[9,.13,.23,-.1],[10.9,.08,.23,-.04],[11.5316,.015,.18,.02]],z);
+    hull('Radiator',[[4.9,.16,-.04,-.24],[5.2,.35,.12,-.32],[5.9,.3,.12,-.3],[6.4,.12,.02,-.13]],z+side*.28,'lower');
+    const fin=extrudeProfile([[8.5,.18],[9.25,1.48],[9.8,1.78],[10.35,1.73],[11.48,.6],[11.5316,.04],[10.1,.03]],.12);fin.translate(0,0,z);add('Twin_tail',fin);
+    add('Turbocharger',box(4.75,5.45,.33,.46,z-.16,z+.16),'dark');
+    const prop=new THREE.Group();prop.name=side<0?'Propeller':'Propeller_2';prop.position.set(.42,0,z);root.add(prop);
+    add('Spinner',loft([[0,.035],[.18,.15],[.42,.23],[.55,.2]].map(([x,r])=>circleRing(x-.42,r,16)),{capStart:true,capEnd:true}),'metal',prop);
+    for(let i=0;i<3;i++) {
+      const a=i*Math.PI*2/3;
+      const blade=box(-.045,.025,.19,1.55,-.095,.095);blade.rotateX(a);add('Blade',blade,'dark',prop);
+      const tip=box(-.046,.026,1.55,1.66,-.09,.09);tip.rotateX(a);add('Blade_tip',tip,'yellow',prop);
+    }
+    const roundel=disc(.48);roundel.rotateX(-Math.PI/2);roundel.translate(4.55,.42,side*5.8);add('US_roundel',roundel,'blue');
+    const emblem=star(.4);emblem.rotateX(-Math.PI/2);emblem.translate(4.55,.43,side*5.8);add('US_star',emblem,'white');
+  }
+  const tail=[{y:0,le:9.35,te:10.65,h:.18,t:.14},{y:2.45,le:9.35,te:10.65,h:.18,t:.12},{y:2.85,le:9.55,te:10.5,h:.18,t:.06}];
+  for(const side of [-1,1]) add('Connecting_tailplane',lofted(tail,side));
+  hull('Cockpit_pod',[[.72,.05,.1,-.15],[1.45,.3,.38,-.43],[2.5,.49,.53,-.6],[3.45,.51,.63,-.58],[4.65,.42,.54,-.4],[5.8,.19,.27,-.19],[6.3,.015,.08,-.04]]);
+  hull('Canopy',[[2.55,.25,.59,.4],[3.05,.37,1.05,.48],[3.7,.37,1.1,.52],[4.25,.29,.83,.49],[4.7,.05,.56,.48]],0,'glass');
+  add('Canopy_frame',box(3.03,3.08,.56,1.06,-.37,.37),'olive');
+  add('Canopy_spine',box(3.08,3.72,1.09,1.12,-.025,.025),'olive');
+  for(const z of [-.18,-.06,.06,.18]) add('Nose_gun',box(.57,1.18,-.025,.025,z-.022,z+.022),'dark');
+  return root;
+}
+
 // Spec space → glTF space: x aft → +z, y up → +y, z starboard → +x,
 // then shift so the origin sits at the length mid-point.
 // Swapping x and z mirrors the handedness, so triangle winding is reversed
@@ -587,7 +631,7 @@ function toModel(root, S) {
       const g = node.geometry, p = g.attributes.position, n = g.attributes.normal;
       for (let i = 0; i < p.count; i++) {
         const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
-        p.setXYZ(i, z, y, x - (node.parent.name === 'Propeller' ? 0 : shift));
+        p.setXYZ(i, z, y, x - (node.parent.name.startsWith('Propeller') ? 0 : shift));
         if (n) { const nx = n.getX(i), ny = n.getY(i), nz = n.getZ(i); n.setXYZ(i, nz, ny, nx); }
       }
       if (g.index) {
@@ -603,8 +647,8 @@ function toModel(root, S) {
         }
       }
       g.computeBoundingBox();
-    } else if (node.name === 'Propeller') {
-      node.position.set(0, 0, node.position.x - shift);
+    } else if (node.name.startsWith('Propeller')) {
+      node.position.set(node.position.z, node.position.y, node.position.x - shift);
     }
   });
 }
@@ -675,8 +719,8 @@ function writeGLB(root, file) {
   return { triangles, bytes: 12 + 8 + jsonBuf.length + 8 + bin.length };
 }
 
-for (const spec of [CORSAIR, ZERO]) {
-  const aircraft = buildAircraft(spec);
+for (const spec of [CORSAIR, ZERO, LIGHTNING]) {
+  const aircraft = spec === LIGHTNING ? buildLightning() : buildAircraft(spec);
   toModel(aircraft, spec);
   const out = path.join(OUT_DIR, `${spec.name}.glb`);
   const info = writeGLB(aircraft, out);
