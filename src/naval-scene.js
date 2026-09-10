@@ -121,7 +121,7 @@ export function createNavalScene(scene) {
         v.root.position.set(field.x, 0, field.y);
         v.root.rotation.y = -field.a - Math.PI / 2;
         v.beacon.material = field.owner === 'us' ? friend : hostile;
-        const intact = field.owner === 'us' ? 3 : Math.ceil(3 * Math.max(0, field.hp) / field.maxHp);
+        const intact = Math.ceil(3 * Math.max(0, field.hp) / field.maxHp);
         v.hangars.forEach((hangar, i) => {
           hangar.scale.y = i < intact ? 1 : .15;
           hangar.position.y = i < intact ? 18 : 10;
@@ -151,11 +151,25 @@ export function createNavalScene(scene) {
           const ring = new THREE.Mesh(ringGeometry, hostile); ring.position.y = 9; group.add(ring);
           const pole = new THREE.Mesh(poleGeometry, cabin); pole.position.set(-100, 28, 0); group.add(pole);
           const flag = new THREE.Mesh(flagGeometry, hostile); flag.position.set(-88, 40, 0); group.add(flag);
+          if (t.role === 'radar') {
+            box(group, [32, 18, 26], [70, 17, 0], cabin);
+            box(group, [3, 42, 3], [70, 43, 0], dark);
+            const dish = box(group, [45, 20, 3], [70, 62, 0], cabin); dish.name = 'RadarDish';
+            box(group, [2, 28, 2], [70, 62, 0], dark);
+          } else if (t.role === 'port') {
+            box(group, [110, 5, 30], [0, 9, t.radius * .7], wood);
+            for (const x of [-42, 42]) box(group, [18, 5, 80], [x, 9, t.radius * .7 + 28], wood);
+            for (const x of [-30, 15]) box(group, [32, 24, 35], [x, 20, t.radius * .7 - 42], cabin);
+            box(group, [4, 58, 4], [65, 36, t.radius * .7], dark);
+            box(group, [54, 4, 4], [45, 64, t.radius * .7], dark);
+          }
           group.name = 'Territory-' + t.name; zones.set(t, group); scene.add(group);
         }
         const group = zones.get(t), mat = t.owner === 'us' ? friend : hostile;
         group.children[0].material = mat; group.children[2].material = mat;
         group.children[0].visible = t.owner !== 'us';
+        const dish = group.getObjectByName('RadarDish');
+        if (dish) dish.rotation.y = game.time * .5;
       }
     },
   };

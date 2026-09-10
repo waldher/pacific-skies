@@ -8,6 +8,7 @@ import { aircraftPreviews } from './aircraft-previews.js';
 import { availableBases, canUseAircraft, selectSortie } from './bases.js';
 import { carrierAction } from './carrier.js';
 import { defenders } from './campaign.js';
+import { sessionSummary } from './session-report.js';
 import { CONFIG } from './config.js';
 import { clamp, TAU } from './util.js';
 
@@ -32,9 +33,21 @@ export function drawHud() {
     ctx.textAlign = 'center'; ctx.font = '700 10px system-ui';
     ctx.fillStyle = field.owner === 'us' ? '#82dfbc' : '#ffad91';
     ctx.fillText(field.owner === 'us' ? 'FRIENDLY AIRFIELD' : field.hp > 0 ? 'AIRFIELD · BOMB TARGET' : 'AIRFIELD DISABLED', sx, sy - 62);
-    if (field.owner !== 'us' && field.hp > 0) {
+    if (field.hp > 0 && (field.owner !== 'us' || field.hp < field.maxHp)) {
       ctx.fillStyle = '#172e3a'; rr(sx - 23, sy - 55, 46, 4, 2);
-      ctx.fillStyle = '#ed876c'; rr(sx - 23, sy - 55, 46 * field.hp / field.maxHp, 4, 2);
+      ctx.fillStyle = field.owner === 'us' ? '#82dfbc' : '#ed876c'; rr(sx - 23, sy - 55, 46 * field.hp / field.maxHp, 4, 2);
+    }
+  }
+  for (const territory of game.territories.filter(t => t.role && t.role !== 'airfield')) {
+    const [sx, sy] = w2s(territory.x, territory.y);
+    if (sx < -80 || sx > W + 80 || sy < -80 || sy > H + 80) continue;
+    ctx.textAlign = 'center'; ctx.font = '700 10px system-ui';
+    ctx.fillStyle = territory.owner === 'us' ? '#82dfbc' : '#ffad91';
+    ctx.fillText(roleNames[territory.role].toUpperCase(), sx, sy - 40);
+    if (territory.maxIntegrity && territory.integrity > 0) {
+      ctx.fillStyle = '#172e3a'; rr(sx - 23, sy - 33, 46, 4, 2);
+      ctx.fillStyle = territory.owner === 'us' ? '#82dfbc' : '#ed876c';
+      rr(sx - 23, sy - 33, 46 * territory.integrity / territory.maxIntegrity, 4, 2);
     }
   }
   for (const ally of game.allies) {
@@ -45,8 +58,15 @@ export function drawHud() {
   // off-screen enemy arrows
   ctx.fillStyle = 'rgba(255,120,90,0.9)';
   for (const e of game.enemies) {
+    if (e.strike && !e.detected) continue;
     const [sx, sy] = w2s(e.x, e.y);
-    if (sx > -10 && sx < W + 10 && sy > -10 && sy < H + 10) continue;
+    if (sx > -10 && sx < W + 10 && sy > -10 && sy < H + 10) {
+      if (e.strikeRole && e.phase !== 'retreat') {
+        ctx.font = '650 9px system-ui'; ctx.textAlign = 'center'; ctx.fillStyle = '#ffbd83';
+        ctx.fillText(e.strikeRole === 'torpedo' ? 'TORPEDO' : e.strikeRole === 'bomber' ? 'BOMBER' : 'ESCORT', sx, sy + 24);
+      }
+      continue;
+    }
     const dx = sx - W / 2, dy = sy - H / 2;
     const m = 26;
     const t = Math.min(
@@ -87,10 +107,22 @@ function drawNavigation() {
     if (hasAirfield) {
       ctx.fillRect(x - 4, y - 4, 8, 8);
       ctx.fillStyle = '#f2eee1'; ctx.fillRect(x - .5, y - 3, 1, 6);
+    } else if (t.role === 'port') {
+      ctx.fillRect(x - 4, y - 3, 8, 6); ctx.fillStyle = '#f2eee1'; ctx.fillRect(x - 1, y - 3, 2, 4);
+    } else if (t.role === 'radar') {
+      ctx.beginPath(); ctx.moveTo(x, y - 5); ctx.lineTo(x + 4, y + 3); ctx.lineTo(x - 4, y + 3); ctx.closePath(); ctx.fill();
     } else { ctx.beginPath(); ctx.arc(x, y, 4, 0, TAU); ctx.fill(); }
   }
   for (const ship of game.ships.filter(s => s.hp > 0 && s.active !== false && s.kind === 'carrier')) {
     const [cx, cy] = project(ship); ctx.fillStyle = ship.team === 'us' ? '#6de4b3' : '#ef816b'; ctx.fillRect(cx - 3, cy - 5, 6, 10);
+  }
+  for (const enemy of game.enemies.filter(e => e.hp > 0 && e.strike && e.detected && e.phase !== 'retreat')) {
+    const [x, y] = project(enemy), target = raidTarget(enemy.targetBaseId);
+    if (target) {
+      const [tx, ty] = project(target); ctx.strokeStyle = '#ffad9170'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(tx, ty); ctx.stroke();
+    }
+    ctx.fillStyle = '#ffbd83'; ctx.beginPath(); ctx.arc(x, y, 2, 0, TAU); ctx.fill();
   }
   const [px, py] = project(p);
   ctx.save(); ctx.translate(px, py); ctx.rotate(p.a); ctx.fillStyle = '#ffffff';
@@ -102,6 +134,9 @@ const text = (id, value) => { const node = el(id); if (node.textContent !== valu
 let menuState = '';
 let sortieBound = false;
 const aircraftIds = Object.keys(AIRCRAFT);
+const roleNames = { airfield: 'Airfield', port: 'Port', radar: 'Radar station' };
+const roleBenefits = { airfield: 'Landing, repair & defenses', port: 'Supplies fleet repairs', radar: 'Earlier raid detection' };
+const clock = seconds => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
 const icons = {
   airfield: '<path d="M35 9h26v62H35z"/><path class="icon-cut" d="M47 14h2v9h-2zm0 16h2v9h-2zm0 16h2v9h-2zm0 16h2v5h-2z"/><path d="M14 23h13v13H14zm55 19h13v13H69z"/>',
   carrier: '<path d="m35 9 26 0 7 45-12 17H40L28 54z"/><path class="icon-cut" d="M46 17h3v42h-3z"/><path d="M64 25h10v20H64z"/>',
@@ -163,6 +198,7 @@ function drawSortie(p, playing) {
   el('sortie-unlock').hidden = !next;
   if (next) {
     const type = AIRCRAFT[next], requirements = [];
+    if ((game.combatSorties || 0) < (type.unlockSorties || 0)) requirements.push(`${game.combatSorties || 0}/${type.unlockSorties} combat sorties`);
     if (game.score < type.unlockScore) requirements.push(`${type.unlockScore.toLocaleString()} pts`);
     if (game.rank < type.minRank) requirements.push('rescue the carrier');
     text('sortie-unlock', `Next: ${type.shortName} · ${requirements.join(' + ')}`);
@@ -183,6 +219,7 @@ export function drawMenus() {
   el('fire-indicator').hidden = !playing || !isTouchDevice || p?.flight !== 'flying';
   el('fire-indicator').dataset.firing = String(fireTouch.active);
   if (playing) {
+    drawThreatStatus();
     text('score-value', game.score.toLocaleString());
     text('hull-value', `${Math.ceil(p.hp)}%`);
     el('hull-value').style.color = p.hp > 35 ? '#82dfbc' : '#f18f7c';
@@ -206,10 +243,10 @@ export function drawMenus() {
     if (p.flight === 'landed') { title = p.hp < CONFIG.player.hp ? 'Repairing' : 'Ready for takeoff'; detail = `Hull ${Math.ceil(p.hp)}% · ${p.loadout === 'bombs' ? 'Bombs ' + (p.bombAmmo || 0) : 'Torpedoes ' + (p.torpedoAmmo || 0)}`; }
     else if (p.landingHint) { title = 'Landing approach'; detail = p.landingHint; }
     else if (nearby) {
-      title = nearby.name;
+      title = `${nearby.name}${nearby.role ? ' · ' + roleNames[nearby.role] : ''}`;
       const remaining = defenders(game, nearby);
       const field = (game.airfields || []).find(f => (f.territory === nearby.id || f.territory === nearby) && f.owner !== 'us' && f.hp > 0);
-      detail = nearby.owner === 'us' ? 'Secured' : field ? 'Bomb the airfield to stop enemy launches' : remaining ? `${remaining} defenders remaining` : `Securing island · ${Math.ceil(CONFIG.conquest.captureSeconds - nearby.progress)}s`;
+      detail = nearby.owner === 'us' ? (nearby.established < CONFIG.conquest.establishSeconds ? `Establishing · ${Math.ceil(CONFIG.conquest.establishSeconds - nearby.established)}s · vulnerable` : roleBenefits[nearby.role] || 'Secured') : field ? 'Bomb the airfield to stop enemy launches' : remaining ? `${remaining} defenders remaining` : `Securing island · ${Math.ceil(CONFIG.conquest.captureSeconds - nearby.progress)}s`;
     }
     if (p.flight === 'flying' && !p.landingHint && game.rescue?.status === 'active' && (!nearby || nearby.owner === 'us')) {
       title = 'Carrier rescue';
@@ -233,6 +270,7 @@ export function drawMenus() {
     torpedo.textContent = (isTouchDevice || cooldown > 0 || !ammo ? '' : 'T · ') + `${name} ${ammo || 0}/${capacity}` + (cooldown > 0 ? ` · ${Math.ceil(cooldown)}s` : '');
     return;
   }
+  drawSessionReport();
   const key = `${game.mode}:${isTouchDevice}:${game.score}:${game.best}`;
   if (key === menuState) return;
   menuState = key;
@@ -240,8 +278,47 @@ export function drawMenus() {
   text('menu-title', game.mode === 'title' ? 'Pacific Skies' : game.mode === 'victory' ? 'Pacific secured' : game.endReason || 'Shot down');
   text('menu-summary', game.mode === 'title' ? 'Launch from your airfield. Capture islands, earn your wings, and rescue the fleet.' : `Score ${game.score.toLocaleString()} · Best ${game.best.toLocaleString()}`);
   const instructions = game.mode === 'title' ? (isTouchDevice
-    ? ['Left thumb steers · Right thumb fires', 'Tap Bomb to strike airfields and ships', 'Line up with a friendly runway to land']
+    ? ['Left thumb steers · Right thumb fires', 'Bomb island defenses · Torpedo ships', 'Line up with a friendly runway to land']
     : ['WASD / Arrows to fly · Space to fire', 'T to drop ordnance · L to take off', 'Line up with a friendly runway to land']) : [`${game.territories.filter(t => t.owner === 'us').length} of ${game.territories.length} islands secured`];
   el('menu-instructions').replaceChildren(...instructions.map(line => { const node = document.createElement('div'); node.textContent = line; return node; }));
   text('menu-start', isTouchDevice ? 'Tap to begin' : 'Press Space to begin');
+}
+
+function drawSessionReport() {
+  const node = el('session-report'), report = sessionSummary(game);
+  node.hidden = game.mode === 'title' || !report;
+  if (node.hidden) { node.open = false; return; }
+  if (!node.dataset.bound) {
+    for (const event of ['keydown', 'keyup', 'pointerdown']) node.addEventListener(event, e => e.stopPropagation());
+    node.dataset.bound = 'true';
+  }
+  const rows = [['Campaign time', clock(report.elapsed)], ['Territory gained / lost', `${report.captured} / ${report.lost}`], ['Carriers lost', report.carrierLosses]];
+  if (Number.isFinite(report.raids.intercepted)) rows.push(['Your raid interceptions', report.raids.intercepted]);
+  if (Number.isFinite(report.raids.damage)) rows.push(['Raid damage sustained', Math.round(report.raids.damage)]);
+  const signature = JSON.stringify(report);
+  if (node.dataset.report === signature) return;
+  node.dataset.report = signature;
+  el('report-grid').replaceChildren(...rows.map(([label, value]) => {
+    const cell = document.createElement('div'), name = document.createElement('span'), number = document.createElement('strong');
+    name.textContent = label; number.textContent = value; cell.append(name, number); return cell;
+  }));
+  text('report-unlocks', report.unlocks.length ? report.unlocks.map(u => `${AIRCRAFT[u.aircraft]?.shortName || u.aircraft} at ${clock(u.time)}`).join(' · ') : 'No new aircraft unlocked this campaign.');
+}
+
+function raidTarget(id) {
+  const base = (game.bases || []).find(b => b.id === id);
+  return base?.ship || base?.airfield || (base?.shipId && game.ships.find(s => s.id === base.shipId))
+    || (game.airfields || []).find(f => f.id === id)
+    || game.ships.find(s => s.id === id || (id === 'fleet-carrier' && s.team === 'us' && s.kind === 'carrier'))
+    || game.territories.find(t => `territory-${t.id}` === id);
+}
+function drawThreatStatus() {
+  const threats = game.enemies.filter(e => e.hp > 0 && e.strike && e.detected && e.phase !== 'retreat' && !e.rescue);
+  el('threat-status').hidden = !threats.length;
+  if (!threats.length) return;
+  const first = threats.reduce((a, b) => Math.hypot(a.x - game.player.x, a.y - game.player.y) < Math.hypot(b.x - game.player.x, b.y - game.player.y) ? a : b);
+  const target = raidTarget(first.targetBaseId), formation = threats.filter(e => e.targetBaseId === first.targetBaseId);
+  const name = target?.name || (first.targetBaseId === 'home-airfield' ? 'Home airfield' : 'Friendly position');
+  text('threat-title', name);
+  text('threat-detail', `${formation.length} ${formation.length === 1 ? 'attacker' : 'attackers'}${threats.length > formation.length ? ' · more raids' : ' detected'}`);
 }

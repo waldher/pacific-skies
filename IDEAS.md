@@ -1,40 +1,29 @@
-# Backlog
+# Pacific Skies roadmap
 
-Ideas and known issues, roughly ordered. Move items to "Done" with
-the commit that shipped them.
+## Next conquest additions
 
-## Known gameplay issues (from playtesting)
+- Supply convoys: escort friendly reinforcements and interdict enemy supplies.
+- Visual landed investment choices: radar, hardened hangars, repair crews and escorts.
+- Squadron assignments: patrol a selected base, escort a strike, replace lost wingmen.
+- Fleet expansion: destroyer escorts and a second mobile carrier.
+- Original enemy bomber and torpedo-aircraft models; current strike roles use the Zero.
+- Visible enemy bomb and torpedo releases; current strikes damage their target on arrival.
+- Persistent campaign saves and service records, paint schemes and nose art.
 
-- Waves 1–3 are nearly risk-free: the +25 hp heal between waves
-  almost tops the player off, danger only starts around wave 4, then
-  wave 5 spikes hard (bot went 86→0 hp in ~4 s). Consider smoothing
-  the curve: smaller heal, or earlier aces, or gentler wave-5 count.
-- The "— WAVE N —" banner renders at H*0.22, right where dogfights
-  happen; it overlapped an enemy plane in playtests. Move it higher,
-  shrink it, or render it under the HUD panel.
+## Balance work
 
-## Feature ideas
+- Measure first-aircraft timing with human sessions; score and combat-sortie gates are initial tuning, not a validated 10–15 minute guarantee.
+- Add conquest and defensive-return bots, including ordnance accuracy and manual landings.
+- Extend seeded coverage beyond the three smoke-test seeds and compare full campaigns with similar skill levels.
+- Inspect time spent travelling without useful decisions as the map and fleet expand.
+- Use the optional end report and playtest/balance.cjs together; isolated defense simulations do not prove overall fun or campaign difficulty.
 
-- **Enemy variety:** bombers (slow, tough, straight lines, worth
-  more) with fighter escorts; floatplanes that turn lazily.
-- **Ground/sea targets:** ships and island AA guns to strafe between
-  waves; torpedo-run bonus objectives.
-- **Power-ups:** repair, spread guns, brief overdrive — dropped by
-  aces, risk/reward to fly through the wreckage.
-- **Carrier:** friendly carrier you can land on between waves to
-  repair (replaces the automatic heal with a skill action).
-- **Persistence:** localStorage for best score; daily-seed mode so
-  everyone fights the same waves.
-- **Feel:** prop sound loop pitched by throttle; engine smoke
-  trails at full boost; ship wakes once there are ships.
-- **Mobile polish:** real-device touch testing, haptics on hit
-  (navigator.vibrate), safe-area insets for notched phones.
+## Implemented
 
-## Done
-
-- Gun heat: holding fire ~4 s overheats the guns (1.5 s lockout,
-  amber HUD gauge, steam hiss + cowling smoke). Rewards trigger
-  discipline instead of pinning the space bar.
-- v0.1: first playable (single file).
-- v0.2: ES-module refactor, config.js tuning table, seeded RNG,
-  playtest harness + CI, docs.
+- Procedural island chains and manual airfield/carrier landing with instant rearming.
+- P-38, Dauntless, Corsair, Avenger and P-51 roles with real model cards.
+- Two-round ordnance, torpedo naval attacks and exact-hit naval bombing.
+- Airfield, radar and port holdings; establishment, defense and raid-driven recapture.
+- Organized bomber/torpedo flights with fighter escorts and detected raid routes.
+- Slower score plus completed-combat-sortie qualifications.
+- Recorded campaign outcomes and repeatable defense balance scenarios.

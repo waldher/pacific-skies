@@ -28,6 +28,7 @@ export function updateBombs(game, dt) {
     for (const f of game.airfields) {
       if (!land || f.owner !== 'enemy' || f.hp <= 0 || Math.hypot(f.x - b.x, f.y - b.y) > (b.blastRadius ?? B.blastRadius)) continue;
       f.hp = Math.max(0, f.hp - damage); hit = true;
+      game.playerMerit = (game.playerMerit || 0) + 1;
       if (f.hp === 0) {
         game.score += B.airfieldScore;
         notify(game, 'Enemy airfield disabled · launches stopped');

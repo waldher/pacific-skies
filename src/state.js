@@ -1,4 +1,5 @@
 // Central mutable game state, shared by all systems.
+import { resetSessionReport } from './session-report.js';
 import { CONFIG } from './config.js';
 import { createCampaign } from './campaign.js';
 
@@ -37,8 +38,9 @@ export function startGame() {
   game.torpedoes = [];
   game.bullets = []; game.ebullets = []; game.enemies = []; game.particles = [];
   game.cam = { x: 0, y: 0 };
-  game.score = 0; game.time = 0; game.endReason = '';
+  game.score = 0; game.time = 0; game.flightSeconds = 0; game.combatSorties = 0; game.playerMerit = 0; game.raidImpacts = 0; game.raidDamage = 0; game.raidIntercepts = 0; game.strikeLaunchCooldown = 0; game.endReason = '';
   Object.assign(game, createCampaign());
+  resetSessionReport(game);
   game.message = 'Choose your sortie, then take off. Bomb enemy airfields to stop their strikes.';
   game.messageTime = CONFIG.conquest.messageDuration;
   game.shake = 0;

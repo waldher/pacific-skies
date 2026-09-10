@@ -4,6 +4,7 @@ import { CONFIG } from './config.js';
 export function availableBases(game) {
   return (game.bases || []).filter(base => base.owner === 'us' && base.available !== false &&
     (base.kind !== 'carrier' || game.rank >= 2) &&
+    (!base.airfieldId || game.airfields.some(f => f.id === base.airfieldId && f.owner === 'us' && f.hp > 0)) &&
     (!base.shipId || game.ships.some(ship => ship.id === base.shipId && ship.hp > 0)));
 }
 

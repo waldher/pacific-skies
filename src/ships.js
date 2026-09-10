@@ -51,6 +51,7 @@ export function hitsShip(b, s) {
 export function damageShip(s, amount = 1) {
   if (s.team !== 'jp' || s.hp <= 0) return;
   s.hp = Math.max(0, s.hp - amount);
+  game.playerMerit = (game.playerMerit || 0) + 1;
   if (s.hp === 0) {
     s.sinking = 0;
     game.score += CONFIG.ship.score;

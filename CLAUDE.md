@@ -34,7 +34,8 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 | `aircraft-types.js` | aircraft roles, available ordnance, base restrictions and unlock metadata |
 | `bases.js` | landed base transfer and aircraft/loadout compatibility |
 | `bombs.js` | two-bomb loadout, delayed impact and airfield/ship damage |
-| `strikes.js` | launch-site strike groups, base attacks and field repair |
+| `strikes.js` | bomber/torpedo raids, escorts, radar detection and garrison defense |
+| `session-report.js` | observed campaign outcomes and unlock timings |
 | `carrier.js` | manual approach, aligned deck landing, deck repair and takeoff |
 | `airwar.js` | independent friendly patrols and occasional roaming Zero interceptors |
 | `torpedoes.js` | two-round loadout, surface runs, ship impacts and cooldown |

@@ -80,10 +80,11 @@ export const CONFIG = {
   },
   generation: { enemyMin: 5, enemyMax: 7, spacing: 1650, jitter: 130, radiusMin: 300, radiusMax: 370, carrierX: 1000, carrierY: 1600, enemyCarrierX: -2300, enemyCarrierY: 1800, enemyCarrierOrbit: 280 },
   airfield: { deckHeight: 9, length: 300, width: 70, hp: 40, homeHp: 200 },
-  progression: { aircraftUnlocks: { dauntless: 300, avenger: 1200, p51: 2200 }, rescueScore: 600, rescueStartRadius: 1200, rescueIntercepts: 2, rescueHp: 140, rescueRadius: 600, rescueRetry: 45, rescueEnemies: 3, rescueSpawnDistance: 1500 },
+  progression: { aircraftUnlocks: { dauntless: 1800, avenger: 4000, p51: 6000 }, aircraftSorties: { dauntless: 3, corsair: 5, avenger: 8, p51: 12 }, rescueScore: 2500, rescueStartRadius: 1200, rescueIntercepts: 2, rescueHp: 140, rescueRadius: 600, rescueRetry: 45, rescueEnemies: 3, rescueSpawnDistance: 1500 },
   bomb: { capacity: 2, rearmSeconds: 0, cooldown: 1, fallSeconds: .8, driftSpeed: 160, blastRadius: 100, damage: 20, airfieldScore: 300 },
-  strike: { intervalMin: 45, intervalMax: 65, groupSize: 2, maxActive: 6, speed: 205, turn: 1.7, hp: 3, attackRange: 65, baseDamage: 10, baseRepairPerSecond: 3, formationSpacing: 48, retreatDistance: 1000 },
+  strike: { launchGap: 45, firstMin: 90, firstMax: 150, intervalMin: 65, intervalMax: 90, groupSize: 3, maxActive: 12, speed: 205, turn: 1.7, hp: 3, attackRange: 65, baseDamage: 22, torpedoDamage: 30, escortCount: 1, escortRange: 450, escortFireCooldown: 1.4, defenseRange: 600, defenseCooldown: .8, radarRange: 2200, baseDetectionRange: 1100, baseRepairPerSecond: 3, formationSpacing: 48, retreatDistance: 1000 },
   conquest: {
+    outpostHp: 100, capturedIntegrityFraction: .55, establishSeconds: 90, garrisonRepairPerSecond: .35, portRepairPerSecond: .4, recaptureFighters: 2,
     activateRadius: 850, captureRadius: 330, captureSeconds: 6, captureScore: 500,
     patrolRadius: 290, pursuitRadius: 750, engageRadius: 620, messageDuration: 4,
   },
