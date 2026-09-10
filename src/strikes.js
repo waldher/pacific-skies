@@ -25,6 +25,19 @@ function territoryFor(game, base) {
   const asset = baseAsset(game, base);
   return game.territories.find(t => t.id === (base.territoryId ?? base.territory ?? asset?.territory));
 }
+// Pressure can cross one regional connection. Rear areas become safe when the
+// neighboring launch sources are neutralized; distant timers cannot skip fronts.
+function regionAt(game, asset) {
+  const holding = game.territories.find(t => t.id === asset.territory);
+  if (holding) return holding.sector;
+  const region = (game.sectors || []).reduce((best, r) => !best || Math.hypot(r.x-asset.x,r.y-asset.y) < Math.hypot(best.x-asset.x,best.y-asset.y) ? r : best, null);
+  return region?.id;
+}
+function withinFront(game, source, asset) {
+  if (!game.sectorLinks) return true;
+  const a=regionAt(game,source), b=regionAt(game,asset);
+  return a === b || game.sectorLinks.some(([x,y]) => (x===a&&y===b)||(x===b&&y===a));
+}
 export function updateStrikes(game, dt) {
   game.strikeLaunchCooldown = Math.max(0, (game.strikeLaunchCooldown || 0) - dt);
   const S = CONFIG.strike, targets = candidates(game).filter(b => living(game, b));
@@ -41,10 +54,11 @@ export function updateStrikes(game, dt) {
   for (const source of sources) {
     if (game.strikeLaunchCooldown > 0 || source.launchTimer > 0 || !targets.length || active >= S.maxActive) continue;
     // The nearest foothold takes pressure, instead of every source ignoring the frontline.
-    const target = [...targets].sort((a, b) => {
+    const target = targets.filter(b => withinFront(game, source, baseAsset(game,b))).sort((a, b) => {
       const aa = baseAsset(game, a), bb = baseAsset(game, b);
       return Math.hypot(aa.x - source.x, aa.y - source.y) - Math.hypot(bb.x - source.x, bb.y - source.y);
     })[0];
+    if (!target) continue;
     source.launchTimer = rand(S.intervalMin, S.intervalMax);
     game.strikeLaunchCooldown = S.launchGap;
     const asset = baseAsset(game, target), a = Math.atan2(asset.y - source.y, asset.x - source.x);

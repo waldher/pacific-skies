@@ -1,88 +1,113 @@
-// A charted theater: strategic holdings sit in chains of independent landforms.
+// Adapt the shared expedition geography into operational holdings and sea routes.
 import { CONFIG } from './config.js';
 import { rand, TAU } from './util.js';
+import { generate } from './expedition-geography.js';
+import { insidePolygon } from './surface.js';
+
+function pointSegmentDistance(point, a, b) {
+  const dx=b[0]-a[0],dy=b[1]-a[1],length2=dx*dx+dy*dy;
+  const t=length2?Math.max(0,Math.min(1,((point.x-a[0])*dx+(point.y-a[1])*dy)/length2)):0;
+  return Math.hypot(point.x-a[0]-t*dx,point.y-a[1]-t*dy);
+}
+
+// An enclosing disk covers every ship, at every heading, including turn sweeps.
+// Testing continuous segments against enclosing land disks proves the whole
+// formation stays offshore; sampling only carrier waypoints would not do that.
+export function fleetRouteClearance() {
+  return Math.max(Math.hypot(CONFIG.carrier.length,CONFIG.carrier.width)/2,
+    Math.hypot(CONFIG.fleet.escortAhead,CONFIG.fleet.escortLateral)
+      +Math.hypot(CONFIG.ship.length,CONFIG.ship.width)/2)
+    +CONFIG.theater.fleetCoastClearance;
+}
+export function fleetRouteIsClear(route, terrain, clearance=fleetRouteClearance()) {
+  return route.every((a,i)=>terrain.every(t=>pointSegmentDistance(t,a,route[(i+1)%route.length])>t.extent+clearance));
+}
+function offshoreRoute(region, terrain) {
+  const length=CONFIG.theater.fleetPatrolLength, clearance=fleetRouteClearance();
+  // Search nearby waters first, then outside the region. This is intentionally
+  // independent of holding placement: ships patrol water, not objective slots.
+  for(let ring=0;ring<12;ring++) for(let step=0;step<32;step++) {
+    const a=region.heading+step/32*TAU, distance=region.radius+clearance+ring*length*.4;
+    const x=region.x+Math.cos(a)*distance,y=region.y+Math.sin(a)*distance;
+    const points=[[-length/2,0],[length/2,0],[0,length*.4]].map(([u,v])=>[
+      x-Math.sin(a)*u+Math.cos(a)*v,y+Math.cos(a)*u+Math.sin(a)*v]);
+    if(fleetRouteIsClear(points,terrain,clearance))return points;
+  }
+  // A guaranteed offshore fallback beyond all terrain, not a best-effort unsafe route.
+  const x=Math.max(...terrain.map(t=>t.x+t.extent))+clearance+length;
+  return [[x,region.y],[x+length,region.y],[x+length/2,region.y+length/2]];
+}
+function portCoast(holding, land) {
+  let closest=null;
+  for(let i=0;i<land.shoreline.length;i++) {
+    const [ax,ay]=land.shoreline[i],[bx,by]=land.shoreline[(i+1)%land.shoreline.length];
+    const dx=bx-ax,dy=by-ay,length=Math.hypot(dx,dy);
+    const t=Math.max(0,Math.min(1,((holding.x-land.x-ax)*dx+(holding.y-land.y-ay)*dy)/(length*length)));
+    const x=ax+t*dx,y=ay+t*dy,distance=Math.hypot(x+land.x-holding.x,y+land.y-holding.y);
+    // At a concave vertex one edge normal can point across the next headland.
+    if(insidePolygon(x+dy/length*50,y-dx/length*50,land.shoreline))continue;
+    if(!closest||distance<closest.distance)closest={x:x+land.x,y:y+land.y,a:Math.atan2(-dx,dy),distance};
+  }
+  return closest;
+}
+function fitsRunway(holding, land, angle) {
+  return [-CONFIG.airfield.length/2,0,CONFIG.airfield.length/2].every(along=>
+    [-CONFIG.airfield.width/2,CONFIG.airfield.width/2].every(side=>insidePolygon(
+      holding.x-land.x+Math.cos(angle)*along-Math.sin(angle)*side,
+      holding.y-land.y+Math.sin(angle)*along+Math.cos(angle)*side,land.shoreline)));
+}
 
 export function generateTheater() {
-  const C = CONFIG.theater || {}, scale = C.scale ?? 1, jitter = C.positionJitter ?? 110;
-  const sectors = [
-    { id: 'home', name: 'Coral Approaches', x: 0, y: -550 },
-    { id: 'contested', name: 'Windward Archipelagos', x: 0, y: -2900 },
-    { id: 'stronghold', name: 'Ember Anchorage', x: 0, y: -5300 },
-  ];
-  const specs = [
-    ['HOME ISLAND', 0, 0, 410, 'airfield', 'home', 'long'],
-    ['CORAL WATCH', 450, -1250, 265, 'radar', 'home', 'crescent'],
-    ['JADE RUNWAY', -1300, -2350, 420, 'airfield', 'contested', 'long'],
-    ['PALM HARBOR', 1450, -2350, 365, 'port', 'contested', 'crescent'],
-    ['NORTH REEF', -1550, -3750, 255, 'radar', 'contested', 'crescent'],
-    ['TURTLE FIELD', 1550, -3850, 410, 'airfield', 'contested', 'long'],
-    ['EMBER ANCHORAGE', -700, -5150, 390, 'port', 'stronghold', 'crescent'],
-    ['EMBER COMMAND', 650, -5450, 465, 'airfield', 'stronghold', 'long'],
-  ];
-  // Coherent regional bends change the approach routes, rather than jittering
-  // each objective independently into another set of points.
-  const westBend=rand(-280,220), eastBend=rand(-220,240), northDrift=rand(-240,240);
-  const branchStagger=rand(-240,240), homeBend=rand(-220,220);
-  for (let id=1;id<specs.length;id++) {
-    const p=specs[id];
-    if (id===1) p[1]+=homeBend;
-    else if (p[5]==='contested') {
-      const bend=p[1]<0?westBend:eastBend;
-      p[1]+=bend*(id>=4?1:.45);
-      p[2]+=(p[1]<0?1:-1)*branchStagger;
-    } else { p[1]+=northDrift;p[2]+=branchStagger*.25; }
-  }
-  const terrain = [];
-  function land(x,y,radius,kind,a,sector,holdingId) {
-    const seed = rand(0,10000), id = terrain.length;
-    // Crescents are a single concave shoreline, with an open water lagoon.
-    const shoreline = [];
-    if (kind === 'crescent') {
-      const start = -.15 * Math.PI, end = 1.25 * Math.PI;
-      for (let i=0;i<=18;i++) {
-        const t=start+(end-start)*i/18, r=radius*rand(.92,1.06);
-        shoreline.push([Math.cos(t)*r,Math.sin(t)*r*.85]);
-      }
-      for (let i=18;i>=0;i--) {
-        const t=start+(end-start)*i/18, r=radius*rand(.43,.51);
-        shoreline.push([Math.cos(t)*r,Math.sin(t)*r*.85]);
-      }
-      // The holding is on the outer back of the crescent, never in its lagoon.
-      for (const p of shoreline) p[0] += radius*.71;
-    } else {
-      for(let i=0;i<24;i++) {
-        const t=i/24*TAU, r=radius*rand(.9,1.08);
-        shoreline.push([Math.cos(t)*r*(kind==='long'?.62:1),Math.sin(t)*r*(kind==='long'?1.28:.8)]);
+  const geography=generate(Math.floor(rand(0,4294967296)));
+  const terrain=geography.islands.map(t=>({id:t.id,seed:geography.seed+t.id,x:t.x,y:t.y,
+    radius:Math.max(t.rx,t.ry),extent:Math.max(...t.coast.map(p=>Math.hypot(...p))),
+    kind:t.kind,a:t.a,sector:t.region,region:t.region,holdingId:null,holdingIds:[],shoreline:t.coast}));
+  // Choose an existing island on the first passage for the forward runway.
+  // Largest-island ranking alone can put it behind home, making capture useless.
+  const firstDestination=geography.regions[1];
+  const radarIsland=geography.holdings.find(h=>h.id===1).island;
+  const forward=geography.islands.filter(t=>t.region===0&&t.id!==0&&t.id!==radarIsland
+    &&fitsRunway(t,terrain[t.id],t.a+(t.ry>=t.rx?Math.PI/2:0)))
+    .sort((a,b)=>Math.hypot(a.x-firstDestination.x,a.y-firstDestination.y)-Math.hypot(b.x-firstDestination.x,b.y-firstDestination.y))[0];
+  const territories=geography.holdings.map(original=>{
+    const h={...original};
+    if(h.id===2&&forward)Object.assign(h,{x:forward.x,y:forward.y,island:forward.id});
+    const physical=terrain[h.island], source=geography.islands[h.island];
+    // The home archipelago supports a first reconnaissance sortie and a forward
+    // runway before the first long passage. Its coastline remains exactly atlas-generated.
+    let role=h.role==='home airfield'?'airfield':h.role==='seaplane station'?'radar':h.role;
+    if(h.region===0&&h.id===1)role='radar';
+    if(h.region===0&&h.id===2)role='airfield';
+    let coast=null;
+    if(role==='port') {
+      coast=portCoast(h,physical);
+      // The capture point and port buildings belong at the actual anchorage,
+      // not an invisible point in the middle of a large island.
+      h.x=coast.x-Math.cos(coast.a)*CONFIG.theater.portSetback;h.y=coast.y-Math.sin(coast.a)*CONFIG.theater.portSetback;
+      if(!insidePolygon(h.x-physical.x,h.y-physical.y,physical.shoreline)) {
+        h.x=(coast.x+physical.x)/2;h.y=(coast.y+physical.y)/2;
       }
     }
-    for (const p of shoreline) { const [px,py]=p;p[0]=px*Math.cos(a)-py*Math.sin(a);p[1]=px*Math.sin(a)+py*Math.cos(a); }
-    const extent=Math.max(...shoreline.map(p=>Math.hypot(...p)));
-    const result={id,seed,x,y,radius,extent,kind,a,sector,holdingId,shoreline};terrain.push(result);return result;
-  }
-  const territories=specs.map(([name,x,y,radius,role,sector,kind],id)=>{
-    x=(x+(id?rand(-jitter,jitter):0))*scale;y=(y+(id?rand(-jitter,jitter):0))*scale;
-    const shapeAngle=role==='airfield'?rand(-.16,.16):rand(0,TAU);
-    const physical=land(x,y,radius,kind,id===0?0:shapeAngle,sector,id);
-    return {id,name,x,y,radius,role,sector,seed:physical.seed,a:-Math.PI/2+(id===0?0:shapeAngle),terrainId:physical.id,
-      shoreline:physical.shoreline,extent:physical.extent,stronghold:sector==='stronghold',owner:id?'enemy':'us',activated:!id,progress:0,fighters:id===1?2:id<6?3:4};
+    const a=source.a+(source.ry>=source.rx?Math.PI/2:0);
+    if(role==='airfield'&&!fitsRunway(h,physical,a))throw new Error('Generated airfield does not fit its shoreline');
+    const radius=role==='airfield'?420:role==='port'?365:265;
+    physical.holdingIds.push(h.id);physical.holdingId??=h.id;
+    return {id:h.id,name:h.id===0?'HOME AIRFIELD':`${geography.regions[h.region].name} ${role}`.toUpperCase(),
+      x:h.x,y:h.y,radius,role,portShore:coast?{x:coast.x-h.x,y:coast.y-h.y,a:coast.a}:null,sector:h.region,region:h.region,seed:physical.seed,a,terrainId:physical.id,
+      // A holding footprint is expressed relative to its own origin, even when
+      // multiple installations occupy one physical island.
+      shoreline:physical.shoreline.map(([x,y])=>[x+physical.x-h.x,y+physical.y-h.y]),
+      extent:physical.extent+Math.hypot(physical.x-h.x,physical.y-h.y),
+      stronghold:!!geography.regions[h.region].stronghold,owner:h.id?'enemy':'us',activated:!h.id,
+      progress:0,fighters:h.id===1?2:h.region===0?3:4};
   });
-  // Satellites follow each chain's long axis. Avoid the runway approach corridor.
-  for(const t of territories) {
-    const count=Math.floor(rand(C.satelliteMin??2,(C.satelliteMax??3)+1));
-    for(let i=0;i<count;i++) {
-      for (let attempt=0;attempt<4;attempt++) {
-        const side=i%2?1:-1, x=t.x+side*rand(530,850), y=t.y+rand(-490,490);
-        if(terrain.some(p=>Math.hypot(p.x-x,p.y-y)<p.extent+145)) continue;
-        land(x,y,rand(65,145),'islet',rand(0,TAU),t.sector,null);break;
-      }
-    }
+  const sectors=geography.regions.map(r=>({...r,neighbors:geography.links.filter(link=>link.includes(r.id)).map(link=>link.find(id=>id!==r.id))}));
+  const fleetRoutes={us:offshoreRoute(sectors[0],terrain),jp:offshoreRoute(sectors.find(r=>r.stronghold),terrain)};
+  const theaterBounds={...geography.bounds}, margin=fleetRouteClearance();
+  for(const route of Object.values(fleetRoutes))for(const [x,y] of route) {
+    theaterBounds.minX=Math.min(theaterBounds.minX,x-margin);theaterBounds.maxX=Math.max(theaterBounds.maxX,x+margin);
+    theaterBounds.minY=Math.min(theaterBounds.minY,y-margin);theaterBounds.maxY=Math.max(theaterBounds.maxY,y+margin);
   }
-  // A broken outer reef links the home chain, while remaining clear of takeoff.
-  for(let i=0;i<7 && terrain.length<35;i++) land(-900-i*85,-350-i*170,rand(45,65),'islet',0,'home',null);
-  const theaterBounds={minX:Math.min(...terrain.map(t=>t.x-t.extent))-650,maxX:Math.max(...terrain.map(t=>t.x+t.extent))+650,
-    minY:Math.min(...terrain.map(t=>t.y-t.extent))-700,maxY:1250};
-  const fleetRoutes={us:[[1100,1000],[2300,1100],[2900,300]],
-    jp:[[3200,-2400],[3400,-4300],[3000,-5800]]};
-  theaterBounds.maxX=Math.max(theaterBounds.maxX,3900);
-  return {territories,terrain,sectors,theaterBounds,fleetRoutes};
+  return {territories,terrain,sectors,sectorLinks:geography.links,regionLinks:geography.links,
+    geographySeed:geography.seed,theaterBounds,fleetRoutes};
 }

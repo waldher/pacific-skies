@@ -1,7 +1,8 @@
 // Player flight model, firing, damage smoke, and death.
 import { updateCarrierFlight, checkDeckLanding } from './carrier.js';
 import { CONFIG } from './config.js';
-import { game } from './state.js';
+import { game, recoveryBases } from './state.js';
+import { saveCampaign } from './persistence.js';
 import { keys, stick, fireTouch } from './input.js';
 import { sfxGun, sfxOverheat } from './audio.js';
 import { explosion } from './particles.js';
@@ -94,6 +95,9 @@ export function damagePlayer(amount) {
     player.hp = 0;
     explosion(player.x, player.y, true);
     game.best = Math.max(game.best, game.score);
-    game.mode = 'over';
+    game.pilotLosses = (game.pilotLosses || 0) + 1;
+    game.mode = recoveryBases().length ? 'recovery' : 'over';
+    game.endReason = game.mode === 'over' ? 'All bases lost' : 'Aircraft lost';
+    saveCampaign(game);
   }
 }

@@ -3,7 +3,8 @@ import { recordSession, sessionSummary } from './session-report.js';
 import { updateIntelligence } from './intelligence.js';
 import { initOperations, drawOperations } from './operations.js';
 import { CONFIG } from './config.js';
-import { game, startGame } from './state.js';
+import { game, startGame, recoverPilot, resumeCampaign } from './state.js';
+import { updateCampaignSave, hasSavedCampaign, saveCampaign } from './persistence.js';
 import { cvs, ctx, view } from './canvas.js';
 import { keys, stick, fireTouch, initInput } from './input.js';
 import { updatePlayer, damagePlayer } from './player.js';
@@ -21,13 +22,15 @@ import { createRenderer } from './renderer.js';
 import { drawHud, drawMenus } from './hud.js';
 import { lerp, angDiff, rand, setSeed } from './util.js';
 
+window.addEventListener('pagehide', () => saveCampaign(game));
+document.addEventListener?.('visibilitychange', () => { if (document.hidden) saveCampaign(game); });
 let graphics;
 let contextLost = false;
 
 function update(dt) {
   if (game.paused) return;
-  game.time += dt;
   if (game.mode !== 'play') return;
+  game.time += dt;
 
   if (game.player.flight === 'flying') game.flightSeconds += dt;
   updatePlayer(dt);
@@ -91,6 +94,7 @@ function update(dt) {
 
   updateIntelligence(game, dt);
   recordSession(game);
+  updateCampaignSave(game);
 
   // camera: lead slightly ahead of the nose
   const player = game.player, lead = player.flight === 'flying' ? CONFIG.camera.lead : 0;
@@ -124,7 +128,7 @@ function frame(now) {
 }
 // Debug/test API: the playtest harness (and console tinkering) reads
 // live state and drives input through this handle.
-window.__game = { sessionSummary: () => sessionSummary(game), game, CONFIG, startGame, setSeed, keys, stick, fireTouch, view, angDiff, update, launchTorpedo, launchBomb: () => launchBomb(game), selectSortie: options => selectSortie(game, options), requestCarrier: () => requestCarrier(game) };
+window.__game = { sessionSummary: () => sessionSummary(game), game, CONFIG, startGame, recoverPilot, resumeCampaign, hasSavedCampaign, setSeed, keys, stick, fireTouch, view, angDiff, update, launchTorpedo, launchBomb: () => launchBomb(game), selectSortie: options => selectSortie(game, options), requestCarrier: () => requestCarrier(game) };
 
 
 const status = document.getElementById('loading');

@@ -10,5 +10,5 @@ export const AIRCRAFT = Object.freeze({
 });
 export function aircraftUnlocked(game, id) {
   const type = AIRCRAFT[id];
-  return Boolean(type && game.rank >= type.minRank && game.score >= type.unlockScore && (game.combatSorties || 0) >= type.unlockSorties);
+  return Boolean(type && game.rank >= type.minRank && game.score >= type.unlockScore && (game.combatSorties || 0) >= type.unlockSorties && (game.flightSeconds || 0) >= (CONFIG.progression.aircraftFlightSeconds[id] || 0));
 }

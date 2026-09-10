@@ -27,10 +27,10 @@
   .mission-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
   .eyebrow { font-size:8px; letter-spacing:.16em; color:var(--muted); text-transform:uppercase; }
   #score-value { display:block; font-size:23px; line-height:1.15; font-weight:700; letter-spacing:-.04em; font-variant-numeric:tabular-nums; }
-  .island-progress { flex-shrink:0; text-align:right; }
-  #islands-value { letter-spacing:0; white-space:nowrap; font-size:12px; font-weight:650; font-variant-numeric:tabular-nums; color:var(--ink); }
-  #island-pips { display:flex; flex-wrap:wrap; max-width:80px; justify-content:flex-end; gap:3px; margin-top:5px; }
-  #island-pips i { width:7px; height:7px; border-radius:2px; background:#36505c; box-shadow:inset 0 0 0 1px #adc6ca33; }
+  .island-progress { width:72px; flex-shrink:0; text-align:right; }
+  #islands-value { display:block; line-height:1.2; letter-spacing:0; white-space:nowrap; font-size:12px; font-weight:650; font-variant-numeric:tabular-nums; color:var(--ink); }
+  #island-pips { display:flex; flex-wrap:nowrap; width:72px; justify-content:flex-end; gap:2px; margin-top:5px; }
+  #island-pips i { flex:1; min-width:1px; height:4px; border-radius:2px; background:#36505c; box-shadow:inset 0 0 0 1px #adc6ca33; }
   .gauges { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px; }
   .gauge-heading { display:flex; justify-content:space-between; color:var(--muted); font-size:9px; margin-bottom:3px; line-height:1; }
   #hull-value { color:var(--accent); font-variant-numeric:tabular-nums; }
@@ -58,7 +58,9 @@
   #report-unlocks { padding:0 13px 12px; margin:0; color:var(--muted); font-size:11px; }
   #threat-status { position:absolute; top:102px; right:12px; max-width:132px; padding:5px 8px; border-radius:7px; background:var(--panel); font-size:10px; color:#ffad91; text-align:right; }
   #threat-status strong { display:block; font-size:11px; color:var(--ink); }
-  #menu-start { display:inline-block; margin:0; padding:11px 20px; border:1px solid #82dfbc77; border-radius:8px; color:var(--accent); font-weight:650; }
+  .menu-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; pointer-events:auto; }
+  #menu-new { border:1px solid #adc6ca44; border-radius:8px; background:transparent; color:var(--muted); padding:11px 16px; font:inherit; cursor:pointer; }
+  #menu-start { background:var(--panel); font:inherit; cursor:pointer; display:inline-block; margin:0; padding:11px 20px; border:1px solid #82dfbc77; border-radius:8px; color:var(--accent); font-weight:650; }
   #flight-controls button, #fire-indicator { box-sizing:border-box; width:112px; height:56px; min-width:112px; min-height:56px;
     padding:8px; font:650 12px/1.25 system-ui,sans-serif; border:1px solid #83b5bc; border-radius:14px;
     background:var(--panel); color:var(--ink); box-shadow:inset 0 1px 0 #ffffff0c; }
@@ -103,7 +105,7 @@
   #map-open { position:fixed; right:12px; top:12px; width:clamp(100px,30vw,140px); height:84px; z-index:3; background:transparent; border:1px solid #adc6ca33; border-radius:10px; cursor:pointer; touch-action:manipulation; }
   #map-open:focus-visible { outline:2px solid var(--accent); }
   #operations-panel { position:fixed; inset:0; z-index:20; background:#061924; padding:clamp(12px,3vw,30px); box-sizing:border-box; display:flex; flex-direction:column; gap:12px; color:var(--ink); font:500 13px/1.4 system-ui,sans-serif; }
-  #operations-panel header { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  #operations-panel header { flex-wrap:wrap; display:flex; align-items:center; justify-content:space-between; gap:12px; }
   #operations-panel h2 { margin:0; font-size:20px; } #operations-panel small { display:block; color:var(--accent); margin-top:4px; }
   #operations-panel button { background:#163b45; border:1px solid #82dfbc66; border-radius:10px; color:var(--accent); padding:10px 14px; font:600 12px system-ui; touch-action:manipulation; }
   #operations-map { position:static; width:100%; height:0; min-height:0; flex:1; border:1px solid #adc6ca33; border-radius:14px; touch-action:none; }
@@ -115,7 +117,7 @@
     #operations-map { position:absolute; left:14px; top:14px; width:calc(100% - 270px); height:calc(100% - 28px); }
     #operations-panel header, #operations-panel > p, #operations-panel footer { position:absolute; right:14px; width:224px; }
     #operations-panel header { top:18px; flex-direction:column; align-items:flex-start; }
-    #operations-panel > p { top:150px; }
+    #operations-panel > p { top:225px; }
     #operations-panel footer { bottom:18px; flex-direction:column; align-items:flex-start; }
   }
 </style>
@@ -135,7 +137,7 @@
   <div id="objective" hidden><strong id="objective-title"></strong><span id="objective-detail"></span><div id="capture-track" class="track" hidden><i id="capture-fill"></i></div></div>
   <div id="toast" hidden></div>
 </div>
-<div id="menu" class="readout" hidden><div id="menu-card"><p id="menu-kicker"></p><h1 id="menu-title"></h1><p id="menu-summary"></p><div id="menu-instructions"></div><p id="menu-start"></p><details id="session-report" hidden><summary>Campaign report</summary><div id="report-grid"></div><p id="report-unlocks"></p></details></div></div>
+<div id="menu" class="readout" hidden><div id="menu-card"><p id="menu-kicker"></p><h1 id="menu-title"></h1><p id="menu-summary"></p><div id="menu-instructions"></div><div class="menu-actions"><button id="menu-start"></button><button id="menu-new" hidden>New expedition</button></div><details id="session-report" hidden><summary>Campaign report</summary><div id="report-grid"></div><p id="report-unlocks"></p></details></div></div>
 <section id="sortie-panel" class="readout" aria-label="Plan next sortie" hidden>
 <h2>Your sortie</h2>
 <div id="sortie-aircraft" class="sortie-options" role="group" aria-label="Aircraft"></div>

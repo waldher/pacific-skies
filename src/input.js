@@ -2,7 +2,8 @@
 // stick, right half is the fire button.
 import { view } from './canvas.js';
 import { audioInit } from './audio.js';
-import { game, startGame } from './state.js';
+import { game, startGame, recoverPilot, resumeCampaign } from './state.js';
+import { hasSavedCampaign } from './persistence.js';
 import { launchBomb } from './bombs.js';
 import { launchTorpedo } from './torpedoes.js';
 import { requestCarrier } from './carrier.js';
@@ -16,7 +17,17 @@ export let isTouchDevice = navigator.maxTouchPoints > 0 || ('ontouchstart' in wi
 
 export function launchOrdnance() { if (game.paused) return false; return game.player?.loadout === 'bombs' ? launchBomb(game) : launchTorpedo(); }
 
+function continueAction() {
+  for (const key of Object.keys(keys)) keys[key] = false;
+  stick.active = fireTouch.active = false;
+  if (game.mode === 'recovery') recoverPilot();
+  else if (game.mode === 'title' && hasSavedCampaign()) resumeCampaign();
+  else startGame();
+}
 export function initInput(cvs) {
+  document.getElementById('menu-start').addEventListener('click', e => { e.stopPropagation(); audioInit(); continueAction(); });
+  document.getElementById('menu-new').addEventListener('click', e => { e.stopPropagation(); audioInit(); startGame(); });
+
   // Resolve hints from actual input too: tablets and embedded browsers may hide
   // their touch capabilities until the first contact.
   window.addEventListener('pointerdown', e => { if (e.pointerType === 'touch' || e.pointerType === 'pen') isTouchDevice = true; }, true);
@@ -37,21 +48,21 @@ export function initInput(cvs) {
     stick.active = fireTouch.active = false;
   });
   window.addEventListener('keydown', e => {
-    if (game.paused) return;
+    if (game.paused || (e.target instanceof HTMLElement && e.target.closest('button,select,details'))) return;
     if (['KeyW','KeyA','KeyS','KeyD','KeyT','KeyL','Space','Enter','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) isTouchDevice = false;
     if (game.mode === 'play' && e.code === 'KeyT' && !e.repeat) launchOrdnance();
     if (game.mode === 'play' && e.code === 'KeyL' && !e.repeat) requestCarrier(game);
     keys[e.code] = true;
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) e.preventDefault();
     audioInit();
-    if (game.mode !== 'play' && (e.code === 'Space' || e.code === 'Enter')) startGame();
+    if (game.mode !== 'play' && !e.repeat && (e.code === 'Space' || e.code === 'Enter')) continueAction();
   });
   window.addEventListener('keyup', e => { keys[e.code] = false; }, true);
 
   cvs.addEventListener('pointerdown', e => {
     if (game.paused) return;
     audioInit();
-    if (game.mode !== 'play') { startGame(); return; }
+    if (game.mode !== 'play') { continueAction(); return; }
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     cvs.setPointerCapture(e.pointerId);
     if (e.clientX < view.W * 0.5 && !stick.active) {

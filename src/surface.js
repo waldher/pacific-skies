@@ -21,7 +21,13 @@ export function islandOutline(t, radius = t.radius, jitter = .22, seed = 2) {
   });
 }
 export function onLand(point, territories) {
-  return territories.some(t => insidePolygon(point.x - t.x, point.y - t.y, islandOutline(t)));
+  return territories.some(t => {
+    const x=point.x-t.x,y=point.y-t.y;
+    // Physical extent encloses the shoreline, including offset shared holdings.
+    // Operational capture radii do not: never use t.radius for this rejection.
+    if(Number.isFinite(t.extent)&&x*x+y*y>t.extent*t.extent)return false;
+    return insidePolygon(x,y,islandOutline(t));
+  });
 }
 export function onHull(point, ship) {
   const dx = point.x - ship.x, dy = point.y - ship.y;

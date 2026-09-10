@@ -1,6 +1,7 @@
 // Responsive text readouts; world markers and touch controls stay on canvas.
 import { ctx, view, w2s } from './canvas.js';
 import { game } from './state.js';
+import { hasSavedCampaign } from './persistence.js';
 import { stick, fireTouch, isTouchDevice } from './input.js';
 import { rr } from './sprites.js';
 import { AIRCRAFT, aircraftUnlocked } from './aircraft-types.js';
@@ -11,7 +12,7 @@ import { defenders } from './campaign.js';
 import { sessionSummary } from './session-report.js';
 import { CONFIG } from './config.js';
 import { clamp, TAU } from './util.js';
-import { installationKnown, shipObserved, enemyObserved, observedAt } from './intelligence.js';
+import { installationKnown, shipObserved, enemyObserved, observedAt, flightSeconds } from './intelligence.js';
 import { drawTheaterMap } from './operations.js';
 
 export function drawHud() {
@@ -175,6 +176,8 @@ function drawSortie(p, playing) {
     if ((game.combatSorties || 0) < (type.unlockSorties || 0)) requirements.push(`${game.combatSorties || 0}/${type.unlockSorties} combat sorties`);
     if (game.score < type.unlockScore) requirements.push(`${type.unlockScore.toLocaleString()} pts`);
     if (game.rank < type.minRank) requirements.push('rescue the carrier');
+    const requiredFlight = CONFIG.progression.aircraftFlightSeconds[next] || 0;
+    if ((game.flightSeconds || 0) < requiredFlight) requirements.push(`${clock(game.flightSeconds || 0)}/${clock(requiredFlight)} flight time`);
     text('sortie-unlock', `Next: ${type.shortName} · ${requirements.join(' + ')}`);
   }
   choiceCards(el('sortie-base'), bases.map(b => ({ id:b.id, name:b.name, icon:b.kind, detail:b.kind === 'carrier' ? 'Flight deck' : 'Runway' })), base?.id, 'base');
@@ -220,7 +223,7 @@ export function drawMenus() {
       title = `${nearby.name}${nearby.role ? ' · ' + roleNames[nearby.role] : ''}`;
       const remaining = defenders(game, nearby);
       const field = (game.airfields || []).find(f => (f.territory === nearby.id || f.territory === nearby) && f.owner !== 'us' && f.hp > 0);
-      detail = nearby.owner === 'us' ? (nearby.role === 'radar' ? 'Radar operational · installations & fleets revealed' : nearby.established < CONFIG.conquest.establishSeconds ? `Establishing · ${Math.ceil(CONFIG.conquest.establishSeconds - nearby.established)}s · vulnerable` : roleBenefits[nearby.role] || 'Secured') : field ? 'Bomb the airfield to stop enemy launches' : remaining ? `${remaining} defenders remaining` : `Securing position · ${Math.ceil(CONFIG.conquest.captureSeconds - nearby.progress)}s`;
+      detail = nearby.owner === 'us' ? (nearby.role === 'radar' ? 'Regional installations charted · nearby fleets tracked' : nearby.established < CONFIG.conquest.establishSeconds ? `Establishing · ${Math.ceil(CONFIG.conquest.establishSeconds - nearby.established)}s · vulnerable` : roleBenefits[nearby.role] || 'Secured') : field ? 'Bomb the airfield to stop enemy launches' : remaining ? `${remaining} defenders remaining` : `Securing position · ${Math.ceil(CONFIG.conquest.captureSeconds - nearby.progress)}s`;
     }
     if (p.flight === 'flying' && !p.landingHint && game.rescue?.status === 'active' && (!nearby || nearby.owner === 'us')) {
       title = 'Carrier rescue';
@@ -228,6 +231,7 @@ export function drawMenus() {
       detail = !game.rescue.launched ? 'Rendezvous with USS Resolute' : intercepts >= 2 && !threats ? 'Rendezvous with the carrier' : intercepts >= 2 ? 'Finish defending the carrier' : `Intercept attackers · ${intercepts}/2 required`;
     }
     else if (!title && game.rescue?.status === 'retry') { title = 'Rescue regrouping'; detail = 'Another rescue opportunity will follow'; }
+    if (!title && p.flight === 'flying') { title = game.waypoint?.name || 'Explore the archipelago'; detail = game.waypoint ? `${flightSeconds(game, game.waypoint)}s at cruise · chart to change course` : 'Open the chart to choose your next expedition'; }
     el('objective').hidden = !title; text('objective-title', title); text('objective-detail', detail);
     el('capture-track').hidden = !nearby || nearby.progress <= 0 || nearby.owner === 'us' || p.flight !== 'flying';
     el('capture-fill').style.width = `${(nearby?.progress || 0) / CONFIG.conquest.captureSeconds * 100}%`;
@@ -245,17 +249,20 @@ export function drawMenus() {
     return;
   }
   drawSessionReport();
-  const key = `${game.mode}:${isTouchDevice}:${game.score}:${game.best}`;
+  const saved = game.mode === 'title' && hasSavedCampaign();
+  const key = `${game.mode}:${isTouchDevice}:${game.score}:${game.best}:${saved}`;
   if (key === menuState) return;
   menuState = key;
   text('menu-kicker', 'Pacific theater · 1942');
-  text('menu-title', game.mode === 'title' ? 'Pacific Skies' : game.mode === 'victory' ? 'Pacific secured' : game.endReason || 'Shot down');
-  text('menu-summary', game.mode === 'title' ? 'Scout the island chains. Capture radar to reveal enemy positions, then push toward the stronghold.' : `Score ${game.score.toLocaleString()} · Best ${game.best.toLocaleString()}`);
+  text('menu-title', game.mode === 'title' ? 'Pacific Skies' : game.mode === 'victory' ? 'Pacific secured' : game.mode === 'recovery' ? 'Aircraft lost' : game.endReason || 'Shot down');
+  text('menu-summary', game.mode === 'title' ? 'Explore the archipelagos. Establish forward airfields. Discover what lies beyond the next coast.' : game.mode === 'recovery' ? 'Your discoveries and holdings remain. Return to a friendly base and continue the expedition.' : `Score ${game.score.toLocaleString()} · Best ${game.best.toLocaleString()}`);
   const instructions = game.mode === 'title' ? (isTouchDevice
     ? ['Left thumb steers · Right thumb fires', 'Bomb island defenses · Torpedo ships', 'Line up with a friendly runway to land']
     : ['WASD / Arrows to fly · Space to fire', 'T to drop ordnance · L to take off', 'Line up with a friendly runway to land']) : [`${game.territories.filter(t => t.owner === 'us').length} of ${game.territories.length} holdings secured`];
   el('menu-instructions').replaceChildren(...instructions.map(line => { const node = document.createElement('div'); node.textContent = line; return node; }));
-  text('menu-start', isTouchDevice ? 'Tap to begin' : 'Press Space to begin');
+  const action = game.mode === 'recovery' ? 'Return to base' : saved ? 'Continue expedition' : 'Begin expedition';
+  text('menu-start', isTouchDevice ? action : `${action} · Space`);
+  el('menu-new').hidden = !saved;
 }
 
 function drawSessionReport() {

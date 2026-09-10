@@ -1,6 +1,6 @@
 # Pacific Skies: expedition theater
 
-Design direction and reviewable geography prototype, September 10, 2026. The atlas in `atlas/` is independent of the playable game's generator. Fleet behavior, campaign persistence, supply and discovery events described below are proposed work, not implemented atlas features.
+Design direction, September 10, 2026. The first playable expedition slice now shares the atlas geography generator: variable regions, radar scouting, forward deployment, local front pressure, pilot recovery and local saves are implemented. The atlas remains a geography inspector. Purposeful fleet offensives/withdrawal, supply routes and narrative discovery events below remain proposed follow-up work.
 
 ## The experience
 
@@ -10,9 +10,9 @@ On the next sortie that bay is familiar. Your new forward strip makes it reachab
 
 That is the campaign: learning a place, gaining a foothold, and changing what is possible there. Scale comes from recognizable distances, incomplete knowledge and a growing operational reach. It must preserve immediate arcade flying and the existing two-thumb controls.
 
-## Why the current map still fails
+## Why the previous map failed
 
-The playable generator retains a small fixed arrangement of holdings beneath its scenery. Changing coastline shapes and adding islets cannot remove the repeating rhythm of nearby, similar objectives. The player clears a large fraction of the theater in four minutes, with little need to learn routes or establish forward positions.
+The previous playable generator retained a small fixed arrangement of holdings beneath its scenery. Changing coastline shapes and adding islets cannot remove the repeating rhythm of nearby, similar objectives. The player clears a large fraction of the theater in four minutes, with little need to learn routes or establish forward positions.
 
 We should replace that structure, not add another layer of coordinate jitter. Geography must be generated before objectives. Land count, strategic holdings, regional count and campaign progression cannot remain interchangeable.
 

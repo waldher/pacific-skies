@@ -2,15 +2,16 @@
   "name": "pacific-skies",
   "version": "0.2.0",
   "private": true,
-  "description": "Pacific Skies — 1942: top-down arcade dogfighter over the Pacific",
+  "description": "Pacific Skies \u2014 1942: top-down arcade dogfighter over the Pacific",
   "scripts": {
-    "test": "node playtest/playtest.js",
+    "test": "node playtest/playtest.js && npm run test:expedition",
     "test:balance:campaign": "node --experimental-vm-modules playtest/campaign-balance.cjs",
     "test:balance": "node --experimental-vm-modules playtest/balance.cjs",
     "test:simulation": "node --experimental-vm-modules playtest/simulation.cjs",
     "serve": "npx http-server -c-1 -p 8080 .",
     "build:aircraft": "node --no-warnings tools/build-aircraft.mjs",
-    "views": "node tools/render-views.js F4U_Corsair Mitsubishi_Zero"
+    "views": "node tools/render-views.js F4U_Corsair Mitsubishi_Zero",
+    "test:expedition": "node --experimental-vm-modules playtest/expedition.cjs && node --experimental-vm-modules playtest/expedition-recovery.cjs"
   },
   "devDependencies": {
     "playwright": "1.56.1"

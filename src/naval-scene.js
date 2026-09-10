@@ -161,10 +161,11 @@ export function createNavalScene(scene) {
             box(group, [2, 28, 2], [70, 62, 0], dark);
           } else if (t.role === 'port') {
             const port = new THREE.Group(); group.add(port);
-            const coast = game.terrain?.find(land => land.holdingId === t.id);
-            // The crescent's inner shore faces its lagoon, independent of map rotation.
+            // Pier points into water at the shared physical coastline.
+            const coast = t.portShore;
+            port.position.set(coast?.x || 0, 0, coast?.y || 0);
             port.rotation.y = Math.PI / 2 - (coast?.a || 0);
-            const shore = t.radius * .22;
+            const shore = 0;
             box(port, [110, 5, 30], [0, 9, shore], wood);
             for (const x of [-42, 42]) box(port, [18, 5, 80], [x, 9, shore + 28], wood);
             for (const x of [-30, 15]) box(port, [32, 24, 35], [x, 20, shore - 42], cabin);

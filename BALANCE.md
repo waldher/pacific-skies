@@ -55,3 +55,13 @@ there is no mandatory time gate. Use the optional campaign report to inspect
 actual unlock times and territory losses during human sessions. Next work is a
 conquest bot with return-to-base behavior and human feedback on travel time,
 warning time, fatigue, and recoverability.
+
+## Expedition slice (September 10)
+
+The game now shares the atlas macro geography: 4–7 regions, with 36–109 physical landforms in the 500-seed geometry sample. Regional center links exceed 9,000 units; runway/capture sites retain local operational dimensions. The home region includes radar and a forward field placed toward the first outward passage. Flights should be measured from actual bases, not inferred from bounding-box size.
+
+Pressure now originates only in the same or an adjacent region, with one four-aircraft major formation active at a time. Existing pursuit Zeroes and independent allies remain. Ordinary pilot death pauses for recovery; campaign defeat requires losing all viable launch bases. Local saves retain the active war. Earlier bot survival/defeat figures are not directly comparable to this persistent campaign.
+
+Qualifications retain score and personal combat-sortie requirements, adding accumulated flight experience: Dauntless 7 min, Corsair 12 min, Avenger 18 min, P-51 25 min. These are minimum flight times, not promised unlock times or final balance. Landing/idle time does not count. Next human sessions should report first useful discovery, first forward landing, repeated rearm transit, first unlock, and whether attacks have an understandable source.
+
+Geometry, saved-world recovery, front adjacency and source suppression have automated coverage. These checks establish correctness; they do not establish exploration fun or final pacing. Purposeful fleet offensives, logistics and encounter discoveries remain follow-up work.

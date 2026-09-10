@@ -3,9 +3,9 @@ const vm = require('node:vm');
 const fs = require('node:fs');
 const path = require('node:path');
 const root = path.resolve(__dirname, '..');
-const element = { getContext: () => ({ setTransform() {} }), style: {}, addEventListener() {} };
+const element = { getContext: () => ({ setTransform() {} }), style: {}, addEventListener() {}, append() {}, setAttribute() {}, querySelector() { return this; } };
 const context = vm.createContext({ console, performance, Math, navigator: { maxTouchPoints: 0 },
-  document: { getElementById: () => element }, requestAnimationFrame() {},
+  document: { getElementById: () => element, createElement: () => ({...element}) }, requestAnimationFrame() {},
   window: { innerWidth: 900, innerHeight: 600, addEventListener() {} } });
 const cache = new Map();
 async function load(file) {

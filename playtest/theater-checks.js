@@ -3,7 +3,7 @@ export async function theaterChecks(api) {
   const { game, startGame, setSeed, CONFIG } = api;
   const { onLand } = await import('../src/surface.js');
   const checks = [], check = (name, ok) => checks.push({ name, ok: !!ok });
-  let terrainRich = true, runwaySafe = true, finite = true, lagoons = true;
+  let terrainRich = true, runwaySafe = true, finite = true, waterways = true;
   const layouts = new Set();
   for (const seed of [1,927,1942,1945,8801,65535]) {
     setSeed(seed); startGame();
@@ -11,7 +11,8 @@ export async function theaterChecks(api) {
     const first = snapshot(); setSeed(seed); startGame();
     finite &&= snapshot() === first;
     layouts.add(first);
-    terrainRich &&= game.terrain.length > game.territories.length * 2 && new Set(game.terrain.map(t=>t.kind)).size >= 3;
+    terrainRich &&= game.terrain.length > game.territories.length * 2 && game.sectors.length >= 4 && game.sectors.length <= 7;
+    for(const [a,b] of game.sectorLinks) waterways &&= Math.hypot(game.sectors[a].x-game.sectors[b].x,game.sectors[a].y-game.sectors[b].y)>9000;
     for (const t of game.terrain) finite &&= t.shoreline.every(p=>p.every(Number.isFinite));
     for (const field of game.airfields) {
       for (const along of [-CONFIG.airfield.length/2,0,CONFIG.airfield.length/2]) {
@@ -21,16 +22,17 @@ export async function theaterChecks(api) {
         }
       }
     }
-    for (const t of game.terrain.filter(t=>t.kind==='crescent')) {
-      lagoons &&= !onLand({x:t.x+Math.cos(t.a)*t.radius*.71,y:t.y+Math.sin(t.a)*t.radius*.71},[t]);
+    for (const region of game.sectors.filter(t=>t.identity==='drowned caldera')) {
+      waterways &&= !onLand(region,game.terrain);
     }
   }
   check('six seeds reproduce finite shoreline geometry deterministically', finite && layouts.size === 6);
   check('archipelagos contain varied scenery beyond capturable holdings', terrainRich);
   check('every runway corner and midpoint rests on physical land', runwaySafe);
-  check('crescent lagoons are actual water for impacts and navigation', lagoons);
+  check('regional passages have expedition scale and caldera interiors remain water', waterways);
   setSeed(1942); startGame();
-  check('theater offers home, contested and stronghold regions', ['home','contested','stronghold'].every(id=>game.territories.some(t=>t.sector===id)));
+  check('theater offers a home region, connected fronts and a distant stronghold', game.territories[0].sector===0 && game.sectors.some(r=>r.stronghold&&r.id!==0) && game.sectorLinks.length>=game.sectors.length-1);
+  check('home archipelago includes a forward airfield before the first ocean crossing', game.territories.some(t=>t.id!==0&&t.sector===0&&t.role==='airfield'));
   check('first foothold does not demand anti-ship weapons', game.territories[1].role === 'radar' && !game.ships.some(s=>s.territory===game.territories[1].id));
   const { updateFleets } = await import('../src/fleets.js');
   let hullsClear = true, formation = true;
@@ -63,10 +65,10 @@ export async function theaterChecks(api) {
   setSeed(1942); startGame();
   const {resetIntelligence,updateIntelligence,installationKnown,knownShips} = await import('../src/intelligence.js');
   resetIntelligence(game); updateIntelligence(game,0);
-  const remote=game.territories.find(t=>t.sector==='stronghold');
+  const remote=game.territories.find(t=>t.stronghold);
   check('remote enemy installations and carrier locations begin unknown', !installationKnown(game,remote)&&!knownShips(game).some(s=>s.team==='jp'));
   const radar=game.territories.find(t=>t.role==='radar');
-  const nearby=game.territories.find(t=>t.owner==='enemy'&&t.id!==radar.id&&Math.hypot(t.x-radar.x,t.y-radar.y)<CONFIG.intelligence.radarRadius);
+  const nearby=game.territories.find(t=>t.owner==='enemy'&&t.id!==radar.id&&(t.sector===radar.sector||Math.hypot(t.x-radar.x,t.y-radar.y)<CONFIG.intelligence.radarRadius));
   radar.owner='us'; radar.established=0; updateIntelligence(game,0);
   check('captured radar reveals nearby installations immediately', !!nearby&&installationKnown(game,nearby));
   const contact=game.ships.find(s=>s.team==='jp'&&s.kind==='carrier');
