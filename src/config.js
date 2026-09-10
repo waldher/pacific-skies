@@ -81,7 +81,7 @@ export const CONFIG = {
   generation: { enemyMin: 5, enemyMax: 7, spacing: 1650, jitter: 130, radiusMin: 300, radiusMax: 370, carrierX: 1000, carrierY: 1600, enemyCarrierX: -2300, enemyCarrierY: 1800, enemyCarrierOrbit: 280 },
   airfield: { deckHeight: 9, length: 300, width: 70, hp: 40, homeHp: 200 },
   progression: { aircraftUnlocks: { dauntless: 300, avenger: 1200, p51: 2200 }, rescueScore: 600, rescueStartRadius: 1200, rescueIntercepts: 2, rescueHp: 140, rescueRadius: 600, rescueRetry: 45, rescueEnemies: 3, rescueSpawnDistance: 1500 },
-  bomb: { capacity: 2, rearmSeconds: 2, cooldown: 1, fallSeconds: .8, driftSpeed: 160, blastRadius: 100, damage: 20, airfieldScore: 300 },
+  bomb: { capacity: 2, rearmSeconds: 0, cooldown: 1, fallSeconds: .8, driftSpeed: 160, blastRadius: 100, damage: 20, airfieldScore: 300 },
   strike: { intervalMin: 45, intervalMax: 65, groupSize: 2, maxActive: 6, speed: 205, turn: 1.7, hp: 3, attackRange: 65, baseDamage: 10, baseRepairPerSecond: 3, formationSpacing: 48, retreatDistance: 1000 },
   conquest: {
     activateRadius: 850, captureRadius: 330, captureSeconds: 6, captureScore: 500,
@@ -99,7 +99,7 @@ export const CONFIG = {
     allyCount: 2, allyHp: 36, allySpeed: 235, allyTurn: 2.3,
     allyRange: 600, allyFireCooldown: .45, waypointRadius: 150,
   },
-  torpedo: { capacity: 2, rearmSeconds: 2, speed: 220, range: 1100, damage: 20, cooldown: 5, armingDistance: 45 },
+  torpedo: { capacity: 2, rearmSeconds: 0, speed: 220, range: 1100, damage: 20, cooldown: 5, armingDistance: 45 },
   ship: {
     length: 115, width: 28, hp: 20, speed: 22, patrolOffset: 155,
     gunRange: 500, fireCooldown: 1.8, bulletSpeed: 400, bulletDamage: 6, score: 200,

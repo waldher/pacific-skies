@@ -210,9 +210,16 @@ export async function campaignChecks(api) {
   check('correcting alignment after the stern still catches a wire', game.player.flight === 'landing');
   game.player.flight = 'flying';
   approach(c.x + 6, c.y + c.length / 2 + 40, c.a);
+  game.player.bombAmmo = 0; game.player.torpedoAmmo = 0;
   for (let i = 0; i < 300 && game.player.flight !== 'landed'; i++) update(.02);
   check('aligned stern crossing lands without requesting assistance', game.player.flight === 'landed'
     && Math.abs(game.player.x - c.x - 6) < 1 && game.player.altitude === CONFIG.carrier.deckHeight);
+  check('landing immediately refills both ordnance types', game.player.bombAmmo === 2 && game.player.torpedoAmmo === 2);
+  const parkedHp = game.player.hp;
+  game.enemies.push({ x: game.player.x, y: game.player.y, a: 0, hp: 3, speed: 0, turn: 0, fireCd: 99, wobble: 0, raider: true });
+  update(.001);
+  check('parked player and overlapping enemy do not ram each other', game.player.hp >= parkedHp && game.enemies.some(e => e.raider && e.hp === 3 && e.speed === 0));
+  game.enemies = game.enemies.filter(e => !(e.raider && e.speed === 0));
   keys.Space = true; step(.1);
   check('guns stay safe on deck', game.bullets.every(b => b.fromAlly || b.fromShip));
   step(1);
@@ -237,6 +244,7 @@ export async function campaignChecks(api) {
   step(CONFIG.torpedo.range / CONFIG.torpedo.speed + .1);
   check('empty loadout stays empty in flight and spent torpedoes expire', !launchTorpedo() && game.player.torpedoAmmo === 0 && game.torpedoes.length === 0);
   game.player.x = game.ships[0].x; game.player.y = game.ships[0].y + CONFIG.carrier.length / 2 + 30; game.player.a = game.ships[0].a;
+  game.player.bombAmmo = 0; game.player.torpedoAmmo = 0;
   for (let i = 0; i < 300 && game.player.flight !== 'landed'; i++) update(.02);
   check('torpedoes cannot launch on deck', !launchTorpedo());
   step(CONFIG.torpedo.rearmSeconds + .1);

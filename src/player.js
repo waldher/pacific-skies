@@ -85,7 +85,7 @@ export function updatePlayer(dt) {
 }
 
 export function damagePlayer(amount) {
-  if (game.mode !== 'play' || game.player.flight === 'landed') return;
+  if (game.mode !== 'play' || game.player.flight !== 'flying') return;
   const player = game.player;
   player.hp -= amount;
   player.hitFlash = 0.25;
