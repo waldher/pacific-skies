@@ -7,14 +7,18 @@ export async function campaignChecks(api) {
   const { updateStrikes } = await import('../src/strikes.js');
   const { selectSortie, availableBases } = await import('../src/bases.js');
   const { AIRCRAFT, aircraftUnlocked } = await import('../src/aircraft-types.js');
+  const { recordSession, sessionSummary } = await import('../src/session-report.js');
+  const { updateCarrierFlight } = await import('../src/carrier.js');
   const { onLand } = await import('../src/surface.js');
   const checks = [];
   const check = (name, ok) => checks.push({ name, ok: !!ok });
   const reset = () => { for (const key of Object.keys(keys)) keys[key] = false; api.setSeed(1942); startGame(); };
   const fly = () => { game.player.flight = 'flying'; game.player.altitude = CONFIG.render.flightHeight; game.player.speed = CONFIG.player.speedCruise; };
   const naval = () => {
-    fly(); game.rank = 2; game.rescue = { ...(game.rescue || {}), status: 'complete' };
-    const c = game.ships[0]; c.active = true; c.hp = c.maxHp;
+    fly(); game.rank = 2; game.flightSeconds = CONFIG.progression.aircraftFlightSeconds.corsair; game.combatSorties = CONFIG.progression.aircraftSorties.corsair; game.rescue = { ...(game.rescue || {}), status: 'complete' };
+    const c = game.ships[0]; c.active = true; c.hp = c.maxHp; c.a = -Math.PI / 2;
+    // Isolate landing tolerances from route motion; task groups are tested separately.
+    game.ships.forEach(s => { delete s.fleet; });
     const base = game.bases.find(b => b.kind === 'carrier'); if (base) base.available = true;
     game.player.aircraft = 'corsair'; game.player.loadout = 'torpedoes';
     game.player.x = c.x + 1000; game.player.y = c.y + 1000;
@@ -25,14 +29,6 @@ export async function campaignChecks(api) {
   const layout = () => JSON.stringify(game.territories.map(t => [t.x,t.y,t.radius,t.owner]));
   const initialLayout = layout(); reset();
   check('same campaign seed reproduces the island chain', layout() === initialLayout);
-  let spaced = true, carriersClear = true;
-  for (const seed of [1, 927, 1942, 1945, 8801, 65535]) {
-    api.setSeed(seed); startGame();
-    spaced &&= game.territories.every((a, i) => game.territories.slice(i + 1).every(b => Math.hypot(a.x-b.x,a.y-b.y) - a.radius - b.radius > 600));
-    carriersClear &&= game.ships.filter(s => s.kind === 'carrier').every(s => game.territories.every(t => Math.hypot(s.x-t.x,s.y-t.y)-t.radius-s.length/2 > 600));
-  }
-  check('six seeded maps leave open-water corridors between islands', spaced);
-  check('carriers have substantial clearance from island bases', carriersClear);
   api.setSeed(927); startGame();
   check('different campaign seeds create different island chains', layout() !== initialLayout); reset(); fly();
   reset();
@@ -40,14 +36,20 @@ export async function campaignChecks(api) {
   check('rank zero cannot select a Corsair', !selectSortie(game, { baseId: home.id, aircraft: 'corsair', loadout: 'bombs' }));
   check('P38 cannot equip torpedoes', !selectSortie(game, { baseId: home.id, aircraft: 'p38', loadout: 'torpedoes' }));
   check('new aircraft stay locked before their milestones', ['dauntless','avenger','p51'].every(id => !aircraftUnlocked(game,id)));
-  game.score = 300;
-  check('300 points unlock the Dauntless at an airfield', selectSortie(game,{baseId:home.id,aircraft:'dauntless',loadout:'bombs'}));
+  game.score = CONFIG.progression.aircraftUnlocks.dauntless;
+  check('score alone cannot bypass combat sortie qualifications', !aircraftUnlocked(game,'dauntless'));
+  game.combatSorties = CONFIG.progression.aircraftSorties.dauntless - 1;
+  check('Dauntless stays locked one combat sortie before qualification', !aircraftUnlocked(game,'dauntless'));
+  game.combatSorties++;
+  check('early score and sorties cannot skip flight experience', !aircraftUnlocked(game,'dauntless'));
+  game.flightSeconds = CONFIG.progression.aircraftFlightSeconds.dauntless;
+  check('score and completed combat sorties unlock the Dauntless at an airfield', selectSortie(game,{baseId:home.id,aircraft:'dauntless',loadout:'bombs'}));
   fly(); launchBomb(game);
   check('Dauntless releases a heavier, faster-falling bomb', game.bombs[0].damage === 40 && game.bombs[0].maxLife < CONFIG.bomb.fallSeconds);
-  reset(); game.score = 2200;
+  reset(); game.score = CONFIG.progression.aircraftUnlocks.p51; game.combatSorties = CONFIG.progression.aircraftSorties.p51;
   check('points alone do not unlock advanced naval campaign aircraft', !aircraftUnlocked(game,'avenger') && !aircraftUnlocked(game,'p51'));
-  game.rank = 2;
-  check('completed rescue and points unlock all five aircraft', Object.keys(AIRCRAFT).length === 5 && Object.keys(AIRCRAFT).every(id => aircraftUnlocked(game,id)));
+  game.rank = 2; game.flightSeconds = CONFIG.progression.aircraftFlightSeconds.p51;
+  check('completed rescue, points and combat sorties unlock all five aircraft', Object.keys(AIRCRAFT).length === 5 && Object.keys(AIRCRAFT).every(id => aircraftUnlocked(game,id)));
   check('Avenger rejects bombs and equips torpedoes', !selectSortie(game,{baseId:home.id,aircraft:'avenger',loadout:'bombs'}) && selectSortie(game,{baseId:home.id,aircraft:'avenger',loadout:'torpedoes'}));
   fly(); launchTorpedo();
   check('Avenger launches a heavy anti-ship torpedo', game.torpedoes[0]?.damage === 40);
@@ -59,7 +61,7 @@ export async function campaignChecks(api) {
   for (const f of game.airfields) f.launchTimer = 1000;
   for (const s of game.ships) s.launchTimer = 1000;
   field.launchTimer = 0; updateStrikes(game, .02);
-  check('living enemy airfield launches a strike group', game.enemies.filter(e => e.sourceId === field.id).length === CONFIG.strike.groupSize);
+  check('living enemy airfield launches a strike group', game.enemies.filter(e => e.sourceId === field.id).length === CONFIG.strike.groupSize + CONFIG.strike.escortCount);
   game.enemies = [];
   game.player.x = field.x - CONFIG.bomb.driftSpeed * CONFIG.bomb.fallSeconds;
   game.player.y = field.y; game.player.a = 0;
@@ -76,17 +78,35 @@ export async function campaignChecks(api) {
   check('destroyed airfield stops launching new attackers', !game.enemies.some(e => e.sourceId === field.id));
   check('empty bomb loadout cannot fire', !launchBomb(game));
   const enemyCarrier = game.ships.find(s => s.team === 'jp' && s.kind === 'carrier');
-  enemyCarrier.launchTimer = 0; updateStrikes(game, .02);
+  enemyCarrier.x = home.x + 2500; enemyCarrier.y = home.y;
+  enemyCarrier.launchTimer = 0; game.strikeLaunchCooldown = 0; updateStrikes(game, .02);
   const attackers = game.enemies.filter(e => e.sourceId === enemyCarrier.id);
-  check('enemy carrier launches attackers from its actual flight deck', attackers.length === CONFIG.strike.groupSize && attackers.every(e => Math.hypot(e.x - enemyCarrier.x, e.y - enemyCarrier.y) < 100));
+  check('enemy carrier launches attackers from its actual flight deck', attackers.length === CONFIG.strike.groupSize + CONFIG.strike.escortCount && attackers.every(e => Math.hypot(e.x - enemyCarrier.x, e.y - enemyCarrier.y) < CONFIG.strike.formationSpacing * attackers.length));
   const homeField = game.airfields.find(f => f.id === home.airfieldId), homeHp = homeField.hp;
-  const attacker = attackers[0]; attacker.x = homeField.x; attacker.y = homeField.y;
+  check('organized raids include bombers and escorts', attackers.filter(e => e.strikeRole === 'bomber').length === CONFIG.strike.groupSize && attackers.filter(e => e.strikeRole === 'escort').length === CONFIG.strike.escortCount);
+  const attacker = attackers.find(e => e.strikeRole === 'bomber'); attacker.x = homeField.x; attacker.y = homeField.y;
   updateStrikes(game, .02);
   check('unintercepted strike damages its target base and retreats', homeField.hp === homeHp - CONFIG.strike.baseDamage && attacker.phase === 'retreat');
+  const escort = attackers.find(e => e.strikeRole === 'escort');
+  escort.x = homeField.x; escort.y = homeField.y; const escortHp = homeField.hp;
+  updateStrikes(game, .02);
+  check('escort reaching a base cannot apply bombing damage', homeField.hp === escortHp && escort.phase === 'retreat');
   enemyCarrier.hp = 0; enemyCarrier.launchTimer = 0; game.enemies = [];
   updateStrikes(game, .02);
   check('sinking enemy carrier stops subsequent strikes', !game.enemies.some(e => e.sourceId === enemyCarrier.id));
 
+  reset(); fly();
+  for (const f of game.airfields) f.launchTimer = f.owner === 'enemy' ? 0 : 1000;
+  for (const s of game.ships) s.launchTimer = 1000;
+  updateStrikes(game, .01);
+  const firstSources = new Set(game.enemies.filter(e => e.strike).map(e => e.sourceId));
+  check('simultaneously overdue facilities launch only one formation', firstSources.size === 1 && game.enemies.length === CONFIG.strike.groupSize + CONFIG.strike.escortCount);
+  updateStrikes(game, CONFIG.strike.launchGap - .1);
+  check('global raid spacing prevents a second immediate launch', new Set(game.enemies.filter(e => e.strike).map(e => e.sourceId)).size === 1);
+  updateStrikes(game, .11);
+  check('active offensive cap prevents overlapping major raids after cooldown', new Set(game.enemies.filter(e => e.strike).map(e => e.sourceId)).size === 1);
+  game.enemies = []; updateStrikes(game,.02);
+  check('next local offensive launches after the previous formation clears', game.enemies.filter(e => e.strike).length === CONFIG.strike.groupSize + CONFIG.strike.escortCount);
   reset();
   const targetShip = game.ships.find(s => s.team === 'jp');
   Object.assign(targetShip, {x:20000,y:20000,a:.73,hp:100,maxHp:100});
@@ -129,6 +149,7 @@ export async function campaignChecks(api) {
   game.player.x = game.ships[0].x; game.player.y = game.ships[0].y;
   updateCampaign(game, .02, () => {});
   check('clearing rescue attackers near carrier unlocks naval operations', game.rank === 2 && game.rescue.status === 'complete' && availableBases(game).some(b => b.kind === 'carrier'));
+  game.combatSorties = CONFIG.progression.aircraftSorties.corsair; game.flightSeconds = CONFIG.progression.aircraftFlightSeconds.corsair;
   const carrierBase = game.bases.find(b => b.kind === 'carrier');
   check('land-based P38 cannot transfer onto a carrier', !selectSortie(game, { baseId: carrierBase.id, aircraft: 'p38', loadout: 'bombs' }));
   check('safely landed pilot can transfer and equip a naval sortie', selectSortie(game, { baseId: carrierBase.id, aircraft: 'corsair', loadout: 'torpedoes' }) && game.player.baseId === carrierBase.id && game.player.x === game.ships[0].x);
@@ -142,7 +163,7 @@ export async function campaignChecks(api) {
   update(.02);
   check('active territories do not repeatedly respawn defenders', game.enemies.length === count);
   check('defenders prevent capture', t.progress === 0 && defenders(game, t) > 0);
-  const ship = game.ships.find(s => s.territory === t.id);
+  const ship = game.ships.find(s => s.team === 'jp' && s.kind === 'destroyer');
   check('fast rounds intersect the oriented hull', hitsShip({ prevX: ship.x - Math.cos(ship.a) * 200,
     prevY: ship.y - Math.sin(ship.a) * 200, x: ship.x + Math.cos(ship.a) * 200, y: ship.y + Math.sin(ship.a) * 200 }, ship));
   const hullHp = ship.hp;
@@ -235,7 +256,7 @@ export async function campaignChecks(api) {
   check('sortie starts with exactly two torpedoes', game.player.torpedoAmmo === 2);
   check('torpedo launches and consumes one round', launchTorpedo() && game.torpedoes.length === 1 && game.player.torpedoAmmo === 1);
   check('torpedo cooldown prevents duplicate launches', !launchTorpedo() && game.player.torpedoAmmo === 1);
-  const torp = game.torpedoes[0], patrol = game.ships.find(s => s.team === 'jp');
+  const torp = game.torpedoes[0], patrol = game.ships.find(s => s.team === 'jp' && s.kind === 'destroyer');
   torp.x = patrol.x - 50; torp.y = patrol.y; torp.vx = CONFIG.torpedo.speed; torp.vy = 0; torp.distance = 100;
   step(.3);
   check('armed torpedo sinks a destroyer through real collisions', patrol.hp === 0 && game.torpedoes.length === 0);
@@ -251,7 +272,7 @@ export async function campaignChecks(api) {
   check('carrier rearms both torpedoes', game.player.torpedoAmmo === 2);
   reset();
   for (let i = 0; i < game.territories.length; i++) {
-    const island = game.territories[i]; if (island.owner === 'us') continue;
+    const island = game.territories[i]; if (island.owner === 'us' || !island.stronghold) continue;
     fly(); game.airfields.filter(f => f.territory === island.id).forEach(f => { f.hp = 0; });
     game.player.x = island.x; game.player.y = island.y; game.player.a = 0;
     update(.02);
@@ -260,8 +281,8 @@ export async function campaignChecks(api) {
     keys.KeyD = true;
     step(CONFIG.conquest.captureSeconds + .2);
   }
-  game.ships.filter(s => s.team === 'jp').forEach(s => damageShip(s, s.hp)); update(.02);
-  check('conquering all islands and sinking the enemy fleet ends the campaign in victory', game.mode === 'victory' && game.territories.every(t => t.owner === 'us'));
+  game.ships.filter(s => s.team === 'jp' && s.kind === 'carrier').forEach(s => damageShip(s, s.hp)); update(.02);
+  check('stronghold and principal carrier victory does not require every island or escort', game.mode === 'victory' && game.territories.some(t => t.owner === 'enemy') && game.ships.some(s => s.team === 'jp' && s.hp > 0));
   reset();
   check('new campaign resets territory ownership, fleet and flight state', game.mode === 'play'
     && game.territories[0].owner === 'us' && game.territories.slice(1).every(t => t.owner === 'enemy' && !t.activated) && game.player.flight === 'landed'
@@ -288,5 +309,76 @@ export async function campaignChecks(api) {
   game.ebullets.push({ x: friendly.x, y: friendly.y, vx: 0, vy: 0, life: 1 }); update(.02);
   check('friendly fighters can be damaged by hostile fire', friendly.hp < hp);
   reset();
+  // Exercise the actual takeoff/landing transitions, without credit for empty circuits or allied score.
+  const completeLanding = () => {
+    Object.assign(game.player, { flight: 'landing', flightTime: 0,
+      arrival: { x: home.x, y: home.y, a: home.a, speed: 100 } });
+    updateCarrierFlight(game, CONFIG.carrier.landingSeconds + .01);
+  };
+  requestCarrier(); completeLanding();
+  check('empty takeoff and landing cannot farm combat sorties', game.combatSorties === 0);
+  requestCarrier(); game.score += 100; completeLanding();
+  check('allied score during a sortie cannot qualify the player', game.combatSorties === 0);
+  requestCarrier(); game.playerMerit += 1; completeLanding();
+  check('landing after personal combat merit credits exactly one sortie', game.combatSorties === 1);
+  updateCarrierFlight(game, 20);
+  check('waiting parked cannot repeatedly credit the same sortie', game.combatSorties === 1);
+
+  reset();
+  check('generated campaign includes airfield, port and radar roles', ['airfield','port','radar'].every(role => game.territories.some(t => t.role === role)));
+  const port = game.territories.find(t => t.role === 'port');
+  const fleet = game.ships[0];
+  Object.assign(port, { owner: 'us', established: 0 });
+  Object.assign(fleet, { active: true, x: port.x, y: port.y, hp: 80 });
+  updateCampaign(game, 1, () => {});
+  check('newly captured port needs establishment before repairing the fleet', fleet.hp === 80);
+  port.established = CONFIG.conquest.establishSeconds;
+  updateCampaign(game, 1, () => {});
+  check('established friendly port repairs a nearby living fleet', fleet.hp > 80);
+  fleet.hp = 0; updateCampaign(game, 1, () => {});
+  check('port cannot resurrect a sunken carrier', fleet.hp === 0);
+  port.integrity = 0; updateCampaign(game, .01, () => {});
+  check('destroyed outpost is recaptured and campaign can continue', port.owner === 'enemy' && !port.activated && game.mode === 'play');
+
+  reset();
+  const radar = game.territories.find(t => t.role === 'radar'); radar.owner = 'us'; radar.established = CONFIG.conquest.establishSeconds;
+  for (const f of game.airfields) f.launchTimer = 1000;
+  for (const s of game.ships) s.launchTimer = 1000;
+  game.player.x = 20000; game.player.y = 20000;
+  const radarRaid = { x: radar.x, y: radar.y, a: 0, hp: 3, speed: 0, turn: 0, fireCd: 99, strike: true, strikeRole: 'bomber', targetBaseId: home.id, phase: 'attack' };
+  game.enemies = [radarRaid]; updateStrikes(game, .01);
+  check('friendly radar detects a raid beyond the player vicinity', radarRaid.detected);
+  radar.owner = 'enemy'; updateStrikes(game, .01);
+  check('losing radar removes distant raid detection', !radarRaid.detected);
+
+  reset();
+  const forward = game.airfields.find(f => f.owner === 'enemy');
+  const forwardIsland = game.territories.find(t => t.id === forward.territory);
+  const forwardBase = game.bases.find(b => b.airfieldId === forward.id);
+  forward.owner = 'us'; forwardIsland.owner = 'us'; forwardBase.owner = 'us'; forwardBase.available = true;
+  selectSortie(game, { baseId: forwardBase.id, aircraft: 'p38', loadout: 'bombs' });
+  forward.hp = 0; updateCampaign(game, .01, () => {});
+  check('lost forward airfield evacuates a grounded player to a surviving base', forward.owner === 'enemy' && !forwardBase.available && game.player.baseId === home.id && game.mode === 'play');
+  game.airfields.find(f => f.id === home.airfieldId).hp = 0; updateCampaign(game, .01, () => {});
+  check('loss of every operational base ends the campaign', game.mode === 'over' && availableBases(game).length === 0);
+  reset(); fly();
+  const freshField = game.airfields.find(f => f.owner === 'enemy');
+  const freshIsland = game.territories.find(t => t.id === freshField.territory);
+  freshField.hp = 0; freshIsland.activated = true;
+  game.ships.filter(s => s.territory === freshIsland.id).forEach(s => { s.hp = 0; });
+  game.player.x = freshIsland.x; game.player.y = freshIsland.y;
+  updateCampaign(game, CONFIG.conquest.captureSeconds, () => {});
+  freshField.hp -= CONFIG.strike.baseDamage; updateCampaign(game, .01, () => {});
+  check('freshly captured airfield survives one bomber impact', freshIsland.owner === 'us' && freshField.owner === 'us' && freshField.hp > 0);
+  reset(); recordSession(game);
+  const reportIsland = game.territories[1];
+  reportIsland.owner = 'us'; game.time = 123; game.unlockedAircraft.push('dauntless'); recordSession(game);
+  reportIsland.owner = 'enemy'; game.ships[0].hp = 0; game.raidDamage = 22; recordSession(game); recordSession(game);
+  const report = sessionSummary(game);
+  check('session report records ownership changes, unlock time and carrier loss once', report.captured === 1 && report.lost === 1 && report.carrierLosses === 1 && report.unlocks[0]?.time === 123 && report.raids.damage === 22);
+  reset();
+  check('restarting clears campaign report outcomes', sessionSummary(game).captured === 0 && sessionSummary(game).lost === 0 && sessionSummary(game).unlocks.length === 0 && sessionSummary(game).raids.damage === 0);
+  const { theaterChecks } = await import('./theater-checks.js');
+  checks.push(...await theaterChecks(api));
   return checks;
 }

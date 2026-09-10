@@ -21,35 +21,46 @@
   .readout { color:var(--ink); font:500 13px/1.4 system-ui,sans-serif; pointer-events:none; user-select:none; }
   .readout [hidden], .readout[hidden] { display:none !important; }
   #flight-hud { position:fixed; inset:0; }
-  #stats { box-sizing:border-box; position:absolute; top:12px; left:12px; width:176px; height:84px;
+  #stats { box-sizing:border-box; position:absolute; top:12px; left:12px; width:176px; height:44px;
     background:linear-gradient(135deg,#132f3aee,#081b27ee); border:1px solid #adc6ca33; border-radius:12px; padding:8px 11px;
     box-shadow:inset 0 1px 0 #ffffff0c,0 3px 12px #00131d22; }
   .mission-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
   .eyebrow { font-size:8px; letter-spacing:.16em; color:var(--muted); text-transform:uppercase; }
   #score-value { display:block; font-size:23px; line-height:1.15; font-weight:700; letter-spacing:-.04em; font-variant-numeric:tabular-nums; }
-  .island-progress { flex-shrink:0; text-align:right; }
-  #islands-value { letter-spacing:0; white-space:nowrap; font-size:12px; font-weight:650; font-variant-numeric:tabular-nums; color:var(--ink); }
-  #island-pips { display:flex; flex-wrap:wrap; max-width:80px; justify-content:flex-end; gap:3px; margin-top:5px; }
-  #island-pips i { width:7px; height:7px; border-radius:2px; background:#36505c; box-shadow:inset 0 0 0 1px #adc6ca33; }
-  .gauges { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px; }
+  .island-progress { width:72px; flex-shrink:0; text-align:right; }
+  #islands-value { display:block; line-height:1.2; letter-spacing:0; white-space:nowrap; font-size:12px; font-weight:650; font-variant-numeric:tabular-nums; color:var(--ink); }
+  #island-pips { display:flex; flex-wrap:nowrap; width:72px; justify-content:flex-end; gap:2px; margin-top:5px; }
+  #island-pips i { flex:1; min-width:1px; height:4px; border-radius:2px; background:#36505c; box-shadow:inset 0 0 0 1px #adc6ca33; }
+  .gauges { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:1px; }
   .gauge-heading { display:flex; justify-content:space-between; color:var(--muted); font-size:9px; margin-bottom:3px; line-height:1; }
   #hull-value { color:var(--accent); font-variant-numeric:tabular-nums; }
   .track { height:4px; background:#36505c; border-radius:3px; overflow:hidden; }
   .track i { display:block; height:100%; background:var(--accent); border-radius:3px; }
   #objective, #toast { position:absolute; left:50%; transform:translateX(-50%); width:max-content; max-width:calc(100% - 32px);
     box-sizing:border-box; text-align:center; background:var(--panel); border:1px solid #adc6ca26; border-radius:10px; padding:9px 14px; }
+  #flight-hud:has(#threat-status:not([hidden])) #objective { top:165px; }
   #objective { top:145px; } #objective strong { display:block; font-weight:650; }
   #objective-detail { color:var(--muted); font-size:12px; }
   #capture-track { margin-top:7px; height:4px; }
   #toast { bottom:124px; font-size:12px; }
   #menu { position:fixed; inset:0; display:grid; place-items:center; padding:20px; box-sizing:border-box;
     background:radial-gradient(ellipse at center, #09232ddb, #061925ef); }
-  #menu-card { width:min(100%,420px); text-align:center; }
+  #menu-card { width:min(100%,420px); max-height:100%; overflow:auto; text-align:center; }
   #menu-kicker { text-transform:uppercase; letter-spacing:.2em; color:var(--accent); font-size:11px; margin:0 0 12px; }
   #menu-title { font-size:clamp(26px,7vw,42px); letter-spacing:-.04em; line-height:1.05; margin:0 0 14px; font-weight:750; }
   #menu-summary { color:var(--muted); margin:0 auto 18px; max-width:32ch; font-size:14px; }
   #menu-instructions { display:grid; gap:7px; margin:0 auto 22px; width:max-content; max-width:100%; font-size:13px; }
-  #menu-start { display:inline-block; margin:0; padding:11px 20px; border:1px solid #82dfbc77; border-radius:8px; color:var(--accent); font-weight:650; }
+  #session-report { pointer-events:auto; margin:14px auto 0; max-width:340px; text-align:left; border:1px solid #adc6ca33; border-radius:10px; background:var(--panel); }
+  #session-report summary { cursor:pointer; padding:10px 13px; color:var(--accent); font-size:12px; }
+  #report-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:3px 13px 13px; }
+  #report-grid span { display:block; color:var(--muted); font-size:10px; }
+  #report-grid strong { font-size:15px; font-variant-numeric:tabular-nums; }
+  #report-unlocks { padding:0 13px 12px; margin:0; color:var(--muted); font-size:11px; }
+  #threat-status { pointer-events:auto; cursor:pointer; border:1px solid #f19b8066; font-family:inherit; position:absolute; top:102px; right:12px; max-width:132px; padding:5px 8px; border-radius:7px; background:var(--panel); font-size:10px; color:#ffad91; text-align:right; }
+  #threat-status strong { display:block; font-size:11px; color:var(--ink); }
+  .menu-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; pointer-events:auto; }
+  #menu-new { border:1px solid #adc6ca44; border-radius:8px; background:transparent; color:var(--muted); padding:11px 16px; font:inherit; cursor:pointer; }
+  #menu-start { background:var(--panel); font:inherit; cursor:pointer; display:inline-block; margin:0; padding:11px 20px; border:1px solid #82dfbc77; border-radius:8px; color:var(--accent); font-weight:650; }
   #flight-controls button, #fire-indicator { box-sizing:border-box; width:112px; height:56px; min-width:112px; min-height:56px;
     padding:8px; font:650 12px/1.25 system-ui,sans-serif; border:1px solid #83b5bc; border-radius:14px;
     background:var(--panel); color:var(--ink); box-shadow:inset 0 1px 0 #ffffff0c; }
@@ -87,8 +98,42 @@
     #sortie-panel { width:min(620px,calc(100% - 156px)); max-height:calc(100% - 174px); display:grid; grid-template-columns:1.1fr 1fr 1fr; gap:0 10px; }
     #sortie-panel h2 { grid-column:1/-1; }
     .sortie-options + .sortie-options { margin-top:0; }
-    body:has(#sortie-panel:not([hidden])) #objective { top:14px; max-width:calc(100% - 380px); }
+    body:has(#sortie-panel:not([hidden])) #flight-hud #objective { top:14px; max-width:calc(100% - 380px); }
  #menu { padding:12px; } #menu-kicker { margin-bottom:7px; } #menu-title { font-size:28px; margin-bottom:10px; } #menu-summary { margin-bottom:10px; } #menu-instructions { gap:3px; margin-bottom:12px; } #objective { top:145px; padding:6px 12px; } #toast { bottom:14px; } }
+
+  #operations-panel[hidden], #map-open[hidden] { display:none; }
+  #map-open { position:fixed; right:12px; top:12px; width:clamp(100px,30vw,140px); height:84px; z-index:3; background:transparent; border:1px solid #adc6ca33; border-radius:10px; cursor:pointer; touch-action:manipulation; }
+  #map-open:focus-visible { outline:2px solid var(--accent); }
+  #operations-panel { position:fixed; inset:0; z-index:20; background:#061924; padding:clamp(12px,3vw,30px); box-sizing:border-box; display:flex; flex-direction:column; gap:12px; color:var(--ink); font:500 13px/1.4 system-ui,sans-serif; }
+  #operations-panel header { flex-wrap:wrap; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  #operations-panel h2 { margin:0; font-size:20px; } #operations-panel small { display:block; color:var(--accent); margin-top:4px; }
+  #operations-panel button { background:#163b45; border:1px solid #82dfbc66; border-radius:10px; color:var(--accent); padding:10px 14px; font:600 12px system-ui; touch-action:manipulation; }
+  #operations-map { position:static; width:100%; height:0; min-height:0; flex:1; border:1px solid #adc6ca33; border-radius:14px; touch-action:none; }
+  #operations-panel footer { display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:12px; color:var(--muted); }
+  #operations-panel p { margin:0; font-size:11px; color:var(--muted); }
+
+  @media(min-width:650px) and (max-height:450px) {
+    #operations-panel { padding:14px; }
+    #operations-map { position:absolute; left:14px; top:14px; width:calc(100% - 270px); height:calc(100% - 28px); }
+    #operations-panel header, #operations-panel > p, #operations-panel footer { position:absolute; right:14px; width:224px; }
+    #operations-panel header { top:18px; flex-direction:column; align-items:flex-start; }
+    #operations-panel > p { top:225px; }
+    #operations-panel footer { bottom:18px; flex-direction:column; align-items:flex-start; }
+  }
+
+  #campaign-overview { color:var(--muted); font-size:12px; }
+  #campaign-overview summary { cursor:pointer; color:var(--accent); }
+  #campaign-overview .mission-row { justify-content:flex-start; gap:24px; margin-top:10px; }
+  #campaign-overview #campaign-status { position:static; padding:6px 0 0; background:none; max-width:none; }
+  #objective { top:108px; border:0; background:#09232dc9; padding:7px 12px; border-radius:8px; }
+  #objective strong { display:inline; font-size:12px; font-weight:600; }
+  #objective-detail { font-size:11px; margin-left:8px; }
+  #qualification summary { font-size:10px; color:var(--muted); cursor:pointer; margin-top:8px; }
+  #flight-hud:has(#threat-status:not([hidden])) #objective { top:150px; }
+  @media(min-width:650px) and (max-height:450px) {
+    #campaign-overview { position:absolute; right:14px; top:212px; width:224px; max-height:65px; overflow:auto; }
+    #operations-panel > p { display:none; }
+  }
 </style>
 </head>
 <body>
@@ -96,25 +141,34 @@
 <canvas id="c" aria-label="Pacific Skies game and controls"></canvas>
 <div id="flight-hud" class="readout" hidden>
   <div id="stats">
-    <div class="mission-row"><div><div class="eyebrow">Score</div><strong id="score-value">0</strong></div>
-      <div class="island-progress"><div class="eyebrow">Islands <span id="islands-value">0 / 4</span></div><div id="island-pips" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div></div>
     <div class="gauges"><div><div class="gauge-heading"><span>Hull</span><span id="hull-value">100%</span></div><div class="track"><i id="health-fill"></i></div></div>
       <div><div class="gauge-heading"><span>Gun heat</span></div><div class="track"><i id="heat-fill"></i></div></div></div>
   </div>
-  <div id="campaign-status"><span id="rank-value">Cadet</span><span id="rank-progress"></span><div id="carrier-status" hidden></div></div>
+
+  <button id="threat-status" hidden type="button"><strong id="threat-title"></strong><span id="threat-detail"></span></button>
   <div id="objective" hidden><strong id="objective-title"></strong><span id="objective-detail"></span><div id="capture-track" class="track" hidden><i id="capture-fill"></i></div></div>
   <div id="toast" hidden></div>
 </div>
-<div id="menu" class="readout" hidden><div id="menu-card"><p id="menu-kicker"></p><h1 id="menu-title"></h1><p id="menu-summary"></p><div id="menu-instructions"></div><p id="menu-start"></p></div></div>
+<div id="menu" class="readout" hidden><div id="menu-card"><p id="menu-kicker"></p><h1 id="menu-title"></h1><p id="menu-summary"></p><div id="menu-instructions"></div><div class="menu-actions"><button id="menu-start"></button><button id="menu-new" hidden>New expedition</button></div><details id="session-report" hidden><summary>Campaign report</summary><div id="report-grid"></div><p id="report-unlocks"></p></details></div></div>
 <section id="sortie-panel" class="readout" aria-label="Plan next sortie" hidden>
 <h2>Your sortie</h2>
 <div id="sortie-aircraft" class="sortie-options" role="group" aria-label="Aircraft"></div>
 <div id="sortie-loadout" class="sortie-options" role="group" aria-label="Ordnance"></div>
 <div id="sortie-base" class="sortie-options" role="group" aria-label="Departure base"></div>
-<p id="sortie-unlock" hidden></p>
+<details id="qualification"><summary>Aircraft unlocks</summary><p id="sortie-unlock" hidden></p></details>
 </section>
 <div id="flight-controls" hidden><button id="torpedo-action">TORPEDO</button><button id="carrier-action">CARRIER</button></div>
 <div id="fire-indicator" class="readout" hidden>Fire</div>
+<button id="map-open" aria-label="Open operations chart" hidden></button>
+<section id="operations-panel" role="dialog" aria-modal="true" aria-labelledby="operations-title" hidden>
+<header><div><h2 id="operations-title">Operations chart</h2><small>Campaign paused</small></div><button id="operations-close">Return to flight</button></header>
+<details id="campaign-overview"><summary id="campaign-label">Campaign</summary>    <div class="mission-row"><div><div class="eyebrow">Score</div><strong id="score-value">0</strong></div>
+      <div class="island-progress"><div class="eyebrow">Holdings <span id="islands-value">0 / 4</span></div><div id="island-pips" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div></div>
+  <div id="campaign-status"><span id="rank-value">Cadet</span><span id="rank-progress"></span><div id="carrier-status" hidden></div></div></details>
+<canvas id="operations-map" aria-label="Charted islands and known military contacts"></canvas>
+<p>Coasts are charted. Scout to discover installations. Capture radar to reveal nearby forces. Dashed circles mark uncertain fleet positions.</p>
+<footer><span id="operations-waypoint"></span><button id="waypoint-clear">Clear course</button></footer>
+</section>
 <div id="loading" role="status"><p id="loading-text">Loading aircraft…</p><button id="retry" hidden>Retry</button></div>
 <script type="importmap">
 {"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}

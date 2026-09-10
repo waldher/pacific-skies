@@ -110,9 +110,11 @@ function check(name, ok, detail) {
       const nose = new THREE.Vector3(0, 0, -1).applyQuaternion(visual.root.quaternion);
       aligned &&= Math.abs(nose.x - Math.cos(a)) < 1e-6 && Math.abs(nose.z - Math.sin(a)) < 1e-6;
     }
-    game.player.a = original;
+    game.player.a = -Math.PI / 2;
     graphics.render(game, view, 0, 0, 0);
     const size = new THREE.Box3().setFromObject(visual.model).getSize(new THREE.Vector3());
+    game.player.a = original;
+    graphics.render(game, view, 0, 0, 0);
     return {
       name: visual.model.name,
       propeller: !!visual.propeller,
@@ -214,7 +216,7 @@ function check(name, ok, detail) {
       await page.screenshot({ path: path.join(SHOT_DIR, '03-dogfight.png') });
       shotMidFight = true;
     }
-    if (s.mode === 'over') { died = true; break; }
+    if (s.mode === 'over' || s.mode === 'recovery') { died = true; break; }
   }
   await page.evaluate(() => clearInterval(window.__bot));
 
@@ -270,11 +272,11 @@ function check(name, ok, detail) {
     const { game, requestCarrier, update, keys } = window.__game;
     for (const key of Object.keys(keys)) keys[key] = false;
     window.__game.startGame();
-    game.rank = 2; game.rescue.status = 'complete';
+    game.rank = 2; game.flightSeconds = window.__game.CONFIG.progression.aircraftFlightSeconds.corsair; game.combatSorties = window.__game.CONFIG.progression.aircraftSorties.corsair; game.rescue.status = 'complete';
     const c = game.ships[0]; c.active = true; c.hp = c.maxHp;
     game.bases.find(b => b.kind === 'carrier').available = true;
     game.player.flight = 'flying'; game.player.aircraft = 'corsair'; game.player.loadout = 'torpedoes';
-    game.player.x = c.x; game.player.y = c.y + 330;
+    game.player.x = c.x - Math.cos(c.a) * 330; game.player.y = c.y - Math.sin(c.a) * 330;
     game.player.a = c.a; game.player.hp = 40;
     for (let i = 0; i < 900 && game.player.flight !== 'landed'; i++) update(.02);
     game.cam.x = c.x; game.cam.y = c.y;
@@ -290,7 +292,7 @@ function check(name, ok, detail) {
   await page.waitForFunction(() => window.__game.graphics.aircraft.get(window.__game.game.player)?.model.name === 'F4U_Corsair');
   check('native carrier transfer selects compatible Corsair at deck height', await page.evaluate(() => { const p = window.__game.game.player; return p.baseId === 'fleet-carrier' && p.aircraft === 'corsair' && p.loadout === 'torpedoes' && p.altitude === window.__game.CONFIG.carrier.deckHeight; }));
 
-  await page.evaluate(() => { window.__game.game.score = 2200; });
+  await page.evaluate(() => { window.__game.game.score = window.__game.CONFIG.progression.aircraftUnlocks.p51; window.__game.game.combatSorties = window.__game.CONFIG.progression.aircraftSorties.p51; window.__game.game.flightSeconds = window.__game.CONFIG.progression.aircraftFlightSeconds.p51; });
   await page.locator('#sortie-base button[data-value="home-airfield"]').click();
   for (const [id,model,loadout] of [['dauntless','SBD_Dauntless','bombs'],['avenger','TBF_Avenger','torpedoes'],['p51','P51_Mustang','bombs']]) {
     await page.locator(`#sortie-aircraft button[data-value="${id}"]`).click();
@@ -310,12 +312,12 @@ function check(name, ok, detail) {
   await mobile.goto(`http://127.0.0.1:${port}/pacific-skies/?quality=1`);
   await mobile.waitForFunction(() => window.__game?.rendering?.ready);
   await mobile.waitForTimeout(150);
-  check('phone title shows touch instructions without keyboard shortcuts', await mobile.locator('#menu').innerText().then(t => t.includes('Tap to begin') && !/Space|WASD|Arrows|T to|L to/.test(t)));
+  check('phone title shows touch instructions without keyboard shortcuts', await mobile.locator('#menu').innerText().then(t => t.includes('Begin expedition') && !/Space|WASD|Arrows|T to|L to/.test(t)));
   await mobile.screenshot({ path: path.join(SHOT_DIR, '06-phone-title.png') });
   await mobile.touchscreen.tap(190, 600);
   await mobile.screenshot({ path: path.join(SHOT_DIR, '06-phone-sortie.png') });
   check('phone sortie selector fits its panel', await mobile.evaluate(() => { const p = document.getElementById('sortie-panel'); return p.scrollWidth <= p.clientWidth; }));
-  await mobile.evaluate(() => { const g = window.__game.game; g.score = 2200; g.rank = 2; g.rescue.status = 'complete'; g.ships[0].active = true; g.bases.find(b => b.kind === 'carrier').available = true; });
+  await mobile.evaluate(() => { const g = window.__game.game; g.score = window.__game.CONFIG.progression.aircraftUnlocks.p51; g.combatSorties = window.__game.CONFIG.progression.aircraftSorties.p51; g.flightSeconds = window.__game.CONFIG.progression.aircraftFlightSeconds.p51; g.rank = 2; g.rescue.status = 'complete'; g.ships[0].active = true; g.bases.find(b => b.kind === 'carrier').available = true; });
   for (const [width,height,name] of [[320,568,'small-phone'],[844,390,'landscape']]) {
     await mobile.setViewportSize({ width,height }); await mobile.waitForTimeout(100);
     check(`${name} sortie panel fits without overlapping the HUD`, await mobile.evaluate(() => {
@@ -347,6 +349,30 @@ function check(name, ok, detail) {
     check(`${name} notice sizes to its text`, await mobile.evaluate(() => document.getElementById('toast').getBoundingClientRect().width < innerWidth - 40));
     await mobile.screenshot({ path: path.join(SHOT_DIR, `07-${name}.png`) });
   }
+  await mobile.setViewportSize({width:390,height:844});
+  await mobile.locator('#map-open').tap();
+  const pausedTime=await mobile.evaluate(()=>window.__game.game.time);
+  await mobile.waitForTimeout(200);
+  check('phone operations chart pauses the live simulation', await mobile.evaluate(t=>window.__game.game.paused&&window.__game.game.time===t,pausedTime));
+  check('operations chart fits the phone viewport', await mobile.locator('#operations-panel').evaluate(e=>{const r=e.getBoundingClientRect();return r.x>=0&&r.y>=0&&r.right<=innerWidth&&r.bottom<=innerHeight&&e.scrollWidth<=e.clientWidth;}));
+  const chartTarget=await mobile.evaluate(async()=>{
+    const {mapProjection}=await import(new URL('src/operations.js',location.href).href);
+    const g=window.__game.game,c=document.getElementById('operations-map'),r=c.getBoundingClientRect();
+    const [x,y]=mapProjection(g,{x:0,y:0,w:r.width,h:r.height},true).point(g.territories[0]);
+    return {x:r.left+x,y:r.top+y};
+  });
+  await mobile.touchscreen.tap(chartTarget.x,chartTarget.y);
+  check('chart touch selects a known destination without steering or firing', await mobile.evaluate(async()=>{
+    const {stick,fireTouch}=await import(new URL('src/input.js',location.href).href);
+    return window.__game.game.waypoint?.name===window.__game.game.territories[0].name&&!stick.active&&!fireTouch.active;
+  }));
+  await mobile.screenshot({path:path.join(SHOT_DIR,'08-operations-phone.png')});
+  await mobile.setViewportSize({width:844,height:390});
+  await mobile.waitForTimeout(100);
+  await mobile.screenshot({path:path.join(SHOT_DIR,'08-operations-landscape.png')});
+  await mobile.locator('#operations-close').tap();
+  await mobile.waitForTimeout(100);
+  check('closing chart resumes simulation without a stuck control', await mobile.evaluate(t=>!window.__game.game.paused&&window.__game.game.time>t,pausedTime));
   await mobile.keyboard.press('t');
   await mobile.evaluate(() => { window.__game.game.mode = 'over'; });
   await mobile.waitForTimeout(100);
@@ -354,7 +380,7 @@ function check(name, ok, detail) {
   await mobile.touchscreen.tap(90, 500);
   await mobile.evaluate(() => { window.__game.game.mode = 'over'; });
   await mobile.waitForTimeout(100);
-  check('touch input restores touch restart hint', await mobile.locator('#menu-start').innerText().then(t => t === 'Tap to begin'));
+  check('touch input restores touch restart hint', await mobile.locator('#menu-start').innerText().then(t => t === 'Begin expedition'));
   check('responsive HUD has no runtime errors', results.errors.length === 0, results.errors[0]);
   await mobile.close();
 

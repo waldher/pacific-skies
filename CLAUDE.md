@@ -7,7 +7,7 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 
 ## Design pillars
 
-- **Arcade, not sim.** Individual sorties are a few minutes, restart is instant,
+- **Arcade, not sim.** Individual sorties are a few minutes, pilot recovery is instant, campaign saves locally,
   one input scheme per platform (keyboard / two thumbs).
 - **No build step.** Three.js and GLB aircraft are checked in. Keep runtime
   imports local so GitHub Pages works without a CDN. Audio is WebAudio
@@ -28,13 +28,22 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 | `input.js` | keyboard + touch (virtual stick left half, fire right half) |
 | `player.js` | flight model, firing, damage, death |
 | `enemies.js` | territory defenders, patrol/pursuit AI, enemy fire, ramming |
+| `objectives.js` | concrete next actions and automatic/manual course guidance |
+| `coastal-home.js` | moves legacy home runways to the coast while preserving saves |
+| `persistence.js` | validated local expedition checkpoints and restore data |
+| `expedition-geography.js` | shared atlas and game archipelago generator |
+| `theater.js` | seeded archipelago landforms, holdings, fixed bounds and offshore routes |
+| `fleets.js` | carrier/escort formations and approach holds |
+| `intelligence.js` | observed installation and fleet snapshots |
+| `operations.js` | paused chart, coastlines and snapshot waypoints |
 | `campaign.js` | seeded island chains, territory ownership, carrier rescue, rank and victory |
 | `surface.js` | shared visible shoreline and precise hull footprints for bomb impacts |
 | `aircraft-previews.js` | renders actual GLB aircraft into selection-card images once at startup |
 | `aircraft-types.js` | aircraft roles, available ordnance, base restrictions and unlock metadata |
 | `bases.js` | landed base transfer and aircraft/loadout compatibility |
 | `bombs.js` | two-bomb loadout, delayed impact and airfield/ship damage |
-| `strikes.js` | launch-site strike groups, base attacks and field repair |
+| `strikes.js` | bomber/torpedo raids, escorts, radar detection and garrison defense |
+| `session-report.js` | observed campaign outcomes and unlock timings |
 | `carrier.js` | manual approach, aligned deck landing, deck repair and takeoff |
 | `airwar.js` | independent friendly patrols and occasional roaming Zero interceptors |
 | `torpedoes.js` | two-round loadout, surface runs, ship impacts and cooldown |
@@ -52,7 +61,7 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 Conventions:
 
 - Game state mutations go through the shared `game` object from
-  `state.js`. `game.mode` is `title | play | over | victory`.
+  `state.js`. `game.mode` is `title | play | recovery | over | victory`.
 - Tuning numbers belong in `config.js`, never inline. A balance
   change should be a one-line diff there.
 - Gameplay randomness must use `rand()` from `util.js` (seedable for

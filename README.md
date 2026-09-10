@@ -9,19 +9,24 @@ modules, no build step. Responsive HTML readouts show status and instructions; a
 - Mobile: left thumb steers, right thumb fires; tap Bomb/Torpedo in flight and Take Off while parked.
 
 Start in a P-38 Lightning at a friendly airfield. Every campaign generates a new
-chain of five to seven enemy islands, with wider open-water passages between bases. Clear fighters and patrol ships, bomb any
-airfield facilities, then hold the island for six seconds to capture it. Captured
-airfields become departure bases. Capture all islands and sink the enemy fleet to win.
+theater of three archipelagos: eight strategic holdings among 28–35 landforms,
+including elongated islands, crescent lagoons, reefs and satellite islets. Clear fighters
+and bomb airfield facilities, then hold the position for six seconds to capture it.
+Ships no longer block island capture. Captured airfields become departure bases.
+Secure both Ember stronghold holdings and sink the principal enemy carrier to win;
+decorative islets and surviving destroyers do not need clearing.
 
 Enemy airfields and a patrolling enemy carrier launch interceptable strike groups
-at your home airfield, then at your active carrier. Destroying the launch site stops
-future launches. Protect base health: your home airfield falling ends the campaign.
+at nearby friendly holdings. Bombers attack islands, torpedo flights attack carriers,
+and escorts engage you. These attack roles currently share the Zero model. Destroying
+a launch site stops future launches. Losing a base is recoverable while another usable
+base remains. Raids can overrun captured islands; retaking one never awards capture points twice.
 Landing there repairs its facilities as well as your plane.
 
-At 600 points, a friendly carrier needs rescue. Its rescue attack starts when you approach,
+At 2,500 points, a friendly carrier needs rescue. Its rescue attack starts when you approach,
 so earning rank far away does not waste the mission. Intercept at least two of its three
 attackers, clear the rescue group, and rendezvous near the carrier to unlock the
-Corsair and naval operations. Failed rescues can be retried after 45 seconds.
+naval operations. Aircraft qualifications are earned separately. Failed rescues can be retried after 45 seconds.
 
 Land by aligning with a friendly runway's painted arrow, or with a carrier's bow.
 The approach stays manual, with a forgiving heading/offset window. P-38s use
@@ -32,7 +37,7 @@ Take off when ready; base transfer is unavailable in flight.
 Each loadout has two bombs or two torpedoes. Bombs drift forward before impact
 and strike ground targets; only an exact impact on a ship hull damages it. Water
 near-misses splash harmlessly; torpedoes run on the surface and only hit ships.
-Bullets only damage aircraft. Two seconds parked reloads both weapons. Aircraft
+Bullets only damage aircraft. Landing immediately reloads both weapons. Aircraft
 selection uses renders of the actual flight models. Single loadouts are shown as
 summaries; aircraft and weapon alternatives become selectable cards. Aircraft
 unlocks and territory ownership last for the current campaign; restarting creates
@@ -46,21 +51,50 @@ Aircraft unlock during each campaign:
 | Aircraft | Unlock | Role |
 |---|---|---|
 | P-38 Lightning | Starting aircraft | Fast land-based interceptor with bombs |
-| SBD Dauntless | 300 points | Slower bomber; one heavy bomb disables an airfield |
-| F4U Corsair | Rescue the carrier | Versatile naval fighter with bombs or torpedoes |
-| TBF Avenger | Rescue + 1,200 points | Slower torpedo specialist; two heavy torpedoes sink an enemy carrier |
-| P-51 Mustang | Rescue + 2,200 points | Fastest fighter, land-based, with bombs |
+| SBD Dauntless | 1,800 points + 3 combat sorties | Slower bomber; one heavy bomb disables an airfield |
+| F4U Corsair | Rescue + 5 combat sorties | Versatile naval fighter with bombs or torpedoes |
+| TBF Avenger | Rescue + 4,000 points + 8 combat sorties | Slower torpedo specialist; two heavy torpedoes sink an enemy carrier |
+| P-51 Mustang | Rescue + 6,000 points + 12 combat sorties | Fastest fighter, land-based, with bombs |
 
 All aircraft carry two rounds of their selected ordnance. Dauntless, Corsair and
 Avenger can use carrier decks once the carrier is rescued; P-38 and P-51 require
 an airfield. The sortie panel shows the next unlock. Touch throttle respects each
 aircraft's speed range, just like keyboard controls.
 
+A combat sortie counts when you land after personally hitting a hostile ground/sea
+target or destroying an aircraft since takeoff. Empty circuits, idle time and allied
+kills do not qualify. The end menu has an optional campaign report with territory
+changes, carrier losses, raid damage, personal interceptions and unlock times.
+
+Islands have distinct roles: airfields offer landing and repair, ports supply fleet
+repairs, and radar stations immediately reveal nearby enemy installations and track fleets. Newly captured holdings start damaged
+and take 90 seconds to establish defenses and port repair support. Capturing a frontline
+island draws attacks away from more distant holdings. Early raids have a preparation
+window; subsequent launch intervals vary by seed.
+
+Tap the minimap for a paused operations chart. Coastlines are always charted;
+enemy installations and ships must be discovered through reconnaissance or captured
+radar. Known fixed locations persist. Fleet contacts stop at their last-seen position
+when observation ends, gain age/uncertainty, and expire after 90 seconds. Waypoints
+use the selected observation, not the hidden live position. Radar's intelligence
+benefit is immediate; garrison defenses still take time to establish.
+
+Each carrier has two armed destroyer escorts following shared offshore routes.
+The friendly task group holds for an aligned approach and throughout deck operations.
+Escorts remain afloat and continue moving after their flagship sinks. Enemy naval
+strikes can attack friendly escorts as well as the carrier. Ports support fleet
+repair globally in this slice; connected/local supply is still future work.
+
+Being shot down still ends the campaign. Recoverable pilot losses and saves remain
+separate follow-up work; this map update does not introduce a hidden respawn rule.
+
 ## Develop
 
 ```sh
 npm run serve   # serve locally on :8080
 npm test        # headless playtest (needs playwright + chromium)
+npm run test:simulation # functional campaign checks
+npm run test:balance    # repeatable raid strategy comparisons
 ```
 
 See `CLAUDE.md` for architecture and conventions, `IDEAS.md` for the
@@ -92,7 +126,7 @@ context loss pauses the simulation until recovery.
 loads and animates models, `src/world.js` streams islands, and `src/effects.js`
 batches tracers and particles. Visual tuning lives in `CONFIG.render`.
 
-Both aircraft GLBs are generated from real dimensions by `tools/build-aircraft.mjs`
+The aircraft GLBs are generated from real dimensions by `tools/build-aircraft.mjs`
 (`npm run build:aircraft`); the reference measurements and the three-view
 drawings they came from are in `tools/reference/`.
 

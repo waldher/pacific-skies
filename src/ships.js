@@ -3,26 +3,21 @@ import { CONFIG } from './config.js';
 import { game } from './state.js';
 import { explosion, splash } from './particles.js';
 import { notify } from './campaign.js';
+import { updateFleets } from './fleets.js';
 
 export function updateShips(dt) {
+  updateFleets(game, dt);
   for (const s of game.ships) {
     if (s.active === false) continue;
     if (s.hp <= 0) { s.sinking = (s.sinking || 0) + dt; continue; }
-    if (s.team === 'jp') {
-      const t = game.territories[s.territory];
-      s.angle += CONFIG.ship.speed / s.orbit * dt;
-      const x = t?.x ?? s.anchorX, y = t?.y ?? s.anchorY;
-      s.x = x + Math.cos(s.angle) * s.orbit; s.y = y + Math.sin(s.angle) * s.orbit;
-      s.a = s.angle + Math.PI / 2;
-    }
     s.fireCd -= dt;
     let target = s.team === 'jp' ? game.player : game.enemies.filter(e => e.hp > 0)
       .sort((a, b) => Math.hypot(a.x - s.x, a.y - s.y) - Math.hypot(b.x - s.x, b.y - s.y))[0];
     const range = s.team === 'jp' ? CONFIG.ship.gunRange : CONFIG.carrier.defenseRange;
-    if (!target || target.flight === 'landed' || Math.hypot(target.x - s.x, target.y - s.y) > range) continue;
+    if (!target || (target.flight && target.flight !== 'flying') || Math.hypot(target.x - s.x, target.y - s.y) > range) continue;
     s.gunAngle = Math.atan2(target.y - s.y, target.x - s.x);
     if (s.fireCd <= 0) {
-      s.fireCd = s.team === 'jp' ? CONFIG.ship.fireCooldown : CONFIG.carrier.fireCooldown;
+      s.fireCd = s.kind === 'carrier' && s.team === 'us' ? CONFIG.carrier.fireCooldown : CONFIG.ship.fireCooldown;
       const speed = CONFIG.ship.bulletSpeed;
       const rounds = s.team === 'jp' ? game.ebullets : game.bullets;
       rounds.push({ x: s.x, y: s.y, vx: Math.cos(s.gunAngle) * speed, vy: Math.sin(s.gunAngle) * speed,
@@ -51,10 +46,11 @@ export function hitsShip(b, s) {
 export function damageShip(s, amount = 1) {
   if (s.team !== 'jp' || s.hp <= 0) return;
   s.hp = Math.max(0, s.hp - amount);
+  game.playerMerit = (game.playerMerit || 0) + 1;
   if (s.hp === 0) {
     s.sinking = 0;
     game.score += CONFIG.ship.score;
     explosion(s.x, s.y, true); splash(s.x, s.y);
-    notify(game, s.kind === 'carrier' ? 'Enemy carrier sunk · flight deck silenced' : 'Patrol destroyer sunk');
+    notify(game, s.kind === 'carrier' ? 'Enemy carrier sunk · flight deck silenced' : 'Destroyer escort sunk');
   }
 }

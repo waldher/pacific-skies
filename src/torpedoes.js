@@ -1,4 +1,5 @@
 // Arcade air-dropped torpedoes: straight surface runs, ship-only damage.
+import { onLand } from './surface.js';
 import { CONFIG } from './config.js';
 import { game } from './state.js';
 import { hitsShip, damageShip } from './ships.js';
@@ -6,7 +7,7 @@ import { splash } from './particles.js';
 
 export function launchTorpedo() {
   const p = game.player, T = CONFIG.torpedo;
-  if (p?.loadout !== 'torpedoes' || game.mode !== 'play' || p.flight !== 'flying' || p.torpedoCd > 0 || p.torpedoAmmo <= 0) return false;
+  if (game.paused || p?.loadout !== 'torpedoes' || game.mode !== 'play' || p.flight !== 'flying' || p.torpedoCd > 0 || p.torpedoAmmo <= 0) return false;
   p.torpedoCd = T.cooldown; p.torpedoAmmo--;
   game.torpedoes.push({ damage: CONFIG.aircraft[p.aircraft]?.torpedoDamage ?? T.damage, x: p.x, y: p.y, vx: Math.cos(p.a) * T.speed,
     vy: Math.sin(p.a) * T.speed, distance: 0, life: T.range / T.speed, wakeCd: 0 });
@@ -23,7 +24,7 @@ export function updateTorpedoes(dt) {
     t.wakeCd -= dt;
     if (t.wakeCd <= 0) { splash(t.x, t.y); t.wakeCd = .15; }
     if (t.life <= 0) continue;
-    if (game.territories.some(i => Math.hypot(t.x - i.x, t.y - i.y) < i.radius * .7)) {
+    if (onLand(t, game.terrain || game.territories)) {
       t.life = 0; splash(t.x, t.y); continue;
     }
     if (t.distance < CONFIG.torpedo.armingDistance) continue;

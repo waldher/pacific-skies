@@ -1,6 +1,7 @@
 // Low-poly ship meshes and territorial beacons, built once and reused.
 import * as THREE from 'three';
 import { CONFIG } from './config.js';
+import { shipObserved, installationKnown, observedAt } from './intelligence.js';
 
 const material = (color, options = {}) => new THREE.MeshStandardMaterial({ color, roughness: .85, ...options });
 const hull = material('#314453'), deck = material('#6c7270'), wood = material('#8b8060');
@@ -50,13 +51,13 @@ function shipTemplate(carrier, enemy = false) {
       box(turret, [13, 5, 11], [0, 0, 0], hull);
       box(turret, [2, 2, 18], [0, 2, -10], dark); group.add(turret);
     }
-    box(group, [12, .2, 8], [0, 11.3, 48], hostile);
+    box(group, [12, .2, 8], [0, 11.3, 48], enemy ? hostile : friend);
   }
   return group;
 }
 
 export function createNavalScene(scene) {
-  const templates = { carrier: shipTemplate(true), enemyCarrier: shipTemplate(true, true), destroyer: shipTemplate(false) };
+  const templates = { carrier: shipTemplate(true), enemyCarrier: shipTemplate(true, true), destroyer: shipTemplate(false), enemyDestroyer: shipTemplate(false, true) };
   const ships = new Map(), zones = new Map(), airfields = new Map(), bombs = new Map();
   const runwayMat = material('#4d5753'), hangarMat = material('#a7a189'), rubbleMat = material('#343534');
   const bombGeometry = new THREE.SphereGeometry(3, 6, 4);
@@ -72,16 +73,17 @@ export function createNavalScene(scene) {
       for (const [s, visual] of ships) if (!liveShips.has(s)) { scene.remove(visual.root, visual.wake); ships.delete(s); }
       for (const s of liveShips) {
         if (!ships.has(s)) {
-          const root = templates[s.kind === 'carrier' && s.team === 'jp' ? 'enemyCarrier' : s.kind].clone(true);
+          const root = templates[s.team === 'jp' ? (s.kind === 'carrier' ? 'enemyCarrier' : 'enemyDestroyer') : s.kind].clone(true);
           root.name = s.kind === 'carrier' ? (s.team === 'jp' ? 'EnemyCarrier' : 'FriendlyCarrier') : 'PatrolDestroyer';
           const wake = new THREE.Mesh(wakeGeometry, wakeMat);
           ships.set(s, { root, wake }); scene.add(root, wake);
         }
         const v = ships.get(s), sink = s.hp <= 0 ? s.sinking / CONFIG.ship.sinkingSeconds : 0;
+        v.root.visible = shipObserved(game, s);
         v.root.position.set(s.x, -sink * 28, s.y);
         v.root.rotation.set(0, -s.a - Math.PI / 2, sink * .35);
         v.root.traverse(node => { if (node.name === 'Turret') node.rotation.y = -(s.gunAngle ?? s.a) + s.a; });
-        v.wake.visible = s.hp > 0 && (s.kind !== 'carrier' || s.team === 'jp');
+        v.wake.visible = v.root.visible && s.hp > 0 && (s.fleet ? s.fleet.moving : s.team === 'jp');
         v.wake.position.set(s.x - Math.cos(s.a) * s.length * .65, .3, s.y - Math.sin(s.a) * s.length * .65);
         v.wake.rotation.y = v.root.rotation.y;
         v.wake.scale.set(s.width * .55, 1, s.length * .7);
@@ -118,10 +120,11 @@ export function createNavalScene(scene) {
           airfields.set(field, { root, hangars, beacon }); scene.add(root);
         }
         const v = airfields.get(field);
+        v.root.visible = field.owner === 'us' || observedAt(game, field);
         v.root.position.set(field.x, 0, field.y);
         v.root.rotation.y = -field.a - Math.PI / 2;
         v.beacon.material = field.owner === 'us' ? friend : hostile;
-        const intact = field.owner === 'us' ? 3 : Math.ceil(3 * Math.max(0, field.hp) / field.maxHp);
+        const intact = Math.ceil(3 * Math.max(0, field.hp) / field.maxHp);
         v.hangars.forEach((hangar, i) => {
           hangar.scale.y = i < intact ? 1 : .15;
           hangar.position.y = i < intact ? 18 : 10;
@@ -151,11 +154,33 @@ export function createNavalScene(scene) {
           const ring = new THREE.Mesh(ringGeometry, hostile); ring.position.y = 9; group.add(ring);
           const pole = new THREE.Mesh(poleGeometry, cabin); pole.position.set(-100, 28, 0); group.add(pole);
           const flag = new THREE.Mesh(flagGeometry, hostile); flag.position.set(-88, 40, 0); group.add(flag);
+          if (t.role === 'radar') {
+            box(group, [32, 18, 26], [70, 17, 0], cabin);
+            box(group, [3, 42, 3], [70, 43, 0], dark);
+            const dish = box(group, [45, 20, 3], [70, 62, 0], cabin); dish.name = 'RadarDish';
+            box(group, [2, 28, 2], [70, 62, 0], dark);
+          } else if (t.role === 'port') {
+            const port = new THREE.Group(); group.add(port);
+            // Pier points into water at the shared physical coastline.
+            const coast = t.portShore;
+            port.position.set(coast?.x || 0, 0, coast?.y || 0);
+            port.rotation.y = Math.PI / 2 - (coast?.a || 0);
+            const shore = 0;
+            box(port, [110, 5, 30], [0, 9, shore], wood);
+            for (const x of [-42, 42]) box(port, [18, 5, 80], [x, 9, shore + 28], wood);
+            for (const x of [-30, 15]) box(port, [32, 24, 35], [x, 20, shore - 42], cabin);
+            box(port, [4, 58, 4], [65, 36, shore], dark);
+            box(port, [54, 4, 4], [45, 64, shore], dark);
+          }
           group.name = 'Territory-' + t.name; zones.set(t, group); scene.add(group);
         }
-        const group = zones.get(t), mat = t.owner === 'us' ? friend : hostile;
+        const group = zones.get(t);
+        group.visible = installationKnown(game, t) && (t.owner === 'us' || observedAt(game, t));
+        const mat = t.owner === 'us' ? friend : hostile;
         group.children[0].material = mat; group.children[2].material = mat;
         group.children[0].visible = t.owner !== 'us';
+        const dish = group.getObjectByName('RadarDish');
+        if (dish) dish.rotation.y = game.time * .5;
       }
     },
   };

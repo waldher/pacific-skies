@@ -6,6 +6,7 @@
 // then shadows. It steps back up only into levels that never failed, so a
 // device settles rather than oscillates. ?quality=N in the URL pins a level.
 import * as THREE from 'three';
+import { enemyObserved } from './intelligence.js';
 import { CONFIG } from './config.js';
 import { loadAircraft, createAircraft, updateAircraft, setShadowMode } from './aircraft.js';
 import { createWorld } from './world.js';
@@ -127,8 +128,8 @@ export async function createRenderer(canvas) {
       const [sx, sy, sz] = CONFIG.render.sunOffset;
       sun.position.set(game.cam.x + sx, sy, game.cam.y + sz);
       sun.target.position.set(game.cam.x, 0, game.cam.y);
-      world.update(game.cam, view, game.time, lastRatio, game.territories);
-      const live = new Set([...game.enemies, ...game.allies]);
+      world.update(game.cam, view, game.time, lastRatio, game.terrain || game.territories);
+      const live = new Set([...game.enemies.filter(e => enemyObserved(game, e)), ...game.allies]);
       if (game.player && game.mode === 'play') live.add(game.player);
       for (const [entity, visual] of aircraft) {
         if (live.has(entity) && visual.aircraftType === (entity.aircraft || (entity === game.player || entity.team === 'us' ? 'us' : 'jp'))) continue;

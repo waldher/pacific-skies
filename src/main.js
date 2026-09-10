@@ -1,6 +1,11 @@
 // Game loop: flight, combat, surface patrols, conquest, camera and rendering.
+import { recordSession, sessionSummary } from './session-report.js';
+import { updateGuidance } from './objectives.js';
+import { updateIntelligence } from './intelligence.js';
+import { initOperations, drawOperations } from './operations.js';
 import { CONFIG } from './config.js';
-import { game, startGame } from './state.js';
+import { game, startGame, recoverPilot, resumeCampaign } from './state.js';
+import { updateCampaignSave, hasSavedCampaign, saveCampaign } from './persistence.js';
 import { cvs, ctx, view } from './canvas.js';
 import { keys, stick, fireTouch, initInput } from './input.js';
 import { updatePlayer, damagePlayer } from './player.js';
@@ -18,13 +23,17 @@ import { createRenderer } from './renderer.js';
 import { drawHud, drawMenus } from './hud.js';
 import { lerp, angDiff, rand, setSeed } from './util.js';
 
+window.addEventListener('pagehide', () => saveCampaign(game));
+document.addEventListener?.('visibilitychange', () => { if (document.hidden) saveCampaign(game); });
 let graphics;
 let contextLost = false;
 
 function update(dt) {
-  game.time += dt;
+  if (game.paused) return;
   if (game.mode !== 'play') return;
+  game.time += dt;
 
+  if (game.player.flight === 'flying') game.flightSeconds += dt;
   updatePlayer(dt);
   updateAirWar(dt);
   updateEnemies(dt);
@@ -51,6 +60,10 @@ function update(dt) {
         if (e.hp <= 0) {
           if (e.rescue) game.rescue.intercepts = (game.rescue.intercepts || 0) + 1;
           game.score += e.ace ? CONFIG.score.aceKill : CONFIG.score.kill;
+          if (!b.fromAlly && !b.fromShip) {
+            game.playerMerit = (game.playerMerit || 0) + 1;
+            if (e.strike) game.raidIntercepts = (game.raidIntercepts || 0) + 1;
+          }
           explosion(e.x, e.y, false);
         }
         break;
@@ -80,6 +93,11 @@ function update(dt) {
 
   if (game.mode === 'play') updateCampaign(game, dt, spawnDefenders);
 
+  updateIntelligence(game, dt);
+  updateGuidance(game);
+  recordSession(game);
+  updateCampaignSave(game);
+
   // camera: lead slightly ahead of the nose
   const player = game.player, lead = player.flight === 'flying' ? CONFIG.camera.lead : 0;
   game.cam.x = lerp(game.cam.x, player.x + Math.cos(player.a) * lead, 1 - Math.pow(0.005, dt));
@@ -90,13 +108,14 @@ function update(dt) {
 function render(dt) {
   const shakeX = game.shake > 0 ? rand(-game.shake, game.shake) * .5 : 0;
   const shakeY = game.shake > 0 ? rand(-game.shake, game.shake) * .5 : 0;
-  graphics.render(game, view, dt, shakeX, shakeY);
+  graphics.render(game, view, game.paused ? 0 : dt, shakeX, shakeY);
   ctx.clearRect(0, 0, view.W, view.H);
   ctx.save();
   ctx.translate(shakeX, shakeY);
   if (game.player) drawHud();
   ctx.restore();
   drawMenus();
+  drawOperations(game);
 }
 
 let last = performance.now();
@@ -111,7 +130,7 @@ function frame(now) {
 }
 // Debug/test API: the playtest harness (and console tinkering) reads
 // live state and drives input through this handle.
-window.__game = { game, CONFIG, startGame, setSeed, keys, stick, fireTouch, view, angDiff, update, launchTorpedo, launchBomb: () => launchBomb(game), selectSortie: options => selectSortie(game, options), requestCarrier: () => requestCarrier(game) };
+window.__game = { sessionSummary: () => sessionSummary(game), game, CONFIG, startGame, recoverPilot, resumeCampaign, hasSavedCampaign, setSeed, keys, stick, fireTouch, view, angDiff, update, launchTorpedo, launchBomb: () => launchBomb(game), selectSortie: options => selectSortie(game, options), requestCarrier: () => requestCarrier(game) };
 
 
 const status = document.getElementById('loading');
@@ -142,6 +161,7 @@ async function boot() {
     window.__game.rendering = graphics.diagnostics;
     status.hidden = true;
     initInput(cvs);
+    initOperations(game);
     last = performance.now();
     requestAnimationFrame(frame);
   } catch (error) {

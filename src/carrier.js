@@ -13,9 +13,10 @@ export function carrierAction(game) {
 
 export function requestCarrier(game) {
   const p = game.player;
-  if (!p || game.mode !== 'play') return;
+  if (!p || game.paused || game.mode !== 'play') return;
   if (p.flight === 'landed') {
     p.flight = 'takeoff'; p.flightTime = 0;
+    p.sortieScore = game.playerMerit || 0;
     p.departure = { x: p.x, y: p.y };
     notify(game, 'Launching — good hunting');
   }
@@ -49,6 +50,8 @@ export function updateCarrierFlight(game, dt) {
       p.torpedoAmmo = CONFIG.torpedo.capacity; p.bombAmmo = CONFIG.bomb.capacity;
       p.torpedoCd = 0; p.bombCd = 0;
       p.flight = 'landed'; p.a = c.a; p.speed = 0;
+      if (p.sortieScore !== undefined && (game.playerMerit || 0) > p.sortieScore) game.combatSorties = (game.combatSorties || 0) + 1;
+      p.sortieScore = undefined;
       notify(game, 'Landed — rearmed and repairing');
     }
   } else if (p.flight === 'landed') {
