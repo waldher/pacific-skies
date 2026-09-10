@@ -1,5 +1,5 @@
 // Responsive text readouts; world markers and touch controls stay on canvas.
-import { objectiveFor } from './objectives.js';
+import { objectiveFor, flightPresentation, coursePhase } from './objectives.js';
 import { ctx, view, w2s } from './canvas.js';
 import { game } from './state.js';
 import { hasSavedCampaign } from './persistence.js';
@@ -24,7 +24,7 @@ export function drawHud() {
     if (sx < -100 || sx > W + 100 || sy < -150 || sy > H + 150) continue;
     ctx.textAlign = 'center'; ctx.font = '700 11px monospace';
     ctx.fillStyle = ship.team === 'us' ? '#83edcb' : '#ffad91';
-    ctx.fillText(ship.team === 'us' ? 'FRIENDLY CARRIER' : ship.kind === 'carrier' ? 'ENEMY CARRIER' : 'PATROL', sx, sy - ship.length / 2 - 18);
+    if(ship.team==='jp' && ship.kind==='carrier')ctx.fillText('CARRIER',sx,sy-ship.length/2-18);
     if (ship.team === 'jp') {
       ctx.fillStyle = '#172e3a'; rr(sx - 23, sy + 26, 46, 4, 2);
       ctx.fillStyle = '#ed876c'; rr(sx - 23, sy + 26, 46 * ship.hp / ship.maxHp, 4, 2);
@@ -37,7 +37,7 @@ export function drawHud() {
     if (sx < -80 || sx > W + 80 || sy < -80 || sy > H + 80) continue;
     ctx.textAlign = 'center'; ctx.font = '700 10px system-ui';
     ctx.fillStyle = field.owner === 'us' ? '#82dfbc' : '#ffad91';
-    ctx.fillText(field.owner === 'us' ? 'FRIENDLY AIRFIELD' : field.hp > 0 ? 'AIRFIELD · BOMB TARGET' : 'AIRFIELD DISABLED', sx, sy - 62);
+    if(field.owner!=='us')ctx.fillText(field.hp>0?'AIRFIELD':'DISABLED',sx,sy-62);
     if (field.hp > 0 && (field.owner !== 'us' || field.hp < field.maxHp)) {
       ctx.fillStyle = '#172e3a'; rr(sx - 23, sy - 55, 46, 4, 2);
       ctx.fillStyle = field.owner === 'us' ? '#82dfbc' : '#ed876c'; rr(sx - 23, sy - 55, 46 * field.hp / field.maxHp, 4, 2);
@@ -54,11 +54,6 @@ export function drawHud() {
       ctx.fillStyle = territory.owner === 'us' ? '#82dfbc' : '#ed876c';
       rr(sx - 23, sy - 33, 46 * territory.integrity / territory.maxIntegrity, 4, 2);
     }
-  }
-  for (const ally of game.allies) {
-    const [x, y] = w2s(ally.x, ally.y);
-    ctx.textAlign = 'center'; ctx.font = '700 10px monospace'; ctx.fillStyle = '#86ebd1';
-    ctx.fillText(ally.name, x, y + 28);
   }
   // off-screen enemy arrows
   ctx.fillStyle = 'rgba(255,120,90,0.9)';
@@ -105,19 +100,23 @@ function drawNavigation() {
   drawCourseMarker();
 }
 
-// A gold course marker stays in the flight view; no chart reading is needed to steer.
+// Direction while travelling; a stationary, unlabelled marker once close.
 function drawCourseMarker() {
-  if(game.mode!=='play' || !game.waypoint)return;
-  const {W,H}=view, goal=objectiveFor(game), [sx,sy]=w2s(goal.target.x,goal.target.y);
-  const cx=W/2,cy=H/2;
-  // Keep the guide near the aircraft, clear of top readouts and the two thumbs.
-  const radius=Math.min(W*.31,H*.22), dx=sx-cx,dy=sy-cy, d=Math.hypot(dx,dy);
-  const x=cx+dx*Math.min(1,radius/(d||1)),y=cy+dy*Math.min(1,radius/(d||1));
-  ctx.save();ctx.translate(x,y);ctx.rotate(Math.atan2(dy,dx));
-  ctx.fillStyle='#f5cc7f';ctx.strokeStyle='#142d35';ctx.lineWidth=3;
-  ctx.beginPath();ctx.moveTo(12,0);ctx.lineTo(-7,-7);ctx.lineTo(-3,0);ctx.lineTo(-7,7);ctx.closePath();ctx.stroke();ctx.fill();ctx.restore();
-  ctx.fillStyle='#f5cc7f';ctx.textAlign='center';ctx.font='700 11px system-ui';ctx.lineWidth=3;ctx.strokeStyle='#102a34';
-  const label=d>radius?`${flightSeconds(game,goal.target)}s`:'HERE';ctx.strokeText(label,x,y+23);ctx.fillText(label,x,y+23);
+  if(game.mode!=='play' || game.player.flight!=='flying' || !game.waypoint)return;
+  const {W,H}=view, target=game.waypoint, [sx,sy]=w2s(target.x,target.y);
+  const phase=coursePhase(game);
+  ctx.save();ctx.strokeStyle='#edce91';ctx.lineWidth=1.5;
+  if(phase==='arrived') {
+    ctx.globalAlpha=.55;
+    ctx.beginPath();ctx.arc(sx,sy,18,0,TAU);ctx.stroke();
+  } else {
+    const [px,py]=w2s(game.player.x,game.player.y);
+    const dx=sx-px,dy=sy-py,d=Math.hypot(dx,dy),radius=Math.min(W*.3,H*.2);
+    const x=px+dx*Math.min(1,radius/(d||1)),y=py+dy*Math.min(1,radius/(d||1));
+    ctx.translate(x,y);ctx.rotate(Math.atan2(dy,dx));
+    ctx.beginPath();ctx.moveTo(-5,-5);ctx.lineTo(3,0);ctx.lineTo(-5,5);ctx.stroke();
+  }
+  ctx.restore();
 }
 
 const el = id => document.getElementById(id);
@@ -217,6 +216,7 @@ export function drawMenus() {
     text('hull-value', `${Math.ceil(p.hp)}%`);
     el('hull-value').style.color = p.hp > 35 ? '#82dfbc' : '#f18f7c';
     if (el('island-pips').children.length !== game.territories.length) el('island-pips').replaceChildren(...game.territories.map(() => document.createElement('i')));
+    text('campaign-label', `Campaign · ${game.territories.filter(t=>t.owner==='us').length}/${game.territories.length} secured`);
     text('rank-value', ['Cadet', 'Lieutenant', 'Naval aviator'][Math.min(game.rank || 0, 2)]);
     text('rank-progress', game.rank < 1 ? ` · ${game.score}/${CONFIG.progression?.rescueScore || 600}` : '');
     const homeCarrier = game.ships.find(s => s.kind === 'carrier' && s.team === 'us' && s.hp > 0 && s.active !== false);
@@ -232,14 +232,14 @@ export function drawMenus() {
     el('heat-fill').style.width = `${p.heat * 100}%`;
     el('heat-fill').style.background = p.overheated ? '#f18f7c' : '#e5b76f';
     const nearby = game.territories.find(t => installationKnown(game,t) && Math.hypot(t.x - p.x, t.y - p.y) < CONFIG.conquest.captureRadius);
-    const goal = objectiveFor(game);
-    let {title,detail} = goal;
-    if (p.landingHint) { title='Line up to land'; detail=p.landingHint; }
-    el('objective').hidden = !title; text('objective-title', title); text('objective-detail', detail);
+    let {title,detail} = flightPresentation(game);
+    if (nearby?.progress>0 && nearby.owner!=='us') { title='Capturing'; detail=''; }
+    if (p.landingHint) { title='Approach'; detail=p.landingHint; }
+    el('objective').hidden = !title || p.flight !== 'flying'; text('objective-title', title); text('objective-detail', detail); el('objective-detail').hidden=!detail;
     el('capture-track').hidden = !nearby || nearby.progress <= 0 || nearby.owner === 'us' || p.flight !== 'flying';
     el('capture-fill').style.width = `${(nearby?.progress || 0) / CONFIG.conquest.captureSeconds * 100}%`;
     // Avoid repeating the deck status in a second panel.
-    el('toast').hidden = game.messageTime <= 0 || p.flight === 'landed'; text('toast', game.message);
+    el('toast').hidden = game.messageTime <= 0 || p.flight === 'landed' || /spotted|follow the gold|select it on the map/i.test(game.message); text('toast', game.message);
     const action = carrierAction(game), button = el('carrier-action');
     button.textContent = (isTouchDevice ? '' : 'L · ') + action.label;
     button.disabled = !action.enabled; button.hidden = p.flight !== 'landed';

@@ -3,7 +3,7 @@ const root=path.resolve(__dirname,'..'),records=new Map(),context=vm.createConte
 async function load(f){if(cache.has(f))return cache.get(f);const m=new vm.SourceTextModule(fs.readFileSync(f,'utf8'),{context,identifier:f});cache.set(f,m);return m;}const link=(s,p)=>load(path.resolve(path.dirname(p.identifier),s));
 async function ns(f){const m=await load(path.join(root,f));if(m.status==='unlinked')await m.link(link);if(m.status==='linked')await m.evaluate();return m.namespace;}
 (async()=>{
- const {game,startGame}=await ns('src/state.js'),{updateIntelligence}=await ns('src/intelligence.js'),{objectiveFor,updateGuidance}=await ns('src/objectives.js'),persist=await ns('src/persistence.js');
+ const {game,startGame}=await ns('src/state.js'),{updateIntelligence}=await ns('src/intelligence.js'),{objectiveFor,updateGuidance,coursePhase,flightPresentation}=await ns('src/objectives.js'),persist=await ns('src/persistence.js');
  startGame();assert.ok(game.waypoint);assert.ok(['Find the enemy outpost','Capture radar','Bomb the runway'].includes(objectiveFor(game).title));
  const field=game.airfields.find(f=>f.owner==='enemy'),site=game.territories.find(t=>t.id===field.territory);
  Object.assign(game.player,{x:site.x,y:site.y,flight:'flying'});site.activated=true;updateIntelligence(game);
@@ -16,5 +16,12 @@ async function ns(f){const m=await load(path.join(root,f));if(m.status==='unlink
  Object.assign(home,{x:land.x,y:land.y,shoreline:land.shoreline});const base=game.bases.find(b=>b.id==='home-airfield'),hf=game.airfields.find(f=>f.id===base.airfieldId);
  Object.assign(base,{x:land.x,y:land.y});Object.assign(hf,{x:land.x,y:land.y});Object.assign(game.player,{x:land.x,y:land.y,parked:{x:land.x,y:land.y}});
  assert.ok(persist.saveCampaign(game));const restored=persist.loadCampaign();assert.ok(restored.territories[0].coastal);assert.equal(restored.score,987);assert.equal(restored.player.x,restored.bases[0].x);assert.ok(Math.hypot(restored.player.x-land.x,restored.player.y-land.y)>100);assert.equal(restored.terrain[0].x,land.x);
+ game.waypoint={x:game.player.x,y:game.player.y,name:'Arrival',siteId:999};
+ assert.equal(coursePhase(game),'arrived');assert.equal(flightPresentation(game).detail,'');
+ game.waypoint.x=game.player.x+600;assert.equal(coursePhase(game),'arrived');
+ game.waypoint.x=game.player.x+701;assert.equal(coursePhase(game),'travel');
+ game.waypoint.x=game.player.x+600;assert.equal(coursePhase(game),'travel');
+ game.waypoint.x=game.player.x+499;assert.equal(coursePhase(game),'arrived');
+ console.log('PASS stable arrival state and quiet flight presentation');
  console.log('PASS actionable objective phases, completion, manual courses, clear course and legacy coastal-save migration');
 })().catch(e=>{console.error(e);process.exitCode=1});

@@ -78,7 +78,7 @@ export const CONFIG = {
     avenger: { speedCruise: 215, speedBoost: 275, speedBrake: 135, turnRate: 2.1, fireCooldown: .24, torpedoDamage: 40 },
     p51: { speedCruise: 315, speedBoost: 430, speedBrake: 180, turnRate: 3.3, fireCooldown: .1, heatPerShot: .075, gunOffsets: [-6, 6] },
   },
-  navigation: { repairHull: 30 },
+  navigation: { repairHull: 30, arrivalRadius: 500, departureRadius: 700 },
   persistence: { saveInterval: 15 },
   theater: { homeCoastSetback: 115, portSetback: 80, fleetCoastClearance: 650, fleetPatrolLength: 4200 },
   fleet: { turnRate: .25, enemyCarrierHp: 80, speed: 24, escortAhead: 180, escortLateral: 230, approachHoldDistance: 650, approachHoldAngle: .65 },

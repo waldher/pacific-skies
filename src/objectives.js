@@ -62,3 +62,31 @@ export function objectiveFor(game) {
   const time=`${flightSeconds(game,wp)}s flight`;
   return {target:wp,title,detail:p.flight==='landed'?`Take off · ${time}`:reason||time};
 }
+
+// Hysteresis avoids flickering between navigation and arrival on a capture orbit.
+const arrivalState=new WeakMap();
+export function coursePhase(game) {
+  const target=game.waypoint,p=game.player;
+  if(!target || !p){arrivalState.delete(game);return 'none';}
+  const key=target.siteId??target.baseId??target.shipId??target.name;
+  const previous=arrivalState.get(game),d=distance(p,target);
+  const arrived=previous?.world===game.terrain&&previous.key===key&&previous.arrived
+    ? d<CONFIG.navigation.departureRadius : d<CONFIG.navigation.arrivalRadius;
+  arrivalState.set(game,{key,arrived,world:game.terrain});return arrived?'arrived':'travel';
+}
+export function flightPresentation(game) {
+  const goal=objectiveFor(game),phase=coursePhase(game);
+  if(!goal.target)return {title:'',detail:''};
+  const names={
+    'Fly to destination':'Destination', 'Defend the base':'Base defense',
+    'Land to rearm and repair':'Return to base', 'Defend the carrier':'Carrier defense',
+    'Scout the next islands':'Uncharted islands', 'Find the enemy outpost':'Reported activity',
+    'Fly to friendly outpost':'Friendly outpost', 'Bomb the runway':'Enemy airfield',
+    'Capture radar':'Radar station', 'Capture the port':'Enemy port',
+    'Shoot down the defenders':'Contested airspace', 'Circle to capture':'Capturing',
+    'Find the fleet contact':'Fleet contact', 'Fly to the carrier':'Carrier',
+  };
+  const title=names[goal.title]||'Destination';
+  // Counts belong to the map or visible target bars. Capture progress has its own bar.
+  return {title,detail:phase==='travel'?`${flightSeconds(game,goal.target)}s`:''};
+}
