@@ -146,6 +146,16 @@ function check(name, ok, detail) {
     return results;
   });
   check('every quality level renders', qualityChecks.every(Boolean), qualityChecks.join(','));
+  check('severe foreground stalls still reduce rendering quality', await page.evaluate(() => {
+    const {graphics,game,view}=window.__game;
+    const original=performance.now.bind(performance); let now=original();
+    graphics.quality.set(0); graphics.quality.unlock();
+    performance.now=()=>now;
+    try {
+      for(let i=0;i<32;i++){now+=300;graphics.render(game,view,0,0,0);}
+      return graphics.quality.level>0;
+    } finally {delete performance.now;graphics.quality.set(1);}
+  }));
   const propAngle = await page.evaluate(() => window.__game.graphics.aircraft.get(window.__game.game.player).propeller.rotation.z);
   await page.keyboard.down('KeyD');
   await page.waitForTimeout(350);

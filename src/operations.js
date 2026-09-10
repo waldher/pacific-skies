@@ -4,6 +4,17 @@ import { knownInstallations, knownShips, radarStations, enemyObserved, explorati
 import { objectiveFor } from './objectives.js';
 import { CONFIG } from './config.js';
 import { keys, stick, fireTouch } from './input.js';
+// Coastlines are immutable for the lifetime of each generated terrain object.
+const coastlines = new WeakMap();
+function chartCoast(t) {
+  let coast=coastlines.get(t);
+  if(!coast) {
+    const points=islandOutline(t);
+    coast={points,extent:Math.max(...points.map(([x,y])=>Math.max(Math.abs(x),Math.abs(y))))};
+    coastlines.set(t,coast);
+  }
+  return coast;
+}
 let bound=false;
 let chart={zoom:1,x:null,y:null,bounds:null,local:false};
 function centerChart(game) {
@@ -31,7 +42,9 @@ export function drawTheaterMap(ctx,game,rect,detailed=false) {
   ctx.save();ctx.beginPath();ctx.rect(rect.x,rect.y,rect.w,rect.h);ctx.clip();
   ctx.fillStyle='#091f2b';ctx.fillRect(rect.x,rect.y,rect.w,rect.h);
   for(const t of game.terrain||game.territories||[]) {
-    ctx.beginPath();islandOutline(t).forEach(([x,y],i)=>{const [px,py]=point({x:t.x+x,y:t.y+y});i?ctx.lineTo(px,py):ctx.moveTo(px,py);});ctx.closePath();
+    const coast=chartCoast(t),[cx,cy]=point(t),extent=coast.extent*scale+1;
+    if(cx+extent<rect.x||cx-extent>rect.x+rect.w||cy+extent<rect.y||cy-extent>rect.y+rect.h)continue;
+    ctx.beginPath();coast.points.forEach(([x,y],i)=>{const px=cx+x*scale,py=cy+y*scale;i?ctx.lineTo(px,py):ctx.moveTo(px,py);});ctx.closePath();
     ctx.fillStyle='#254d4b';ctx.fill();ctx.strokeStyle='#49736a';ctx.lineWidth=detailed?1:.5;ctx.stroke();
   }
   if(detailed) for(const sector of game.sectors||[]) { const [x,y]=point(sector);ctx.font='600 10px system-ui';ctx.textAlign='center';ctx.fillStyle='#adc6ca99';ctx.fillText(sector.name.toUpperCase(),x,y-22); }

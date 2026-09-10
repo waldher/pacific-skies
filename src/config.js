@@ -20,8 +20,10 @@ export const CONFIG = {
         { pixelRatio: 1.25, ocean: 1, shadows: true },
         { pixelRatio: 1, ocean: 1, shadows: true },
         { pixelRatio: 1, ocean: 0, shadows: false },
+        { pixelRatio: .75, ocean: 0, shadows: false },
       ],
       start: 1,
+      touchStart: 4,           // start phones lean; recover detail only with frame headroom
       slowFrame: .024,         // s; frames longer than this count as slow (≈42 fps)
       fastFrame: .0175,        // s; frames shorter than this count as fast (holds 60 fps)
       settle: 2,               // s of net slow frames before stepping down
