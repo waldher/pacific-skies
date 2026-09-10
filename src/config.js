@@ -16,14 +16,14 @@ export const CONFIG = {
       // Pin a level for testing with ?quality=N in the URL.
       levels: [
         { pixelRatio: 2, ocean: 2, shadows: true },
-        { pixelRatio: 1.5, ocean: 2, shadows: true },
-        { pixelRatio: 1.25, ocean: 1, shadows: true },
-        { pixelRatio: 1, ocean: 1, shadows: true },
-        { pixelRatio: 1, ocean: 0, shadows: false },
-        { pixelRatio: .75, ocean: 0, shadows: false },
+        // Preserve the water and scene lighting as resolution falls. Shadow
+        // maps cost a second scene pass, so they go before visible detail.
+        { pixelRatio: 1.5, ocean: 2, shadows: false },
+        { pixelRatio: 1.25, ocean: 2, shadows: false },
+        { pixelRatio: 1.1, ocean: 2, shadows: false },
       ],
       start: 1,
-      touchStart: 4,           // start phones lean; recover detail only with frame headroom
+      touchStart: 1,
       slowFrame: .024,         // s; frames longer than this count as slow (≈42 fps)
       fastFrame: .0175,        // s; frames shorter than this count as fast (holds 60 fps)
       settle: 2,               // s of net slow frames before stepping down

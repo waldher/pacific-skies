@@ -2,9 +2,9 @@
 //
 // Adaptive quality: frames are timed here (the game loop's dt is capped,
 // so it can't see slow frames). While frames stay slow the renderer steps
-// down CONFIG.render.quality.levels: pixel ratio first, then ocean detail,
-// then shadows. It steps back up only into levels that never failed, so a
-// device settles rather than oscillates. ?quality=N in the URL pins a level.
+// down CONFIG.render.quality.levels: costly shadows first, then pixel ratio
+// while retaining ocean detail. It requires sustained headroom before stepping
+// back up, so short hitches do not cause oscillation. ?quality=N pins a level.
 import * as THREE from 'three';
 import { enemyObserved } from './intelligence.js';
 import { CONFIG } from './config.js';
@@ -92,7 +92,8 @@ export async function createRenderer(canvas) {
     if (state.slow > Q.settle && state.level < Q.levels.length - 1) {
       state.failed.add(state.level);
       applyLevel(state.level + 1);
-    } else if (state.fast > Q.recover && state.level > 0 && !state.failed.has(state.level - 1)) {
+    } else if (state.fast > Q.recover && state.level > 0) {
+      state.failed.delete(state.level - 1);
       applyLevel(state.level - 1);
     }
   }
