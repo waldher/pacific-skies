@@ -16,7 +16,9 @@ export async function campaignChecks(api) {
   const fly = () => { game.player.flight = 'flying'; game.player.altitude = CONFIG.render.flightHeight; game.player.speed = CONFIG.player.speedCruise; };
   const naval = () => {
     fly(); game.rank = 2; game.combatSorties = CONFIG.progression.aircraftSorties.corsair; game.rescue = { ...(game.rescue || {}), status: 'complete' };
-    const c = game.ships[0]; c.active = true; c.hp = c.maxHp;
+    const c = game.ships[0]; c.active = true; c.hp = c.maxHp; c.a = -Math.PI / 2;
+    // Isolate landing tolerances from route motion; task groups are tested separately.
+    game.ships.forEach(s => { delete s.fleet; });
     const base = game.bases.find(b => b.kind === 'carrier'); if (base) base.available = true;
     game.player.aircraft = 'corsair'; game.player.loadout = 'torpedoes';
     game.player.x = c.x + 1000; game.player.y = c.y + 1000;
@@ -27,14 +29,6 @@ export async function campaignChecks(api) {
   const layout = () => JSON.stringify(game.territories.map(t => [t.x,t.y,t.radius,t.owner]));
   const initialLayout = layout(); reset();
   check('same campaign seed reproduces the island chain', layout() === initialLayout);
-  let spaced = true, carriersClear = true;
-  for (const seed of [1, 927, 1942, 1945, 8801, 65535]) {
-    api.setSeed(seed); startGame();
-    spaced &&= game.territories.every((a, i) => game.territories.slice(i + 1).every(b => Math.hypot(a.x-b.x,a.y-b.y) - a.radius - b.radius > 600));
-    carriersClear &&= game.ships.filter(s => s.kind === 'carrier').every(s => game.territories.every(t => Math.hypot(s.x-t.x,s.y-t.y)-t.radius-s.length/2 > 600));
-  }
-  check('six seeded maps leave open-water corridors between islands', spaced);
-  check('carriers have substantial clearance from island bases', carriersClear);
   api.setSeed(927); startGame();
   check('different campaign seeds create different island chains', layout() !== initialLayout); reset(); fly();
   reset();
@@ -164,7 +158,7 @@ export async function campaignChecks(api) {
   update(.02);
   check('active territories do not repeatedly respawn defenders', game.enemies.length === count);
   check('defenders prevent capture', t.progress === 0 && defenders(game, t) > 0);
-  const ship = game.ships.find(s => s.territory === t.id);
+  const ship = game.ships.find(s => s.team === 'jp' && s.kind === 'destroyer');
   check('fast rounds intersect the oriented hull', hitsShip({ prevX: ship.x - Math.cos(ship.a) * 200,
     prevY: ship.y - Math.sin(ship.a) * 200, x: ship.x + Math.cos(ship.a) * 200, y: ship.y + Math.sin(ship.a) * 200 }, ship));
   const hullHp = ship.hp;
@@ -257,7 +251,7 @@ export async function campaignChecks(api) {
   check('sortie starts with exactly two torpedoes', game.player.torpedoAmmo === 2);
   check('torpedo launches and consumes one round', launchTorpedo() && game.torpedoes.length === 1 && game.player.torpedoAmmo === 1);
   check('torpedo cooldown prevents duplicate launches', !launchTorpedo() && game.player.torpedoAmmo === 1);
-  const torp = game.torpedoes[0], patrol = game.ships.find(s => s.team === 'jp');
+  const torp = game.torpedoes[0], patrol = game.ships.find(s => s.team === 'jp' && s.kind === 'destroyer');
   torp.x = patrol.x - 50; torp.y = patrol.y; torp.vx = CONFIG.torpedo.speed; torp.vy = 0; torp.distance = 100;
   step(.3);
   check('armed torpedo sinks a destroyer through real collisions', patrol.hp === 0 && game.torpedoes.length === 0);
@@ -273,7 +267,7 @@ export async function campaignChecks(api) {
   check('carrier rearms both torpedoes', game.player.torpedoAmmo === 2);
   reset();
   for (let i = 0; i < game.territories.length; i++) {
-    const island = game.territories[i]; if (island.owner === 'us') continue;
+    const island = game.territories[i]; if (island.owner === 'us' || island.sector !== 'stronghold') continue;
     fly(); game.airfields.filter(f => f.territory === island.id).forEach(f => { f.hp = 0; });
     game.player.x = island.x; game.player.y = island.y; game.player.a = 0;
     update(.02);
@@ -282,8 +276,8 @@ export async function campaignChecks(api) {
     keys.KeyD = true;
     step(CONFIG.conquest.captureSeconds + .2);
   }
-  game.ships.filter(s => s.team === 'jp').forEach(s => damageShip(s, s.hp)); update(.02);
-  check('conquering all islands and sinking the enemy fleet ends the campaign in victory', game.mode === 'victory' && game.territories.every(t => t.owner === 'us'));
+  game.ships.filter(s => s.team === 'jp' && s.kind === 'carrier').forEach(s => damageShip(s, s.hp)); update(.02);
+  check('stronghold and principal carrier victory does not require every island or escort', game.mode === 'victory' && game.territories.some(t => t.owner === 'enemy') && game.ships.some(s => s.team === 'jp' && s.hp > 0));
   reset();
   check('new campaign resets territory ownership, fleet and flight state', game.mode === 'play'
     && game.territories[0].owner === 'us' && game.territories.slice(1).every(t => t.owner === 'enemy' && !t.activated) && game.player.flight === 'landed'
@@ -379,5 +373,7 @@ export async function campaignChecks(api) {
   check('session report records ownership changes, unlock time and carrier loss once', report.captured === 1 && report.lost === 1 && report.carrierLosses === 1 && report.unlocks[0]?.time === 123 && report.raids.damage === 22);
   reset();
   check('restarting clears campaign report outcomes', sessionSummary(game).captured === 0 && sessionSummary(game).lost === 0 && sessionSummary(game).unlocks.length === 0 && sessionSummary(game).raids.damage === 0);
+  const { theaterChecks } = await import('./theater-checks.js');
+  checks.push(...await theaterChecks(api));
   return checks;
 }

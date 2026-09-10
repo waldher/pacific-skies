@@ -1,5 +1,6 @@
 // Central mutable game state, shared by all systems.
 import { resetSessionReport } from './session-report.js';
+import { resetIntelligence, updateIntelligence } from './intelligence.js';
 import { CONFIG } from './config.js';
 import { createCampaign } from './campaign.js';
 
@@ -40,8 +41,10 @@ export function startGame() {
   game.cam = { x: 0, y: 0 };
   game.score = 0; game.time = 0; game.flightSeconds = 0; game.combatSorties = 0; game.playerMerit = 0; game.raidImpacts = 0; game.raidDamage = 0; game.raidIntercepts = 0; game.strikeLaunchCooldown = 0; game.endReason = '';
   Object.assign(game, createCampaign());
+  game.paused = false; game.waypoint = null;
+  resetIntelligence(game); updateIntelligence(game, 0);
   resetSessionReport(game);
-  game.message = 'Choose your sortie, then take off. Bomb enemy airfields to stop their strikes.';
+  game.message = 'Scout the nearby atoll. Capture radar to reveal enemy positions.';
   game.messageTime = CONFIG.conquest.messageDuration;
   game.shake = 0;
   game.mode = 'play';

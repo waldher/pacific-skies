@@ -20,6 +20,11 @@
 
 ## Implemented
 
+- Three archipelagos with independent landforms and strategic holdings.
+- Moving carrier task groups and escorts; friendly approach holds.
+- Charted coastlines, discovered installations, live/stale fleet contacts and radar intelligence.
+- Paused operations chart and observation-based navigation waypoints.
+
 - Procedural island chains and manual airfield/carrier landing with instant rearming.
 - P-38, Dauntless, Corsair, Avenger and P-51 roles with real model cards.
 - Two-round ordnance, torpedo naval attacks and exact-hit naval bombing.

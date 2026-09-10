@@ -1,10 +1,13 @@
 // Organized strikes originate at surviving enemy facilities. All aircraft can be intercepted.
+import { enemyObserved } from './intelligence.js';
 import { CONFIG } from './config.js';
 import { rand, clamp, angDiff } from './util.js';
 import { explosion } from './particles.js';
 
 function candidates(game) {
-  return [...game.bases.filter(b => b.owner === 'us' && b.available !== false),
+  return [...game.ships.filter(s => s.team === 'us' && s.kind === 'destroyer' && s.active !== false && s.hp > 0)
+      .map(s => ({ id: `escort-${s.id}`, kind: 'carrier', shipId: s.id, owner: 'us', available: true })),
+    ...game.bases.filter(b => b.owner === 'us' && b.available !== false),
     ...game.territories.filter(t => t.owner === 'us' && !game.bases.some(b => b.territoryId === t.id || b.territory === t.id))
       .map(t => ({ id: `territory-${t.id}`, kind: 'territory', territoryId: t.id, owner: 'us' }))];
 }
@@ -72,9 +75,7 @@ export function updateStrikes(game, dt) {
   for (const e of game.enemies) {
     if (!e.strike || e.hp <= 0) continue;
     e.phase ??= 'attack';
-    e.detected = Math.hypot(e.x - game.player.x, e.y - game.player.y) < S.escortRange
-      || targets.some(b => { const a = baseAsset(game, b); return Math.hypot(e.x - a.x, e.y - a.y) < S.baseDetectionRange; })
-      || game.territories.some(t => t.owner === 'us' && t.role === 'radar' && t.established >= CONFIG.conquest.establishSeconds && Math.hypot(e.x - t.x, e.y - t.y) < S.radarRange);
+    e.detected = enemyObserved(game, e);
     const base = targets.find(b => b.id === e.targetBaseId) ?? game.bases.find(b => b.id === e.targetBaseId && b.owner === 'us' && living(game, b)), asset = base && baseAsset(game, base);
     if (!asset) e.phase = 'retreat';
     if (e.phase === 'attack') {

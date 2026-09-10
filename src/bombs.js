@@ -7,7 +7,7 @@ import { notify } from './campaign.js';
 
 export function launchBomb(game) {
   const p = game.player, B = CONFIG.bomb, A = CONFIG.aircraft[p?.aircraft] || {};
-  if (game.mode !== 'play' || p.flight !== 'flying' || p.loadout !== 'bombs'
+  if (game.paused || game.mode !== 'play' || p.flight !== 'flying' || p.loadout !== 'bombs'
     || p.bombCd > 0 || !(p.bombAmmo > 0)) return false;
   p.bombAmmo--; p.bombCd = B.cooldown;
   const drift = A.bombDriftSpeed ?? B.driftSpeed, fall = A.bombFallSeconds ?? B.fallSeconds;
@@ -24,7 +24,7 @@ export function updateBombs(game, dt) {
     b.x += b.vx * step; b.y += b.vy * step; b.life -= dt;
     if (b.life > 0) continue;
     let hit = false;
-    const land = onLand(b, game.territories), damage = b.damage ?? B.damage;
+    const land = onLand(b, game.terrain || game.territories), damage = b.damage ?? B.damage;
     for (const f of game.airfields) {
       if (!land || f.owner !== 'enemy' || f.hp <= 0 || Math.hypot(f.x - b.x, f.y - b.y) > (b.blastRadius ?? B.blastRadius)) continue;
       f.hp = Math.max(0, f.hp - damage); hit = true;

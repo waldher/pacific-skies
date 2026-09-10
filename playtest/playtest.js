@@ -274,7 +274,7 @@ function check(name, ok, detail) {
     const c = game.ships[0]; c.active = true; c.hp = c.maxHp;
     game.bases.find(b => b.kind === 'carrier').available = true;
     game.player.flight = 'flying'; game.player.aircraft = 'corsair'; game.player.loadout = 'torpedoes';
-    game.player.x = c.x; game.player.y = c.y + 330;
+    game.player.x = c.x - Math.cos(c.a) * 330; game.player.y = c.y - Math.sin(c.a) * 330;
     game.player.a = c.a; game.player.hp = 40;
     for (let i = 0; i < 900 && game.player.flight !== 'landed'; i++) update(.02);
     game.cam.x = c.x; game.cam.y = c.y;
@@ -347,6 +347,30 @@ function check(name, ok, detail) {
     check(`${name} notice sizes to its text`, await mobile.evaluate(() => document.getElementById('toast').getBoundingClientRect().width < innerWidth - 40));
     await mobile.screenshot({ path: path.join(SHOT_DIR, `07-${name}.png`) });
   }
+  await mobile.setViewportSize({width:390,height:844});
+  await mobile.locator('#map-open').tap();
+  const pausedTime=await mobile.evaluate(()=>window.__game.game.time);
+  await mobile.waitForTimeout(200);
+  check('phone operations chart pauses the live simulation', await mobile.evaluate(t=>window.__game.game.paused&&window.__game.game.time===t,pausedTime));
+  check('operations chart fits the phone viewport', await mobile.locator('#operations-panel').evaluate(e=>{const r=e.getBoundingClientRect();return r.x>=0&&r.y>=0&&r.right<=innerWidth&&r.bottom<=innerHeight&&e.scrollWidth<=e.clientWidth;}));
+  const chartTarget=await mobile.evaluate(async()=>{
+    const {mapProjection}=await import(new URL('src/operations.js',location.href).href);
+    const g=window.__game.game,c=document.getElementById('operations-map'),r=c.getBoundingClientRect();
+    const [x,y]=mapProjection(g,{x:0,y:0,w:r.width,h:r.height}).point(g.territories[0]);
+    return {x:r.left+x,y:r.top+y};
+  });
+  await mobile.touchscreen.tap(chartTarget.x,chartTarget.y);
+  check('chart touch selects a known destination without steering or firing', await mobile.evaluate(async()=>{
+    const {stick,fireTouch}=await import(new URL('src/input.js',location.href).href);
+    return window.__game.game.waypoint?.name===window.__game.game.territories[0].name&&!stick.active&&!fireTouch.active;
+  }));
+  await mobile.screenshot({path:path.join(SHOT_DIR,'08-operations-phone.png')});
+  await mobile.setViewportSize({width:844,height:390});
+  await mobile.waitForTimeout(100);
+  await mobile.screenshot({path:path.join(SHOT_DIR,'08-operations-landscape.png')});
+  await mobile.locator('#operations-close').tap();
+  await mobile.waitForTimeout(100);
+  check('closing chart resumes simulation without a stuck control', await mobile.evaluate(t=>!window.__game.game.paused&&window.__game.game.time>t,pausedTime));
   await mobile.keyboard.press('t');
   await mobile.evaluate(() => { window.__game.game.mode = 'over'; });
   await mobile.waitForTimeout(100);

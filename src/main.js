@@ -1,5 +1,7 @@
 // Game loop: flight, combat, surface patrols, conquest, camera and rendering.
 import { recordSession, sessionSummary } from './session-report.js';
+import { updateIntelligence } from './intelligence.js';
+import { initOperations, drawOperations } from './operations.js';
 import { CONFIG } from './config.js';
 import { game, startGame } from './state.js';
 import { cvs, ctx, view } from './canvas.js';
@@ -23,6 +25,7 @@ let graphics;
 let contextLost = false;
 
 function update(dt) {
+  if (game.paused) return;
   game.time += dt;
   if (game.mode !== 'play') return;
 
@@ -86,6 +89,7 @@ function update(dt) {
 
   if (game.mode === 'play') updateCampaign(game, dt, spawnDefenders);
 
+  updateIntelligence(game, dt);
   recordSession(game);
 
   // camera: lead slightly ahead of the nose
@@ -98,13 +102,14 @@ function update(dt) {
 function render(dt) {
   const shakeX = game.shake > 0 ? rand(-game.shake, game.shake) * .5 : 0;
   const shakeY = game.shake > 0 ? rand(-game.shake, game.shake) * .5 : 0;
-  graphics.render(game, view, dt, shakeX, shakeY);
+  graphics.render(game, view, game.paused ? 0 : dt, shakeX, shakeY);
   ctx.clearRect(0, 0, view.W, view.H);
   ctx.save();
   ctx.translate(shakeX, shakeY);
   if (game.player) drawHud();
   ctx.restore();
   drawMenus();
+  drawOperations(game);
 }
 
 let last = performance.now();
@@ -150,6 +155,7 @@ async function boot() {
     window.__game.rendering = graphics.diagnostics;
     status.hidden = true;
     initInput(cvs);
+    initOperations(game);
     last = performance.now();
     requestAnimationFrame(frame);
   } catch (error) {

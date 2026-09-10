@@ -15,10 +15,26 @@
 // CONFIG.render.ocean.
 import * as THREE from 'three';
 import { CONFIG } from './config.js';
-import { islandOutline } from './surface.js';
+import { islandOutline, insidePolygon } from './surface.js';
 import { hash2, TAU } from './util.js';
 
 const MAX_ISLANDS = 12;
+
+// Narrow beaches follow concave lagoon shores instead of shrinking toward an
+// arbitrary island center (which would put grass across the water).
+function insetShore(points, distance) {
+  const area = points.reduce((n,p,i) => { const q=points[(i+1)%points.length];return n+p[0]*q[1]-q[0]*p[1]; },0);
+  const sign=area>0?1:-1;
+  return points.map((p,i) => {
+    const prev=points[(i+points.length-1)%points.length],next=points[(i+1)%points.length];
+    const l1=Math.hypot(p[0]-prev[0],p[1]-prev[1]),l2=Math.hypot(next[0]-p[0],next[1]-p[1]);
+    const n1=[-(p[1]-prev[1])/l1*sign,(p[0]-prev[0])/l1*sign];
+    const n2=[-(next[1]-p[1])/l2*sign,(next[0]-p[0])/l2*sign];
+    const k=distance/Math.max(.4,1+n1[0]*n2[0]+n1[1]*n2[1]);
+    const q=[p[0]+(n1[0]+n2[0])*k,p[1]+(n1[1]+n2[1])*k];
+    return insidePolygon(q[0],q[1],points)?q:p;
+  });
+}
 
 const NOISE = `
   float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -136,23 +152,30 @@ export function createWorld(scene) {
       group.add(mesh);
     };
     const layer = (rad, jitter, seed, height, material, base) => {
-      const shape = new THREE.Shape(outline(rad, jitter, seed));
+      const points = material === materials.grass && territory.shoreline
+        ? insetShore(islandOutline(territory), Math.min(14, radius * .12)).map(([x,y])=>new THREE.Vector2(x,-y))
+        : outline(rad, jitter, seed);
+      const shape = new THREE.Shape(points);
       place(new THREE.ExtrudeGeometry(shape, { depth: height, bevelEnabled: false }), material, base, true);
     };
     const surf = new THREE.Shape(outline(radius * 1.12, .22, 2));
     surf.holes.push(new THREE.Path(outline(radius * .97, .22, 2)));
     place(new THREE.ShapeGeometry(surf), surfMaterial, .3, false);
     layer(radius, .22, 2, 3, materials.sand, .5);
-    layer(radius * .86, .12, 2, 5, materials.grass, 3.5);
+    layer(territory.shoreline ? radius : radius * .86, .12, 2, 5, materials.grass, 3.5);
     for (let i = 0; i < 5; i++) {
       const a = hash2(gx + i * 13, gy + i * 7) * TAU;
       const r = (.65 + hash2(gy + i, gx + i * 3) * .1) * radius;
+      const hx = Math.cos(a) * r, hy = Math.sin(a) * r * .8;
+      if (!insidePolygon(hx, hy, islandOutline(territory, radius * .85))) continue;
+      if (territory.holdingId != null && Math.abs(hx) < 75 && Math.abs(hy) < 240) continue;
       const hill = new THREE.Mesh(new THREE.ConeGeometry(radius * .09, 9, 7), materials.hill);
-      hill.position.set(Math.cos(a) * r, 12, Math.sin(a) * r * .8);
+      hill.position.set(hx, 12, hy);
       hill.receiveShadow = true;
       group.add(hill);
     }
     group.userData.radius = radius;
+    group.userData.extent = territory.extent ?? radius;
     return group;
   }
   return {
@@ -165,7 +188,7 @@ export function createWorld(scene) {
       surfMaterial.uniforms.time.value = time;
       const needed = new Set();
       for (const territory of territories) {
-        const margin = territory.radius * 1.4 + 150;
+        const margin = (territory.extent ?? territory.radius) * 1.4 + 150;
         if (Math.abs(territory.x - cam.x) > view.W / 2 + margin ||
             Math.abs(territory.y - cam.y) > view.H / 2 + margin) continue;
         needed.add(territory);
@@ -183,7 +206,8 @@ export function createWorld(scene) {
       // Tell the ocean where the visible islands are for the shallows.
       const list = oceanMaterial.uniforms.islands.value;
       let n = 0;
-      for (const group of chunks.values()) {
+      for (const group of [...chunks.values()].sort((a,b) =>
+        Math.hypot(a.position.x-cam.x,a.position.z-cam.y)-Math.hypot(b.position.x-cam.x,b.position.z-cam.y))) {
         if (n >= MAX_ISLANDS) break;
         list.set([group.position.x, group.position.z, group.userData.radius, 0], n++ * 4);
       }

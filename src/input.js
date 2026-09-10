@@ -14,7 +14,7 @@ const touchMedia = window.matchMedia?.('(any-pointer: coarse)');
 export let isTouchDevice = navigator.maxTouchPoints > 0 || ('ontouchstart' in window)
   || !!touchMedia?.matches || /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent || '');
 
-export function launchOrdnance() { return game.player?.loadout === 'bombs' ? launchBomb(game) : launchTorpedo(); }
+export function launchOrdnance() { if (game.paused) return false; return game.player?.loadout === 'bombs' ? launchBomb(game) : launchTorpedo(); }
 
 export function initInput(cvs) {
   // Resolve hints from actual input too: tablets and embedded browsers may hide
@@ -37,6 +37,7 @@ export function initInput(cvs) {
     stick.active = fireTouch.active = false;
   });
   window.addEventListener('keydown', e => {
+    if (game.paused) return;
     if (['KeyW','KeyA','KeyS','KeyD','KeyT','KeyL','Space','Enter','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) isTouchDevice = false;
     if (game.mode === 'play' && e.code === 'KeyT' && !e.repeat) launchOrdnance();
     if (game.mode === 'play' && e.code === 'KeyL' && !e.repeat) requestCarrier(game);
@@ -48,6 +49,7 @@ export function initInput(cvs) {
   window.addEventListener('keyup', e => { keys[e.code] = false; }, true);
 
   cvs.addEventListener('pointerdown', e => {
+    if (game.paused) return;
     audioInit();
     if (game.mode !== 'play') { startGame(); return; }
     if (e.pointerType === 'mouse' && e.button !== 0) return;

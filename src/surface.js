@@ -10,6 +10,10 @@ export function insidePolygon(x, y, points) {
   return inside;
 }
 export function islandOutline(t, radius = t.radius, jitter = .22, seed = 2) {
+  if (t.shoreline) {
+    const factor = radius / t.radius;
+    return t.shoreline.map(([x,y]) => [x * factor, y * factor]);
+  }
   const gx = t.seed ?? t.id, gy = t.id;
   return Array.from({ length: 9 }, (_, i) => {
     const a = i / 9 * TAU, r = radius * (1 - jitter + hash2(gx * 9 + i + seed, gy * 9 + i) * jitter * 2);

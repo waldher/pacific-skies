@@ -13,7 +13,7 @@ export function carrierAction(game) {
 
 export function requestCarrier(game) {
   const p = game.player;
-  if (!p || game.mode !== 'play') return;
+  if (!p || game.paused || game.mode !== 'play') return;
   if (p.flight === 'landed') {
     p.flight = 'takeoff'; p.flightTime = 0;
     p.sortieScore = game.playerMerit || 0;

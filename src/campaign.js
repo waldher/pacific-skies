@@ -1,53 +1,35 @@
 // Seeded island chains, persistent bases, and the carrier rescue progression.
+import { generateTheater } from './theater.js';
+import { createFleets } from './fleets.js';
 import { AIRCRAFT, aircraftUnlocked } from './aircraft-types.js';
 import { CONFIG } from './config.js';
 import { availableBases, canUseAircraft, resolveBase } from './bases.js';
-import { rand, TAU } from './util.js';
+import { rand } from './util.js';
 
 export function createCampaign() {
-  const G = CONFIG.generation, C = CONFIG.carrier;
-  const territories = [{ id: 0, name: 'HOME ISLAND', x: 0, y: 0, radius: 370, owner: 'us', activated: true, progress: 0, fighters: 0, seed: rand(0, 10000) }];
-  const cells = [[-1,0],[1,0],[-1,-1],[0,-1],[1,-1],[-2,-1],[2,-1],[-1,-2],[0,-2],[1,-2]];
-  for (let i = cells.length - 1; i > 0; i--) { const j = Math.floor(rand(0, i + 1)); [cells[i], cells[j]] = [cells[j], cells[i]]; }
-  const count = Math.floor(rand(G.enemyMin, G.enemyMax + 1));
-  const names = ['CORAL', 'PALM', 'LAGOON', 'NORTH REEF', 'EMBER', 'JADE', 'TURTLE'];
-  cells.slice(0, count).forEach(([gx, gy], i) => territories.push({ id: i + 1, name: names[i],
-    x: gx * G.spacing + rand(-G.jitter, G.jitter), y: gy * G.spacing + rand(-G.jitter, G.jitter),
-    radius: rand(G.radiusMin, G.radiusMax), seed: rand(0, 10000), owner: 'enemy', activated: false, progress: 0, fighters: i < 3 ? 2 : 3 }));
+  const theater = generateTheater();
+  const { territories } = theater, C = CONFIG.carrier;
   for (const t of territories) {
-    t.role = t.id === 0 || t.id % 2 === 1 ? 'airfield' : t.id % 4 === 2 ? 'port' : 'radar';
     t.maxIntegrity = CONFIG.conquest.outpostHp; t.integrity = t.maxIntegrity;
     t.established = t.id === 0 ? CONFIG.conquest.establishSeconds : 0;
     t.everCaptured = t.id === 0; t.attackHits = 0;
   }
-  const airfields = territories.filter((t, i) => i === 0 || i % 2 === 1).map(t => ({
+  const airfields = territories.filter(t => t.role === 'airfield').map(t => ({
     id: t.id === 0 ? 'home-airfield' : `airfield-${t.id}`, territory: t.id, name: t.name,
-    x: t.x, y: t.y, a: -Math.PI / 2, owner: t.owner,
+    x: t.x, y: t.y, a: t.a ?? -Math.PI / 2, owner: t.owner,
     hp: t.id === 0 ? CONFIG.airfield.homeHp : CONFIG.airfield.hp,
     maxHp: t.id === 0 ? CONFIG.airfield.homeHp : CONFIG.airfield.hp, launchTimer: rand(CONFIG.strike.firstMin, CONFIG.strike.firstMax) }));
-  const ships = [{ id: 'carrier', kind: 'carrier', name: 'USS Resolute', team: 'us', active: false,
-    x: G.carrierX, y: G.carrierY, a: -Math.PI / 2, hp: CONFIG.progression.rescueHp, maxHp: CONFIG.progression.rescueHp,
-    fireCd: 0, length: C.length, width: C.width }];
-  territories.slice(1).forEach(t => {
-    const orbit = t.radius + CONFIG.ship.patrolOffset, angle = rand(0, TAU);
-    ships.push({ id: `patrol-${t.id}`, kind: 'destroyer', team: 'jp', territory: t.id,
-      x: t.x + Math.cos(angle) * orbit, y: t.y + Math.sin(angle) * orbit, a: angle + Math.PI / 2,
-      orbit, angle, fireCd: 1, hp: CONFIG.ship.hp, maxHp: CONFIG.ship.hp, length: CONFIG.ship.length, width: CONFIG.ship.width });
-  });
-  ships.push({ id: 'enemy-carrier', kind: 'carrier', team: 'jp', name: 'Enemy carrier',
-    x: G.enemyCarrierX + G.enemyCarrierOrbit, y: G.enemyCarrierY, anchorX: G.enemyCarrierX, anchorY: G.enemyCarrierY, orbit: G.enemyCarrierOrbit, angle: 0, a: -Math.PI / 2,
-    hp: 80, maxHp: 80, length: C.length, width: C.width, fireCd: 1, launchTimer: rand(CONFIG.strike.firstMin, CONFIG.strike.firstMax) });
+  const ships = createFleets(theater);
   const bases = airfields.map(f => ({ id: f.id, name: f.territory === 0 ? 'Home Airfield' : `${f.name} Airfield`,
     kind: 'airfield', airfieldId: f.id, territory: f.territory, x: f.x, y: f.y, a: f.a,
     length: CONFIG.airfield.length, width: CONFIG.airfield.width, owner: f.owner, available: f.owner === 'us' }));
   bases.push({ id: 'fleet-carrier', name: 'USS Resolute', kind: 'carrier', shipId: 'carrier',
     x: ships[0].x, y: ships[0].y, a: ships[0].a, length: C.length, width: C.width, owner: 'us', available: false });
-  return { territories, ships, airfields, bases, unlockedAircraft: ['p38'], rank: 0, rescue: { status: 'locked', timer: 0 }, bombs: [] };
+  return { ...theater, territories, ships, airfields, bases, unlockedAircraft: ['p38'], rank: 0, rescue: { status: 'locked', timer: 0 }, bombs: [] };
 }
 
 export function defenders(game, territory) {
   return game.enemies.filter(e => e.territory === territory.id && e.hp > 0 && !e.strike).length
-    + game.ships.filter(s => s.territory === territory.id && s.hp > 0).length
     + game.airfields.filter(f => f.territory === territory.id && f.owner === 'enemy' && f.hp > 0).length;
 }
 export function notify(game, message) { game.message = message; game.messageTime = CONFIG.conquest.messageDuration; }
@@ -120,7 +102,7 @@ export function updateCampaign(game, dt, activate) {
     } else t.progress = 0;
   }
   if (!availableBases(game).some(base => Object.keys(AIRCRAFT).some(id => canUseAircraft(game, base, id)))) { game.mode = 'over'; game.endReason = 'All bases lost'; game.best = Math.max(game.best, game.score); notify(game, 'No operational bases remain'); }
-  if (game.mode === 'play' && game.territories.every(t => t.owner === 'us') && game.ships.every(s => s.team !== 'jp' || s.hp <= 0)) {
+  if (game.mode === 'play' && game.territories.filter(t => t.stronghold).every(t => t.owner === 'us') && game.ships.some(s => s.id === 'enemy-carrier' && s.hp <= 0)) {
     game.mode = 'victory'; game.best = Math.max(game.best, game.score);
   }
 }

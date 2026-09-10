@@ -11,12 +11,14 @@ import { defenders } from './campaign.js';
 import { sessionSummary } from './session-report.js';
 import { CONFIG } from './config.js';
 import { clamp, TAU } from './util.js';
+import { installationKnown, shipObserved, enemyObserved, observedAt } from './intelligence.js';
+import { drawTheaterMap } from './operations.js';
 
 export function drawHud() {
   const { W, H } = view, player = game.player;
   drawNavigation();
   for (const ship of game.ships) {
-    if (ship.hp <= 0 || ship.active === false) continue;
+    if (ship.hp <= 0 || ship.active === false || !shipObserved(game, ship)) continue;
     const [sx, sy] = w2s(ship.x, ship.y);
     if (sx < -100 || sx > W + 100 || sy < -150 || sy > H + 150) continue;
     ctx.textAlign = 'center'; ctx.font = '700 11px monospace';
@@ -28,6 +30,8 @@ export function drawHud() {
     }
   }
   for (const field of game.airfields || []) {
+    const holding = game.territories.find(t => t.id === field.territory || t === field.territory);
+    if (field.owner !== 'us' && (!holding || !observedAt(game, holding))) continue;
     const [sx, sy] = w2s(field.x, field.y);
     if (sx < -80 || sx > W + 80 || sy < -80 || sy > H + 80) continue;
     ctx.textAlign = 'center'; ctx.font = '700 10px system-ui';
@@ -38,7 +42,7 @@ export function drawHud() {
       ctx.fillStyle = field.owner === 'us' ? '#82dfbc' : '#ed876c'; rr(sx - 23, sy - 55, 46 * field.hp / field.maxHp, 4, 2);
     }
   }
-  for (const territory of game.territories.filter(t => t.role && t.role !== 'airfield')) {
+  for (const territory of game.territories.filter(t => t.role && t.role !== 'airfield' && (t.owner === 'us' || observedAt(game,t)))) {
     const [sx, sy] = w2s(territory.x, territory.y);
     if (sx < -80 || sx > W + 80 || sy < -80 || sy > H + 80) continue;
     ctx.textAlign = 'center'; ctx.font = '700 10px system-ui';
@@ -58,7 +62,7 @@ export function drawHud() {
   // off-screen enemy arrows
   ctx.fillStyle = 'rgba(255,120,90,0.9)';
   for (const e of game.enemies) {
-    if (e.strike && !e.detected) continue;
+    if (!enemyObserved(game, e)) continue;
     const [sx, sy] = w2s(e.x, e.y);
     if (sx > -10 && sx < W + 10 && sy > -10 && sy < H + 10) {
       if (e.strikeRole && e.phase !== 'retreat') {
@@ -95,38 +99,8 @@ function drawNavigation() {
   const { W, H } = view, p = game.player;
   const mw = Math.min(140, Math.max(100, W * .3)), mh = 84, mx = W - mw - 12, my = 12;
   ctx.fillStyle = 'rgba(8,27,39,.88)'; rr(mx, my, mw, mh, 10);
-  const all = [...game.territories, ...game.ships.filter(s => s.hp > 0 && s.active !== false), p];
-  const minX = Math.min(...all.map(t => t.x)) - 450, maxX = Math.max(...all.map(t => t.x)) + 450;
-  const minY = Math.min(...all.map(t => t.y)) - 450, maxY = Math.max(...all.map(t => t.y)) + 450;
-  const project = t => [mx + 8 + clamp((t.x - minX) / (maxX - minX), 0, 1) * (mw - 16),
-    my + 8 + clamp((t.y - minY) / (maxY - minY), 0, 1) * (mh - 16)];
-  for (const t of game.territories) {
-    const [x, y] = project(t);
-    ctx.fillStyle = t.owner === 'us' ? '#6de4b3' : '#ef816b';
-    const hasAirfield = (game.airfields || []).some(f => f.territory === t.id);
-    if (hasAirfield) {
-      ctx.fillRect(x - 4, y - 4, 8, 8);
-      ctx.fillStyle = '#f2eee1'; ctx.fillRect(x - .5, y - 3, 1, 6);
-    } else if (t.role === 'port') {
-      ctx.fillRect(x - 4, y - 3, 8, 6); ctx.fillStyle = '#f2eee1'; ctx.fillRect(x - 1, y - 3, 2, 4);
-    } else if (t.role === 'radar') {
-      ctx.beginPath(); ctx.moveTo(x, y - 5); ctx.lineTo(x + 4, y + 3); ctx.lineTo(x - 4, y + 3); ctx.closePath(); ctx.fill();
-    } else { ctx.beginPath(); ctx.arc(x, y, 4, 0, TAU); ctx.fill(); }
-  }
-  for (const ship of game.ships.filter(s => s.hp > 0 && s.active !== false && s.kind === 'carrier')) {
-    const [cx, cy] = project(ship); ctx.fillStyle = ship.team === 'us' ? '#6de4b3' : '#ef816b'; ctx.fillRect(cx - 3, cy - 5, 6, 10);
-  }
-  for (const enemy of game.enemies.filter(e => e.hp > 0 && e.strike && e.detected && e.phase !== 'retreat')) {
-    const [x, y] = project(enemy), target = raidTarget(enemy.targetBaseId);
-    if (target) {
-      const [tx, ty] = project(target); ctx.strokeStyle = '#ffad9170'; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(tx, ty); ctx.stroke();
-    }
-    ctx.fillStyle = '#ffbd83'; ctx.beginPath(); ctx.arc(x, y, 2, 0, TAU); ctx.fill();
-  }
-  const [px, py] = project(p);
-  ctx.save(); ctx.translate(px, py); ctx.rotate(p.a); ctx.fillStyle = '#ffffff';
-  ctx.beginPath(); ctx.moveTo(5, 0); ctx.lineTo(-3, -3); ctx.lineTo(-3, 3); ctx.closePath(); ctx.fill(); ctx.restore();
+  drawTheaterMap(ctx, game, {x:mx, y:my, w:mw, h:mh});
+  ctx.textAlign='right'; ctx.font='600 9px system-ui'; ctx.fillStyle='#adc6ca'; ctx.fillText('OPERATIONS ↗', mx+mw-7,my+mh-5);
 }
 
 const el = id => document.getElementById(id);
@@ -135,7 +109,7 @@ let menuState = '';
 let sortieBound = false;
 const aircraftIds = Object.keys(AIRCRAFT);
 const roleNames = { airfield: 'Airfield', port: 'Port', radar: 'Radar station' };
-const roleBenefits = { airfield: 'Landing, repair & defenses', port: 'Supplies fleet repairs', radar: 'Earlier raid detection' };
+const roleBenefits = { airfield: 'Landing, repair & defenses', port: 'Supplies fleet repairs', radar: 'Reveals installations & tracks fleets' };
 const clock = seconds => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
 const icons = {
   airfield: '<path d="M35 9h26v62H35z"/><path class="icon-cut" d="M47 14h2v9h-2zm0 16h2v9h-2zm0 16h2v9h-2zm0 16h2v5h-2z"/><path d="M14 23h13v13H14zm55 19h13v13H69z"/>',
@@ -238,7 +212,7 @@ export function drawMenus() {
     el('health-fill').style.background = p.hp > 35 ? '#82dfbc' : '#f18f7c';
     el('heat-fill').style.width = `${p.heat * 100}%`;
     el('heat-fill').style.background = p.overheated ? '#f18f7c' : '#e5b76f';
-    const nearby = game.territories.find(t => Math.hypot(t.x - p.x, t.y - p.y) < CONFIG.conquest.captureRadius);
+    const nearby = game.territories.find(t => installationKnown(game,t) && Math.hypot(t.x - p.x, t.y - p.y) < CONFIG.conquest.captureRadius);
     let title = '', detail = '';
     if (p.flight === 'landed') { title = p.hp < CONFIG.player.hp ? 'Repairing' : 'Ready for takeoff'; detail = `Hull ${Math.ceil(p.hp)}% · ${p.loadout === 'bombs' ? 'Bombs ' + (p.bombAmmo || 0) : 'Torpedoes ' + (p.torpedoAmmo || 0)}`; }
     else if (p.landingHint) { title = 'Landing approach'; detail = p.landingHint; }
@@ -246,7 +220,7 @@ export function drawMenus() {
       title = `${nearby.name}${nearby.role ? ' · ' + roleNames[nearby.role] : ''}`;
       const remaining = defenders(game, nearby);
       const field = (game.airfields || []).find(f => (f.territory === nearby.id || f.territory === nearby) && f.owner !== 'us' && f.hp > 0);
-      detail = nearby.owner === 'us' ? (nearby.established < CONFIG.conquest.establishSeconds ? `Establishing · ${Math.ceil(CONFIG.conquest.establishSeconds - nearby.established)}s · vulnerable` : roleBenefits[nearby.role] || 'Secured') : field ? 'Bomb the airfield to stop enemy launches' : remaining ? `${remaining} defenders remaining` : `Securing island · ${Math.ceil(CONFIG.conquest.captureSeconds - nearby.progress)}s`;
+      detail = nearby.owner === 'us' ? (nearby.role === 'radar' ? 'Radar operational · installations & fleets revealed' : nearby.established < CONFIG.conquest.establishSeconds ? `Establishing · ${Math.ceil(CONFIG.conquest.establishSeconds - nearby.established)}s · vulnerable` : roleBenefits[nearby.role] || 'Secured') : field ? 'Bomb the airfield to stop enemy launches' : remaining ? `${remaining} defenders remaining` : `Securing position · ${Math.ceil(CONFIG.conquest.captureSeconds - nearby.progress)}s`;
     }
     if (p.flight === 'flying' && !p.landingHint && game.rescue?.status === 'active' && (!nearby || nearby.owner === 'us')) {
       title = 'Carrier rescue';
@@ -276,10 +250,10 @@ export function drawMenus() {
   menuState = key;
   text('menu-kicker', 'Pacific theater · 1942');
   text('menu-title', game.mode === 'title' ? 'Pacific Skies' : game.mode === 'victory' ? 'Pacific secured' : game.endReason || 'Shot down');
-  text('menu-summary', game.mode === 'title' ? 'Launch from your airfield. Capture islands, earn your wings, and rescue the fleet.' : `Score ${game.score.toLocaleString()} · Best ${game.best.toLocaleString()}`);
+  text('menu-summary', game.mode === 'title' ? 'Scout the island chains. Capture radar to reveal enemy positions, then push toward the stronghold.' : `Score ${game.score.toLocaleString()} · Best ${game.best.toLocaleString()}`);
   const instructions = game.mode === 'title' ? (isTouchDevice
     ? ['Left thumb steers · Right thumb fires', 'Bomb island defenses · Torpedo ships', 'Line up with a friendly runway to land']
-    : ['WASD / Arrows to fly · Space to fire', 'T to drop ordnance · L to take off', 'Line up with a friendly runway to land']) : [`${game.territories.filter(t => t.owner === 'us').length} of ${game.territories.length} islands secured`];
+    : ['WASD / Arrows to fly · Space to fire', 'T to drop ordnance · L to take off', 'Line up with a friendly runway to land']) : [`${game.territories.filter(t => t.owner === 'us').length} of ${game.territories.length} holdings secured`];
   el('menu-instructions').replaceChildren(...instructions.map(line => { const node = document.createElement('div'); node.textContent = line; return node; }));
   text('menu-start', isTouchDevice ? 'Tap to begin' : 'Press Space to begin');
 }
@@ -306,6 +280,7 @@ function drawSessionReport() {
 }
 
 function raidTarget(id) {
+  if (id?.startsWith('escort-')) return game.ships.find(s=>s.id===id.slice(7)&&s.team==='us');
   const base = (game.bases || []).find(b => b.id === id);
   return base?.ship || base?.airfield || (base?.shipId && game.ships.find(s => s.id === base.shipId))
     || (game.airfields || []).find(f => f.id === id)
@@ -313,7 +288,7 @@ function raidTarget(id) {
     || game.territories.find(t => `territory-${t.id}` === id);
 }
 function drawThreatStatus() {
-  const threats = game.enemies.filter(e => e.hp > 0 && e.strike && e.detected && e.phase !== 'retreat' && !e.rescue);
+  const threats = game.enemies.filter(e => e.hp > 0 && e.strike && enemyObserved(game,e) && e.phase !== 'retreat' && !e.rescue);
   el('threat-status').hidden = !threats.length;
   if (!threats.length) return;
   const first = threats.reduce((a, b) => Math.hypot(a.x - game.player.x, a.y - game.player.y) < Math.hypot(b.x - game.player.x, b.y - game.player.y) ? a : b);

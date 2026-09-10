@@ -28,6 +28,10 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 | `input.js` | keyboard + touch (virtual stick left half, fire right half) |
 | `player.js` | flight model, firing, damage, death |
 | `enemies.js` | territory defenders, patrol/pursuit AI, enemy fire, ramming |
+| `theater.js` | seeded archipelago landforms, holdings, fixed bounds and offshore routes |
+| `fleets.js` | carrier/escort formations and approach holds |
+| `intelligence.js` | observed installation and fleet snapshots |
+| `operations.js` | paused chart, coastlines and snapshot waypoints |
 | `campaign.js` | seeded island chains, territory ownership, carrier rescue, rank and victory |
 | `surface.js` | shared visible shoreline and precise hull footprints for bomb impacts |
 | `aircraft-previews.js` | renders actual GLB aircraft into selection-card images once at startup |

@@ -15,15 +15,17 @@ At the same 180-second checkpoint, using one enemy launch site:
 | Personally intercept | 178–200 | 140 |
 
 Ignoring the isolated raids loses an undefended field after 242–258 seconds.
-Established defenses delay that to 313–330 seconds. A carrier's existing guns
+Established defenses delay that to 313–330 seconds. An isolated carrier without the new escorts has existing guns that
 also delay loss to 313–330 seconds, but do not make it invulnerable.
 
-The full world includes all launch sites, ordinary fighters, allies, repair and
-campaign logic. Normal non-firing patrol pilots die after 145–177 seconds while
-home remains friendly; those runs cannot establish base-loss timing. A separately
-labeled high-HP observer, changing only initial pilot HP, lets the siege continue:
-home is overrun after 386–507 seconds. That observer is not evidence of fair pilot
-survival or a successful player strategy.
+After the archipelago rewrite, the full world includes all launch sites, ordinary
+fighters, allies, repair, task groups and campaign logic. Non-firing patrol pilots
+in these three seeds die after 187–189 seconds while home remains friendly. The
+separate high-HP observer now reaches the 600-second cutoff with home still held
+(127–147 HP) and an active carrier at 96 HP. These runs do not prove that a task
+group or the home base eventually falls. The new geography and escorts changed
+pressure materially; further human and active-conquest comparison is needed.
+The isolated table above excludes the new escorts and is not a task-group benchmark.
 
 ## What these experiments establish
 
