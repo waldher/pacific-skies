@@ -15,7 +15,7 @@ const { chromium } = require('playwright');
 
 const ROOT = path.resolve(__dirname, '..');
 const OUT = path.join(__dirname, 'views');
-const HALF = 7.5; // metres from centre to the edge of each view
+const HALF = Number(process.env.AIRCRAFT_VIEW_HALF) || 7.5; // metres from centre to the edge of each view
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.glb': 'model/gltf-binary' };
 
 const PAGE = `<!doctype html><body style="margin:0"><canvas id="c" width="1200" height="1500"></canvas>

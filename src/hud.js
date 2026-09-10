@@ -3,7 +3,8 @@ import { ctx, view, w2s } from './canvas.js';
 import { game } from './state.js';
 import { stick, fireTouch, isTouchDevice } from './input.js';
 import { rr } from './sprites.js';
-import { AIRCRAFT } from './aircraft-types.js';
+import { AIRCRAFT, aircraftUnlocked } from './aircraft-types.js';
+import { aircraftPreviews } from './aircraft-previews.js';
 import { availableBases, canUseAircraft, selectSortie } from './bases.js';
 import { carrierAction } from './carrier.js';
 import { defenders } from './campaign.js';
@@ -102,8 +103,6 @@ let menuState = '';
 let sortieBound = false;
 const aircraftIds = Object.keys(AIRCRAFT);
 const icons = {
-  p38: '<path d="M28 12h6v50l-3 9-3-9zm34 0h6v50l-3 9-3-9zM45 17h6l3 29-6 23-6-23z"/><path d="m12 35 30-5h12l30 5v6H12zm14 25h44v5H26z"/><path class="icon-line" d="M22 15h18m16 0h18"/>',
-  corsair: '<path d="m45 10 6 0 4 26 29 9-1 7-22-3-8-5-2 18 12 7v5l-15-3-15 3v-5l12-7-2-18-8 5-22 3-1-7 29-9z"/><path class="icon-line" d="M35 16h26"/>',
   airfield: '<path d="M35 9h26v62H35z"/><path class="icon-cut" d="M47 14h2v9h-2zm0 16h2v9h-2zm0 16h2v9h-2zm0 16h2v5h-2z"/><path d="M14 23h13v13H14zm55 19h13v13H69z"/>',
   carrier: '<path d="m35 9 26 0 7 45-12 17H40L28 54z"/><path class="icon-cut" d="M46 17h3v42h-3z"/><path d="M64 25h10v20H64z"/>',
   bombs: '<path d="m41 12 7 5 7-5v16c13 17 13 31-7 42-20-11-20-25-7-42z"/><path class="icon-cut" d="M45 34h3v21h-3z"/>',
@@ -117,7 +116,11 @@ function choiceCards(node, entries, selected, kind) {
       card.className = 'sortie-card'; card.dataset.value = entry.id;
       if (entries.length > 1) { card.type = 'button'; card.dataset.choice = kind; }
       const art = document.createElement('span'); art.className = 'sortie-art';
-      art.innerHTML = `<svg viewBox="0 0 96 80" aria-hidden="true">${icons[entry.icon]}</svg>`;
+      if (kind === 'aircraft') {
+        const img = document.createElement('img');
+        img.src = aircraftPreviews[entry.id]; img.alt = ''; img.width = 256; img.height = 160;
+        art.append(img);
+      } else art.innerHTML = `<svg viewBox="0 0 96 80" aria-hidden="true">${icons[entry.icon]}</svg>`;
       const copy = document.createElement('span'); copy.className = 'sortie-copy';
       const name = document.createElement('strong'); name.textContent = entry.name;
       const detail = document.createElement('small'); detail.textContent = entry.detail;
@@ -148,15 +151,25 @@ function drawSortie(p, playing) {
       const base = availableBases(game).find(b => b.id === baseId);
       let aircraft = card.dataset.choice === 'aircraft' ? card.dataset.value : current.aircraft;
       if (!canUseAircraft(game, base, aircraft)) aircraft = aircraftIds.find(a => canUseAircraft(game, base, a));
-      const loadout = aircraft === 'p38' ? 'bombs' : card.dataset.choice === 'loadout' ? card.dataset.value : current.loadout;
+      const requested = card.dataset.choice === 'loadout' ? card.dataset.value : current.loadout;
+      const loadouts = AIRCRAFT[aircraft].loadouts;
+      const loadout = loadouts.includes(requested) ? requested : loadouts[0];
       selectSortie(game, { baseId, aircraft, loadout });
     });
     sortieBound = true;
   }
   const bases = availableBases(game), base = bases.find(b => b.id === p.baseId) || bases[0];
+  const next = aircraftIds.find(id => !aircraftUnlocked(game, id));
+  el('sortie-unlock').hidden = !next;
+  if (next) {
+    const type = AIRCRAFT[next], requirements = [];
+    if (game.score < type.unlockScore) requirements.push(`${type.unlockScore.toLocaleString()} pts`);
+    if (game.rank < type.minRank) requirements.push('rescue the carrier');
+    text('sortie-unlock', `Next: ${type.shortName} · ${requirements.join(' + ')}`);
+  }
   choiceCards(el('sortie-base'), bases.map(b => ({ id:b.id, name:b.name, icon:b.kind, detail:b.kind === 'carrier' ? 'Flight deck' : 'Runway' })), base?.id, 'base');
   choiceCards(el('sortie-aircraft'), aircraftIds.filter(a => base && canUseAircraft(game, base, a)).map(a => ({ id:a, name:AIRCRAFT[a].shortName, icon:a, detail:AIRCRAFT[a].role })), p.aircraft, 'aircraft');
-  choiceCards(el('sortie-loadout'), (p.aircraft === 'p38' ? ['bombs'] : ['bombs', 'torpedoes']).map(id => ({ id, icon:id, name:id === 'bombs' ? '2 bombs' : '2 torpedoes', detail:id === 'bombs' ? 'Airfields & ships' : 'Ship hunter' })), p.loadout, 'loadout');
+  choiceCards(el('sortie-loadout'), AIRCRAFT[p.aircraft].loadouts.map(id => ({ id, icon:id, name:id === 'bombs' ? '2 bombs' : '2 torpedoes', detail:id === 'bombs' ? 'Ground targets' : 'Ship hunter' })), p.loadout, 'loadout');
 }
 
 

@@ -1,4 +1,5 @@
 // Seeded island chains, persistent bases, and the carrier rescue progression.
+import { AIRCRAFT, aircraftUnlocked } from './aircraft-types.js';
 import { CONFIG } from './config.js';
 import { rand, TAU } from './util.js';
 
@@ -18,7 +19,7 @@ export function createCampaign() {
     hp: t.id === 0 ? CONFIG.airfield.homeHp : CONFIG.airfield.hp,
     maxHp: t.id === 0 ? CONFIG.airfield.homeHp : CONFIG.airfield.hp, launchTimer: rand(35, 55) }));
   const ships = [{ id: 'carrier', kind: 'carrier', name: 'USS Resolute', team: 'us', active: false,
-    x: 540, y: 650, a: -Math.PI / 2, hp: CONFIG.progression.rescueHp, maxHp: CONFIG.progression.rescueHp,
+    x: G.carrierX, y: G.carrierY, a: -Math.PI / 2, hp: CONFIG.progression.rescueHp, maxHp: CONFIG.progression.rescueHp,
     fireCd: 0, length: C.length, width: C.width }];
   territories.slice(1).forEach(t => {
     const orbit = t.radius + CONFIG.ship.patrolOffset, angle = rand(0, TAU);
@@ -27,14 +28,14 @@ export function createCampaign() {
       orbit, angle, fireCd: 1, hp: CONFIG.ship.hp, maxHp: CONFIG.ship.hp, length: CONFIG.ship.length, width: CONFIG.ship.width });
   });
   ships.push({ id: 'enemy-carrier', kind: 'carrier', team: 'jp', name: 'Enemy carrier',
-    x: -1200, y: 900, anchorX: -1200, anchorY: 900, orbit: 180, angle: 0, a: -Math.PI / 2,
+    x: G.enemyCarrierX + G.enemyCarrierOrbit, y: G.enemyCarrierY, anchorX: G.enemyCarrierX, anchorY: G.enemyCarrierY, orbit: G.enemyCarrierOrbit, angle: 0, a: -Math.PI / 2,
     hp: 80, maxHp: 80, length: C.length, width: C.width, fireCd: 1, launchTimer: 50 });
   const bases = airfields.map(f => ({ id: f.id, name: f.territory === 0 ? 'Home Airfield' : `${f.name} Airfield`,
     kind: 'airfield', airfieldId: f.id, territory: f.territory, x: f.x, y: f.y, a: f.a,
     length: CONFIG.airfield.length, width: CONFIG.airfield.width, owner: f.owner, available: f.owner === 'us' }));
   bases.push({ id: 'fleet-carrier', name: 'USS Resolute', kind: 'carrier', shipId: 'carrier',
     x: ships[0].x, y: ships[0].y, a: ships[0].a, length: C.length, width: C.width, owner: 'us', available: false });
-  return { territories, ships, airfields, bases, rank: 0, rescue: { status: 'locked', timer: 0 }, bombs: [] };
+  return { territories, ships, airfields, bases, unlockedAircraft: ['p38'], rank: 0, rescue: { status: 'locked', timer: 0 }, bombs: [] };
 }
 
 export function defenders(game, territory) {
@@ -87,6 +88,12 @@ export function updateCampaign(game, dt, activate) {
     && Math.hypot(game.player.x - carrier.x, game.player.y - carrier.y) < R.rescueRadius) {
     game.rank = 2; game.rescue.status = 'complete'; carrierBase.available = true;
     notify(game, 'Carrier rescued — Corsair and naval operations unlocked');
+  }
+  for (const id of Object.keys(AIRCRAFT)) {
+    if (aircraftUnlocked(game, id) && !game.unlockedAircraft.includes(id)) {
+      game.unlockedAircraft.push(id);
+      if (id !== 'corsair') notify(game, `${AIRCRAFT[id].name} unlocked — choose it when landed`);
+    }
   }
   for (const t of game.territories) {
     if (t.owner === 'us') continue;

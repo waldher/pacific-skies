@@ -31,7 +31,7 @@ function batchMeshes(source, relativeTo) {
 export async function loadAircraft() {
   const loader = new GLTFLoader();
   const templates = {};
-  await Promise.all([['corsair', 'F4U_Corsair'], ['p38', 'P38_Lightning'], ['jp', 'Mitsubishi_Zero']].map(async ([kind, name]) => {
+  await Promise.all([['corsair', 'F4U_Corsair'], ['p38', 'P38_Lightning'], ['dauntless', 'SBD_Dauntless'], ['avenger', 'TBF_Avenger'], ['p51', 'P51_Mustang'], ['jp', 'Mitsubishi_Zero']].map(async ([kind, name]) => {
     const { scene } = await loader.loadAsync(new URL(`../assets/aircraft/${name}.glb`, import.meta.url).href);
     scene.updateMatrixWorld(true);
     const airframe = scene.getObjectByName('Airframe');
@@ -101,9 +101,11 @@ export function createAircraft(template, entity, shadows = true) {
     });
   }
   root.add(model);
+  // Altitude marks the surface under the aircraft, not its fuselage center.
+  const clearance = Math.max(0, -new THREE.Box3().setFromObject(model).min.y) + .5;
   const shadow = new THREE.Mesh(receiverGeometry, shadowMaterial);
   shadow.position.y = .1;
-  const visual = { root, model, shadow, ownedMaterials, propeller: model.getObjectByName('Propeller'), propellers: model.children.filter(node => node.name.startsWith('Propeller')), heading: entity.a, bank: 0 };
+  const visual = { root, model, clearance, shadow, ownedMaterials, propeller: model.getObjectByName('Propeller'), propellers: model.children.filter(node => node.name.startsWith('Propeller')), heading: entity.a, bank: 0 };
   setShadowMode(visual, shadows);
   return visual;
 }
@@ -113,8 +115,9 @@ export function updateAircraft(visual, entity, dt, turnRate, flash = false) {
   const rate = dt > 0 ? angDiff(visual.heading, entity.a) / dt : 0;
   const target = entity.flight && entity.flight !== 'flying' ? 0 : -clamp(rate / turnRate, -1, 1) * R.bankAngle;
   visual.bank += (target - visual.bank) * (1 - Math.exp(-R.bankResponse * dt));
+  if (entity.flight && entity.flight !== 'flying') visual.bank = 0;
   visual.heading = entity.a;
-  visual.root.position.set(entity.x, entity.altitude ?? R.flightHeight, entity.y);
+  visual.root.position.set(entity.x, (entity.altitude ?? R.flightHeight) + visual.clearance, entity.y);
   visual.root.rotation.y = -entity.a - Math.PI / 2;
   visual.shadow.position.set(entity.x + shadowShift[0], .1, entity.y + shadowShift[1]);
   visual.shadow.rotation.y = visual.root.rotation.y;

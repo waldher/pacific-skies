@@ -59,7 +59,7 @@ function update(dt) {
   }
   for (const b of game.ebullets) {
     if (b.life <= 0) continue;
-    if (Math.hypot(b.x - game.player.x, b.y - game.player.y) < 15) {
+    if (game.player.flight === 'flying' && Math.hypot(b.x - game.player.x, b.y - game.player.y) < 15) {
       b.life = 0;
       damagePlayer(b.damage ?? CONFIG.enemy.bulletDamage);
     }

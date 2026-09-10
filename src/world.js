@@ -15,6 +15,7 @@
 // CONFIG.render.ocean.
 import * as THREE from 'three';
 import { CONFIG } from './config.js';
+import { islandOutline } from './surface.js';
 import { hash2, TAU } from './util.js';
 
 const MAX_ISLANDS = 12;
@@ -126,15 +127,7 @@ export function createWorld(scene) {
     const gx = territory.seed ?? territory.id, gy = territory.id;
     group.position.set(territory.x, 0, territory.y);
     const radius = territory.radius;
-    const outline = (rad, jitter, seed) => {
-      const points = [];
-      for (let i = 0; i < 9; i++) {
-        const a = i / 9 * TAU;
-        const r = rad * (1 - jitter + hash2(gx * 9 + i + seed, gy * 9 + i) * jitter * 2);
-        points.push(new THREE.Vector2(Math.cos(a) * r, -Math.sin(a) * r * .85));
-      }
-      return points;
-    };
+    const outline = (rad, jitter, seed) => islandOutline(territory, rad, jitter, seed).map(([x, y]) => new THREE.Vector2(x, -y));
     const place = (geometry, material, base, receive) => {
       const mesh = new THREE.Mesh(geometry, material);
       mesh.rotation.x = -Math.PI / 2;

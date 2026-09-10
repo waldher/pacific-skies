@@ -26,8 +26,8 @@ export function updateEnemies(dt) {
     if (e.hp <= 0 || e.strike) continue;
     e.wobble += dt * 2;
     const home = e.raider ? game.ships[0] : game.territories[e.territory];
-    const candidates = [player, ...game.allies].filter(f => f.hp > 0 && f.flight !== 'landed');
-    const target = e.raider && player.flight !== 'landed' ? player : candidates.sort((a, b) =>
+    const candidates = [player, ...game.allies].filter(f => f.hp > 0 && (!f.flight || f.flight === 'flying'));
+    const target = e.raider && player.flight === 'flying' ? player : candidates.sort((a, b) =>
       Math.hypot(a.x - e.x, a.y - e.y) - Math.hypot(b.x - e.x, b.y - e.y))[0];
     const chase = target && (e.raider || (Math.hypot(target.x - home.x, target.y - home.y) < CONFIG.conquest.pursuitRadius
       && Math.hypot(target.x - e.x, target.y - e.y) < CONFIG.conquest.engageRadius));
@@ -49,7 +49,7 @@ export function updateEnemies(dt) {
         life: E.bulletLife,
       });
     }
-    if (player.flight !== 'landed' && Math.hypot(player.x - e.x, player.y - e.y) < E.ramDist) {
+    if (player.flight === 'flying' && Math.hypot(player.x - e.x, player.y - e.y) < E.ramDist) {
       e.hp = 0;
       damagePlayer(E.ramDamage);
       explosion(e.x, e.y, false);

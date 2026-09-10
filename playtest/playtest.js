@@ -87,6 +87,7 @@ function check(name, ok, detail) {
   s = await snap();
   check('Space starts the game', s.mode === 'play');
   check('single-choice sortie is a visual summary without false controls', await page.locator('#sortie-panel button, #sortie-panel select').count() === 0);
+  check('starting aircraft card displays a loaded GLB render', await page.locator('#sortie-aircraft img').evaluate(img => img.complete && img.naturalWidth === 256 && img.naturalHeight === 160 && img.src.startsWith('data:image/png')));
   check('starting airfield exposes sortie planning', await page.locator('#sortie-panel').isVisible());
   await page.screenshot({ path: path.join(SHOT_DIR, '01-airfield.png') });
   await page.getByRole('button', { name: /TAKE OFF/ }).click();
@@ -289,8 +290,16 @@ function check(name, ok, detail) {
   await page.waitForFunction(() => window.__game.graphics.aircraft.get(window.__game.game.player)?.model.name === 'F4U_Corsair');
   check('native carrier transfer selects compatible Corsair at deck height', await page.evaluate(() => { const p = window.__game.game.player; return p.baseId === 'fleet-carrier' && p.aircraft === 'corsair' && p.loadout === 'torpedoes' && p.altitude === window.__game.CONFIG.carrier.deckHeight; }));
 
+  await page.evaluate(() => { window.__game.game.score = 2200; });
+  await page.locator('#sortie-base button[data-value="home-airfield"]').click();
+  for (const [id,model,loadout] of [['dauntless','SBD_Dauntless','bombs'],['avenger','TBF_Avenger','torpedoes'],['p51','P51_Mustang','bombs']]) {
+    await page.locator(`#sortie-aircraft button[data-value="${id}"]`).click();
+    await page.waitForFunction(model => window.__game.graphics.aircraft.get(window.__game.game.player)?.model.name === model, model);
+    check(`${id} card selects its real flight model and compatible weapon`, await page.evaluate(({id,loadout}) => { const p = window.__game.game.player; return p.aircraft === id && p.loadout === loadout; }, {id,loadout}));
+  }
+  check('all five aircraft cards contain loaded model renders', await page.locator('#sortie-aircraft img').evaluateAll(imgs => imgs.length === 5 && imgs.every(img => img.complete && img.naturalWidth === 256 && img.naturalHeight === 160)));
   await page.getByRole('button', { name: /TAKE OFF/ }).click();
-  check('on-screen carrier control launches the aircraft', await page.evaluate(() => window.__game.game.player.flight === 'takeoff'));
+  check('on-screen takeoff control launches the selected aircraft', await page.evaluate(() => window.__game.game.player.flight === 'takeoff'));
   await page.evaluate(() => window.__game.startGame());
   await page.waitForTimeout(200);
   check('restart removes old aircraft instances', await page.evaluate(() => window.__game.graphics.aircraft.size === 1 + window.__game.game.allies.length));
@@ -306,6 +315,7 @@ function check(name, ok, detail) {
   await mobile.touchscreen.tap(190, 600);
   await mobile.screenshot({ path: path.join(SHOT_DIR, '06-phone-sortie.png') });
   check('phone sortie selector fits its panel', await mobile.evaluate(() => { const p = document.getElementById('sortie-panel'); return p.scrollWidth <= p.clientWidth; }));
+  await mobile.evaluate(() => { const g = window.__game.game; g.score = 2200; g.rank = 2; g.rescue.status = 'complete'; g.ships[0].active = true; g.bases.find(b => b.kind === 'carrier').available = true; });
   for (const [width,height,name] of [[320,568,'small-phone'],[844,390,'landscape']]) {
     await mobile.setViewportSize({ width,height }); await mobile.waitForTimeout(100);
     check(`${name} sortie panel fits without overlapping the HUD`, await mobile.evaluate(() => {
@@ -314,6 +324,12 @@ function check(name, ok, detail) {
       return r.x >= 0 && r.right <= innerWidth && r.y >= 0 && r.bottom <= innerHeight && p.scrollWidth <= p.clientWidth
         && ids.every(id => { const e = document.getElementById(id); if (!e || e.hidden) return true; const b = e.getBoundingClientRect(); return r.right <= b.x || r.x >= b.right || r.bottom <= b.y || r.y >= b.bottom; });
     }));
+    check(`${name} expanded aircraft cards have no clipped labels`, await mobile.locator('#sortie-aircraft button').evaluateAll(cards => cards.length === 5 && cards.every(card => card.scrollWidth <= card.clientWidth)));
+    await mobile.locator('#sortie-aircraft button[data-value="p51"]').tap();
+    check(`${name} last aircraft remains reachable by scrolling`, await mobile.evaluate(() => window.__game.game.player.aircraft === 'p51'));
+    await mobile.locator('#sortie-base button[data-value="fleet-carrier"]').tap();
+    check(`${name} base transfer remains reachable below aircraft choices`, await mobile.evaluate(() => window.__game.game.player.baseId === 'fleet-carrier'));
+    await mobile.locator('#sortie-base button[data-value="home-airfield"]').tap();
     await mobile.screenshot({ path: path.join(SHOT_DIR, `06-${name}-sortie.png`) });
   }
   await mobile.getByRole('button', { name: /TAKE OFF/ }).tap();

@@ -11,6 +11,7 @@ import { loadAircraft, createAircraft, updateAircraft, setShadowMode } from './a
 import { createWorld } from './world.js';
 import { createNavalScene } from './naval-scene.js';
 import { createEffects } from './effects.js';
+import { renderAircraftPreviews } from './aircraft-previews.js';
 
 export async function createRenderer(canvas) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
@@ -36,6 +37,7 @@ export async function createRenderer(canvas) {
   const effects = createEffects(scene, renderer);
   const naval = createNavalScene(scene);
   const templates = await loadAircraft();
+  renderAircraftPreviews(renderer, templates);
   const aircraft = new Map();
   let lastW = 0, lastH = 0, lastRatio = 0;
   const diagnostics = {

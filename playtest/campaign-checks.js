@@ -6,6 +6,8 @@ export async function campaignChecks(api) {
   const { launchBomb, updateBombs } = await import('../src/bombs.js');
   const { updateStrikes } = await import('../src/strikes.js');
   const { selectSortie, availableBases } = await import('../src/bases.js');
+  const { AIRCRAFT, aircraftUnlocked } = await import('../src/aircraft-types.js');
+  const { onLand } = await import('../src/surface.js');
   const checks = [];
   const check = (name, ok) => checks.push({ name, ok: !!ok });
   const reset = () => { for (const key of Object.keys(keys)) keys[key] = false; api.setSeed(1942); startGame(); };
@@ -23,13 +25,35 @@ export async function campaignChecks(api) {
   const layout = () => JSON.stringify(game.territories.map(t => [t.x,t.y,t.radius,t.owner]));
   const initialLayout = layout(); reset();
   check('same campaign seed reproduces the island chain', layout() === initialLayout);
+  let spaced = true, carriersClear = true;
+  for (const seed of [1, 927, 1942, 1945, 8801, 65535]) {
+    api.setSeed(seed); startGame();
+    spaced &&= game.territories.every((a, i) => game.territories.slice(i + 1).every(b => Math.hypot(a.x-b.x,a.y-b.y) - a.radius - b.radius > 600));
+    carriersClear &&= game.ships.filter(s => s.kind === 'carrier').every(s => game.territories.every(t => Math.hypot(s.x-t.x,s.y-t.y)-t.radius-s.length/2 > 600));
+  }
+  check('six seeded maps leave open-water corridors between islands', spaced);
+  check('carriers have substantial clearance from island bases', carriersClear);
   api.setSeed(927); startGame();
   check('different campaign seeds create different island chains', layout() !== initialLayout); reset(); fly();
   reset();
   const home = game.bases.find(b => b.kind === 'airfield' && b.owner === 'us');
   check('rank zero cannot select a Corsair', !selectSortie(game, { baseId: home.id, aircraft: 'corsair', loadout: 'bombs' }));
   check('P38 cannot equip torpedoes', !selectSortie(game, { baseId: home.id, aircraft: 'p38', loadout: 'torpedoes' }));
-  fly();
+  check('new aircraft stay locked before their milestones', ['dauntless','avenger','p51'].every(id => !aircraftUnlocked(game,id)));
+  game.score = 300;
+  check('300 points unlock the Dauntless at an airfield', selectSortie(game,{baseId:home.id,aircraft:'dauntless',loadout:'bombs'}));
+  fly(); launchBomb(game);
+  check('Dauntless releases a heavier, faster-falling bomb', game.bombs[0].damage === 40 && game.bombs[0].maxLife < CONFIG.bomb.fallSeconds);
+  reset(); game.score = 2200;
+  check('points alone do not unlock advanced naval campaign aircraft', !aircraftUnlocked(game,'avenger') && !aircraftUnlocked(game,'p51'));
+  game.rank = 2;
+  check('completed rescue and points unlock all five aircraft', Object.keys(AIRCRAFT).length === 5 && Object.keys(AIRCRAFT).every(id => aircraftUnlocked(game,id)));
+  check('Avenger rejects bombs and equips torpedoes', !selectSortie(game,{baseId:home.id,aircraft:'avenger',loadout:'bombs'}) && selectSortie(game,{baseId:home.id,aircraft:'avenger',loadout:'torpedoes'}));
+  fly(); launchTorpedo();
+  check('Avenger launches a heavy anti-ship torpedo', game.torpedoes[0]?.damage === 40);
+  game.player.flight = 'landed';
+  check('Mustang is selectable at an airfield with the fastest cruise speed', selectSortie(game,{baseId:home.id,aircraft:'p51',loadout:'bombs'}) && CONFIG.aircraft.p51.speedCruise > CONFIG.aircraft.p38.speedCruise);
+  reset(); fly();
   check('sortie changes are rejected in flight', !selectSortie(game, { baseId: home.id, aircraft: 'p38', loadout: 'bombs' }));
   const field = game.airfields.find(f => f.owner === 'enemy');
   for (const f of game.airfields) f.launchTimer = 1000;
@@ -63,7 +87,22 @@ export async function campaignChecks(api) {
   updateStrikes(game, .02);
   check('sinking enemy carrier stops subsequent strikes', !game.enemies.some(e => e.sourceId === enemyCarrier.id));
 
-  reset(); fly();
+  reset();
+  const targetShip = game.ships.find(s => s.team === 'jp');
+  Object.assign(targetShip, {x:20000,y:20000,a:.73,hp:100,maxHp:100});
+  const impact = (along,lateral) => {
+    game.particles = [];
+    const x = targetShip.x + Math.cos(targetShip.a)*along - Math.sin(targetShip.a)*lateral;
+    const y = targetShip.y + Math.sin(targetShip.a)*along + Math.cos(targetShip.a)*lateral;
+    game.bombs.push({x,y,vx:0,vy:0,life:.01}); updateBombs(game,.02);
+  };
+  impact(0,targetShip.width);
+  check('near-miss bomb splashes in water without ship damage', targetShip.hp === 100 && game.particles.some(p => p.kind === 'splash') && !game.particles.some(p => p.kind === 'fire'));
+  impact(targetShip.length*.48,targetShip.width*.3);
+  check('bomb outside tapered bow splashes despite bounding-box overlap', targetShip.hp === 100 && game.particles.some(p => p.kind === 'splash'));
+  impact(0,0);
+  check('precise bomb impact damages a rotated hull', targetShip.hp === 100-CONFIG.bomb.damage && game.particles.some(p => p.kind === 'fire') && !game.particles.some(p => p.kind === 'splash'));
+  check('shoreline classifies island center as land and open ocean as water', onLand(game.territories[0],game.territories) && !onLand({x:20000,y:20000},game.territories));
   reset();
   game.player.x = 20000; game.player.y = 20000;
   game.score = CONFIG.progression.rescueScore;
@@ -171,9 +210,16 @@ export async function campaignChecks(api) {
   check('correcting alignment after the stern still catches a wire', game.player.flight === 'landing');
   game.player.flight = 'flying';
   approach(c.x + 6, c.y + c.length / 2 + 40, c.a);
+  game.player.bombAmmo = 0; game.player.torpedoAmmo = 0;
   for (let i = 0; i < 300 && game.player.flight !== 'landed'; i++) update(.02);
   check('aligned stern crossing lands without requesting assistance', game.player.flight === 'landed'
     && Math.abs(game.player.x - c.x - 6) < 1 && game.player.altitude === CONFIG.carrier.deckHeight);
+  check('landing immediately refills both ordnance types', game.player.bombAmmo === 2 && game.player.torpedoAmmo === 2);
+  const parkedHp = game.player.hp;
+  game.enemies.push({ x: game.player.x, y: game.player.y, a: 0, hp: 3, speed: 0, turn: 0, fireCd: 99, wobble: 0, raider: true });
+  update(.001);
+  check('parked player and overlapping enemy do not ram each other', game.player.hp >= parkedHp && game.enemies.some(e => e.raider && e.hp === 3 && e.speed === 0));
+  game.enemies = game.enemies.filter(e => !(e.raider && e.speed === 0));
   keys.Space = true; step(.1);
   check('guns stay safe on deck', game.bullets.every(b => b.fromAlly || b.fromShip));
   step(1);
@@ -198,6 +244,7 @@ export async function campaignChecks(api) {
   step(CONFIG.torpedo.range / CONFIG.torpedo.speed + .1);
   check('empty loadout stays empty in flight and spent torpedoes expire', !launchTorpedo() && game.player.torpedoAmmo === 0 && game.torpedoes.length === 0);
   game.player.x = game.ships[0].x; game.player.y = game.ships[0].y + CONFIG.carrier.length / 2 + 30; game.player.a = game.ships[0].a;
+  game.player.bombAmmo = 0; game.player.torpedoAmmo = 0;
   for (let i = 0; i < 300 && game.player.flight !== 'landed'; i++) update(.02);
   check('torpedoes cannot launch on deck', !launchTorpedo());
   step(CONFIG.torpedo.rearmSeconds + .1);

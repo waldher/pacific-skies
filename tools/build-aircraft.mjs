@@ -237,6 +237,55 @@ const ZERO = {
 };
 
 // ---------------------------------------------------------------------------
+// Expansion aircraft: published overall dimensions; station shapes are artistic
+// approximations for arcade readability. See tools/reference/Expansion.md.
+const stations = rows => rows.map(([x,w,top,bot])=>({x,w,top,bot}));
+const wings = rows => rows.map(([y,le,te,h,t])=>({y,le,te,h,t}));
+const glazing = rows => rows.map(([x,w,top,sill])=>({x,w,top,sill}));
+const DAUNTLESS = {
+  ...CORSAIR, name:'SBD_Dauntless', length:9.9568, span:12.6492,
+  colors:{...CORSAIR.colors,upper:'#66818c',lower:'#d0d2c8',brake:'#983d33'},
+  fuselage:stations([[1.5,.68,.68,-.68],[2,.66,.74,-.75],[3,.61,.72,-.78],[4,.58,.73,-.74],[5,.53,.73,-.63],[6,.44,.68,-.46],[7,.33,.56,-.29],[8,.23,.42,-.16],[9,.1,.3,-.06],[9.9568,.01,.22,.03]]),
+  cowl:[{x:.4,r:.59},{x:.55,r:.7},{x:1.35,r:.71},{x:1.6,r:.67}],
+  engineFace:{x:.42,r:.57},
+  wing:wings([[0,2.35,5.35,-.34,.39],[1.2,2.4,5.3,-.34,.38],[3,2.58,5.04,-.18,.3],[5.7,2.94,4.55,.12,.15],[6.2,3.15,4.25,.17,.08],[6.3246,3.55,3.9,.18,.025]]),
+  foldLine:0, aileron:{y0:3.8,y1:6.1,chord:.24},guns:{spans:[],protrude:.2,r:.04},walkways:[],insignia:{y:4.5,r:.5,sides:[-1,1]},
+  tailplane:wings([[0,7.95,9.6,.17,.15],[1.4,8.1,9.5,.17,.12],[2.3,8.5,9.2,.17,.06],[2.45,8.8,9.02,.17,.02]]),
+  fin:{outline:[[7.15,.45],[7.9,1.5],[8.5,1.95],[8.95,1.85],[9.6,1.1],[9.9568,.3],[9.9568,.03],[8.5,.1]],thickness:.11},
+  canopy:glazing([[2.5,.24,.78,.7],[2.9,.41,1.23,.71],[3.55,.42,1.29,.72],[4.25,.41,1.25,.72],[4.95,.38,1.17,.71],[5.65,.3,1.01,.69],[6,.12,.75,.68]]),
+  canopyFrames:[2.9,3.55,4.25,4.95,5.65],antenna:{x:2.35,h0:.72,h1:1.42,rake:.08},
+  propeller:{...CORSAIR.propeller,diameter:3.3,planform:[[.18,.06],[.6,.12],[1.1,.13],[1.55,.09],[1.65,.025]]},
+  detail:'divebrakes',
+};
+const AVENGER = {
+  ...DAUNTLESS,name:'TBF_Avenger',length:12.4714,span:16.51,
+  colors:{...CORSAIR.colors,upper:'#34566c',lower:'#d1d5cd'},
+  fuselage:stations([[1.7,.85,.88,-.88],[2.5,.82,1,-1.1],[3.5,.79,1.03,-1.23],[4.7,.75,1.01,-1.27],[6,.67,.94,-1.14],[7,.58,.8,-.85],[8,.45,.64,-.55],[9.5,.3,.49,-.27],[11,.15,.35,-.1],[12.4714,.015,.23,.04]]),
+  cowl:[{x:.48,r:.74},{x:.7,r:.88},{x:1.6,r:.88},{x:1.9,r:.84}],engineFace:{x:.5,r:.7},
+  wing:wings([[0,3,6.85,-.35,.55],[1.6,3.08,6.8,-.35,.52],[3,3.25,6.6,-.22,.45],[6.7,3.9,5.95,.17,.22],[8.05,4.2,5.6,.3,.1],[8.255,4.55,5.3,.32,.035]]),
+  foldLine:2.9,aileron:{y0:5.2,y1:8.05,chord:.24},guns:{spans:[2.2],protrude:.15,r:.045},insignia:{y:6.2,r:.63,sides:[-1,1]},
+  tailplane:wings([[0,10.1,12.2,.28,.22],[1.5,10.22,12.1,.28,.18],[2.8,10.65,11.9,.28,.1],[3.1,11.05,11.6,.28,.025]]),
+  fin:{outline:[[8.4,.6],[9.25,1.7],[10.15,2.45],[10.8,2.55],[11.4,2.1],[12.4714,.5],[12.4714,.02],[10,.05]],thickness:.17},
+  canopy:glazing([[2.95,.28,1.04,.97],[3.4,.49,1.55,1],[4.2,.5,1.59,.99],[5,.46,1.5,.96],[5.7,.4,1.37,.91],[6.15,.22,1.05,.86]]),
+  canopyFrames:[3.4,4.2,5,5.7],antenna:{x:4.5,h0:1.55,h1:2.03,rake:-.1},
+  propeller:{...CORSAIR.propeller,diameter:3.96,planform:[[.2,.07],[.7,.15],[1.3,.18],[1.85,.12],[1.98,.025]]},detail:'turret',
+};
+const MUSTANG = {
+  ...DAUNTLESS,name:'P51_Mustang',length:9.8298,span:11.2776,
+  colors:{...CORSAIR.colors,upper:'#acb7ba',lower:'#bfc6c5',hub:'#c24c3b'},
+  paint:{...CORSAIR.paint,fuselage:c=>c.x<3.4&&c.y>.35?'walkway':c.y>-.2?'upper':'lower'},
+  fuselage:stations([[.64,.29,.3,-.29],[1.2,.43,.46,-.5],[2.2,.47,.48,-.6],[3.2,.48,.56,-.63],[4.1,.5,.62,-.61],[5,.46,.58,-.55],[6,.37,.46,-.47],[7,.29,.36,-.32],[8,.18,.25,-.15],[9,.08,.18,-.03],[9.8298,.01,.15,.03]]),
+  cowl:[],engineFace:{x:.66,r:.01},cylinders:{...CORSAIR.cylinders,count:0},
+  hub:[{x:0,r:.015},{x:.15,r:.18},{x:.4,r:.3},{x:.68,r:.31}],
+  wing:wings([[0,2.75,5.6,-.34,.33],[.9,2.83,5.55,-.31,.3],[1.3,3.12,5.5,-.27,.28],[4.9,3.55,4.98,.07,.16],[5.48,3.67,4.78,.13,.09],[5.6388,3.95,4.57,.14,.025]]),
+  aileron:{y0:3.3,y1:5.45,chord:.22},guns:{spans:[1.7,1.95,2.2],protrude:.13,r:.035},insignia:{y:3.85,r:.43,sides:[-1,1]},
+  tailplane:wings([[0,7.82,9.33,.17,.14],[1,8.03,9.25,.17,.11],[1.95,8.36,9.12,.17,.07],[2.2,8.63,8.96,.17,.025]]),
+  fin:{outline:[[6.7,.32],[7.8,.74],[8.25,1.73],[8.67,1.85],[9.05,1.58],[9.8298,.36],[9.8298,.02],[8.5,.02]],thickness:.095},
+  canopy:glazing([[3.2,.25,.66,.55],[3.6,.37,1.04,.58],[4.15,.41,1.15,.6],[4.65,.37,1.08,.59],[5.1,.22,.76,.57],[5.3,.06,.59,.54]]),
+  canopyFrames:[3.6],antenna:{x:5.45,h0:.54,h1:.95,rake:-.1},
+  propeller:{...CORSAIR.propeller,blades:4,pivot:.63,disc:.56,diameter:3.4,planform:[[.25,.07],[.6,.13],[1.15,.145],[1.59,.1],[1.7,.025]]},detail:'radiator',
+};
+
 // Geometry helpers. All build in "spec space" (x aft, y up, z starboard);
 // toModel() converts to glTF space at the end.
 
@@ -426,7 +475,7 @@ function buildAircraft(S) {
   // Fuselage and cowling.
   addPainted('Fuselage', loft(S.fuselage.map(s => fuselageRing(s.x, s.w, s.top, s.bot, S.fuselageExponent, SEG)),
     { capStart: true, capEnd: true }), S.paint.fuselage);
-  addPainted('Radial_cowling', loft(S.cowl.map(s => circleRing(s.x, s.r, SEG)), { capStart: true, capEnd: true }), S.paint.cowl);
+  if (S.cowl.length) addPainted('Radial_cowling', loft(S.cowl.map(s => circleRing(s.x, s.r, SEG)), { capStart: true, capEnd: true }), S.paint.cowl);
   const face = new THREE.CircleGeometry(S.engineFace.r, SEG); face.rotateY(-Math.PI / 2); face.translate(S.engineFace.x, 0, 0);
   add(airframe, 'Engine_face', face, 'dark');
   for (let i = 0; i < S.cylinders.count; i++) {
@@ -567,6 +616,33 @@ function buildAircraft(S) {
     };
     add(propeller, `Propeller_blade_${b}`, strip(blade, discX), 'blade');
     if (P.yellowTip > 0) add(propeller, `Yellow_blade_tip_${b}`, strip(tip, discX - 0.005), 'tip');
+  }
+
+  // Role-defining details built into the same GLB as the flight model.
+  if (S.detail === 'divebrakes') {
+    for (const side of [-1, 1]) {
+      add(airframe, 'Perforated_dive_brake', surfaceStrip(S.wing,side,.85,3.7,.78,.99), 'brake');
+      for(let z=.98;z<3.6;z+=.22) for(const f of [.84,.94]) {
+        const w=wingAt(S.wing,z),g=disc(.046);g.rotateX(-Math.PI/2);
+        g.translate(w.le+(w.te-w.le)*f,0,z*side);
+        const p=g.attributes.position;
+        for(let i=0;i<p.count;i++){const st=wingAt(S.wing,Math.abs(p.getZ(i)));const cf=(p.getX(i)-st.le)/(st.te-st.le);p.setY(i,st.h+st.t*upperAt(cf)+.03);}
+        g.computeVertexNormals();
+        add(airframe,'Brake_perforation',g,'dark');
+      }
+      add(airframe,'Rear_gun',box(5.6,6.75,.96,1.01,side*.08-.025,side*.08+.025),'dark');
+    }
+  } else if (S.detail === 'turret') {
+    const turret=new THREE.SphereGeometry(.6,20,12);turret.translate(6.3,1.04,0);
+    add(airframe,'Rear_ball_turret',turret,'glass');
+    add(airframe,'Turret_gun',box(6.45,7.6,1.2,1.26,-.035,.035),'dark');
+    add(airframe,'Turret_frame',box(6.27,6.33,1.04,1.66,-.05,.05),'upper');
+    add(airframe,'Bomb_bay_seam',box(3.2,6.8,-1.275,-1.265,-.018,.018),'seam');
+  } else if (S.detail === 'radiator') {
+    const radiator=loft(stations([[4.15,.26,-.56,-.76],[4.45,.39,-.49,-1.01],[5.55,.34,-.4,-1.04],[6.45,.19,-.37,-.65]]).map(s=>fuselageRing(s.x,s.w,s.top,s.bot,2.7,16)),{capStart:true,capEnd:true});
+    add(airframe,'Belly_radiator',radiator,'lower');
+    add(airframe,'Radiator_intake',box(4.155,4.18,-.76,-.6,-.24,.24),'dark');
+    for(const side of [-1,1]) for(let x=1.72;x<2.9;x+=.19) add(airframe,'Exhaust_stack',box(x,x+.12,.1,.19,side*.46-.055,side*.46+.055),'dark');
   }
 
   const root = new THREE.Group(); root.name = S.name;
@@ -719,7 +795,9 @@ function writeGLB(root, file) {
   return { triangles, bytes: 12 + 8 + jsonBuf.length + 8 + bin.length };
 }
 
-for (const spec of [CORSAIR, ZERO, LIGHTNING]) {
+const requestedModels = process.argv.slice(2);
+for (const spec of [CORSAIR, ZERO, LIGHTNING, DAUNTLESS, AVENGER, MUSTANG]) {
+  if (requestedModels.length && !requestedModels.includes(spec.name)) continue;
   const aircraft = spec === LIGHTNING ? buildLightning() : buildAircraft(spec);
   toModel(aircraft, spec);
   const out = path.join(OUT_DIR, `${spec.name}.glb`);

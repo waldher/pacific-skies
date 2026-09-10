@@ -46,8 +46,10 @@ export function updateCarrierFlight(game, dt) {
         lateral: -(p.x - c.x) * Math.sin(c.a) + (p.y - c.y) * Math.cos(c.a),
       };
       p.rearmTime = 0;
+      p.torpedoAmmo = CONFIG.torpedo.capacity; p.bombAmmo = CONFIG.bomb.capacity;
+      p.torpedoCd = 0; p.bombCd = 0;
       p.flight = 'landed'; p.a = c.a; p.speed = 0;
-      notify(game, 'Landed — repairing and rearming');
+      notify(game, 'Landed — rearmed and repairing');
     }
   } else if (p.flight === 'landed') {
     if (p.parkedOffset) {
@@ -60,8 +62,8 @@ export function updateCarrierFlight(game, dt) {
     p.hp = Math.min(CONFIG.player.hp, p.hp + C.repairPerSecond * dt);
     p.heat = 0; p.overheated = false;
     p.rearmTime = (p.rearmTime || 0) + dt;
-    if (p.rearmTime >= CONFIG.torpedo.rearmSeconds) p.torpedoAmmo = CONFIG.torpedo.capacity;
-    if (p.rearmTime >= (CONFIG.bomb?.rearmSeconds ?? CONFIG.torpedo.rearmSeconds)) p.bombAmmo = CONFIG.bomb?.capacity ?? CONFIG.torpedo.capacity;
+    p.torpedoAmmo = CONFIG.torpedo.capacity;
+    p.bombAmmo = CONFIG.bomb.capacity;
   } else if (p.flight === 'takeoff') {
     p.flightTime += dt;
     const t = clamp(p.flightTime / C.takeoffSeconds, 0, 1);

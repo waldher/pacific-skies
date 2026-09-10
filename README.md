@@ -9,7 +9,7 @@ modules, no build step. Responsive HTML readouts show status and instructions; a
 - Mobile: left thumb steers, right thumb fires; tap Bomb/Torpedo in flight and Take Off while parked.
 
 Start in a P-38 Lightning at a friendly airfield. Every campaign generates a new
-chain of five to seven enemy islands. Clear fighters and patrol ships, bomb any
+chain of five to seven enemy islands, with wider open-water passages between bases. Clear fighters and patrol ships, bomb any
 airfield facilities, then hold the island for six seconds to capture it. Captured
 airfields become departure bases. Capture all islands and sink the enemy fleet to win.
 
@@ -30,16 +30,31 @@ panel lets you choose a friendly departure base, unlocked aircraft, and loadout.
 Take off when ready; base transfer is unavailable in flight.
 
 Each loadout has two bombs or two torpedoes. Bombs drift forward before impact
-and can hit airfields or ships; torpedoes run on the surface and only hit ships.
-Bullets only damage aircraft. Two seconds parked reloads both weapons. P-38s
-carry bombs; Corsairs can select either loadout. Aircraft unlocks and territory
-ownership last for the current campaign; restarting creates a new campaign.
+and strike ground targets; only an exact impact on a ship hull damages it. Water
+near-misses splash harmlessly; torpedoes run on the surface and only hit ships.
+Bullets only damage aircraft. Two seconds parked reloads both weapons. Aircraft
+selection uses renders of the actual flight models. Single loadouts are shown as
+summaries; aircraft and weapon alternatives become selectable cards. Aircraft
+unlocks and territory ownership last for the current campaign; restarting creates
+a new campaign.
 
 Two allied P-38s patrol independently and engage enemies. Occasional roaming
 Zeros still pursue you anywhere, without incoming-fighter announcements.
 
-This campaign stage includes the P-38 and Corsair. Dauntless, Avenger, and P-51
-roles remain future additions rather than placeholder aircraft choices.
+Aircraft unlock during each campaign:
+
+| Aircraft | Unlock | Role |
+|---|---|---|
+| P-38 Lightning | Starting aircraft | Fast land-based interceptor with bombs |
+| SBD Dauntless | 300 points | Slower bomber; one heavy bomb disables an airfield |
+| F4U Corsair | Rescue the carrier | Versatile naval fighter with bombs or torpedoes |
+| TBF Avenger | Rescue + 1,200 points | Slower torpedo specialist; two heavy torpedoes sink an enemy carrier |
+| P-51 Mustang | Rescue + 2,200 points | Fastest fighter, land-based, with bombs |
+
+All aircraft carry two rounds of their selected ordnance. Dauntless, Corsair and
+Avenger can use carrier decks once the carrier is rescued; P-38 and P-51 require
+an airfield. The sortie panel shows the next unlock. Touch throttle respects each
+aircraft's speed range, just like keyboard controls.
 
 ## Develop
 
@@ -53,7 +68,7 @@ backlog.
 
 ## 3D rendering
 
-The P-38, Corsair and Zero load directly from local GLB files with lighting, shadows,
+All six aircraft types load directly from local GLB files with lighting, shadows,
 animated propellers, and banking in turns. An orthographic camera preserves the
 original screen-to-world scale, controls, and combat tuning. The ocean, islands,
 tracers, and particles render in Three.js; gameplay remains a top-down XY simulation.
