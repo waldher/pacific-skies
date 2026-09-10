@@ -1,5 +1,6 @@
 // Game loop: flight, combat, surface patrols, conquest, camera and rendering.
 import { recordSession, sessionSummary } from './session-report.js';
+import { updateGuidance } from './objectives.js';
 import { updateIntelligence } from './intelligence.js';
 import { initOperations, drawOperations } from './operations.js';
 import { CONFIG } from './config.js';
@@ -93,6 +94,7 @@ function update(dt) {
   if (game.mode === 'play') updateCampaign(game, dt, spawnDefenders);
 
   updateIntelligence(game, dt);
+  updateGuidance(game);
   recordSession(game);
   updateCampaignSave(game);
 

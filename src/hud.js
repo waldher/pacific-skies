@@ -1,4 +1,5 @@
 // Responsive text readouts; world markers and touch controls stay on canvas.
+import { objectiveFor } from './objectives.js';
 import { ctx, view, w2s } from './canvas.js';
 import { game } from './state.js';
 import { hasSavedCampaign } from './persistence.js';
@@ -8,7 +9,6 @@ import { AIRCRAFT, aircraftUnlocked } from './aircraft-types.js';
 import { aircraftPreviews } from './aircraft-previews.js';
 import { availableBases, canUseAircraft, selectSortie } from './bases.js';
 import { carrierAction } from './carrier.js';
-import { defenders } from './campaign.js';
 import { sessionSummary } from './session-report.js';
 import { CONFIG } from './config.js';
 import { clamp, TAU } from './util.js';
@@ -101,7 +101,23 @@ function drawNavigation() {
   const mw = Math.min(140, Math.max(100, W * .3)), mh = 84, mx = W - mw - 12, my = 12;
   ctx.fillStyle = 'rgba(8,27,39,.88)'; rr(mx, my, mw, mh, 10);
   drawTheaterMap(ctx, game, {x:mx, y:my, w:mw, h:mh});
-  ctx.textAlign='right'; ctx.font='600 9px system-ui'; ctx.fillStyle='#adc6ca'; ctx.fillText('OPERATIONS ↗', mx+mw-7,my+mh-5);
+  ctx.textAlign='right'; ctx.font='600 9px system-ui'; ctx.fillStyle='#adc6ca'; ctx.fillText('MAP ↗', mx+mw-7,my+mh-5);
+  drawCourseMarker();
+}
+
+// A gold course marker stays in the flight view; no chart reading is needed to steer.
+function drawCourseMarker() {
+  if(game.mode!=='play' || !game.waypoint)return;
+  const {W,H}=view, goal=objectiveFor(game), [sx,sy]=w2s(goal.target.x,goal.target.y);
+  const cx=W/2,cy=H/2;
+  // Keep the guide near the aircraft, clear of top readouts and the two thumbs.
+  const radius=Math.min(W*.31,H*.22), dx=sx-cx,dy=sy-cy, d=Math.hypot(dx,dy);
+  const x=cx+dx*Math.min(1,radius/(d||1)),y=cy+dy*Math.min(1,radius/(d||1));
+  ctx.save();ctx.translate(x,y);ctx.rotate(Math.atan2(dy,dx));
+  ctx.fillStyle='#f5cc7f';ctx.strokeStyle='#142d35';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(12,0);ctx.lineTo(-7,-7);ctx.lineTo(-3,0);ctx.lineTo(-7,7);ctx.closePath();ctx.stroke();ctx.fill();ctx.restore();
+  ctx.fillStyle='#f5cc7f';ctx.textAlign='center';ctx.font='700 11px system-ui';ctx.lineWidth=3;ctx.strokeStyle='#102a34';
+  const label=d>radius?`${flightSeconds(game,goal.target)}s`:'HERE';ctx.strokeText(label,x,y+23);ctx.fillText(label,x,y+23);
 }
 
 const el = id => document.getElementById(id);
@@ -216,22 +232,9 @@ export function drawMenus() {
     el('heat-fill').style.width = `${p.heat * 100}%`;
     el('heat-fill').style.background = p.overheated ? '#f18f7c' : '#e5b76f';
     const nearby = game.territories.find(t => installationKnown(game,t) && Math.hypot(t.x - p.x, t.y - p.y) < CONFIG.conquest.captureRadius);
-    let title = '', detail = '';
-    if (p.flight === 'landed') { title = p.hp < CONFIG.player.hp ? 'Repairing' : 'Ready for takeoff'; detail = `Hull ${Math.ceil(p.hp)}% · ${p.loadout === 'bombs' ? 'Bombs ' + (p.bombAmmo || 0) : 'Torpedoes ' + (p.torpedoAmmo || 0)}`; }
-    else if (p.landingHint) { title = 'Landing approach'; detail = p.landingHint; }
-    else if (nearby) {
-      title = `${nearby.name}${nearby.role ? ' · ' + roleNames[nearby.role] : ''}`;
-      const remaining = defenders(game, nearby);
-      const field = (game.airfields || []).find(f => (f.territory === nearby.id || f.territory === nearby) && f.owner !== 'us' && f.hp > 0);
-      detail = nearby.owner === 'us' ? (nearby.role === 'radar' ? 'Regional installations charted · nearby fleets tracked' : nearby.established < CONFIG.conquest.establishSeconds ? `Establishing · ${Math.ceil(CONFIG.conquest.establishSeconds - nearby.established)}s · vulnerable` : roleBenefits[nearby.role] || 'Secured') : field ? 'Bomb the airfield to stop enemy launches' : remaining ? `${remaining} defenders remaining` : `Securing position · ${Math.ceil(CONFIG.conquest.captureSeconds - nearby.progress)}s`;
-    }
-    if (p.flight === 'flying' && !p.landingHint && game.rescue?.status === 'active' && (!nearby || nearby.owner === 'us')) {
-      title = 'Carrier rescue';
-      const intercepts = game.rescue.intercepts || 0, threats = game.enemies.some(e => e.rescue && e.hp > 0);
-      detail = !game.rescue.launched ? 'Rendezvous with USS Resolute' : intercepts >= 2 && !threats ? 'Rendezvous with the carrier' : intercepts >= 2 ? 'Finish defending the carrier' : `Intercept attackers · ${intercepts}/2 required`;
-    }
-    else if (!title && game.rescue?.status === 'retry') { title = 'Rescue regrouping'; detail = 'Another rescue opportunity will follow'; }
-    if (!title && p.flight === 'flying') { title = game.waypoint?.name || 'Explore the archipelago'; detail = game.waypoint ? `${flightSeconds(game, game.waypoint)}s at cruise · chart to change course` : 'Open the chart to choose your next expedition'; }
+    const goal = objectiveFor(game);
+    let {title,detail} = goal;
+    if (p.landingHint) { title='Line up to land'; detail=p.landingHint; }
     el('objective').hidden = !title; text('objective-title', title); text('objective-detail', detail);
     el('capture-track').hidden = !nearby || nearby.progress <= 0 || nearby.owner === 'us' || p.flight !== 'flying';
     el('capture-fill').style.width = `${(nearby?.progress || 0) / CONFIG.conquest.captureSeconds * 100}%`;
@@ -255,7 +258,7 @@ export function drawMenus() {
   menuState = key;
   text('menu-kicker', 'Pacific theater · 1942');
   text('menu-title', game.mode === 'title' ? 'Pacific Skies' : game.mode === 'victory' ? 'Pacific secured' : game.mode === 'recovery' ? 'Aircraft lost' : game.endReason || 'Shot down');
-  text('menu-summary', game.mode === 'title' ? 'Explore the archipelagos. Establish forward airfields. Discover what lies beyond the next coast.' : game.mode === 'recovery' ? 'Your discoveries and holdings remain. Return to a friendly base and continue the expedition.' : `Score ${game.score.toLocaleString()} · Best ${game.best.toLocaleString()}`);
+  text('menu-summary', game.mode === 'title' ? 'Capture airfields and radar. Defeat the enemy fleet.' : game.mode === 'recovery' ? 'Aircraft lost. Your territory is safe.' : `Score ${game.score.toLocaleString()} · Best ${game.best.toLocaleString()}`);
   const instructions = game.mode === 'title' ? (isTouchDevice
     ? ['Left thumb steers · Right thumb fires', 'Bomb island defenses · Torpedo ships', 'Line up with a friendly runway to land']
     : ['WASD / Arrows to fly · Space to fire', 'T to drop ordnance · L to take off', 'Line up with a friendly runway to land']) : [`${game.territories.filter(t => t.owner === 'us').length} of ${game.territories.length} holdings secured`];
@@ -301,6 +304,7 @@ function drawThreatStatus() {
   const first = threats.reduce((a, b) => Math.hypot(a.x - game.player.x, a.y - game.player.y) < Math.hypot(b.x - game.player.x, b.y - game.player.y) ? a : b);
   const target = raidTarget(first.targetBaseId), formation = threats.filter(e => e.targetBaseId === first.targetBaseId);
   const name = target?.name || (first.targetBaseId === 'home-airfield' ? 'Home airfield' : 'Friendly position');
-  text('threat-title', name);
-  text('threat-detail', `${formation.length} ${formation.length === 1 ? 'attacker' : 'attackers'}${threats.length > formation.length ? ' · more raids' : ' detected'}`);
+  text('threat-title', `${formation.length} attackers → base`);
+  text('threat-detail', 'Tap to defend');
+  el('threat-status').onclick=()=>{if(target){game.waypoint={x:target.x,y:target.y,name,defend:true,auto:false};game.guidanceCleared=false;}};
 }

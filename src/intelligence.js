@@ -33,16 +33,18 @@ export function updateIntelligence(game, dt=0) {
   // One coarse local lead makes the first sortie purposeful without revealing a base.
   if(!intel.briefed && game.player && (game.territories||[]).length) {
     intel.briefed=true;
+    const known=Object.values(intel.sites).filter(t=>t.owner!=='us').sort((a,b)=>distance(game.player,a)-distance(game.player,b))[0];
+    if(known && !game.waypoint)game.waypoint={x:known.x,y:known.y,name:known.name,siteId:known.id,role:known.role,owner:known.owner,auto:true};
     const nearby=(game.territories||[]).filter(t=>!installationKnown(game,t)).sort((a,b)=>distance(game.player,a)-distance(game.player,b))[0];
     if(nearby && !game.waypoint) {
       const cell=setting('searchRadius',1500);
-      game.waypoint={x:Math.round(nearby.x/cell)*cell,y:Math.round(nearby.y/cell)*cell,name:'Scout reported activity',search:true,radius:cell};
+      game.waypoint={x:Math.round(nearby.x/cell)*cell,y:Math.round(nearby.y/cell)*cell,name:'Enemy outpost',search:true,radius:cell,auto:true};
     }
   }
   // Arriving within sight resolves a search into a permanent charted installation.
   if(game.waypoint?.search) {
     const contact=Object.values(intel.sites).filter(t=>t.owner!=='us' && distance(t,game.waypoint)<game.waypoint.radius && observedAt(game,t)).sort((a,b)=>distance(game.player,a)-distance(game.player,b))[0];
-    if(contact) game.waypoint={x:contact.x,y:contact.y,name:contact.name};
+    if(contact) game.waypoint={x:contact.x,y:contact.y,name:contact.name,siteId:contact.id,role:contact.role,owner:contact.owner,auto:game.waypoint.auto};
   }
   for (const s of game.ships||[]) {
     if (s.active===false) { if(s.team==='us') delete intel.ships[s.id]; continue; }

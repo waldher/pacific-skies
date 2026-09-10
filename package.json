@@ -11,7 +11,7 @@
     "serve": "npx http-server -c-1 -p 8080 .",
     "build:aircraft": "node --no-warnings tools/build-aircraft.mjs",
     "views": "node tools/render-views.js F4U_Corsair Mitsubishi_Zero",
-    "test:expedition": "node --experimental-vm-modules playtest/expedition.cjs && node --experimental-vm-modules playtest/expedition-recovery.cjs"
+    "test:expedition": "node --experimental-vm-modules playtest/expedition.cjs && node --experimental-vm-modules playtest/expedition-recovery.cjs && node --experimental-vm-modules playtest/coastal-home.cjs && node --experimental-vm-modules playtest/navigation.cjs"
   },
   "devDependencies": {
     "playwright": "1.56.1"

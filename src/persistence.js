@@ -1,4 +1,5 @@
 // One local expedition checkpoint. Simulation data only: never renderer objects or UI state.
+import { migrateCoastalHome } from './coastal-home.js';
 import { CONFIG } from './config.js';
 import { AIRCRAFT } from './aircraft-types.js';
 export const CAMPAIGN_SAVE_KEY = 'pacific-skies-expedition-v1';
@@ -6,7 +7,7 @@ const VERSION = 1;
 const FIELDS = ['player','score','time','flightSeconds','combatSorties','playerMerit','raidImpacts','raidDamage','raidIntercepts',
   'strikeLaunchCooldown','raidTimer','territories','terrain','sectors','regions','theaterBounds','fleetRoutes','theaterSeed','geographySeed','sectorLinks','regionLinks',
   'ships','airfields','bases','unlockedAircraft','rank','rescue','intelligence','sessionReport','pilotLosses',
-  'enemies','allies','bullets','ebullets','torpedoes','bombs','waypoint','endReason'];
+  'enemies','allies','bullets','ebullets','torpedoes','bombs','waypoint','guidanceCleared','endReason'];
 const arrays = ['territories','terrain','ships','airfields','bases','unlockedAircraft','enemies','allies','bullets','ebullets','torpedoes','bombs'];
 let lastCheckpoint = '', lastSaveTime = -Infinity, savedAvailable;
 function storage() { try { return globalThis.localStorage; } catch { return null; } }
@@ -69,6 +70,13 @@ export function loadCampaign() {
     // reconnect escorts before any simulation update advances the formation.
     const fleets = new Map(saved.data.ships.filter(s => s.kind === 'carrier').map(s => [s.fleet.id, s.fleet]));
     for (const ship of saved.data.ships) ship.fleet = fleets.get(ship.fleet.id);
+    migrateCoastalHome(saved.data);
+    if(saved.data.waypoint?.name==='Scout reported activity')Object.assign(saved.data.waypoint,{name:'Enemy outpost',auto:true});
+    if(saved.data.waypoint && saved.data.waypoint.auto===undefined){
+      saved.data.waypoint.auto=true;
+      const site=Object.values(saved.data.intelligence.sites).find(t=>Math.hypot(t.x-saved.data.waypoint.x,t.y-saved.data.waypoint.y)<1);
+      if(site)Object.assign(saved.data.waypoint,{siteId:site.id,role:site.role,owner:site.owner});
+    }
     return saved.data;
   } catch { return null; }
 }

@@ -38,7 +38,8 @@ function beginRescue(game) {
   const c = game.ships[0];
   c.active = true; c.hp = c.maxHp; c.sinking = 0;
   game.rescue.status = 'active'; game.rescue.intercepts = 0; game.rescue.launched = false;
-  notify(game, 'Carrier in distress — rendezvous with USS Resolute');
+  if(!game.waypoint || game.waypoint.auto)game.waypoint={x:c.x,y:c.y,name:'USS Resolute',shipId:c.id,rescue:true,auto:true};
+  notify(game, 'Carrier needs help — select it on the map');
 }
 
 function launchRescueAttack(game) {
@@ -50,7 +51,7 @@ function launchRescueAttack(game) {
       a: a + Math.PI, hp: CONFIG.strike.hp, speed: CONFIG.strike.speed, turn: CONFIG.strike.turn,
       fireCd: 1, wobble: 0, strike: true, rescue: true, sourceId: 'rescue', targetBaseId: 'fleet-carrier', phase: 'attack' });
   }
-  notify(game, 'Carrier in distress — defend USS Resolute');
+  notify(game, 'Defend the carrier');
 }
 
 export function updateCampaign(game, dt, activate) {
@@ -64,18 +65,18 @@ export function updateCampaign(game, dt, activate) {
     if (game.player.baseId === carrierBase.id && game.player.flight !== 'flying') {
       relocateGroundedPlayer(game);
     }
-    notify(game, 'Carrier lost — regroup. Another rescue opportunity will follow.');
+    notify(game, 'Carrier lost');
   }
   if (game.rescue.status === 'retry') { game.rescue.timer -= dt; if (game.rescue.timer <= 0) beginRescue(game); }
   if (game.rescue.status === 'active' && !game.rescue.launched && Math.hypot(game.player.x - carrier.x, game.player.y - carrier.y) < R.rescueStartRadius) launchRescueAttack(game);
   if (game.rescue.status === 'active' && game.rescue.launched && !game.enemies.some(e => e.rescue && e.hp > 0) && game.rescue.intercepts < R.rescueIntercepts) {
     game.rescue.status = 'retry'; game.rescue.timer = R.rescueRetry;
-    notify(game, 'Strike escaped — regroup for another rescue attempt');
+    notify(game, 'Rescue failed — try again');
   }
   if (game.rescue.status === 'active' && carrier.hp > 0 && game.rescue.intercepts >= R.rescueIntercepts && !game.enemies.some(e => e.rescue && e.hp > 0)
     && Math.hypot(game.player.x - carrier.x, game.player.y - carrier.y) < R.rescueRadius) {
     game.rank = 2; game.rescue.status = 'complete'; carrierBase.available = true;
-    notify(game, 'Carrier rescued — naval base available');
+    notify(game, 'Carrier rescued — landing available');
   }
   for (const id of Object.keys(AIRCRAFT)) {
     if (aircraftUnlocked(game, id) && !game.unlockedAircraft.includes(id)) {
@@ -87,7 +88,7 @@ export function updateCampaign(game, dt, activate) {
   for (const t of game.territories) {
     if (t.owner === 'us') continue;
     const distance = Math.hypot(game.player.x - t.x, game.player.y - t.y);
-    if (!t.activated && distance < C.activateRadius) { t.activated = true; activate(t); notify(game, `${t.name}: clear defenders${game.airfields.some(f => f.territory === t.id) ? ' and bomb the airfield' : ''}`); }
+    if (!t.activated && distance < C.activateRadius) { t.activated = true; activate(t); notify(game, game.airfields.some(f=>f.territory===t.id)?'Enemy runway spotted':'Enemy defenders spotted'); }
     if (!t.activated) continue;
     if (defenders(game, t) === 0 && distance < C.captureRadius && game.player.flight === 'flying') {
       t.progress = Math.min(C.captureSeconds, t.progress + dt);
@@ -97,7 +98,7 @@ export function updateCampaign(game, dt, activate) {
         t.integrity = t.maxIntegrity * C.capturedIntegrityFraction;
         const field = game.airfields.find(f => f.territory === t.id), base = game.bases.find(b => b.territory === t.id);
         if (field) { field.owner = 'us'; field.maxHp = Math.max(field.maxHp, C.outpostHp); field.hp = field.maxHp * C.capturedIntegrityFraction; base.owner = 'us'; base.available = true; }
-        notify(game, `${t.name} secured — ${field ? 'airfield available' : t.role === 'port' ? 'fleet repair supplies secured' : 'radar coverage extended'}`);
+        notify(game, field ? 'Airfield captured — land here to rearm' : t.role === 'port' ? 'Port captured — fleet repairs available' : 'Radar captured — new targets on map');
       }
     } else t.progress = 0;
   }

@@ -1,20 +1,33 @@
 // Both charts draw only charted geography and player intelligence snapshots.
 import { islandOutline } from './surface.js';
 import { knownInstallations, knownShips, radarStations, enemyObserved, explorationLeads, flightSeconds } from './intelligence.js';
+import { objectiveFor } from './objectives.js';
 import { CONFIG } from './config.js';
 import { keys, stick, fireTouch } from './input.js';
 let bound=false;
-let chart={zoom:1,x:null,y:null,bounds:null};
+let chart={zoom:1,x:null,y:null,bounds:null,local:false};
+function centerChart(game) {
+  chart={zoom:1,x:game.player.x,y:game.player.y,bounds:game.theaterBounds,local:true};
+}
+export function localMapProjection(game,rect) {
+  const radius=CONFIG.intelligence?.minimapRadius??2200;
+  const scale=Math.min(rect.w,rect.h)/(radius*2);
+  const cx=game.player?.x??0,cy=game.player?.y??0;
+  const ox=rect.x+rect.w/2-cx*scale,oy=rect.y+rect.h/2-cy*scale;
+  return {scale,point:p=>[ox+p.x*scale,oy+p.y*scale],world:(x,y)=>({x:(x-ox)/scale,y:(y-oy)/scale})};
+}
 export function mapProjection(game,rect,interactive=false) {
   const b=game.theaterBounds || {minX:-5000,maxX:5000,minY:-5000,maxY:5000};
-  if(interactive && chart.bounds!==b)chart={zoom:1,x:null,y:null,bounds:b};
-  const scale=(interactive?chart.zoom:1)*Math.min((rect.w-24)/(b.maxX-b.minX),(rect.h-24)/(b.maxY-b.minY));
+  if(interactive && chart.bounds!==b)centerChart(game);
+  const fit=Math.min((rect.w-24)/(b.maxX-b.minX),(rect.h-24)/(b.maxY-b.minY));
+  const local=Math.min(rect.w-24,rect.h-24)/(2*(CONFIG.intelligence?.chartRadius??5500));
+  const scale=interactive?(chart.local?local:fit)*chart.zoom:fit;
   const cx=interactive&&chart.x!=null?chart.x:(b.minX+b.maxX)/2,cy=interactive&&chart.y!=null?chart.y:(b.minY+b.maxY)/2;
   const ox=rect.x+rect.w/2-cx*scale, oy=rect.y+rect.h/2-cy*scale;
   return {scale, point:p=>[ox+p.x*scale,oy+p.y*scale],world:(x,y)=>({x:(x-ox)/scale,y:(y-oy)/scale})};
 }
 export function drawTheaterMap(ctx,game,rect,detailed=false) {
-  const {scale,point}=mapProjection(game,rect,detailed);
+  const {scale,point}=detailed?mapProjection(game,rect,true):localMapProjection(game,rect);
   ctx.save();ctx.beginPath();ctx.rect(rect.x,rect.y,rect.w,rect.h);ctx.clip();
   ctx.fillStyle='#091f2b';ctx.fillRect(rect.x,rect.y,rect.w,rect.h);
   for(const t of game.terrain||game.territories||[]) {
@@ -42,7 +55,12 @@ export function drawTheaterMap(ctx,game,rect,detailed=false) {
     if(detailed&&s.kind==='carrier'){ctx.font='11px system-ui';ctx.textAlign='center';ctx.fillText(s.age>1?`Last seen ${Math.floor(s.age)}s ago`:(s.team==='us'?'Friendly carrier':'Carrier contact'),x,y+19);}ctx.globalAlpha=1;
   }
   for(const e of game.enemies||[]) if(e.strike&&e.phase!=='retreat'&&enemyObserved(game,e)){const[x,y]=point(e);ctx.fillStyle='#ffc879';ctx.beginPath();ctx.arc(x,y,2,0,Math.PI*2);ctx.fill();}
-  if(game.waypoint){const[x,y]=point(game.waypoint);const[px,py]=point(game.player);ctx.strokeStyle='#f2ead2';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(x,y);ctx.stroke();ctx.setLineDash([]);ctx.strokeRect(x-6,y-6,12,12);if(game.waypoint.search){ctx.beginPath();ctx.arc(x,y,game.waypoint.radius*scale,0,Math.PI*2);ctx.stroke();}}
+  if(game.waypoint){const[rawX,rawY]=point(game.waypoint);let x=rawX,y=rawY;
+    if(!detailed){
+      const cx=rect.x+rect.w/2,cy=rect.y+rect.h/2,dx=x-cx,dy=y-cy;
+      const edge=Math.min(1,(rect.w/2-9)/Math.max(1,Math.abs(dx)),(rect.h/2-9)/Math.max(1,Math.abs(dy)));
+      x=cx+dx*edge;y=cy+dy*edge;
+    }const[px,py]=point(game.player);ctx.strokeStyle='#f5ca76';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(x,y);ctx.stroke();ctx.setLineDash([]);ctx.strokeRect(x-6,y-6,12,12);if(game.waypoint.search&&detailed){ctx.beginPath();ctx.arc(rawX,rawY,game.waypoint.radius*scale,0,Math.PI*2);ctx.stroke();}}
   if(detailed){const length=15*(CONFIG.aircraft?.[game.player?.aircraft]?.speedCruise||CONFIG.player.speedCruise)*scale;ctx.strokeStyle='#adc6ca';ctx.beginPath();ctx.moveTo(rect.x+14,rect.y+rect.h-18);ctx.lineTo(rect.x+14+length,rect.y+rect.h-18);ctx.stroke();ctx.fillStyle='#adc6ca';ctx.font='10px system-ui';ctx.textAlign='left';ctx.fillText('15s cruise',rect.x+14,rect.y+rect.h-24);}
   if(game.player){const[x,y]=point(game.player);ctx.translate(x,y);ctx.rotate(game.player.a);ctx.fillStyle='#fff9e9';ctx.beginPath();ctx.moveTo(6,0);ctx.lineTo(-4,-4);ctx.lineTo(-4,4);ctx.closePath();ctx.fill();}
   ctx.restore();
@@ -52,24 +70,24 @@ export function setOperationsOpen(game,open) {
   for(const key of Object.keys(keys))keys[key]=false;
   stick.active=fireTouch.active=false;stick.dx=stick.dy=0;
   document.getElementById('operations-panel').hidden=!game.paused;
-  if(game.paused) document.getElementById('operations-close').focus();
+  if(game.paused) {centerChart(game);document.getElementById('operations-close').focus();}
 }
 export function initOperations(game) {
   if(bound)return;bound=true;
   document.getElementById('map-open').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();setOperationsOpen(game,true);});
   document.getElementById('map-open').addEventListener('click',e=>{if(e.detail===0)setOperationsOpen(game,true);});
   document.getElementById('operations-close').addEventListener('click',()=>setOperationsOpen(game,false));
-  document.getElementById('waypoint-clear').addEventListener('click',()=>{game.waypoint=null;});
+  document.getElementById('waypoint-clear').addEventListener('click',()=>{game.waypoint=null;game.guidanceCleared=true;});
   const panel=document.getElementById('operations-panel');
   panel.addEventListener('pointerdown',e=>e.stopPropagation());
   panel.addEventListener('keydown',e=>{e.stopPropagation();if(e.code==='Escape')setOperationsOpen(game,false);if(e.code==='Tab'){const items=[...panel.querySelectorAll('button')];const i=items.indexOf(document.activeElement);e.preventDefault();items[(i+(e.shiftKey?-1:1)+items.length)%items.length].focus();}});
   const map=document.getElementById('operations-map');
   const controls=document.createElement('div');controls.style.cssText='display:flex;gap:6px;flex-wrap:wrap';
-  for(const [label,action] of [['−',()=>chart.zoom=Math.max(1,chart.zoom/1.6)],['+',()=>chart.zoom=Math.min(12,chart.zoom*1.6)],['Whole theater',()=>{chart.zoom=1;chart.x=chart.y=null;}],['My position',()=>{chart.zoom=5;chart.x=game.player.x;chart.y=game.player.y;}]]) {
+  for(const [label,action] of [['−',()=>chart.zoom=Math.max(.25,chart.zoom/1.6)],['+',()=>chart.zoom=Math.min(12,chart.zoom*1.6)],['Whole theater',()=>{chart.zoom=1;chart.x=chart.y=null;chart.local=false;}],['My position',()=>{centerChart(game);}]]) {
     const button=document.createElement('button');button.textContent=label;button.type='button';button.setAttribute('aria-label',label==='+'?'Zoom in':label==='−'?'Zoom out':label);button.addEventListener('click',action);controls.append(button);
   }
   panel.querySelector('header').append(controls);
-  panel.querySelector('p').textContent='Coasts are charted; installations need scouting. Radar charts its region and tracks nearby fleets. Gold circles are survey areas. Pinch or use + to zoom.';
+  panel.querySelector('p').textContent='Tap a destination. Drag or pinch to explore.';
   const points=new Map();let gesture=null;
   const projection=()=>{const r=map.getBoundingClientRect();return mapProjection(game,{x:0,y:0,w:r.width,h:r.height},true);};
   map.addEventListener('pointerdown',e=>{
@@ -80,7 +98,7 @@ export function initOperations(game) {
   map.addEventListener('pointermove',e=>{
     if(!points.has(e.pointerId))return;
     const previous=points.get(e.pointerId);points.set(e.pointerId,{x:e.clientX,y:e.clientY});
-    if(points.size===2){const[a,b]=[...points.values()];if(gesture?.pinch)chart.zoom=Math.max(1,Math.min(12,gesture.zoom*Math.hypot(a.x-b.x,a.y-b.y)/Math.max(1,gesture.pinch)));return;}
+    if(points.size===2){const[a,b]=[...points.values()];if(gesture?.pinch)chart.zoom=Math.max(.25,Math.min(12,gesture.zoom*Math.hypot(a.x-b.x,a.y-b.y)/Math.max(1,gesture.pinch)));return;}
     if(!gesture||gesture.pinch)return;
     if(Math.hypot(e.clientX-gesture.x,e.clientY-gesture.y)>6)gesture.moved=true;
     if(gesture.moved){const p=projection(),r=map.getBoundingClientRect(),center=p.world(r.width/2,r.height/2);chart.x=center.x-(e.clientX-previous.x)/p.scale;chart.y=center.y-(e.clientY-previous.y)/p.scale;}
@@ -91,10 +109,10 @@ export function initOperations(game) {
     const r=map.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,{point}=projection();
     const candidates=[...knownInstallations(game),...knownShips(game),...explorationLeads(game)];
     const target=candidates.map(t=>({t,d:Math.hypot(point(t)[0]-x,point(t)[1]-y)})).sort((a,b)=>a.d-b.d)[0];
-    if(target&&target.d<30)game.waypoint={x:target.t.x,y:target.t.y,name:target.t.name||'Last known contact',...(target.t.search?{search:true,radius:target.t.radius}:{})};
+    if(target&&target.d<30){game.waypoint={...target.t,name:target.t.name||'Last known contact',auto:false,...(target.t.kind?{shipId:target.t.id}:target.t.id!=null?{siteId:target.t.id}:{})};game.guidanceCleared=false;}
   };
   map.addEventListener('pointerup',finish);map.addEventListener('pointercancel',finish);
-  map.addEventListener('wheel',e=>{e.preventDefault();chart.zoom=Math.max(1,Math.min(12,chart.zoom*Math.exp(-e.deltaY*.001)));},{passive:false});
+  map.addEventListener('wheel',e=>{e.preventDefault();chart.zoom=Math.max(.25,Math.min(12,chart.zoom*Math.exp(-e.deltaY*.001)));},{passive:false});
 }
 export function drawOperations(game) {
   initOperations(game);
@@ -104,5 +122,6 @@ export function drawOperations(game) {
   const canvas=document.getElementById('operations-map'),r=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);
   if(canvas.width!==Math.round(r.width*dpr)||canvas.height!==Math.round(r.height*dpr)){canvas.width=Math.round(r.width*dpr);canvas.height=Math.round(r.height*dpr);}
   const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);drawTheaterMap(ctx,game,{x:0,y:0,w:r.width,h:r.height},true);
-  document.getElementById('operations-waypoint').textContent=game.waypoint?`${game.waypoint.name} · ~${flightSeconds(game,game.waypoint)}s flight${game.waypoint.search?' · search area':''}`:'Select a site, contact or unsurveyed region. Drag to pan; pinch or use + to zoom.';
+  const objective=objectiveFor(game);
+  document.getElementById('operations-waypoint').textContent=objective.target?`${objective.title} · ${flightSeconds(game,objective.target)}s flight`:'Tap a destination to set your course.';
 }

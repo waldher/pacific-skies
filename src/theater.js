@@ -57,6 +57,28 @@ function fitsRunway(holding, land, angle) {
       holding.y-land.y+Math.sin(angle)*along+Math.cos(angle)*side,land.shoreline)));
 }
 
+// Keep the first runway beside an actual beach. A dense apron footprint checks
+// the runway, hangars and approach ends against the unchanged atlas coastline.
+export function coastalHome(land) {
+  const inset=CONFIG.theater.homeCoastSetback;
+  const candidates=[];
+  for(let i=0;i<land.shoreline.length;i++) {
+    const [ax,ay]=land.shoreline[i],[bx,by]=land.shoreline[(i+1)%land.shoreline.length];
+    const dx=bx-ax,dy=by-ay,length=Math.hypot(dx,dy),a=Math.atan2(dy,dx);
+    for(const t of [.5,.25,.75]) {
+      const x=ax+dx*t-dy/length*inset,y=ay+dy*t+dx/length*inset;
+      let fits=true;
+      for(let along=-CONFIG.airfield.length/2-20;along<=CONFIG.airfield.length/2+20&&fits;along+=20)
+        for(let side=-100;side<=100;side+=20)
+          if(!insidePolygon(x+Math.cos(a)*along-Math.sin(a)*side,y+Math.sin(a)*along+Math.cos(a)*side,land.shoreline)){fits=false;break;}
+      if(fits)candidates.push({x:x+land.x,y:y+land.y,a,length});
+    }
+  }
+  candidates.sort((a,b)=>b.length-a.length);
+  if(!candidates.length)throw new Error('No safe coastal home runway');
+  return candidates[0];
+}
+
 export function generateTheater() {
   const geography=generate(Math.floor(rand(0,4294967296)));
   const terrain=geography.islands.map(t=>({id:t.id,seed:geography.seed+t.id,x:t.x,y:t.y,
@@ -88,11 +110,12 @@ export function generateTheater() {
         h.x=(coast.x+physical.x)/2;h.y=(coast.y+physical.y)/2;
       }
     }
-    const a=source.a+(source.ry>=source.rx?Math.PI/2:0);
+    let a=source.a+(source.ry>=source.rx?Math.PI/2:0);
+    if(h.id===0){const home=coastalHome(physical);h.x=home.x;h.y=home.y;a=home.a;}
     if(role==='airfield'&&!fitsRunway(h,physical,a))throw new Error('Generated airfield does not fit its shoreline');
     const radius=role==='airfield'?420:role==='port'?365:265;
     physical.holdingIds.push(h.id);physical.holdingId??=h.id;
-    return {id:h.id,name:h.id===0?'HOME AIRFIELD':`${geography.regions[h.region].name} ${role}`.toUpperCase(),
+    return {id:h.id,coastal:h.id===0,name:h.id===0?'HOME AIRFIELD':`${geography.regions[h.region].name} ${role}`.toUpperCase(),
       x:h.x,y:h.y,radius,role,portShore:coast?{x:coast.x-h.x,y:coast.y-h.y,a:coast.a}:null,sector:h.region,region:h.region,seed:physical.seed,a,terrainId:physical.id,
       // A holding footprint is expressed relative to its own origin, even when
       // multiple installations occupy one physical island.

@@ -56,7 +56,7 @@
   #report-grid span { display:block; color:var(--muted); font-size:10px; }
   #report-grid strong { font-size:15px; font-variant-numeric:tabular-nums; }
   #report-unlocks { padding:0 13px 12px; margin:0; color:var(--muted); font-size:11px; }
-  #threat-status { position:absolute; top:102px; right:12px; max-width:132px; padding:5px 8px; border-radius:7px; background:var(--panel); font-size:10px; color:#ffad91; text-align:right; }
+  #threat-status { pointer-events:auto; cursor:pointer; border:1px solid #f19b8066; font-family:inherit; position:absolute; top:102px; right:12px; max-width:132px; padding:5px 8px; border-radius:7px; background:var(--panel); font-size:10px; color:#ffad91; text-align:right; }
   #threat-status strong { display:block; font-size:11px; color:var(--ink); }
   .menu-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; pointer-events:auto; }
   #menu-new { border:1px solid #adc6ca44; border-radius:8px; background:transparent; color:var(--muted); padding:11px 16px; font:inherit; cursor:pointer; }
@@ -133,7 +133,7 @@
       <div><div class="gauge-heading"><span>Gun heat</span></div><div class="track"><i id="heat-fill"></i></div></div></div>
   </div>
   <div id="campaign-status"><span id="rank-value">Cadet</span><span id="rank-progress"></span><div id="carrier-status" hidden></div></div>
-  <div id="threat-status" hidden><strong id="threat-title"></strong><span id="threat-detail"></span></div>
+  <button id="threat-status" hidden type="button"><strong id="threat-title"></strong><span id="threat-detail"></span></button>
   <div id="objective" hidden><strong id="objective-title"></strong><span id="objective-detail"></span><div id="capture-track" class="track" hidden><i id="capture-fill"></i></div></div>
   <div id="toast" hidden></div>
 </div>

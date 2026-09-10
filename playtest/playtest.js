@@ -358,7 +358,7 @@ function check(name, ok, detail) {
   const chartTarget=await mobile.evaluate(async()=>{
     const {mapProjection}=await import(new URL('src/operations.js',location.href).href);
     const g=window.__game.game,c=document.getElementById('operations-map'),r=c.getBoundingClientRect();
-    const [x,y]=mapProjection(g,{x:0,y:0,w:r.width,h:r.height}).point(g.territories[0]);
+    const [x,y]=mapProjection(g,{x:0,y:0,w:r.width,h:r.height},true).point(g.territories[0]);
     return {x:r.left+x,y:r.top+y};
   });
   await mobile.touchscreen.tap(chartTarget.x,chartTarget.y);

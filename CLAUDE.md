@@ -28,6 +28,8 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 | `input.js` | keyboard + touch (virtual stick left half, fire right half) |
 | `player.js` | flight model, firing, damage, death |
 | `enemies.js` | territory defenders, patrol/pursuit AI, enemy fire, ramming |
+| `objectives.js` | concrete next actions and automatic/manual course guidance |
+| `coastal-home.js` | moves legacy home runways to the coast while preserving saves |
 | `persistence.js` | validated local expedition checkpoints and restore data |
 | `expedition-geography.js` | shared atlas and game archipelago generator |
 | `theater.js` | seeded archipelago landforms, holdings, fixed bounds and offshore routes |

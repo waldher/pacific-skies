@@ -48,10 +48,10 @@ export function startGame() {
   if (home) Object.assign(game.player, { x: home.x, y: home.y, a: home.a, parked: { x: home.x, y: home.y }, parkedOffset: { along: 0, lateral: 0 } });
   game.cam = { x: game.player.x, y: game.player.y };
   game.pilotLosses = 0;
-  game.paused = false; game.waypoint = null;
+  game.paused = false; game.waypoint = null; game.guidanceCleared = false;
   resetIntelligence(game); updateIntelligence(game, 0);
   resetSessionReport(game);
-  game.message = 'Follow the scouting lead. Forward airfields extend your expedition.';
+  game.message = 'Follow the gold marker.';
   game.messageTime = CONFIG.conquest.messageDuration;
   game.shake = 0;
   game.mode = 'play';
