@@ -298,6 +298,7 @@ function check(name, ok, detail) {
   await page.waitForFunction(() => window.__game.graphics.aircraft.get(window.__game.game.player)?.model.name === 'P38_Lightning');
   check('native sortie selectors transfer home and switch the rendered aircraft', await page.evaluate(() => { const p = window.__game.game.player; return p.baseId === 'home-airfield' && p.aircraft === 'p38' && p.altitude === window.__game.CONFIG.airfield.deckHeight && p.loadout === 'bombs'; }));
   await page.locator('#sortie-base button[data-value=\"fleet-carrier\"]').click();
+  await page.locator('#sortie-aircraft button[data-value=\"corsair\"]').click();
   await page.locator('#sortie-loadout button[data-value=\"torpedoes\"]').click();
   await page.waitForFunction(() => window.__game.graphics.aircraft.get(window.__game.game.player)?.model.name === 'F4U_Corsair');
   check('native carrier transfer selects compatible Corsair at deck height', await page.evaluate(() => { const p = window.__game.game.player; return p.baseId === 'fleet-carrier' && p.aircraft === 'corsair' && p.loadout === 'torpedoes' && p.altitude === window.__game.CONFIG.carrier.deckHeight; }));
