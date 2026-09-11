@@ -15,7 +15,7 @@ export async function campaignChecks(api) {
   const reset = () => { for (const key of Object.keys(keys)) keys[key] = false; api.setSeed(1942); startGame(); };
   const fly = () => { game.player.flight = 'flying'; game.player.altitude = CONFIG.render.flightHeight; game.player.speed = CONFIG.player.speedCruise; };
   const naval = () => {
-    fly(); game.rank = 2; game.flightSeconds = CONFIG.progression.aircraftFlightSeconds.corsair; game.combatSorties = CONFIG.progression.aircraftSorties.corsair; game.rescue = { ...(game.rescue || {}), status: 'complete' };
+    fly(); game.rank = 2; game.combatSorties = CONFIG.progression.aircraftSorties.corsair; game.rescue = { ...(game.rescue || {}), status: 'complete' };
     const c = game.ships[0]; c.active = true; c.hp = c.maxHp; c.a = -Math.PI / 2;
     // Isolate landing tolerances from route motion; task groups are tested separately.
     game.ships.forEach(s => { delete s.fleet; });
@@ -36,19 +36,22 @@ export async function campaignChecks(api) {
   check('rank zero cannot select a Corsair', !selectSortie(game, { baseId: home.id, aircraft: 'corsair', loadout: 'bombs' }));
   check('P38 cannot equip torpedoes', !selectSortie(game, { baseId: home.id, aircraft: 'p38', loadout: 'torpedoes' }));
   check('new aircraft stay locked before their milestones', ['dauntless','avenger','p51'].every(id => !aircraftUnlocked(game,id)));
+  game.flightSeconds = 10000;
+  check('idle flight time cannot unlock aircraft', !aircraftUnlocked(game,'dauntless'));
+  game.flightSeconds = 0;
   game.score = CONFIG.progression.aircraftUnlocks.dauntless;
   check('score alone cannot bypass combat sortie qualifications', !aircraftUnlocked(game,'dauntless'));
   game.combatSorties = CONFIG.progression.aircraftSorties.dauntless - 1;
   check('Dauntless stays locked one combat sortie before qualification', !aircraftUnlocked(game,'dauntless'));
   game.combatSorties++;
-  check('early score and sorties cannot skip flight experience', !aircraftUnlocked(game,'dauntless'));
-  game.flightSeconds = CONFIG.progression.aircraftFlightSeconds.dauntless;
+  check('first combat return unlocks Dauntless without waiting', game.flightSeconds === 0 && aircraftUnlocked(game,'dauntless'));
+
   check('score and completed combat sorties unlock the Dauntless at an airfield', selectSortie(game,{baseId:home.id,aircraft:'dauntless',loadout:'bombs'}));
   fly(); launchBomb(game);
   check('Dauntless releases a heavier, faster-falling bomb', game.bombs[0].damage === 40 && game.bombs[0].maxLife < CONFIG.bomb.fallSeconds);
   reset(); game.score = CONFIG.progression.aircraftUnlocks.p51; game.combatSorties = CONFIG.progression.aircraftSorties.p51;
   check('points alone do not unlock advanced naval campaign aircraft', !aircraftUnlocked(game,'avenger') && !aircraftUnlocked(game,'p51'));
-  game.rank = 2; game.flightSeconds = CONFIG.progression.aircraftFlightSeconds.p51;
+  game.rank = 2;
   check('completed rescue, points and combat sorties unlock all five aircraft', Object.keys(AIRCRAFT).length === 5 && Object.keys(AIRCRAFT).every(id => aircraftUnlocked(game,id)));
   check('Avenger rejects bombs and equips torpedoes', !selectSortie(game,{baseId:home.id,aircraft:'avenger',loadout:'bombs'}) && selectSortie(game,{baseId:home.id,aircraft:'avenger',loadout:'torpedoes'}));
   fly(); launchTorpedo();
@@ -149,7 +152,7 @@ export async function campaignChecks(api) {
   game.player.x = game.ships[0].x; game.player.y = game.ships[0].y;
   updateCampaign(game, .02, () => {});
   check('clearing rescue attackers near carrier unlocks naval operations', game.rank === 2 && game.rescue.status === 'complete' && availableBases(game).some(b => b.kind === 'carrier'));
-  game.combatSorties = CONFIG.progression.aircraftSorties.corsair; game.flightSeconds = CONFIG.progression.aircraftFlightSeconds.corsair;
+  game.combatSorties = CONFIG.progression.aircraftSorties.corsair;
   const carrierBase = game.bases.find(b => b.kind === 'carrier');
   check('land-based P38 cannot transfer onto a carrier', !selectSortie(game, { baseId: carrierBase.id, aircraft: 'p38', loadout: 'bombs' }));
   check('safely landed pilot can transfer and equip a naval sortie', selectSortie(game, { baseId: carrierBase.id, aircraft: 'corsair', loadout: 'torpedoes' }) && game.player.baseId === carrierBase.id && game.player.x === game.ships[0].x);
