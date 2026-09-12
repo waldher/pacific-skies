@@ -19,7 +19,7 @@ const FOREST_SCALE = .02;
 const BIOMES = {
   jungle:    { sand: '#e6d7a4', low: '#3f7f3c', high: '#2c5a2f', patch: '#5c9a45', rock: '#5d6552', trees: ['#2e6d35', '#3b8342', '#27612c', '#4a8f3d'], palms: true, forest: .62, huts: 'thatch', road: '#8a7a58', mountains: true },
   temperate: { sand: '#e3d49b', low: '#7aa650', high: '#537d3c', patch: '#a6bf66', rock: '#7a7468', trees: ['#4d8b3a', '#63a04a', '#8c9a3a', '#3f7a35'], palms: false, forest: .45, huts: 'house', road: '#5b5a57', fields: true, mountains: true, snow: true },
-  volcanic:  { sand: '#4d4945', low: '#4c7040', high: '#3c3a38', patch: '#6a8150', rock: '#2f2d2b', trees: ['#2f6a37', '#3d7f44', '#356f3a'], palms: true, forest: .38, huts: 'thatch', road: '#6b625a', volcano: true },
+  volcanic:  { sand: '#4d4945', low: '#4c7040', high: '#454240', patch: '#6a8150', rock: '#4a4744', trees: ['#2f6a37', '#3d7f44', '#356f3a'], palms: true, forest: .38, huts: 'thatch', road: '#6b625a', volcano: true },
   atoll:     { sand: '#f3ead0', low: '#b8c586', high: '#8ea86a', patch: '#d3d49a', rock: '#b5ad95', trees: ['#4d9a4b', '#5faa53', '#3f8a44'], palms: true, forest: .34, huts: 'thatch', road: '#cbb98e', palmOnly: true },
   desert:    { sand: '#ecd9a3', low: '#dcbd78', high: '#b98a55', patch: '#c9a465', rock: '#8f6a4c', trees: ['#6c7a3f', '#7b8746'], palms: true, forest: .1, huts: 'adobe', road: '#a88d62', dunes: true, oasis: true, scrub: true },
   savanna:   { sand: '#e9d9a2', low: '#bcae5e', high: '#9c8c48', patch: '#d0c272', rock: '#8a7a5a', trees: ['#5d6e2f', '#6f7f35', '#54662a'], palms: false, forest: .24, huts: 'thatch', road: '#a08c5e', acacia: true, scrub: true },
@@ -406,7 +406,7 @@ export function createLand(scene, shared) {
           if (rng() < .6) batch.cone(x, y, GROUND, 5 + rng() * 3, 6, 7, rgb('#8d6d3f'), rgb('#6f532f'), rng() * TAU);
           else { batch.box(x, y, GROUND, w, d, 3, rot, rgb('#8a7350')); batch.roof(x, y, GROUND + 3, w, d, 4, rot, rgb('#a3874f')); }
         } else if (B.huts === 'adobe') {
-          batch.box(x, y, GROUND, w, d, 4 + rng() * 3, rot, rgb('#c9a878'), rgb('#b8956a'));
+          batch.box(x, y, GROUND, w, d, 4 + rng() * 3, rot, rgb('#9c7550'), rgb('#e0c396'));
         } else {
           batch.box(x, y, GROUND, w, d, 5, rot, rgb(WALLS[Math.floor(rng() * WALLS.length)]));
           batch.roof(x, y, GROUND + 5, w, d, 4, rot, rgb(ROOFS[Math.floor(rng() * ROOFS.length)]));

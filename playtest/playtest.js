@@ -162,7 +162,8 @@ function check(name, ok, detail) {
     graphics.quality.set(1); graphics.quality.unlock();
     performance.now=()=>now;
     try {
-      for(let i=0;i<40;i++){now+=100;graphics.render(game,view,0,0,0);}
+      // Six slow seconds: the change hold eats the first three, settle needs two more.
+      for(let i=0;i<60;i++){now+=100;graphics.render(game,view,0,0,0);}
       const dropped=graphics.quality.level;
       for(let i=0;i<(Q.hold+Q.recover)*100+50;i++){now+=10;graphics.render(game,view,0,0,0);}
       return dropped===2 && graphics.quality.level===2;
