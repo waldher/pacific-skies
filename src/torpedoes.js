@@ -3,6 +3,7 @@ import { onLand } from './surface.js';
 import { CONFIG } from './config.js';
 import { game } from './state.js';
 import { hitsShip, damageShip } from './ships.js';
+import { damageTransport } from './convoys.js';
 import { splash } from './particles.js';
 
 export function launchTorpedo() {
@@ -28,9 +29,11 @@ export function updateTorpedoes(dt) {
       t.life = 0; splash(t.x, t.y); continue;
     }
     if (t.distance < CONFIG.torpedo.armingDistance) continue;
-    for (const s of game.ships) {
+    for (const s of [...game.ships, ...(game.convoys || [])]) {
       if (s.team !== 'jp' || s.hp <= 0 || !hitsShip(t, s)) continue;
-      damageShip(s, t.damage ?? CONFIG.torpedo.damage); splash(t.x, t.y); t.life = 0; break;
+      if (s.kind === 'transport') damageTransport(game, s, t.damage ?? CONFIG.torpedo.damage);
+      else damageShip(s, t.damage ?? CONFIG.torpedo.damage);
+      splash(t.x, t.y); t.life = 0; break;
     }
   }
   game.torpedoes = game.torpedoes.filter(t => t.life > 0);

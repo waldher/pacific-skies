@@ -18,13 +18,14 @@ import { drawTheaterMap } from './operations.js';
 export function drawHud() {
   const { W, H } = view, player = game.player;
   drawNavigation();
-  for (const ship of game.ships) {
+  for (const ship of [...game.ships, ...(game.convoys || [])]) {
     if (ship.hp <= 0 || ship.active === false || !shipObserved(game, ship)) continue;
     const [sx, sy] = w2s(ship.x, ship.y);
     if (sx < -100 || sx > W + 100 || sy < -150 || sy > H + 150) continue;
     ctx.textAlign = 'center'; ctx.font = '700 11px monospace';
     ctx.fillStyle = ship.team === 'us' ? '#83edcb' : '#ffad91';
     if(ship.team==='jp' && ship.kind==='carrier')ctx.fillText('CARRIER',sx,sy-ship.length/2-18);
+    if(ship.kind==='transport')ctx.fillText('CONVOY',sx,sy-ship.length/2-18);
     if (ship.team === 'jp') {
       ctx.fillStyle = '#172e3a'; rr(sx - 23, sy + 26, 46, 4, 2);
       ctx.fillStyle = '#ed876c'; rr(sx - 23, sy + 26, 46 * ship.hp / ship.maxHp, 4, 2);

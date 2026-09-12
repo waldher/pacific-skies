@@ -18,7 +18,7 @@ export const game = {
   cam: { x: 0, y: 0 },
   score: 0,
   best: 0,
-  territories: [], ships: [],
+  territories: [], ships: [], convoys: [],
   message: '', messageTime: 0,
   shake: 0,
   time: 0,
@@ -39,7 +39,7 @@ export function startGame() {
     hp: CONFIG.airWar.allyHp, speed: CONFIG.airWar.allySpeed, turn: CONFIG.airWar.allyTurn,
     fireCd: 0, waypoint: i, hitFlash: 0,
   }));
-  game.torpedoes = [];
+  game.torpedoes = []; game.convoys = []; game.convoyTimer = undefined;
   game.bullets = []; game.ebullets = []; game.enemies = []; game.particles = [];
   game.cam = { x: 0, y: 0 };
   game.score = 0; game.time = 0; game.flightSeconds = 0; game.combatSorties = 0; game.playerMerit = 0; game.raidImpacts = 0; game.raidDamage = 0; game.raidIntercepts = 0; game.strikeLaunchCooldown = 0; game.endReason = '';
@@ -66,7 +66,9 @@ export function recoverPilot(baseId) {
   if (game.mode !== 'recovery') return false;
   const bases = recoveryBases();
   const p = game.player;
-  const base = bases.find(b => b.id === baseId) || bases.find(b => b.id === p.baseId) ||
+  // Without a choice, come back at the closest base to where the aircraft was
+  // lost: a captured forward field saves the whole transit, not just the sortie.
+  const base = bases.find(b => b.id === baseId) ||
     bases.sort((a,b) => Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y))[0];
   if (!base) { game.mode = 'over'; game.endReason = 'All bases lost'; saveCampaign(game); return false; }
   resolveBase(game,base.id);
@@ -87,6 +89,6 @@ export function resumeCampaign() {
   if (!saved || !['play','recovery'].includes(saved.mode)) return false;
   const best=game.best;
   Object.assign(game,saved,{ best:Math.max(best,saved.score),cam:{x:saved.player.x,y:saved.player.y},
-    paused:false,particles:[],shake:0,message:'Expedition resumed',messageTime:CONFIG.conquest.messageDuration });
+    paused:false,particles:[],convoys:[],convoyTimer:undefined,shake:0,message:'Expedition resumed',messageTime:CONFIG.conquest.messageDuration });
   return true;
 }

@@ -26,7 +26,7 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 | `util.js` | math helpers, hash noise, seedable RNG (`setSeed`/`rand`) |
 | `canvas.js` | canvas/ctx, resize, `view {W,H}`, world→screen `w2s` |
 | `input.js` | keyboard + touch (virtual stick left half, fire right half) |
-| `player.js` | flight model, firing, damage, death |
+| `player.js` | flight model, open-water cruise throttle, firing, damage, death |
 | `enemies.js` | territory defenders, patrol/pursuit AI, enemy fire, ramming |
 | `objectives.js` | concrete next actions and automatic/manual course guidance |
 | `coastal-home.js` | moves legacy home runways to the coast while preserving saves |
@@ -48,6 +48,7 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 | `airwar.js` | independent friendly patrols and occasional roaming Zero interceptors |
 | `torpedoes.js` | two-round loadout, surface runs, ship impacts and cooldown |
 | `ships.js` | naval patrols, gunfire and swept hull hits |
+| `convoys.js` | enemy supply transports between holdings: soft gun targets that resupply on arrival |
 | `naval-scene.js` | ship, airfield and installation meshes merged into one draw each, wakes, sinking, territory markers |
 | `particles.js` | explosions, smoke, particle simulation |
 | `noise.js` | one tileable noise field: JS sampler plus the RGBA texture (value, gradient, second field) every shader taps |

@@ -80,9 +80,13 @@ export function createTraffic(scene) {
         if (!traffic) continue;
         const ox = group.position.x, oz = group.position.z;
         for (const truck of traffic.trucks) {
-          truck.s += truck.dir * truck.speed * dt;
-          if (truck.s > truck.length) { truck.s = truck.length; truck.dir = -1; }
-          if (truck.s < 0) { truck.s = 0; truck.dir = 1; }
+          // Drive to the end, stop to load for a while, then head back.
+          if (truck.wait > 0) truck.wait -= dt;
+          else {
+            truck.s += truck.dir * truck.speed * dt;
+            if (truck.s >= truck.length) { truck.s = truck.length; truck.dir = -1; truck.wait = 3 + truck.tint * 4; }
+            else if (truck.s <= 0) { truck.s = 0; truck.dir = 1; truck.wait = 3 + truck.tint * 4; }
+          }
           const [x, y, a] = along(truck.path, truck.s), heading = truck.dir > 0 ? a : a + Math.PI;
           // Keep to the right-hand side of the road.
           const rx = -Math.sin(heading) * 2.6, ry = Math.cos(heading) * 2.6;

@@ -65,6 +65,6 @@ export function explorationLeads(game) {
   }));
 }
 export function flightSeconds(game, point) {
-  const speed=CONFIG.aircraft?.[game.player?.aircraft]?.speedCruise || CONFIG.player?.speedCruise || 275;
+  const speed=(CONFIG.aircraft?.[game.player?.aircraft]?.speedCruise || CONFIG.player?.speedCruise || 275)*(game.player?.cruiseFactor||1);
   return Math.max(1,Math.round(distance(game.player,point)/speed));
 }

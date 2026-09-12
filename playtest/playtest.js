@@ -201,6 +201,36 @@ function check(name, ok, detail) {
     return campaignChecks(window.__game);
   });
   for (const result of campaign) check(result.name, result.ok);
+  check('open-water cruise spools up on boost and drops on contact', await page.evaluate(() => {
+    const { game, CONFIG, keys, update } = window.__game, p = game.player;
+    for (const key of Object.keys(keys)) keys[key] = false;
+    p.flight = 'flying'; p.altitude = CONFIG.render.flightHeight; p.hp = 100;
+    const far = game.theaterBounds; p.x = far.maxX + 4000; p.y = far.maxY + 4000; game.cam.x = p.x; game.cam.y = p.y;
+    game.enemies = []; game.convoys = []; game.raidTimer = 999; game.convoyTimer = 999;
+    keys['KeyW'] = true;
+    for (let i = 0; i < 120; i++) update(.05);
+    const spooled = p.cruiseFactor, fast = p.speed;
+    game.enemies.push({ x: p.x + 300, y: p.y, a: 0, hp: 2, speed: 0, turn: 0, fireCd: 9, wobble: 0, territory: 0 });
+    for (let i = 0; i < 40; i++) update(.05);
+    keys['KeyW'] = false; game.enemies = [];
+    return spooled > CONFIG.cruise.multiplier - .05 && fast > CONFIG.aircraft.p38.speedBoost * 1.3 && p.cruiseFactor < 1.05;
+  }));
+  check('supply convoys spawn between enemy holdings and sink to gunfire', await page.evaluate(() => {
+    const { game, CONFIG, update, spawnConvoy, graphics, view } = window.__game;
+    game.convoys = []; game.convoyTimer = 999;
+    if (!spawnConvoy()) return false;
+    const s = game.convoys[0], before = game.score, count = game.convoys.length;
+    game.player.x = s.x - 200; game.player.y = s.y; game.player.flight = 'flying'; game.cam.x = s.x; game.cam.y = s.y;
+    graphics.render(game, view, 0, 0, 0);
+    const drawn = graphics.naval.ships.get(s)?.root.name === 'SupplyTransport';
+    for (let i = 0; i < 40 && s.hp > 0; i++) {
+      game.bullets.push({ x: s.x - 40, y: s.y, prevX: s.x - 40, prevY: s.y, vx: 860, vy: 0, life: .5 });
+      update(.05);
+    }
+    // Parking beside an enemy holding wakes its defenders; leave none behind for later checks.
+    game.convoys = []; game.enemies = []; game.bullets = [];
+    return count >= CONFIG.convoy.size[0] && drawn && s.hp === 0 && game.score === before + CONFIG.convoy.score;
+  }));
   await page.evaluate(() => {
     const { game, CONFIG } = window.__game, t = game.territories.find(t => t.owner === 'enemy');
     game.player.flight = 'flying'; game.player.altitude = CONFIG.render.flightHeight;

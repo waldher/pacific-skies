@@ -17,6 +17,8 @@ import { updateAirWar } from './airwar.js';
 import { updateTorpedoes, launchTorpedo } from './torpedoes.js';
 import { launchBomb, updateBombs } from './bombs.js';
 import { updateStrikes } from './strikes.js';
+import { updateConvoys, spawnConvoy, damageTransport } from './convoys.js';
+import { hitsShip } from './ships.js';
 import { selectSortie } from './bases.js';
 import { requestCarrier } from './carrier.js';
 import { createRenderer } from './renderer.js';
@@ -39,6 +41,7 @@ function update(dt) {
   updateEnemies(dt);
   updateStrikes(game, dt);
   updateShips(dt);
+  updateConvoys(game, dt);
   updateTorpedoes(dt);
   updateBombs(game, dt);
   game.messageTime = Math.max(0, game.messageTime - dt);
@@ -68,6 +71,16 @@ function update(dt) {
         }
         break;
       }
+    }
+  }
+  // Transports are soft targets: any round that crosses a hull counts.
+  for (const b of game.bullets) {
+    if (b.life <= 0) continue;
+    for (const s of game.convoys) {
+      if (s.hp <= 0 || !hitsShip(b, s)) continue;
+      b.life = 0; damageTransport(game, s, 1);
+      game.particles.push({ x: b.x, y: b.y, vx: rand(-40, 40), vy: rand(-40, 40), life: 0.2, max: 0.2, size: 3, kind: 'fire' });
+      break;
     }
   }
   for (const b of game.ebullets) {
@@ -130,7 +143,7 @@ function frame(now) {
 }
 // Debug/test API: the playtest harness (and console tinkering) reads
 // live state and drives input through this handle.
-window.__game = { sessionSummary: () => sessionSummary(game), game, CONFIG, startGame, recoverPilot, resumeCampaign, hasSavedCampaign, setSeed, keys, stick, fireTouch, view, angDiff, update, launchTorpedo, launchBomb: () => launchBomb(game), selectSortie: options => selectSortie(game, options), requestCarrier: () => requestCarrier(game) };
+window.__game = { sessionSummary: () => sessionSummary(game), game, CONFIG, startGame, recoverPilot, resumeCampaign, hasSavedCampaign, setSeed, keys, stick, fireTouch, view, angDiff, update, launchTorpedo, launchBomb: () => launchBomb(game), selectSortie: options => selectSortie(game, options), requestCarrier: () => requestCarrier(game), spawnConvoy: () => spawnConvoy(game) };
 
 
 const status = document.getElementById('loading');

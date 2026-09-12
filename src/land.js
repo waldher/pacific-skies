@@ -72,9 +72,28 @@ export function insetShore(points, distance) {
     const l1 = Math.hypot(p[0] - prev[0], p[1] - prev[1]), l2 = Math.hypot(next[0] - p[0], next[1] - p[1]);
     const n1 = [-(p[1] - prev[1]) / l1 * sign, (p[0] - prev[0]) / l1 * sign];
     const n2 = [-(next[1] - p[1]) / l2 * sign, (next[0] - p[0]) / l2 * sign];
+    // A tight bay can push the full inset outside; try shorter insets before
+    // leaving the vertex on the waterline.
+    for (const step of [1, .5, .25]) {
+      const k = distance * step / Math.max(.4, 1 + n1[0] * n2[0] + n1[1] * n2[1]);
+      const q = [p[0] + (n1[0] + n2[0]) * k, p[1] + (n1[1] + n2[1]) * k];
+      if (insidePolygon(q[0], q[1], points)) return q;
+    }
+    return p;
+  });
+}
+// Unclamped mitre offset: negative distances move out over the water. Only
+// safe for small distances, where the coast has no concavities that tight.
+export function offsetShore(points, distance) {
+  const area = points.reduce((n, p, i) => { const q = points[(i + 1) % points.length]; return n + p[0] * q[1] - q[0] * p[1]; }, 0);
+  const sign = area > 0 ? 1 : -1;
+  return points.map((p, i) => {
+    const prev = points[(i + points.length - 1) % points.length], next = points[(i + 1) % points.length];
+    const l1 = Math.hypot(p[0] - prev[0], p[1] - prev[1]), l2 = Math.hypot(next[0] - p[0], next[1] - p[1]);
+    const n1 = [-(p[1] - prev[1]) / l1 * sign, (p[0] - prev[0]) / l1 * sign];
+    const n2 = [-(next[1] - p[1]) / l2 * sign, (next[0] - p[0]) / l2 * sign];
     const k = distance / Math.max(.4, 1 + n1[0] * n2[0] + n1[1] * n2[1]);
-    const q = [p[0] + (n1[0] + n2[0]) * k, p[1] + (n1[1] + n2[1]) * k];
-    return insidePolygon(q[0], q[1], points) ? q : p;
+    return [p[0] + (n1[0] + n2[0]) * k, p[1] + (n1[1] + n2[1]) * k];
   });
 }
 function segmentDistance(x, y, a, b) {
@@ -219,10 +238,13 @@ function groundShader(shared) {
         albedo = mix(albedo, patchColor, smoothstep(.55, .75, speck) * .55);
         albedo = mix(albedo, rock, smoothstep(.76, .9, h));
         if (fields > .5) {
-          // Farmland: patchwork fields in the lowlands, each with its own crop, hedged.
-          float farm = vnoise2(q * .0045 + 7.3);
-          float use = smoothstep(.5, .55, farm) * (1.0 - smoothstep(.5, .6, h));
-          vec2 cell = floor(q / 72.0), f = fract(q / 72.0);
+          // Farmland: whole plots in the lowlands, each a rectangle of one crop with
+          // a hedge around it. Deciding per plot (not per pixel) keeps hedges closed.
+          vec2 cell = floor(q / 72.0), f = fract(q / 72.0), centre = (cell + .5) * 72.0;
+          vec2 world = origin + mat2(ca, sa, -sa, ca) * centre;
+          float farm = vnoise2(centre * .0045 + 7.3);
+          float plotHill = vnoise(world * HILL) * .72 + vnoise(world * HILL * 3.1 + 5.0) * .28;
+          float use = step(.52, farm) * step(plotHill, .55);
           float pick = vnoise2(cell * 5.3 + 1.5);
           vec3 crop = pick < .3 ? cropA : pick < .55 ? cropB : pick < .8 ? cropC : cropD;
           crop *= .9 + .1 * step(.5, fract(q.x / 6.0 + pick * 3.0));
@@ -284,17 +306,18 @@ export function createLand(scene, shared) {
       }`,
   });
 
-  function shallowsGeometry(inner, outer) {
-    const n = inner.length, position = new Float32Array(n * 2 * 3), fade = new Float32Array(n * 2), index = [];
-    for (let i = 0; i < n; i++) {
-      position.set([inner[i][0], 0, inner[i][1]], i * 6); position.set([outer[i][0], 0, outer[i][1]], i * 6 + 3);
-      fade[i * 2] = 1; fade[i * 2 + 1] = 0;
-      const j = (i + 1) % n;
-      index.push(i * 2, i * 2 + 1, j * 2, j * 2, i * 2 + 1, j * 2 + 1);
+  // Concentric rings with a `fade` per ring, stitched into strips. Every ring
+  // must share the shoreline's vertex count.
+  function bandGeometry(rings, fades) {
+    const n = rings[0].length, position = [], fade = [], index = [];
+    rings.forEach((ring, r) => ring.forEach(([x, y]) => { position.push(x, 0, y); fade.push(fades[r]); }));
+    for (let r = 0; r + 1 < rings.length; r++) for (let i = 0; i < n; i++) {
+      const j = (i + 1) % n, a = r * n + i, b = r * n + j, c = (r + 1) * n + i, d = (r + 1) * n + j;
+      index.push(a, c, b, b, c, d);
     }
     const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(position, 3));
-    geometry.setAttribute('fade', new THREE.BufferAttribute(fade, 1));
+    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(position), 3));
+    geometry.setAttribute('fade', new THREE.BufferAttribute(new Float32Array(fade), 1));
     geometry.setIndex(index);
     return geometry;
   }
@@ -317,19 +340,26 @@ export function createLand(scene, shared) {
     const inside = (x, y) => insidePolygon(x, y, usable);
     // Same farmland mask as the ground shader, so forests stop at the hedges.
     const ca = Math.cos(t.a ?? 0), sa = Math.sin(t.a ?? 0);
-    const farmland = (x, y) => B.fields && noise((x * ca + y * sa) * .0045 + 7.3, (-x * sa + y * ca) * .0045 + 7.3, 1) > .52 && hill(x, y) * .72 + noise((x + t.x) * HILL_SCALE * 3.1 + 5, (y + t.y) * HILL_SCALE * 3.1 + 5, 0) * .28 < .55;
+    const farmland = (x, y) => {
+      if (!B.fields) return false;
+      const cx = (Math.floor((x * ca + y * sa) / 72) + .5) * 72, cy = (Math.floor((-x * sa + y * ca) / 72) + .5) * 72;
+      const wx = t.x + cx * ca - cy * sa, wy = t.y + cx * sa + cy * ca;
+      return noise(cx * .0045 + 7.3, cy * .0045 + 7.3, 1) > .52
+        && noise(wx * HILL_SCALE, wy * HILL_SCALE, 0) * .72 + noise(wx * HILL_SCALE * 3.1 + 5, wy * HILL_SCALE * 3.1 + 5, 0) * .28 < .55;
+    };
 
     // Water skirts and beach.
-    // Scaling about the centre keeps the skirt free of self-intersections on
-    // these near-star-shaped coasts; a fixed outward offset crosses itself at
-    // concave vertices and the overlaps show as bright rays.
+    // Scaling about the centre keeps the outer skirt free of self-intersections
+    // on these near-star-shaped coasts; a fixed outward offset crosses itself
+    // at concave vertices and the overlaps show as bright rays.
     const outer = islandOutline(t, radius * (1 + Math.min(CONFIG.render.ocean.shallowsRadius - 1, 240 / radius)), .22, 2);
-    const shallows = new THREE.Mesh(shallowsGeometry(shore, outer), shallowsMaterial);
-    shallows.position.y = .2; group.add(shallows);
-    const surf = shapeOf(islandOutline(t, radius * 1.12, .22, 2));
-    surf.holes.push(new THREE.Path(islandOutline(t, radius * .97, .22, 2).map(([x, y]) => new THREE.Vector2(x, -y))));
-    group.add(flat(new THREE.ShapeGeometry(surf), shared.surfMaterial, .3));
     group.add(flat(new THREE.ShapeGeometry(shapeOf(shore)), sandFor(B.sand), 3.5));
+    // The waterline is a gradient, not an edge: water laps a few units onto
+    // the beach, then the shallows fade out to sea, with foam on the line.
+    const shallows = new THREE.Mesh(bandGeometry([insetShore(shore, 9), shore, outer], [0, 1, 0]), shallowsMaterial);
+    shallows.position.y = 3.6; group.add(shallows);
+    const surf = new THREE.Mesh(bandGeometry([insetShore(shore, 3), shore, offsetShore(shore, -14)], [0, 1, 0]), shared.surfMaterial);
+    surf.position.y = 3.7; group.add(surf);
     const ground = groundTemplate.clone();
     ground.uniforms.noiseTex.value = noiseTexture();
     for (const key of ['time', 'wind', 'cloudSpeed', 'cloudStrength', 'sunDir']) ground.uniforms[key] = shared[key];
@@ -391,17 +421,71 @@ export function createLand(scene, shared) {
         if (villages.length < 3 && inside(vx, vy) && clear(vx, vy, 60)) villages.push({ x: vx, y: vy, a: rng() * TAU, coastal: false, oasis: true });
       }
     }
+    // --- Roads: village to village and on to the installations ---------------
+    const nodes = villages.filter(v => !v.tiny).map(v => ({ x: v.x, y: v.y, village: v }));
+    for (const c of clears) {
+      // Airfield roads meet the apron behind the hangars; other installations are met at their edge.
+      // The apron road comes in from behind the hangars: an approach node well
+      // outside the clear zone, then the entry, so no link crosses the runway.
+      const entry = c.role === 'airfield' ? { x: c.x - Math.sin(c.a) * 96, y: c.y + Math.cos(c.a) * 96 } : null;
+      const approach = entry && { x: c.x - Math.sin(c.a) * (c.r + 40), y: c.y + Math.cos(c.a) * (c.r + 40) };
+      if (entry && inside(entry.x, entry.y) && inside(approach.x, approach.y)) {
+        nodes.push(approach);
+        roads.push([[approach.x, approach.y], [entry.x, entry.y]]);
+        batch.ribbon(roads[roads.length - 1], L.roadWidth, GROUND + .3, rgb(B.road));
+      } else if (nodes.length) {
+        const near = nodes[0], d = Math.hypot(near.x - c.x, near.y - c.y) || 1;
+        const edge = { x: c.x + (near.x - c.x) / d * (c.r - 10), y: c.y + (near.y - c.y) / d * (c.r - 10) };
+        if (inside(edge.x, edge.y)) nodes.push(edge);
+      }
+    }
+    if (nodes.length >= 2) {
+      const order = [nodes[0]], rest = nodes.slice(1);
+      while (rest.length) {
+        const last = order[order.length - 1];
+        rest.sort((a, b) => Math.hypot(a.x - last.x, a.y - last.y) - Math.hypot(b.x - last.x, b.y - last.y));
+        order.push(rest.shift());
+      }
+      for (let i = 0; i + 1 < order.length; i++) {
+        const a = order[i], b = order[i + 1], length = Math.hypot(b.x - a.x, b.y - a.y), steps = Math.max(2, Math.round(length / 60));
+        const points = [[a.x, a.y]];
+        let ok = true;
+        for (let k = 1; k < steps; k++) {
+          // A gentle, continuous curve: one low-frequency bend per link, plus a
+          // little noise, both zero at the ends so the road arrives straight.
+          const f = k / steps, x = a.x + (b.x - a.x) * f, y = a.y + (b.y - a.y) * f;
+          const nx = -(b.y - a.y) / length, ny = (b.x - a.x) / length;
+          const bend = (noise(gx * .37 + i * 3.1, gy * .53 + 2.2, 1) - .5) * Math.min(90, length * .18) * Math.sin(f * Math.PI);
+          const jitter = (noise(x * .012 + gx, y * .012 + gy, 1) - .5) * 24 * Math.sin(f * Math.PI);
+          const px = x + nx * (bend + jitter), py = y + ny * (bend + jitter);
+          if (!insidePolygon(x, y, interior) || !clear(x, y, -30)) { ok = false; break; }
+          points.push(inside(px, py) ? [px, py] : [x, y]);
+        }
+        if (!ok) continue;
+        points.push([b.x, b.y]);
+        batch.ribbon(points, L.roadWidth, GROUND + .3, rgb(B.road));
+        roads.push(points);
+        // Villages line up along the road that serves them.
+        for (const [node, neighbour] of [[a, b], [b, a]]) if (node.village && node.village.lane == null) node.village.lane = Math.atan2(neighbour.y - node.y, neighbour.x - node.x);
+        const [minT, maxT] = L.traffic.trucksPerRoad, trucks = minT + Math.floor(rng() * (maxT - minT + 1));
+        const total = points.reduce((n, p, k) => k ? n + Math.hypot(p[0] - points[k - 1][0], p[1] - points[k - 1][1]) : 0, 0);
+        for (let k = 0; k < trucks; k++) traffic.trucks.push({ path: points, length: total, s: rng() * total, dir: rng() < .5 ? 1 : -1, wait: 0, speed: L.traffic.truckSpeed * (.8 + rng() * .4), tint: rng() });
+      }
+    }
+    const nearRoad = (x, y, margin) => roads.some(points => points.some((p, k) => k && segmentDistance(x, y, points[k - 1], p) < margin));
+
+    // --- Houses either side of the lane, never on the road --------------------
     for (const v of villages) {
       const houses = v.tiny ? 2 + Math.floor(rng() * 2) : v.coastal ? 5 + Math.floor(rng() * 4) : 6 + Math.floor(rng() * 7);
-      const lane = v.a + Math.PI / 2, c = Math.cos(lane), s = Math.sin(lane);
+      const lane = v.lane ?? v.a + Math.PI / 2, c = Math.cos(lane), s = Math.sin(lane);
       if (B.huts === 'house') batch.disc(v.x, v.y, GROUND + .2, 20, 9, rgb('#a99a72'), rng());
       if (B.huts === 'adobe') batch.disc(v.x, v.y, GROUND + .2, 26, 8, rgb('#c7ad78'), rng());
       let placed = 0;
       for (let i = 0; i < houses * 2 && placed < houses; i++) {
-        const side = i % 2 ? 1 : -1, u = (Math.floor(i / 2) - (houses - 1) / 4) * 24 + (rng() - .5) * 6, vv = side * (17 + rng() * 6);
+        const side = i % 2 ? 1 : -1, u = (Math.floor(i / 2) - (houses - 1) / 4) * 24 + (rng() - .5) * 6, vv = side * (19 + rng() * 7);
         const x = v.x + u * c - vv * s, y = v.y + u * s + vv * c;
-        if (!inside(x, y) || !clear(x, y, 10)) continue;
         const w = L.houseSize * (.75 + rng() * .5), d = L.houseSize * (.6 + rng() * .4), rot = lane + (rng() - .5) * .25;
+        if (!inside(x, y) || !clear(x, y, 10) || nearRoad(x, y, L.roadWidth / 2 + Math.max(w, d) * .6 + 2)) continue;
         if (B.huts === 'thatch') {
           if (rng() < .6) batch.cone(x, y, GROUND, 5 + rng() * 3, 6, 7, rgb('#8d6d3f'), rgb('#6f532f'), rng() * TAU);
           else { batch.box(x, y, GROUND, w, d, 3, rot, rgb('#8a7350')); batch.roof(x, y, GROUND + 3, w, d, 4, rot, rgb('#a3874f')); }
@@ -413,7 +497,10 @@ export function createLand(scene, shared) {
         }
         placed++;
       }
-      if (B.huts === 'house' && !v.tiny) { batch.box(v.x + c * 2, v.y + s * 2, GROUND, 4, 4, 14, lane, rgb('#d9d2c2')); batch.cone(v.x + c * 2, v.y + s * 2, GROUND + 14, 3.2, 5, 4, rgb('#6b6f74'), rgb('#6b6f74'), lane); }
+      if (B.huts === 'house' && !v.tiny) {
+        const tx = v.x - s * 30, ty = v.y + c * 30;
+        if (inside(tx, ty) && !nearRoad(tx, ty, 8)) { batch.box(tx, ty, GROUND, 4, 4, 14, lane, rgb('#d9d2c2')); batch.cone(tx, ty, GROUND + 14, 3.2, 5, 4, rgb('#6b6f74'), rgb('#6b6f74'), lane); }
+      }
       blocked.push({ x: v.x, y: v.y, r: v.tiny ? 40 : 78 });
       if (v.coastal) {
         // Pier out past the beach, with boats working the water off its end.
@@ -428,47 +515,6 @@ export function createLand(scene, shared) {
       const [minP, maxP] = L.traffic.peoplePerVillage, count = v.tiny ? 2 : minP + Math.floor(rng() * (maxP - minP + 1));
       for (let i = 0; i < count; i++) traffic.people.push({ home: { x: v.x, y: v.y, r: v.tiny ? 22 : 46 }, x: v.x, y: v.y, tx: v.x, ty: v.y, wait: rng() * 3, speed: L.traffic.walkSpeed * (.7 + rng() * .6), tint: rng() });
     }
-
-    // --- Roads ---------------------------------------------------------------
-    const nodes = villages.filter(v => !v.tiny).map(v => ({ x: v.x, y: v.y }));
-    for (const c of clears) {
-      // Airfield roads meet the apron behind the hangars; other installations are met at their edge.
-      const entry = c.role === 'airfield' ? { x: c.x - Math.sin(c.a) * 96, y: c.y + Math.cos(c.a) * 96 } : null;
-      if (entry && inside(entry.x, entry.y)) nodes.push(entry);
-      else if (nodes.length) {
-        const near = nodes[0], d = Math.hypot(near.x - c.x, near.y - c.y) || 1;
-        const edge = { x: c.x + (near.x - c.x) / d * (c.r - 10), y: c.y + (near.y - c.y) / d * (c.r - 10) };
-        if (inside(edge.x, edge.y)) nodes.push(edge);
-      }
-    }
-    if (nodes.length >= 2) {
-      const order = [nodes[0]], rest = nodes.slice(1);
-      while (rest.length) {
-        const last = order[order.length - 1];
-        rest.sort((a, b) => Math.hypot(a.x - last.x, a.y - last.y) - Math.hypot(b.x - last.x, b.y - last.y));
-        order.push(rest.shift());
-      }
-      for (let i = 0; i + 1 < order.length; i++) {
-        const a = order[i], b = order[i + 1], length = Math.hypot(b.x - a.x, b.y - a.y), steps = Math.max(2, Math.round(length / 70));
-        const points = [[a.x, a.y]];
-        let ok = true;
-        for (let k = 1; k < steps; k++) {
-          const f = k / steps, x = a.x + (b.x - a.x) * f, y = a.y + (b.y - a.y) * f;
-          const nx = -(b.y - a.y) / length, ny = (b.x - a.x) / length, wobble = (noise(x * .01 + gx, y * .01 + gy, 2) - .5) * 60 * Math.sin(f * Math.PI);
-          const px = x + nx * wobble, py = y + ny * wobble;
-          if (!insidePolygon(x, y, interior)) { ok = false; break; }
-          points.push(inside(px, py) ? [px, py] : [x, y]);
-        }
-        if (!ok) continue;
-        points.push([b.x, b.y]);
-        batch.ribbon(points, L.roadWidth, GROUND + .3, rgb(B.road));
-        roads.push(points);
-        const [minT, maxT] = L.traffic.trucksPerRoad, trucks = minT + Math.floor(rng() * (maxT - minT + 1));
-        const total = points.reduce((n, p, k) => k ? n + Math.hypot(p[0] - points[k - 1][0], p[1] - points[k - 1][1]) : 0, 0);
-        for (let k = 0; k < trucks; k++) traffic.trucks.push({ path: points, length: total, s: rng() * total, dir: rng() < .5 ? 1 : -1, speed: L.traffic.truckSpeed * (.8 + rng() * .4), tint: rng() });
-      }
-    }
-    const nearRoad = (x, y, margin) => roads.some(points => points.some((p, k) => k && segmentDistance(x, y, points[k - 1], p) < margin));
 
     // --- Peaks: mountains or a volcano at the highest ground ----------------
     const peaks = [];
@@ -508,14 +554,15 @@ export function createLand(scene, shared) {
     for (let x = -radius - spacing; x <= radius + spacing; x += spacing) for (let y = -radius - spacing; y <= radius + spacing; y += spacing) {
       const jx = x + (hash2(x + gx, y) - .5) * spacing * .9, jy = y + (hash2(y + gy, x) - .5) * spacing * .9;
       if (!inside(jx, jy) || !clear(jx, jy) || isBlocked(jx, jy) || nearRoad(jx, jy, 10)) continue;
-      const h = hill(jx, jy), coast = polygonDistance(jx, jy, interior);
-      const f = smoothstep(.3, .7, forestNoise(jx, jy)) * (1 - smoothstep(.72, .88, h)) + (coast < 60 ? .15 : 0);
+      const h = hill(jx, jy), coast = polygonDistance(jx, jy, shore);
+      if (coast < 24) continue;   // the beach is sand, not forest
+      const f = smoothstep(.3, .7, forestNoise(jx, jy)) * (1 - smoothstep(.72, .88, h)) + (coast < 75 ? .15 : 0);
       const r = hash2(jx * 3 + gy, jy * 3 + gx);
       if (B.scrub && r < .18 && h < .7) { batch.cone(jx, jy, GROUND, 3 + r * 12, 3, 5, rgb(B.trees[1]), rgb(B.trees[0]), r * TAU); continue; }
       if (f < threshold || (farmland(jx, jy) && r > .06)) continue;
       trees++;
       const color = treeColors[Math.floor(r * treeColors.length)];
-      if (B.palmOnly || (B.palms && (coast < 75 || r < .12))) batch.palm(jx, jy, GROUND, 8 + r * 5, color, r * TAU);
+      if (B.palmOnly || (B.palms && (coast < 90 || r < .12))) batch.palm(jx, jy, GROUND, 8 + r * 5, color, r * TAU);
       else if (B.acacia) { batch.cone(jx, jy, GROUND + 6, 9 + r * 5, 3, 6, color, shade(color, .85), r * TAU); batch.box(jx, jy, GROUND, 1.6, 1.6, 6, 0, rgb('#5a4630')); }
       else batch.cone(jx, jy, GROUND, 7 + r * 5, 9 + r * 7, 6, color, shade(color, 1.18), r * TAU);
     }

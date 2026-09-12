@@ -84,8 +84,20 @@ function shipTemplate(carrier, enemy = false) {
   return group;
 }
 
+// A loaded merchant hull: crates on deck, a funnel aft, no guns.
+function transportTemplate() {
+  const group = new THREE.Group(), V = CONFIG.convoy, parts = new Parts();
+  parts.add(hullOutline(V.width * .9, V.length, 7), '#4a4238', [0, 1, 0], [-Math.PI / 2, 0, 0]);
+  parts.add(hullOutline(V.width, V.length * .95, 2), '#7d7462', [0, 8, 0], [-Math.PI / 2, 0, 0]);
+  for (const [z, w] of [[-4, 12], [8, 11], [18, 9]]) parts.box([w, 5, 8], [0, 12, z], '#8a6d47');
+  parts.box([9, 9, 12], [0, 14, -18], CABIN);
+  parts.box([3, 12, 3], [0, 19, -24], DARK);
+  group.add(parts.mesh());
+  return group;
+}
+
 export function createNavalScene(scene) {
-  const templates = { carrier: shipTemplate(true), enemyCarrier: shipTemplate(true, true), destroyer: shipTemplate(false), enemyDestroyer: shipTemplate(false, true) };
+  const templates = { carrier: shipTemplate(true), enemyCarrier: shipTemplate(true, true), destroyer: shipTemplate(false), enemyDestroyer: shipTemplate(false, true), transport: transportTemplate() };
   const ships = new Map(), zones = new Map(), airfields = new Map(), bombs = new Map();
   const bombGeometry = new THREE.SphereGeometry(3, 6, 4);
   const bombRing = new THREE.RingGeometry(14, 16, 24).rotateX(-Math.PI / 2);
@@ -113,12 +125,12 @@ export function createNavalScene(scene) {
   return {
     ships, zones, airfields, bombs,
     update(game) {
-      const liveShips = new Set(game.ships.filter(s => s.active !== false && !(s.hp <= 0 && s.sinking > CONFIG.ship.sinkingSeconds)));
+      const liveShips = new Set([...game.ships, ...(game.convoys || [])].filter(s => s.active !== false && !(s.hp <= 0 && s.sinking > CONFIG.ship.sinkingSeconds)));
       for (const [s, visual] of ships) if (!liveShips.has(s)) { scene.remove(visual.root, visual.wake); ships.delete(s); }
       for (const s of liveShips) {
         if (!ships.has(s)) {
-          const root = templates[s.team === 'jp' ? (s.kind === 'carrier' ? 'enemyCarrier' : 'enemyDestroyer') : s.kind].clone(true);
-          root.name = s.kind === 'carrier' ? (s.team === 'jp' ? 'EnemyCarrier' : 'FriendlyCarrier') : 'PatrolDestroyer';
+          const root = templates[s.kind === 'transport' ? 'transport' : s.team === 'jp' ? (s.kind === 'carrier' ? 'enemyCarrier' : 'enemyDestroyer') : s.kind].clone(true);
+          root.name = s.kind === 'transport' ? 'SupplyTransport' : s.kind === 'carrier' ? (s.team === 'jp' ? 'EnemyCarrier' : 'FriendlyCarrier') : 'PatrolDestroyer';
           const wake = new THREE.Mesh(wakeGeometry, wakeMat);
           ships.set(s, { root, wake, turrets: root.children.filter(node => node.name === 'Turret') }); scene.add(root, wake);
         }

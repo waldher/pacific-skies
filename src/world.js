@@ -93,17 +93,22 @@ export function createWorld(scene) {
   ocean.rotation.x = -Math.PI / 2;
   scene.add(ocean);
 
-  // Surf: a foam ring hugging each shoreline, pulsing and broken up by noise.
+  // Surf: a foam band on each waterline (geometry in land.js), pulsing and broken up by noise.
   const surfMaterial = new THREE.ShaderMaterial({
     transparent: true, depthWrite: false,
     uniforms: { noiseTex: { value: noiseTexture() }, time: shared.time, strength: { value: O.surf } },
-    vertexShader: WORLD_VERTEX,
-    fragmentShader: `varying vec2 worldXZ; uniform float time, strength;
+    vertexShader: `attribute float fade; varying float vFade; varying vec2 worldXZ;
+      void main() {
+        vec4 world = modelMatrix * vec4(position, 1.0);
+        worldXZ = world.xz; vFade = fade;
+        gl_Position = projectionMatrix * viewMatrix * world;
+      }`,
+    fragmentShader: `varying vec2 worldXZ; varying float vFade; uniform float time, strength;
       ${NOISE_GLSL}
       void main() {
         float breakup = vnoise(worldXZ * .05 + time * .3);
         float pulse = .55 + .45 * sin(time * 1.4 + breakup * 6.0);
-        gl_FragColor = vec4(.93, .97, 1.0, strength * pulse * smoothstep(.25, .7, breakup));
+        gl_FragColor = vec4(.93, .97, 1.0, strength * pulse * vFade * smoothstep(.25, .7, breakup));
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
       }`,

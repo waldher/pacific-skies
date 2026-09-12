@@ -101,6 +101,13 @@ export const CONFIG = {
     p51: { speedCruise: 315, speedBoost: 430, speedBrake: 180, turnRate: 3.3, fireCooldown: .1, heatPerShot: .075, gunOffsets: [-6, 6] },
   },
   navigation: { repairHull: 30, arrivalRadius: 500, departureRadius: 700 },
+  // Open-water cruise: boost with no contact spools the throttle up so long
+  // transits pass quickly, and any contact winds it straight back down.
+  cruise: { multiplier: 1.6, clearRadius: 1400, spoolSeconds: 2, rampSeconds: 1.5 },
+  // Enemy supply convoys run between holdings and resupply the destination.
+  // Transports are soft: guns sink them, and each one is worth score.
+  convoy: { firstDelay: 45, intervalMin: 50, intervalMax: 80, size: [2, 3], maxActive: 2, speed: 32, hp: 8,
+    length: 64, width: 20, spacing: 95, offshore: 260, supply: 12, score: 150, sightRadius: 1600 },
   persistence: { saveInterval: 15 },
   theater: { homeCoastSetback: 115, portSetback: 80, fleetCoastClearance: 650, fleetPatrolLength: 4200 },
   fleet: { turnRate: .25, enemyCarrierHp: 80, speed: 24, escortAhead: 180, escortLateral: 230, approachHoldDistance: 650, approachHoldAngle: .65 },
