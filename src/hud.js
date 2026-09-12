@@ -191,8 +191,6 @@ function drawSortie(p, playing) {
     if ((game.combatSorties || 0) < (type.unlockSorties || 0)) requirements.push(`${game.combatSorties || 0}/${type.unlockSorties} combat sorties`);
     if (game.score < type.unlockScore) requirements.push(`${type.unlockScore.toLocaleString()} pts`);
     if (game.rank < type.minRank) requirements.push('rescue the carrier');
-    const requiredFlight = CONFIG.progression.aircraftFlightSeconds[next] || 0;
-    if ((game.flightSeconds || 0) < requiredFlight) requirements.push(`${clock(game.flightSeconds || 0)}/${clock(requiredFlight)} flight time`);
     text('sortie-unlock', `Next: ${type.shortName} · ${requirements.join(' + ')}`);
   }
   choiceCards(el('sortie-base'), bases.map(b => ({ id:b.id, name:b.name, icon:b.kind, detail:b.kind === 'carrier' ? 'Flight deck' : 'Runway' })), base?.id, 'base');

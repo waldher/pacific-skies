@@ -2,9 +2,9 @@
 //
 // Adaptive quality: frames are timed here (the game loop's dt is capped,
 // so it can't see slow frames). While frames stay slow the renderer steps
-// down CONFIG.render.quality.levels: pixel ratio first, then ocean detail,
-// then shadows. It steps back up only into levels that never failed, so a
-// device settles rather than oscillates. ?quality=N in the URL pins a level.
+// down CONFIG.render.quality.levels: costly shadows first, then pixel ratio
+// while retaining ocean detail. It requires sustained headroom before stepping
+// back up, so short hitches do not cause oscillation. ?quality=N pins a level.
 import * as THREE from 'three';
 import { enemyObserved } from './intelligence.js';
 import { CONFIG } from './config.js';
@@ -15,7 +15,8 @@ import { createEffects } from './effects.js';
 import { renderAircraftPreviews } from './aircraft-previews.js';
 
 export async function createRenderer(canvas) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+  const touchDevice = window.matchMedia?.('(pointer: coarse)').matches ?? false;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !touchDevice, powerPreference: 'high-performance' });
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -50,7 +51,7 @@ export async function createRenderer(canvas) {
   const Q = CONFIG.render.quality;
   const pinned = new URLSearchParams(location.search).get('quality');
   const state = {
-    level: Q.start, locked: false, failed: new Set(),
+    level: touchDevice ? Q.touchStart : Q.start, locked: false, failed: new Set(),
     slow: 0, fast: 0, hold: 0, lastFrame: 0,
   };
   if (pinned !== null && Q.levels[Number(pinned)]) { state.level = Number(pinned); state.locked = true; }
@@ -73,10 +74,14 @@ export async function createRenderer(canvas) {
 
   function adapt() {
     const now = performance.now();
-    const interval = state.lastFrame ? (now - state.lastFrame) / 1000 : 0;
+    const elapsed = state.lastFrame ? (now - state.lastFrame) / 1000 : 0;
     state.lastFrame = now;
-    if (interval <= 0 || interval > .25) return;      // first frame, or the tab was hidden
-    diagnostics.frameMs = diagnostics.frameMs * .9 + interval * 100;
+    if (document.hidden) { state.lastFrame = 0; return; }
+    if (elapsed <= 0) return;
+    // Severe foreground stalls must still trigger relief. Bound the contribution
+    // so one shader compilation or returning from another tab cannot skip levels.
+    const interval = Math.min(elapsed, .25);
+    diagnostics.frameMs = diagnostics.frameMs * .9 + elapsed * 100;
     if (state.locked) return;
     if (state.hold > 0) { state.hold -= interval; return; }
     if (interval > Q.slowFrame) { state.slow += interval; state.fast = 0; }
@@ -87,7 +92,8 @@ export async function createRenderer(canvas) {
     if (state.slow > Q.settle && state.level < Q.levels.length - 1) {
       state.failed.add(state.level);
       applyLevel(state.level + 1);
-    } else if (state.fast > Q.recover && state.level > 0 && !state.failed.has(state.level - 1)) {
+    } else if (state.fast > Q.recover && state.level > 0) {
+      state.failed.delete(state.level - 1);
       applyLevel(state.level - 1);
     }
   }
