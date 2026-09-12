@@ -26,8 +26,8 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 | `util.js` | math helpers, hash noise, seedable RNG (`setSeed`/`rand`) |
 | `canvas.js` | canvas/ctx, resize, `view {W,H}`, world→screen `w2s` |
 | `input.js` | keyboard + touch (virtual stick left half, fire right half) |
-| `player.js` | flight model, open-water cruise throttle, firing, damage, death |
-| `enemies.js` | territory defenders, patrol/pursuit AI, enemy fire, ramming |
+| `player.js` | flight model (throttle trades speed for turn), firing, damage, death |
+| `enemies.js` | territory defenders; recruit/veteran/ace flying styles, lead pursuit, head-on avoidance, enemy fire, ramming |
 | `objectives.js` | concrete next actions and automatic/manual course guidance |
 | `coastal-home.js` | moves legacy home runways to the coast while preserving saves |
 | `persistence.js` | validated local expedition checkpoints and restore data |
@@ -45,7 +45,7 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 | `strikes.js` | bomber/torpedo raids, escorts, radar detection and garrison defense |
 | `session-report.js` | observed campaign outcomes and unlock timings |
 | `carrier.js` | manual approach, aligned deck landing, deck repair and takeoff |
-| `airwar.js` | independent friendly patrols and occasional roaming Zero interceptors |
+| `airwar.js` | the player's wing (formation, engage, replacements), airfield patrols, carrier CAP and strikes, roaming Zeros |
 | `torpedoes.js` | two-round loadout, surface runs, ship impacts and cooldown |
 | `ships.js` | naval patrols, gunfire and swept hull hits |
 | `convoys.js` | enemy supply transports between holdings: soft gun targets that resupply on arrival |

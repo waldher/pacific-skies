@@ -67,6 +67,7 @@ function update(dt) {
             game.playerMerit = (game.playerMerit || 0) + 1;
             if (e.strike) game.raidIntercepts = (game.raidIntercepts || 0) + 1;
           }
+          if (b.pilot) creditKill(b.pilot);
           explosion(e.x, e.y, false);
         }
         break;
@@ -92,7 +93,7 @@ function update(dt) {
     if (b.life > 0) for (const ally of game.allies) {
       if (ally.hp <= 0 || Math.hypot(b.x - ally.x, b.y - ally.y) >= 15) continue;
       b.life = 0; ally.hp -= b.damage ?? CONFIG.enemy.bulletDamage; ally.hitFlash = .25;
-      if (ally.hp <= 0) explosion(ally.x, ally.y, false);
+      if (ally.hp <= 0) { explosion(ally.x, ally.y, false); wingmanLost(ally); }
       break;
     }
   }
@@ -116,6 +117,21 @@ function update(dt) {
   game.cam.x = lerp(game.cam.x, player.x + Math.cos(player.a) * lead, 1 - Math.pow(0.005, dt));
   game.cam.y = lerp(game.cam.y, player.y + Math.sin(player.a) * lead, 1 - Math.pow(0.005, dt));
   game.shake = Math.max(0, game.shake - 30 * dt);
+}
+
+// Wingmen keep a tally; losing one delays the replacement by further sorties.
+function creditKill(name) {
+  const pilot = game.allies.find(f => f.name === name && f.role === 'wing');
+  if (!pilot) return;
+  pilot.kills = (pilot.kills || 0) + 1;
+  if (game.wing) game.wing.kills = (game.wing.kills || 0) + 1;
+}
+function wingmanLost(ally) {
+  if (ally.role !== 'wing' || !game.wing) return;
+  game.wing.lost++;
+  game.wing.replacementAt = (game.combatSorties || 0) + CONFIG.airWar.wing.replacementSorties;
+  game.message = `${ally.name} is down · replacement after ${CONFIG.airWar.wing.replacementSorties} more combat sorties`;
+  game.messageTime = CONFIG.conquest.messageDuration;
 }
 
 function render(dt) {

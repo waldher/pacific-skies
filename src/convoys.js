@@ -25,24 +25,36 @@ function offshore(game, holding) {
 const clearOfLand = (game, a, b) => (game.terrain || []).every(t => segmentDistance(t, a, b) > (t.extent ?? t.radius) + 30);
 let nextId = 1;
 
+// A straight run if the water allows, otherwise one dogleg around whatever is in the way.
+function findRoute(game, start, end) {
+  if (clearOfLand(game, start, end)) return [end];
+  const mx = (start.x + end.x) / 2, my = (start.y + end.y) / 2, d = Math.hypot(end.x - start.x, end.y - start.y) || 1;
+  const nx = -(end.y - start.y) / d, ny = (end.x - start.x) / d;
+  for (const offset of [1200, -1200, 2400, -2400, 3600, -3600]) {
+    const mid = { x: mx + nx * offset, y: my + ny * offset };
+    if (clearOfLand(game, start, mid) && clearOfLand(game, mid, end)) return [mid, end];
+  }
+  return null;
+}
+
 export function spawnConvoy(game) {
   const V = CONFIG.convoy, holdings = game.territories.filter(t => t.owner === 'enemy');
   const links = game.sectorLinks || [];
   const linked = (a, b) => a.sector === b.sector || links.some(([x, y]) => (x === a.sector && y === b.sector) || (x === b.sector && y === a.sector));
-  for (let attempt = 0; attempt < 12; attempt++) {
-    const from = holdings[Math.floor(rand(0, holdings.length))];
-    const choices = holdings.filter(t => t !== from && t.terrainId !== from.terrainId && linked(from, t));
-    if (!from || !choices.length) continue;
-    const to = choices[Math.floor(rand(0, choices.length))];
-    const start = offshore(game, from), end = offshore(game, to);
-    if (!clearOfLand(game, start, end)) continue;
-    const a = Math.atan2(end.y - start.y, end.x - start.x), count = Math.floor(rand(V.size[0], V.size[1] + 1));
+  // Every linked pair, in a seeded random order, until one has navigable water.
+  const pairs = [];
+  for (const from of holdings) for (const to of holdings) if (from !== to && from.terrainId !== to.terrainId && linked(from, to)) pairs.push([from, to]);
+  for (let i = pairs.length - 1; i > 0; i--) { const j = Math.floor(rand(0, i + 1)); [pairs[i], pairs[j]] = [pairs[j], pairs[i]]; }
+  for (const [from, to] of pairs) {
+    const start = offshore(game, from), end = offshore(game, to), route = findRoute(game, start, end);
+    if (!route) continue;
+    const a = Math.atan2(route[0].y - start.y, route[0].x - start.x), count = Math.floor(rand(V.size[0], V.size[1] + 1));
     const convoyId = nextId++;
     for (let i = 0; i < count; i++) game.convoys.push({
       id: `transport-${convoyId}-${i}`, convoyId, kind: 'transport', team: 'jp', name: 'Supply transport',
       x: start.x - Math.cos(a) * V.spacing * i, y: start.y - Math.sin(a) * V.spacing * i, a,
       hp: V.hp, maxHp: V.hp, length: V.length, width: V.width, speed: V.speed, fireCd: 0,
-      target: end, holdingId: to.id, sighted: false,
+      route, leg: 0, target: route[route.length - 1], holdingId: to.id, sighted: false,
     });
     return true;
   }
@@ -73,8 +85,10 @@ export function updateConvoys(game, dt) {
   const sighted = new Set();
   for (const s of game.convoys) {
     if (s.hp <= 0) { s.sinking = (s.sinking || 0) + dt; continue; }
-    const dx = s.target.x - s.x, dy = s.target.y - s.y, d = Math.hypot(dx, dy);
-    if (d < 120) {
+    const goal = s.route?.[s.leg] ?? s.target, last = !s.route || s.leg >= s.route.length - 1;
+    const dx = goal.x - s.x, dy = goal.y - s.y, d = Math.hypot(dx, dy);
+    if (!last && d < 80) { s.leg++; continue; }
+    if (last && d < 120) {
       // Delivered: the holding and any airfield on it are resupplied.
       const holding = game.territories.find(t => t.id === s.holdingId);
       if (holding?.owner === 'enemy') {

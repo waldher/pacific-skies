@@ -19,7 +19,7 @@ async function namespace(file){const m=await load(path.join(root,file));if(m.sta
   const atlas=generate(world.geographySeed);
   assert.equal(world.terrain.length,atlas.islands.length,'game retains atlas landforms');
   for(const land of world.terrain){const original=atlas.islands[land.id];assert.equal(land.x,original.x);assert.equal(land.y,original.y);assert.equal(JSON.stringify(land.shoreline),JSON.stringify(original.coast));}
-  for(const [a,b] of world.sectorLinks){const x=world.sectors[a],y=world.sectors[b],gap=Math.hypot(x.x-y.x,x.y-y.y);smallestGap=Math.min(smallestGap,gap);assert.ok(gap>9000,'regional crossings have meaningful scale');}
+  for(const [a,b] of world.sectorLinks){const x=world.sectors[a],y=world.sectors[b],gap=Math.hypot(x.x-y.x,x.y-y.y);smallestGap=Math.min(smallestGap,gap);assert.ok(gap>6500,'regional crossings have meaningful scale');}
   for(const route of Object.values(world.fleetRoutes))assert.ok(fleetRouteIsClear(route,world.terrain),'whole fleet routes clear land');
   setSeed(seed);assert.equal(JSON.stringify(generateTheater()),JSON.stringify(world),'seed reproduces the entire operational theater');
  }

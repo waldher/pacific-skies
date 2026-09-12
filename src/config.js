@@ -79,18 +79,24 @@ export const CONFIG = {
   enemy: {
     speed: 245,
     turn: 2.1,
-    hp: 2,
-    fireCooldown: 1.2,
-    ace: { speed: 290, turn: 2.6, hp: 4, fireCooldown: 0.8 },
+    hp: 3,                    // collisions no longer do the enemy's work, so guns must
+    fireCooldown: 0.9,
+    ace: { speed: 290, turn: 2.6, hp: 5, fireCooldown: 0.65 },
     aceFromTerritory: 2,           // first wave that can include aces
     aceEvery: 3,              // every Nth enemy in a wave is an ace
     bulletSpeed: 560,
     bulletLife: 1.4,
     bulletDamage: 9,
     engageDist: 470,          // max range to open fire
-    aimCone: 0.22,            // rad off-nose tolerance to fire
+    aimCone: 0.28,            // rad off-nose tolerance to fire
     ramDist: 26,
-    ramDamage: 30,
+    ramDamage: 50,            // a collision costs half a hull and pays no score
+    avoidRange: 190,          // fighters sidestep a head-on closer than this
+    brake: .65, boost: 1.35,  // throttle multipliers of an enemy's base speed
+    // Flying styles. Recruits pure-pursue; veterans lead their target and brake
+    // to cut inside; aces boom and zoom, extending after a pass and breaking
+    // hard when something gets on their tail.
+    styles: { veteran: { brakeAngle: 1.1 }, ace: { extendSeconds: 1.6, breakSeconds: 1, breakRange: 320, passRange: 150 } },
     spawnDistMin: 750,
     spawnDistMax: 1150,
   },
@@ -101,9 +107,9 @@ export const CONFIG = {
     p51: { speedCruise: 315, speedBoost: 430, speedBrake: 180, turnRate: 3.3, fireCooldown: .1, heatPerShot: .075, gunOffsets: [-6, 6] },
   },
   navigation: { repairHull: 30, arrivalRadius: 500, departureRadius: 700 },
-  // Open-water cruise: boost with no contact spools the throttle up so long
-  // transits pass quickly, and any contact winds it straight back down.
-  cruise: { multiplier: 1.6, clearRadius: 1400, spoolSeconds: 2, rampSeconds: 1.5 },
+  // Speed trades for turn: braked aircraft turn tight, boosted ones turn wide.
+  // Applies to every aircraft, so cutting inside a circle is a choice.
+  flight: { turnScale: { brake: 1.3, boost: .75 } },
   // Enemy supply convoys run between holdings and resupply the destination.
   // Transports are soft: guns sink them, and each one is worth score.
   convoy: { firstDelay: 45, intervalMin: 50, intervalMax: 80, size: [2, 3], maxActive: 2, speed: 32, hp: 8,
@@ -130,8 +136,19 @@ export const CONFIG = {
   },
   airWar: {
     raidFirst: 40, raidMin: 35, raidMax: 55, raidSpeed: 270, raidSpawnDistance: 850,
-    allyCount: 2, allyHp: 36, allySpeed: 235, allyTurn: 2.3,
-    allyRange: 600, allyFireCooldown: .45, waypointRadius: 150,
+    // Wingmen: a squadron that flies off the player's quarters, engages what the
+    // player engages and comes home. Slots by rank; losses are replaced only
+    // after further combat sorties, so bringing them home matters.
+    wing: { slots: [1, 2, 3], hp: 40, speed: 275, boost: 370, turn: 2.8, fireCooldown: .45, aimCone: .22,
+      formation: [[-70, 62], [-70, -62], [-140, 0]], engageRange: 550, leashRange: 900, rejoinRange: 600,
+      replacementSorties: 2, veteranKills: 3, veteran: { aimCone: .14, fireCooldown: .32, hp: 52 },
+      names: ['Hawk', 'Dutch', 'Tex', 'Moose', 'Sparky', 'Duke', 'Red', 'Slim', 'Ace', 'Whiskey', 'Chief', 'Kid'] },
+    // Captured airfields fly their own patrols around the neighbourhood.
+    patrol: { intervalMin: 55, intervalMax: 90, size: 2, maxActive: 6, duration: 80, radius: 900, engageRange: 600 },
+    // The carrier keeps a combat air patrol overhead and flies strikes of its own.
+    cap: { count: 2, radius: 420, respawn: 60, engageRange: 750 },
+    carrierStrike: { intervalMin: 110, intervalMax: 160, size: 2, range: 6500, damage: 10, attackRange: 80 },
+    allyRange: 600, waypointRadius: 150,
   },
   torpedo: { capacity: 2, rearmSeconds: 0, speed: 220, range: 1100, damage: 20, cooldown: 5, armingDistance: 45 },
   ship: {

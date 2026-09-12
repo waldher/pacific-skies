@@ -11,7 +11,7 @@ import { availableBases, canUseAircraft, selectSortie } from './bases.js';
 import { carrierAction } from './carrier.js';
 import { sessionSummary } from './session-report.js';
 import { CONFIG } from './config.js';
-import { clamp, TAU } from './util.js';
+import { clamp, angDiff, TAU } from './util.js';
 import { installationKnown, shipObserved, enemyObserved, observedAt, flightSeconds } from './intelligence.js';
 import { drawTheaterMap } from './operations.js';
 
@@ -54,6 +54,29 @@ export function drawHud() {
       ctx.fillStyle = '#172e3a'; rr(sx - 23, sy - 33, 46, 4, 2);
       ctx.fillStyle = territory.owner === 'us' ? '#82dfbc' : '#ed876c';
       rr(sx - 23, sy - 33, 46 * territory.integrity / territory.maxIntegrity, 4, 2);
+    }
+  }
+  // Wingmen wear their call signs; a lead pipper marks where to shoot the nearest fighter.
+  for (const f of game.allies) {
+    if ((f.role ?? 'wing') !== 'wing' || f.hp <= 0 || !f.name) continue;
+    const [sx, sy] = w2s(f.x, f.y);
+    if (sx < -20 || sx > W + 20 || sy < -20 || sy > H + 20) continue;
+    ctx.textAlign = 'center'; ctx.font = '600 9px system-ui'; ctx.fillStyle = '#9fe6cf';
+    ctx.fillText(f.name + (f.kills >= CONFIG.airWar.wing.veteranKills ? ' ★' : ''), sx, sy + 30);
+  }
+  if (player.flight === 'flying') {
+    let mark = null, best = 650;
+    for (const e of game.enemies) {
+      if (e.hp <= 0 || !enemyObserved(game, e)) continue;
+      const d = Math.hypot(e.x - player.x, e.y - player.y);
+      if (d < best && Math.abs(angDiff(player.a, Math.atan2(e.y - player.y, e.x - player.x))) < 1.1) { best = d; mark = e; }
+    }
+    if (mark) {
+      const t = best / CONFIG.player.bulletSpeed, v = mark.v ?? mark.speed;
+      const [lx, ly] = w2s(mark.x + Math.cos(mark.a) * v * t, mark.y + Math.sin(mark.a) * v * t);
+      ctx.strokeStyle = 'rgba(255,214,122,.9)'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(lx, ly, 6, 0, TAU); ctx.stroke();
+      ctx.fillStyle = 'rgba(255,214,122,.9)'; ctx.fillRect(lx - 1, ly - 1, 2, 2);
     }
   }
   // off-screen enemy arrows
@@ -278,6 +301,7 @@ function drawSessionReport() {
   const rows = [['Campaign time', clock(report.elapsed)], ['Territory gained / lost', `${report.captured} / ${report.lost}`], ['Carriers lost', report.carrierLosses]];
   if (Number.isFinite(report.raids.intercepted)) rows.push(['Your raid interceptions', report.raids.intercepted]);
   if (Number.isFinite(report.raids.damage)) rows.push(['Raid damage sustained', Math.round(report.raids.damage)]);
+  if (report.wing) rows.push(['Wingman kills / lost', `${report.wing.kills} / ${report.wing.lost}`]);
   const signature = JSON.stringify(report);
   if (node.dataset.report === signature) return;
   node.dataset.report = signature;

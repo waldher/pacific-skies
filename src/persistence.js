@@ -6,7 +6,7 @@ export const CAMPAIGN_SAVE_KEY = 'pacific-skies-expedition-v1';
 const VERSION = 1;
 const FIELDS = ['player','score','time','flightSeconds','combatSorties','playerMerit','raidImpacts','raidDamage','raidIntercepts',
   'strikeLaunchCooldown','raidTimer','territories','terrain','sectors','regions','theaterBounds','fleetRoutes','theaterSeed','geographySeed','sectorLinks','regionLinks',
-  'ships','airfields','bases','unlockedAircraft','rank','rescue','intelligence','sessionReport','pilotLosses',
+  'ships','airfields','bases','unlockedAircraft','rank','rescue','intelligence','sessionReport','pilotLosses','wing',
   'enemies','allies','bullets','ebullets','torpedoes','bombs','waypoint','guidanceCleared','endReason'];
 const arrays = ['territories','terrain','ships','airfields','bases','unlockedAircraft','enemies','allies','bullets','ebullets','torpedoes','bombs'];
 let lastCheckpoint = '', lastSaveTime = -Infinity, savedAvailable;

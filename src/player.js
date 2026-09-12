@@ -8,6 +8,12 @@ import { sfxGun, sfxOverheat } from './audio.js';
 import { explosion } from './particles.js';
 import { clamp, lerp, angDiff, rand } from './util.js';
 
+// Turn-rate multiplier for a speed between an aircraft's brake and boost.
+export function turnFactor(speed, brake, boost) {
+  const T = CONFIG.flight.turnScale, t = clamp((speed - brake) / Math.max(1, boost - brake), 0, 1);
+  return lerp(T.brake, T.boost, t);
+}
+
 export function updatePlayer(dt) {
   const player = game.player, P = { ...CONFIG.player, ...CONFIG.aircraft[player.aircraft] };
   if (updateCarrierFlight(game, dt)) return;
@@ -27,19 +33,8 @@ export function updatePlayer(dt) {
       throttleT = lerp(P.speedBrake, P.speedBoost, clamp(m / 70, 0, 1));
     }
   }
-  // Cruise: full boost with nothing hostile in reach opens the throttle past
-  // combat speed. Contact or gunfire cancels it, so fights stay at fighting speed.
-  const C = CONFIG.cruise, boosting = throttleT >= P.speedBoost - 1;
-  const near = (x, y) => Math.hypot(x - player.x, y - player.y) < C.clearRadius;
-  const contact = (keys['Space'] || fireTouch.active) || game.enemies.some(e => e.hp > 0 && near(e.x, e.y))
-    || game.ships.some(s => s.team === 'jp' && s.hp > 0 && s.active !== false && near(s.x, s.y))
-    || (game.convoys || []).some(s => s.hp > 0 && near(s.x, s.y));
-  player.cruiseSpool = boosting && !contact && player.flight === 'flying' ? (player.cruiseSpool || 0) + dt : 0;
-  const rate = (C.multiplier - 1) / C.rampSeconds * dt;
-  player.cruiseFactor = clamp((player.cruiseFactor || 1) + (player.cruiseSpool >= C.spoolSeconds ? rate : -2 * rate), 1, C.multiplier);
-  if (boosting) throttleT *= player.cruiseFactor;
   const previous = { x: player.x, y: player.y };
-  player.a += turnIn * P.turnRate * dt;
+  player.a += turnIn * P.turnRate * turnFactor(player.speed, P.speedBrake, P.speedBoost) * dt;
   player.speed = lerp(player.speed, throttleT, 1 - Math.pow(0.02, dt));
   player.x += Math.cos(player.a) * player.speed * dt;
   player.y += Math.sin(player.a) * player.speed * dt;

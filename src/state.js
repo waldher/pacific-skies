@@ -18,7 +18,7 @@ export const game = {
   cam: { x: 0, y: 0 },
   score: 0,
   best: 0,
-  territories: [], ships: [], convoys: [],
+  territories: [], ships: [], convoys: [], wing: { lost: 0, kills: 0, roster: 0, replacementAt: null },
   message: '', messageTime: 0,
   shake: 0,
   time: 0,
@@ -34,11 +34,8 @@ export function startGame() {
     fireCd: 0, heat: 0, overheated: false, steamCd: 0, hitFlash: 0, smokeCd: 0,
   };
   game.raidTimer = CONFIG.airWar.raidFirst;
-  game.allies = Array.from({ length: CONFIG.airWar.allyCount }, (_, i) => ({
-    team: 'us', aircraft: 'p38', name: `BLUE ${i + 1}`, x: i ? -170 : 170, y: i ? 20 : -130, a: -Math.PI / 2,
-    hp: CONFIG.airWar.allyHp, speed: CONFIG.airWar.allySpeed, turn: CONFIG.airWar.allyTurn,
-    fireCd: 0, waypoint: i, hitFlash: 0,
-  }));
+  // Wingmen muster in airwar.js as rank allows; losses are replaced after further sorties.
+  game.allies = []; game.wing = { lost: 0, kills: 0, roster: 0, replacementAt: null };
   game.torpedoes = []; game.convoys = []; game.convoyTimer = undefined;
   game.bullets = []; game.ebullets = []; game.enemies = []; game.particles = [];
   game.cam = { x: 0, y: 0 };

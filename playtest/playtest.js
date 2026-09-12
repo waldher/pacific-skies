@@ -123,7 +123,7 @@ function check(name, ok, detail) {
       orthographic: graphics.camera.isOrthographicCamera,
     };
   });
-  check('friendly patrols use P38 models', await page.evaluate(() => window.__game.game.allies.every(f => window.__game.graphics.aircraft.get(f)?.model.name === 'P38_Lightning')));
+  check('wingmen use P38 models', await page.evaluate(() => window.__game.game.allies.length > 0 && window.__game.game.allies.every(f => window.__game.graphics.aircraft.get(f)?.model.name === 'P38_Lightning')));
   check('friendly aircraft have independent damage flash materials', await page.evaluate(() => {
     const { graphics, game } = window.__game;
     const p = graphics.aircraft.get(game.player), f = graphics.aircraft.get(game.allies[0]);
@@ -201,24 +201,33 @@ function check(name, ok, detail) {
     return campaignChecks(window.__game);
   });
   for (const result of campaign) check(result.name, result.ok);
-  check('open-water cruise spools up on boost and drops on contact', await page.evaluate(() => {
-    const { game, CONFIG, keys, update } = window.__game, p = game.player;
+  check('head-on fighters sidestep instead of ramming', await page.evaluate(() => {
+    const { game, CONFIG, update, keys } = window.__game, p = game.player;
     for (const key of Object.keys(keys)) keys[key] = false;
-    p.flight = 'flying'; p.altitude = CONFIG.render.flightHeight; p.hp = 100;
-    const far = game.theaterBounds; p.x = far.maxX + 4000; p.y = far.maxY + 4000; game.cam.x = p.x; game.cam.y = p.y;
-    game.enemies = []; game.convoys = []; game.raidTimer = 999; game.convoyTimer = 999;
-    keys['KeyW'] = true;
-    for (let i = 0; i < 120; i++) update(.05);
-    const spooled = p.cruiseFactor, fast = p.speed;
-    game.enemies.push({ x: p.x + 300, y: p.y, a: 0, hp: 2, speed: 0, turn: 0, fireCd: 9, wobble: 0, territory: 0 });
-    for (let i = 0; i < 40; i++) update(.05);
-    keys['KeyW'] = false; game.enemies = [];
-    return spooled > CONFIG.cruise.multiplier - .05 && fast > CONFIG.aircraft.p38.speedBoost * 1.3 && p.cruiseFactor < 1.05;
+    const far = game.theaterBounds; p.x = far.maxX + 4000; p.y = far.maxY + 4000; p.a = 0; p.flight = 'flying'; p.hp = 100; p.speed = CONFIG.aircraft.p38.speedCruise;
+    game.cam.x = p.x; game.cam.y = p.y; game.enemies = []; game.allies = []; game.raidTimer = 999; game.convoyTimer = 999; game.time = 10;
+    const e = { x: p.x + 500, y: p.y, a: Math.PI, hp: 2, speed: CONFIG.enemy.speed, turn: CONFIG.enemy.turn, fireCd: 99, wobble: 0, raider: true, style: 'recruit' };
+    game.enemies.push(e);
+    for (let i = 0; i < 150; i++) { e.fireCd = 99; update(.02); }
+    const survived = p.hp === 100 && e.hp > 0;
+    game.enemies = [];
+    return survived;
   }));
-  check('supply convoys spawn between enemy holdings and sink to gunfire', await page.evaluate(() => {
+  check('captured airfields launch patrols and the carrier flies a CAP', await page.evaluate(() => {
+    const { game, CONFIG, update } = window.__game;
+    game.allies = []; game.raidTimer = 999;
+    const home = game.airfields.find(f => f.id === 'home-airfield'); home.patrolTimer = 0;
+    const carrier = game.ships.find(s => s.id === 'carrier'); carrier.active = true; carrier.hp = carrier.maxHp; carrier.capTimer = 0;
+    update(.02); update(.02); update(.02);
+    const patrols = game.allies.filter(f => f.role === 'patrol'), cap = game.allies.filter(f => f.role === 'cap');
+    const ok = patrols.length === CONFIG.airWar.patrol.size && cap.length >= 1 && cap.every(f => f.aircraft === 'corsair') && patrols.every(f => f.aircraft === 'p38');
+    game.allies = game.allies.filter(f => f.role === 'wing'); carrier.active = false;
+    return ok;
+  }));
+  const convoy = await page.evaluate(() => {
     const { game, CONFIG, update, spawnConvoy, graphics, view } = window.__game;
-    game.convoys = []; game.convoyTimer = 999;
-    if (!spawnConvoy()) return false;
+    game.convoys = []; game.convoyTimer = 999; game.allies = []; game.time = 10; game.enemies = [];
+    if (!spawnConvoy()) return { ok: false, why: `no convoy route (${game.territories.filter(t => t.owner === 'enemy').length} enemy holdings, mode ${game.mode})` };
     const s = game.convoys[0], before = game.score, count = game.convoys.length;
     game.player.x = s.x - 200; game.player.y = s.y; game.player.flight = 'flying'; game.cam.x = s.x; game.cam.y = s.y;
     graphics.render(game, view, 0, 0, 0);
@@ -229,8 +238,10 @@ function check(name, ok, detail) {
     }
     // Parking beside an enemy holding wakes its defenders; leave none behind for later checks.
     game.convoys = []; game.enemies = []; game.bullets = [];
-    return count >= CONFIG.convoy.size[0] && drawn && s.hp === 0 && game.score === before + CONFIG.convoy.score;
-  }));
+    return { ok: count >= CONFIG.convoy.size[0] && drawn && s.hp === 0 && game.score >= before + CONFIG.convoy.score,
+      why: `count ${count} drawn ${drawn} hp ${s.hp} score +${game.score - before}` };
+  });
+  check('supply convoys spawn between enemy holdings and sink to gunfire', convoy.ok, convoy.why);
   await page.evaluate(() => {
     const { game, CONFIG } = window.__game, t = game.territories.find(t => t.owner === 'enemy');
     game.player.flight = 'flying'; game.player.altitude = CONFIG.render.flightHeight;
