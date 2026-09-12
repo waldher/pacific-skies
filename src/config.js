@@ -8,22 +8,25 @@ export const CONFIG = {
     bankResponse: 8,
     propellerSpeed: 55,      // radians/s
     sunOffset: [-240, 800, -320], // sun position relative to the camera; shadows and ocean lighting share it
+    lighting: { sky: '#c5e6ff', ground: '#506273', hemisphere: 2.2, sun: '#fff0d2', sunIntensity: 2.5 },
     quality: {
       // Adaptive quality ladder, best first. The renderer steps down while
       // frames stay slow and back up only into levels that never failed.
-      // pixelRatio caps the device ratio; ocean is the shader detail
-      // (2 full, 1 no glitter/whitecaps, 0 two octaves, no clouds).
+      // pixelRatio caps the device ratio (below 1 the world renders soft but
+      // the HUD stays crisp); ocean is the shader detail (2 full, 1 no
+      // glitter/whitecaps, 0 two octaves, no clouds).
       // Pin a level for testing with ?quality=N in the URL.
       levels: [
         { pixelRatio: 2, ocean: 2, shadows: true },
-        // Preserve the water and scene lighting as resolution falls. Shadow
-        // maps cost a second scene pass, so they go before visible detail.
         { pixelRatio: 1.5, ocean: 2, shadows: false },
-        { pixelRatio: 1.25, ocean: 2, shadows: false },
-        { pixelRatio: 1.1, ocean: 2, shadows: false },
+        // Native 1:1 is where cheap tablets start: the top-down world is
+        // authored at one unit per CSS pixel, so nothing is lost.
+        { pixelRatio: 1, ocean: 2, shadows: false },
+        { pixelRatio: .8, ocean: 1, shadows: false },
+        { pixelRatio: .65, ocean: 0, shadows: false },
       ],
       start: 1,
-      touchStart: 1,
+      touchStart: 2,
       slowFrame: .024,         // s; frames longer than this count as slow (≈42 fps)
       fastFrame: .0175,        // s; frames shorter than this count as fast (holds 60 fps)
       settle: 2,               // s of net slow frames before stepping down
@@ -39,6 +42,23 @@ export const CONFIG = {
       surf: .55,               // shoreline foam ring opacity
       deep: '#0f4468', mid: '#1c6b8a', shallows: '#39aeb0',
       shallowsRadius: 1.9,     // lagoon fade-out distance, in island radii
+      shallowsOpacity: .6,     // strength of the turquoise skirt at the shoreline
+    },
+    land: {
+      // Island scenery. Everything is authored in world units (1 ≈ one CSS
+      // pixel; an aircraft is 48 wide) and batched into one draw per island.
+      treeSpacing: 21,         // grid step between forest trees
+      maxTrees: 2600,          // spacing widens on large islands to stay under this
+      forestCover: .48,        // fraction of an island's interior that becomes forest
+      villageRadius: 220,      // islands smaller than this get a hut at most
+      houseSize: 16,           // footprint of a village house
+      roadWidth: 9,
+      clearRadius: { airfield: 240, port: 190, radar: 170 }, // scenery keeps off installations
+      traffic: {
+        trucks: 64, people: 256, boats: 32,   // instance pool sizes
+        truckSpeed: 34, walkSpeed: 7, boatSpeed: 18,
+        peoplePerVillage: [4, 9], trucksPerRoad: [1, 3],
+      },
     },
   },
   player: {

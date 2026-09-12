@@ -9,6 +9,7 @@
     "test:balance": "node --experimental-vm-modules playtest/balance.cjs",
     "test:simulation": "node --experimental-vm-modules playtest/simulation.cjs",
     "serve": "npx http-server -c-1 -p 8080 .",
+    "bench": "node playtest/bench.js",
     "build:aircraft": "node --no-warnings tools/build-aircraft.mjs",
     "views": "node tools/render-views.js F4U_Corsair Mitsubishi_Zero",
     "test:expedition": "node --experimental-vm-modules playtest/expedition.cjs && node --experimental-vm-modules playtest/expedition-recovery.cjs && node --experimental-vm-modules playtest/coastal-home.cjs && node --experimental-vm-modules playtest/navigation.cjs"

@@ -156,6 +156,35 @@ function check(name, ok, detail) {
       return graphics.quality.level>0;
     } finally {delete performance.now;graphics.quality.set(1);}
   }));
+  check('failed quality levels are never retried', await page.evaluate(() => {
+    const {graphics,game,view,CONFIG}=window.__game, Q=CONFIG.render.quality;
+    const original=performance.now.bind(performance); let now=original();
+    graphics.quality.set(1); graphics.quality.unlock();
+    performance.now=()=>now;
+    try {
+      for(let i=0;i<40;i++){now+=100;graphics.render(game,view,0,0,0);}
+      const dropped=graphics.quality.level;
+      for(let i=0;i<(Q.hold+Q.recover)*100+50;i++){now+=10;graphics.render(game,view,0,0,0);}
+      return dropped===2 && graphics.quality.level===2;
+    } finally {delete performance.now;graphics.quality.set(1);}
+  }));
+  const scenery = await page.evaluate(() => {
+    const { graphics } = window.__game, chunks = [...graphics.world.chunks.values()];
+    const batches = chunks.map(group => group.children.filter(node => node.material?.vertexColors).length);
+    return { chunks: chunks.length, biomes: chunks.map(g => g.userData.biome), trees: chunks.reduce((n, g) => n + g.userData.trees, 0),
+      villages: chunks.reduce((n, g) => n + g.userData.villages, 0), batches, drawCalls: graphics.diagnostics.drawCalls };
+  });
+  check('islands carry biome scenery in one batched draw each', scenery.chunks > 0 && scenery.trees > 0 && scenery.batches.every(n => n === 1), `${scenery.biomes.join(',')} · ${scenery.trees} trees · ${scenery.villages} villages`);
+  check('home airfield view stays under 80 draw calls', scenery.drawCalls < 80, `${scenery.drawCalls} draws`);
+  results.metrics.homeDrawCalls = scenery.drawCalls;
+  check('island traffic moves between frames', await page.evaluate(() => {
+    const { graphics, game, view } = window.__game, pools = graphics.world.traffic.pools;
+    const snapshot = () => Object.fromEntries(Object.entries(pools).map(([k, m]) => [k, [m.count, Array.from(m.instanceMatrix.array.slice(0, m.count * 16))]]));
+    graphics.render(game, view, .5, 0, 0); const before = snapshot();
+    game.time += .5; graphics.render(game, view, .5, 0, 0); const after = snapshot();
+    const moved = Object.keys(pools).filter(k => before[k][0] > 0 && before[k][1].some((v, i) => Math.abs(v - after[k][1][i]) > .01));
+    return before.people[0] > 0 && moved.includes('people') && (before.trucks[0] === 0 || moved.includes('trucks'));
+  }));
   const propAngle = await page.evaluate(() => window.__game.graphics.aircraft.get(window.__game.game.player).propeller.rotation.z);
   await page.keyboard.down('KeyD');
   await page.waitForTimeout(350);

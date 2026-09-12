@@ -48,13 +48,16 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 | `airwar.js` | independent friendly patrols and occasional roaming Zero interceptors |
 | `torpedoes.js` | two-round loadout, surface runs, ship impacts and cooldown |
 | `ships.js` | naval patrols, gunfire and swept hull hits |
-| `naval-scene.js` | ship meshes, wakes, sinking and territory markers |
+| `naval-scene.js` | ship, airfield and installation meshes merged into one draw each, wakes, sinking, territory markers |
 | `particles.js` | explosions, smoke, particle simulation |
-| `world.js` | ocean shader (ripples, glitter, whitecaps, cloud shadows, shallows), surf rings, bounded island chunks |
+| `noise.js` | one tileable noise field: JS sampler plus the RGBA texture (value, gradient, second field) every shader taps |
+| `world.js` | ocean shader (ripples, glitter, whitecaps, cloud shadows), surf ring, bounded island chunk lifecycle |
+| `land.js` | island scenery: biomes, relief-shaded ground shader, shallows skirt, forests/villages/roads/peaks as one vertex-coloured batch per island |
+| `traffic.js` | instanced trucks, villagers and fishing boats living on loaded islands |
 | `sprites.js` | HUD `rr` rounded-rect helper |
 | `hud.js` | responsive HTML readouts/menus, canvas minimap and markers, touch UI |
 | `audio.js` | procedural sfx |
-| `renderer.js` | Three.js scene, orthographic camera, lighting, instance lifecycle, adaptive quality ladder (`?quality=N` pins a level) |
+| `renderer.js` | Three.js scene, orthographic camera, lighting, instance lifecycle, adaptive quality ladder (`?quality=N` pins a level; failed levels are never retried) |
 | `aircraft.js` | GLB loading, geometry batching, banking, propeller animation, per-aircraft shadow receiver / blob |
 | `effects.js` | instanced tracers and batched particles |
 
@@ -110,6 +113,23 @@ push and PR.
 
 When evaluating gameplay changes, look at the screenshots too —
 visual readability is part of the game being good.
+
+## Performance
+
+The target is a cheap tablet: fill rate is the budget, not triangles.
+`npm run bench` (same env vars as the tests) times `graphics.render()`
+per quality level on the software rasterizer, where fragment-shader cost
+shows up directly as milliseconds; compare its numbers before and after
+touching any shader, material or the quality ladder. Rules that keep it
+cheap:
+
+- Shaders sample `noise.js`'s texture (one tap) rather than hashing; lighting
+  uses the stored gradient, never screen-space derivatives of a texture.
+- Land and ships use Lambert or vertex-coloured materials, never PBR.
+  Static geometry is merged into one mesh per island or vessel; anything
+  that moves in numbers is an `InstancedMesh`.
+- Touch devices start at native 1× pixel ratio and only step down; nothing
+  in the world casts shadows except aircraft and ships at the top level.
 
 ## Backlog
 

@@ -1,101 +1,82 @@
-// Camera-local ocean plus deterministic, bounded chunks of low-poly islands.
+// Camera-local ocean plus deterministic, bounded chunks of island scenery.
 //
 // The ocean is one screen-sized plane; everything that makes it look like
-// water happens in its fragment shader from hash noise, so there are no
-// textures and the cost is a fixed number of noise lookups per pixel:
+// water happens in its fragment shader from the shared noise texture, so the
+// cost is a fixed handful of texture taps per pixel:
 //   ripples   three ridged octaves drifting with the wind
-//   lighting  a fake normal from screen-space derivatives, lit by the sun
+//   lighting  the wave slope from the noise gradient, lit by the sun
 //   glitter   a tight specular lobe masked by fast high-frequency noise
 //   whitecaps crests gated by a noise stretched along the wind
-//   shallows  a turquoise fade around each visible island (positions are
-//             uniforms; the loop is at most 12 distance checks)
 //   clouds    a low-frequency layer darkening the sea as it drifts
-// The `detail` uniform drops glitter, whitecaps, the finest octave and the
-// clouds on slow devices (see CONFIG.render.quality). Tuning lives in
-// CONFIG.render.ocean.
+// Shallows are geometry (a fading skirt around each shoreline in land.js),
+// not a per-pixel island loop. The `detail` uniform drops glitter, whitecaps,
+// the finest octave and the clouds on slow devices (see CONFIG.render.quality).
+// Tuning lives in CONFIG.render.ocean; islands are built by land.js.
 import * as THREE from 'three';
 import { CONFIG } from './config.js';
-import { islandOutline, insidePolygon } from './surface.js';
-import { hash2, TAU } from './util.js';
+import { noiseTexture, NOISE_GLSL } from './noise.js';
+import { createLand } from './land.js';
+import { createTraffic } from './traffic.js';
 
-const MAX_ISLANDS = 12;
-
-// Narrow beaches follow concave lagoon shores instead of shrinking toward an
-// arbitrary island center (which would put grass across the water).
-function insetShore(points, distance) {
-  const area = points.reduce((n,p,i) => { const q=points[(i+1)%points.length];return n+p[0]*q[1]-q[0]*p[1]; },0);
-  const sign=area>0?1:-1;
-  return points.map((p,i) => {
-    const prev=points[(i+points.length-1)%points.length],next=points[(i+1)%points.length];
-    const l1=Math.hypot(p[0]-prev[0],p[1]-prev[1]),l2=Math.hypot(next[0]-p[0],next[1]-p[1]);
-    const n1=[-(p[1]-prev[1])/l1*sign,(p[0]-prev[0])/l1*sign];
-    const n2=[-(next[1]-p[1])/l2*sign,(next[0]-p[0])/l2*sign];
-    const k=distance/Math.max(.4,1+n1[0]*n2[0]+n1[1]*n2[1]);
-    const q=[p[0]+(n1[0]+n2[0])*k,p[1]+(n1[1]+n2[1])*k];
-    return insidePolygon(q[0],q[1],points)?q:p;
-  });
-}
-
-const NOISE = `
-  float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
-  float vnoise(vec2 p) {
-    vec2 i = floor(p), f = fract(p);
-    f = f * f * (3.0 - 2.0 * f);
-    return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y);
+const WORLD_VERTEX = `varying vec2 worldXZ;
+  void main() {
+    vec4 world = modelMatrix * vec4(position, 1.0);
+    worldXZ = world.xz;
+    gl_Position = projectionMatrix * viewMatrix * world;
   }`;
 
 export function createWorld(scene) {
   const O = CONFIG.render.ocean;
-  const sun = new THREE.Vector3(...CONFIG.render.sunOffset).normalize();
+  // Uniform objects shared by the ocean, surf and every island's ground, so
+  // one update moves the clouds over sea and land together.
+  const shared = {
+    time: { value: 0 },
+    wind: { value: new THREE.Vector2(...O.wind) },
+    sunDir: { value: new THREE.Vector3(...CONFIG.render.sunOffset).normalize() },
+    cloudSpeed: { value: O.cloudSpeed }, cloudStrength: { value: O.cloudStrength },
+  };
   const oceanMaterial = new THREE.ShaderMaterial({
     uniforms: {
-      time: { value: 0 }, dpr: { value: 1 }, detail: { value: 2 },
-      wind: { value: new THREE.Vector2(...O.wind) },
-      sunDir: { value: sun },
-      cloudSpeed: { value: O.cloudSpeed }, cloudStrength: { value: O.cloudStrength },
+      noiseTex: { value: noiseTexture() }, time: shared.time, detail: { value: 2 },
+      wind: shared.wind, sunDir: shared.sunDir, cloudSpeed: shared.cloudSpeed, cloudStrength: shared.cloudStrength,
       glitter: { value: O.glitter }, foam: { value: O.foam },
       deepColor: { value: new THREE.Color(O.deep) }, midColor: { value: new THREE.Color(O.mid) },
-      shallowColor: { value: new THREE.Color(O.shallows) }, shallowRadius: { value: O.shallowsRadius },
-      islands: { value: new Float32Array(MAX_ISLANDS * 4) }, islandCount: { value: 0 },
     },
-    vertexShader: `varying vec2 worldXZ;
-      void main() {
-        vec4 world = modelMatrix * vec4(position, 1.0);
-        worldXZ = world.xz;
-        gl_Position = projectionMatrix * viewMatrix * world;
-      }`,
+    vertexShader: WORLD_VERTEX,
     fragmentShader: `varying vec2 worldXZ;
-      uniform float time, dpr, detail, cloudSpeed, cloudStrength, glitter, foam, shallowRadius;
-      uniform vec2 wind; uniform vec3 sunDir, deepColor, midColor, shallowColor;
-      uniform vec4 islands[${MAX_ISLANDS}]; uniform int islandCount;
-      ${NOISE}
-      float ridge(vec2 p) { return 1.0 - abs(vnoise(p) * 2.0 - 1.0); }
+      uniform float time, detail, cloudSpeed, cloudStrength, glitter, foam;
+      uniform vec2 wind; uniform vec3 sunDir, deepColor, midColor;
+      ${NOISE_GLSL}
+      // Ridged noise with its gradient, so the wave normal is analytic; .w is the
+      // second noise field from the same tap, free for masks.
+      vec4 ridge(vec2 p) { vec4 s = vnoise4(p); float v = s.r * 2.0 - 1.0; return vec4(1.0 - abs(v), -sign(v) * (s.gb - .5) * 6.0, s.a); }
       const mat2 R1 = mat2(.866, .5, -.5, .866), R2 = mat2(.5, .866, -.866, .5); // 30° and 60°
+      const mat2 R1T = mat2(.866, -.5, .5, .866), R2T = mat2(.5, -.866, .866, .5);
       void main() {
         vec2 p = worldXZ, drift = wind * time;
         // Ripples: three ridged octaves, each rotated so the noise grid never lines up.
-        float h1 = ridge((p + drift) * .011);
-        float h2 = ridge(R1 * (p - drift * .7) * .026);
-        float h = h1 * .55 + h2 * .45;
-        if (detail > .5) h = h1 * .45 + h2 * .33 + ridge(R2 * (p + drift * 1.6) * .058) * .22;
-        // Shallows around islands.
-        float shallow = 0.0;
-        for (int i = 0; i < ${MAX_ISLANDS}; i++) {
-          if (i >= islandCount) break;
-          shallow = max(shallow, smoothstep(shallowRadius, 1.0, distance(p, islands[i].xy) / islands[i].z));
+        vec4 o1 = ridge((p + drift) * .011);
+        vec4 o2 = ridge(R1 * (p - drift * .7) * .026);
+        float h1 = o1.x, h = h1 * .55 + o2.x * .45, twinkle = o2.w;
+        vec2 g = o1.yz * (.55 * .011) + (R1T * o2.yz) * (.45 * .026);
+        if (detail > .5) {
+          vec4 o3 = ridge(R2 * (p + drift * 1.6) * .058);
+          twinkle = o3.w;
+          h = h1 * .45 + o2.x * .33 + o3.x * .22;
+          g = o1.yz * (.45 * .011) + (R1T * o2.yz) * (.33 * .026) + (R2T * o3.yz) * (.22 * .058);
         }
-        vec3 water = mix(mix(deepColor, midColor, .15 + h * .7), shallowColor, shallow * .85);
-        // Lit waves and sun glitter from a screen-space normal.
-        float k = 10.0 * dpr;
-        vec3 n = normalize(vec3(-dFdx(h) * k, 1.0, -dFdy(h) * k));
+        vec3 water = mix(deepColor, midColor, .15 + h * .7);
+        // Lit waves and sun glitter from the wave slope.
+        vec3 n = normalize(vec3(-g.x * 10.0, 1.0, -g.y * 10.0));
         water *= .82 + .3 * max(dot(n, sunDir), 0.0);
         if (detail > 1.5) {
           vec3 halfway = normalize(sunDir + vec3(0.0, 1.0, 0.0));
-          float sparkle = smoothstep(.9, .99, vnoise((p + drift * 2.0) * .09 + time * .7));
+          // Sparkle mask rides the finest octave's spare channel: no extra tap.
+          float sparkle = smoothstep(.88, .99, twinkle) * (.55 + .45 * sin(time * 5.0 + twinkle * 40.0));
           water += glitter * pow(max(dot(n, halfway), 0.0), 400.0) * sparkle * vec3(1.0, .96, .85);
           // Whitecaps: sparse flecks stretched along the wind, clustered on the big swell crests (h1).
           vec2 w = normalize(wind), along = vec2(dot(p, w), dot(p, vec2(-w.y, w.x)));
-          float fleck = vnoise(along * vec2(.045, .16) + vec2(-time * .3, 0.0));
+          float fleck = vnoise2(along * vec2(.045, .16) + vec2(-time * .3, 13.0));
           water = mix(water, vec3(.9, .95, .97), foam * smoothstep(.9, .96, fleck) * smoothstep(.7, .95, h1));
         }
         if (detail > .5) {
@@ -115,15 +96,10 @@ export function createWorld(scene) {
   // Surf: a foam ring hugging each shoreline, pulsing and broken up by noise.
   const surfMaterial = new THREE.ShaderMaterial({
     transparent: true, depthWrite: false,
-    uniforms: { time: { value: 0 }, strength: { value: O.surf } },
-    vertexShader: `varying vec2 worldXZ;
-      void main() {
-        vec4 world = modelMatrix * vec4(position, 1.0);
-        worldXZ = world.xz;
-        gl_Position = projectionMatrix * viewMatrix * world;
-      }`,
+    uniforms: { noiseTex: { value: noiseTexture() }, time: shared.time, strength: { value: O.surf } },
+    vertexShader: WORLD_VERTEX,
     fragmentShader: `varying vec2 worldXZ; uniform float time, strength;
-      ${NOISE}
+      ${NOISE_GLSL}
       void main() {
         float breakup = vnoise(worldXZ * .05 + time * .3);
         float pulse = .55 + .45 * sin(time * 1.4 + breakup * 6.0);
@@ -132,60 +108,16 @@ export function createWorld(scene) {
         #include <colorspace_fragment>
       }`,
   });
-  const materials = {
-    sand: new THREE.MeshStandardMaterial({ color: '#e3d49b', roughness: 1 }),
-    grass: new THREE.MeshStandardMaterial({ color: '#4f8a4a', roughness: 1, flatShading: true }),
-    hill: new THREE.MeshStandardMaterial({ color: '#3b6e39', roughness: 1, flatShading: true }),
-  };
+  const land = createLand(scene, { ...shared, surfMaterial });
+  const traffic = createTraffic(scene);
   const chunks = new Map();
-  function island(territory) {
-    const group = new THREE.Group();
-    const gx = territory.seed ?? territory.id, gy = territory.id;
-    group.position.set(territory.x, 0, territory.y);
-    const radius = territory.radius;
-    const outline = (rad, jitter, seed) => islandOutline(territory, rad, jitter, seed).map(([x, y]) => new THREE.Vector2(x, -y));
-    const place = (geometry, material, base, receive) => {
-      const mesh = new THREE.Mesh(geometry, material);
-      mesh.rotation.x = -Math.PI / 2;
-      mesh.position.y = base;
-      mesh.receiveShadow = receive;
-      group.add(mesh);
-    };
-    const layer = (rad, jitter, seed, height, material, base) => {
-      const points = material === materials.grass && territory.shoreline
-        ? insetShore(islandOutline(territory), Math.min(14, radius * .12)).map(([x,y])=>new THREE.Vector2(x,-y))
-        : outline(rad, jitter, seed);
-      const shape = new THREE.Shape(points);
-      place(new THREE.ExtrudeGeometry(shape, { depth: height, bevelEnabled: false }), material, base, true);
-    };
-    const surf = new THREE.Shape(outline(radius * 1.12, .22, 2));
-    surf.holes.push(new THREE.Path(outline(radius * .97, .22, 2)));
-    place(new THREE.ShapeGeometry(surf), surfMaterial, .3, false);
-    layer(radius, .22, 2, 3, materials.sand, .5);
-    layer(territory.shoreline ? radius : radius * .86, .12, 2, 5, materials.grass, 3.5);
-    for (let i = 0; i < 5; i++) {
-      const a = hash2(gx + i * 13, gy + i * 7) * TAU;
-      const r = (.65 + hash2(gy + i, gx + i * 3) * .1) * radius;
-      const hx = Math.cos(a) * r, hy = Math.sin(a) * r * .8;
-      if (!insidePolygon(hx, hy, islandOutline(territory, radius * .85))) continue;
-      if (territory.holdingId != null && Math.abs(hx) < 75 && Math.abs(hy) < 240) continue;
-      const hill = new THREE.Mesh(new THREE.ConeGeometry(radius * .09, 9, 7), materials.hill);
-      hill.position.set(hx, 12, hy);
-      hill.receiveShadow = true;
-      group.add(hill);
-    }
-    group.userData.radius = radius;
-    group.userData.extent = territory.extent ?? radius;
-    return group;
-  }
   return {
     setDetail(level) { oceanMaterial.uniforms.detail.value = level; },
-    update(cam, view, time, pixelRatio, territories = []) {
+    update(game, view, dt, pixelRatio) {
+      const cam = game.cam, territories = game.terrain || game.territories || [];
       ocean.position.set(cam.x, 0, cam.y);
       ocean.scale.set(view.W + 1000, view.H + 1000, 1);
-      oceanMaterial.uniforms.time.value = time;
-      oceanMaterial.uniforms.dpr.value = pixelRatio;
-      surfMaterial.uniforms.time.value = time;
+      shared.time.value = game.time;
       const needed = new Set();
       for (const territory of territories) {
         const margin = (territory.extent ?? territory.radius) * 1.4 + 150;
@@ -193,26 +125,24 @@ export function createWorld(scene) {
             Math.abs(territory.y - cam.y) > view.H / 2 + margin) continue;
         needed.add(territory);
         if (!chunks.has(territory)) {
-          const mesh = island(territory);
-          chunks.set(territory, mesh); scene.add(mesh);
+          // Older saves lack terrainId; fall back to whichever holdings sit on this landmass.
+          const holdings = territory.role ? [territory]
+            : (game.territories || []).filter(h => h.terrainId != null ? h.terrainId === territory.id
+              : Math.hypot(h.x - territory.x, h.y - territory.y) < (territory.extent ?? territory.radius));
+          const group = land.build(territory, { sectors: game.sectors, holdings, geographySeed: game.geographySeed ?? 0 });
+          chunks.set(territory, group); scene.add(group);
         }
       }
       for (const [key, group] of chunks) {
         if (needed.has(key)) continue;
         scene.remove(group);
-        group.traverse(node => { if (node.isMesh) node.geometry.dispose(); });
+        land.dispose(group);
         chunks.delete(key);
       }
-      // Tell the ocean where the visible islands are for the shallows.
-      const list = oceanMaterial.uniforms.islands.value;
-      let n = 0;
-      for (const group of [...chunks.values()].sort((a,b) =>
-        Math.hypot(a.position.x-cam.x,a.position.z-cam.y)-Math.hypot(b.position.x-cam.x,b.position.z-cam.y))) {
-        if (n >= MAX_ISLANDS) break;
-        list.set([group.position.x, group.position.z, group.userData.radius, 0], n++ * 4);
-      }
-      oceanMaterial.uniforms.islandCount.value = n;
+      traffic.update(dt, chunks.values(), game.time);
     },
     get chunkCount() { return chunks.size; },
+    get chunks() { return chunks; },
+    traffic,
   };
 }
