@@ -22,7 +22,8 @@
 
 - Enemy supply convoys between holdings, sunk by guns; recovery at the nearest base.
 - Wingman squadron with rank slots, replacements and veterans; airfield patrols; carrier CAP and strikes.
-- Throttle trades speed for turn; recruit/veteran/ace enemy styles; head-on avoidance and costly collisions; lead pipper.
+- Throttle trades speed for turn; recruit/veteran/ace enemy styles that weave on a merge and lead turning targets; glancing collisions (both hurt, shoved apart, stunned, no score); lead pipper.
+- Wingman doctrine: cover the player, tail-chasers first, slow clean shots, break off when hurt, half score. `playtest/combat-balance.cjs` holds the bands.
 
 - Three archipelagos with independent landforms and strategic holdings.
 - Moving carrier task groups and escorts; friendly approach holds.

@@ -112,6 +112,15 @@ compare its metrics before/after when changing anything in
 `config.js`. CI (`.github/workflows/playtest.yml`) runs it on every
 push and PR.
 
+`playtest/combat-balance.cjs` (part of `npm test`) fights seeded
+three-ship engagements headless with a scripted average pilot and fails
+when a metric leaves its band: hull lost, share of it lost to collisions,
+fight length, wingman kill share and survival, collisions survived, and
+whether enemies can hit a straight-flying target. Change a number in
+`config.js` that touches guns, hulls, collisions, AI styles or wingmen
+and this is what tells you whether fights are still decided by flying.
+Bands are at the top of the file; move one only with a reason in the diff.
+
 When evaluating gameplay changes, look at the screenshots too —
 visual readability is part of the game being good.
 

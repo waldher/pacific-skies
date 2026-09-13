@@ -4,7 +4,8 @@
   "private": true,
   "description": "Pacific Skies \u2014 1942: top-down arcade dogfighter over the Pacific",
   "scripts": {
-    "test": "node playtest/playtest.js && npm run test:expedition",
+    "test": "node playtest/playtest.js && npm run test:expedition && npm run test:balance:combat",
+    "test:balance:combat": "node --experimental-vm-modules playtest/combat-balance.cjs",
     "test:balance:campaign": "node --experimental-vm-modules playtest/campaign-balance.cjs",
     "test:balance": "node --experimental-vm-modules playtest/balance.cjs",
     "test:simulation": "node --experimental-vm-modules playtest/simulation.cjs",

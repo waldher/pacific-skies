@@ -5,8 +5,8 @@
 //   veteran  leads the target so its rounds land; brakes to cut inside
 //   ace      boom and zoom: attacks at boost, extends after a pass, and
 //            breaks hard when something gets on its tail
-// Every fighter sidesteps a head-on so collisions are the player's choice,
-// and a collision pays no score. Throttle changes turn rate (player.js).
+// Every fighter sidesteps a head-on; a collision is glancing (both hurt,
+// shoved apart, stunned) and pays no score. Throttle changes turn rate (player.js).
 import { CONFIG } from './config.js';
 import { game } from './state.js';
 import { damagePlayer, turnFactor } from './player.js';
@@ -28,11 +28,22 @@ export function spawnDefenders(territory) {
   }
 }
 
-// Where a target will be when a round fired now arrives.
+// Where a target will be when a round fired now arrives: along its current
+// arc when it is turning, straight ahead otherwise.
 export function leadPoint(from, target, bulletSpeed) {
   const d = Math.hypot(target.x - from.x, target.y - from.y), t = d / bulletSpeed;
-  const v = target.v ?? target.speed ?? 0;
-  return { x: target.x + Math.cos(target.a) * v * t, y: target.y + Math.sin(target.a) * v * t };
+  const v = target.v ?? target.speed ?? 0, w = target.omega || 0;
+  if (Math.abs(w) < .15) return { x: target.x + Math.cos(target.a) * v * t, y: target.y + Math.sin(target.a) * v * t };
+  const r = v / w;
+  return { x: target.x + r * (Math.sin(target.a + w * t) - Math.sin(target.a)), y: target.y - r * (Math.cos(target.a + w * t) - Math.cos(target.a)) };
+}
+// True when `a` is inside `range` of `b`, does not have it dead astern, and the
+// gap is closing fast: a turning fight about to trade paint, whatever the headings.
+export function closing(a, b, range, minClosing = 40) {
+  const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy);
+  if (d > range || Math.abs(angDiff(a.a, Math.atan2(dy, dx))) > 2.2) return false;
+  const va = a.v ?? a.speed ?? 0, vb = b.v ?? b.speed ?? 0;
+  return ((Math.cos(a.a) * va - Math.cos(b.a) * vb) * dx + (Math.sin(a.a) * va - Math.sin(b.a) * vb) * dy) / d > minClosing;
 }
 // True when two aircraft are flying at each other inside the avoid range.
 export function headOn(a, b, range) {
@@ -60,7 +71,16 @@ export function updateEnemies(dt) {
     if (chase) {
       const lead = leadPoint(e, target, E.bulletSpeed);
       if (style === 'recruit') { tx = target.x + Math.cos(e.wobble) * 60; ty = target.y + Math.sin(e.wobble * 1.3) * 60; }
-      else { tx = lead.x; ty = lead.y; }
+      else {
+        tx = lead.x; ty = lead.y;
+        // Weave on a head-on approach so nobody can hold a bead on the merge.
+        const toTarget = Math.atan2(target.y - e.y, target.x - e.x);
+        const merging = Math.abs(angDiff(e.a, toTarget)) < .6 && Math.abs(angDiff(target.a, toTarget + Math.PI)) < .7;
+        if (dist > S.weaveRange && merging) {
+          const sway = Math.sin(e.wobble * 2.2) * S.weave;
+          tx += Math.cos(toTarget + Math.PI / 2) * sway; ty += Math.sin(toTarget + Math.PI / 2) * sway;
+        }
+      }
       if (style === 'veteran' && Math.abs(angDiff(e.a, Math.atan2(ty - e.y, tx - e.x))) > S.veteran.brakeAngle) throttle = E.brake;
       if (style === 'ace') {
         e.phase ??= 'attack'; e.phaseTime = (e.phaseTime ?? 0) - dt;
@@ -90,15 +110,19 @@ export function updateEnemies(dt) {
       const gun = style === 'recruit' ? Math.atan2(ty - e.y, tx - e.x) : Math.atan2(lead.y - e.y, lead.x - e.x);
       aim = Math.abs(angDiff(e.a, gun));
     }
-    // Nobody trades paint on purpose: a head-on inside the avoid range is sidestepped.
-    if (target && headOn(e, target, E.avoidRange)) {
+    // After a collision, extend away before turning back in.
+    if (e.recover > 0) { e.recover -= dt; tx = e.x + Math.cos(e.a) * 200; ty = e.y + Math.sin(e.a) * 200; throttle = E.boost; }
+    // Nobody trades paint on purpose: a head-on, or any fast closure at short range, is sidestepped.
+    if (target && (headOn(e, target, E.avoidRange) || closing(e, target, E.closeRange))) {
       const side = angDiff(e.a, Math.atan2(target.y - e.y, target.x - e.x)) > 0 ? -1 : 1;
       tx = e.x + Math.cos(e.a + side * 1.2) * 200; ty = e.y + Math.sin(e.a + side * 1.2) * 200;
     }
     const want = Math.atan2(ty - e.y, tx - e.x);
     const d = angDiff(e.a, want);
     const turn = e.turn * turnFactor(e.v, e.speed * E.brake, e.speed * E.boost);
-    e.a += clamp(d, -turn * dt, turn * dt);
+    const turned = e.stun > 0 ? 0 : clamp(d, -turn * dt, turn * dt);
+    if (e.stun > 0) e.stun -= dt; else e.a += turned;
+    e.omega = dt > 0 ? turned / dt : 0;
     e.v = lerp(e.v, e.speed * throttle, 1 - Math.pow(.05, dt));
     e.x += Math.cos(e.a) * e.v * dt;
     e.y += Math.sin(e.a) * e.v * dt;
@@ -112,10 +136,17 @@ export function updateEnemies(dt) {
         life: E.bulletLife,
       });
     }
-    if (player.flight === 'flying' && Math.hypot(player.x - e.x, player.y - e.y) < E.ramDist) {
-      e.hp = 0;
-      damagePlayer(E.ramDamage);
-      explosion(e.x, e.y, false);
+    e.collideCd = Math.max(0, (e.collideCd || 0) - dt);
+    if (player.flight === 'flying' && e.collideCd <= 0 && Math.hypot(player.x - e.x, player.y - e.y) < E.collision.radius) {
+      // Glancing collision: both hurt, shoved apart, briefly uncontrollable.
+      const C = E.collision, dx = e.x - player.x, dy = e.y - player.y, len = Math.hypot(dx, dy) || 1;
+      e.collideCd = C.cooldown; e.hp -= C.enemyDamage; e.stun = C.stunSeconds; e.recover = E.recoverSeconds; player.stun = C.stunSeconds;
+      e.x += dx / len * C.shove; e.y += dy / len * C.shove;
+      player.x -= dx / len * C.shove * .5; player.y -= dy / len * C.shove * .5;
+      game.collisions = (game.collisions || 0) + 1;
+      for (let i = 0; i < 6; i++) game.particles.push({ x: player.x + dx / 2, y: player.y + dy / 2, vx: rand(-90, 90), vy: rand(-90, 90), life: .3, max: .3, size: 3, kind: 'fire' });
+      damagePlayer(C.damage);
+      if (e.hp <= 0) explosion(e.x, e.y, false);
     }
   }
 }

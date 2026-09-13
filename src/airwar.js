@@ -12,7 +12,7 @@ import { game } from './state.js';
 import { view } from './canvas.js';
 import { clamp, angDiff, rand, lerp, TAU } from './util.js';
 import { turnFactor } from './player.js';
-import { leadPoint, headOn } from './enemies.js';
+import { leadPoint, headOn, closing } from './enemies.js';
 import { damageShip } from './ships.js';
 import { explosion } from './particles.js';
 import { notify } from './campaign.js';
@@ -29,8 +29,8 @@ function pilot(role, aircraft, x, y, a, extra = {}) {
 // Common flight: turn toward a point at a throttle, with turn rate following speed.
 function steer(f, tx, ty, throttle, dt) {
   const want = Math.atan2(ty - f.y, tx - f.x), diff = angDiff(f.a, want);
-  const turn = f.turn * turnFactor(f.v, f.brake, f.boost);
-  f.a += clamp(diff, -turn * dt, turn * dt);
+  const turn = f.turn * turnFactor(f.v, f.brake, f.boost), turned = clamp(diff, -turn * dt, turn * dt);
+  f.a += turned; f.omega = dt > 0 ? turned / dt : 0;
   const goal = throttle > 1 ? f.boost : throttle < 1 ? f.brake : f.speed;
   f.v = lerp(f.v, goal, 1 - Math.pow(.05, dt));
   f.x += Math.cos(f.a) * f.v * dt; f.y += Math.sin(f.a) * f.v * dt;
@@ -45,11 +45,11 @@ function nearestEnemy(point, range) {
   }
   return best;
 }
-// Lead pursuit and gunfire; returns true while the target is still worth chasing.
-function attack(f, target, dt, veteran = false) {
-  const W = CONFIG.airWar.wing, aim = veteran ? W.veteran.aimCone : W.aimCone, cooldown = veteran ? W.veteran.fireCooldown : W.fireCooldown;
+// Lead pursuit and gunfire with the given gunnery (aim cone, fire cooldown).
+function attack(f, target, dt, gunnery = CONFIG.airWar.gunnery) {
+  const aim = gunnery.aimCone, cooldown = gunnery.fireCooldown;
   let tx, ty;
-  if (headOn(f, target, CONFIG.enemy.avoidRange)) {
+  if (headOn(f, target, CONFIG.enemy.avoidRange) || closing(f, target, CONFIG.enemy.closeRange)) {
     const side = angDiff(f.a, Math.atan2(target.y - f.y, target.x - f.x)) > 0 ? -1 : 1;
     tx = f.x + Math.cos(f.a + side * 1.2) * 200; ty = f.y + Math.sin(f.a + side * 1.2) * 200;
   } else ({ x: tx, y: ty } = leadPoint(f, target, CONFIG.player.bulletSpeed));
@@ -90,17 +90,29 @@ function flyWing(f, dt) {
     steer(f, p.x + Math.cos(a) * 260, p.y + Math.sin(a) * 260, 1, dt);
     return;
   }
-  // Fight what threatens the player, or whatever is right on top of the wingman itself.
-  const near = nearestEnemy(f, W.engageRange), threat = nearestEnemy(p, W.engageRange) || near;
-  if (threat && (distance(p, threat) < W.leashRange || distance(f, threat) < W.engageRange * .6)) { attack(f, threat, dt, veteran); return; }
+  // Doctrine: cover the player. Fight only what is on the player (tail-chasers
+  // first) or right on top of the wingman itself, and break off when hurt.
+  if (f.hp >= f.maxHp * W.retreatHull) {
+    let threat = null, best = Infinity;
+    for (const e of game.enemies) {
+      if (e.hp <= 0) continue;
+      const dp = distance(p, e), df = distance(f, e);
+      if (dp > W.engageRange && df > W.selfDefence) continue;
+      const toPlayer = Math.atan2(p.y - e.y, p.x - e.x);
+      const onTail = Math.abs(angDiff(e.a, toPlayer)) < .7 && Math.abs(angDiff(p.a, toPlayer + Math.PI)) > 2.2;
+      const score = dp - (onTail ? 600 : 0);
+      if (score < best) { best = score; threat = e; }
+    }
+    if (threat) { attack(f, threat, dt, veteran ? W.veteran : W); return; }
+  }
   // Formation slot off the player's quarters; speed matches the gap.
   const [along, lateral] = W.formation[(f.slot || 0) % W.formation.length];
   const sx = p.x + Math.cos(p.a) * along - Math.sin(p.a) * lateral, sy = p.y + Math.sin(p.a) * along + Math.cos(p.a) * lateral;
   const gap = Math.hypot(sx - f.x, sy - f.y);
   if (gap > W.rejoinRange) { steer(f, sx, sy, 2, dt); return; }
   const want = gap < 30 ? p.a : Math.atan2(sy - f.y, sx - f.x), diff = angDiff(f.a, want);
-  const turn = f.turn * turnFactor(f.v, f.brake, f.boost);
-  f.a += clamp(diff, -turn * dt, turn * dt);
+  const turn = f.turn * turnFactor(f.v, f.brake, f.boost), turned = clamp(diff, -turn * dt, turn * dt);
+  f.a += turned; f.omega = dt > 0 ? turned / dt : 0;
   const ahead = (sx - f.x) * Math.cos(f.a) + (sy - f.y) * Math.sin(f.a);
   const goal = clamp(p.speed * (1 + ahead / 120), f.brake, f.boost);
   f.v = lerp(f.v, goal, 1 - Math.pow(.02, dt));

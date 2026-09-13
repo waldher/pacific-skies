@@ -62,7 +62,7 @@ function update(dt) {
         game.particles.push({ x: b.x, y: b.y, vx: rand(-40, 40), vy: rand(-40, 40), life: 0.2, max: 0.2, size: 3, kind: 'fire' });
         if (e.hp <= 0) {
           if (e.rescue) game.rescue.intercepts = (game.rescue.intercepts || 0) + 1;
-          game.score += e.ace ? CONFIG.score.aceKill : CONFIG.score.kill;
+          game.score += Math.round((e.ace ? CONFIG.score.aceKill : CONFIG.score.kill) * (b.pilot ? CONFIG.airWar.wing.killScore : 1));
           if (!b.fromAlly && !b.fromShip) {
             game.playerMerit = (game.playerMerit || 0) + 1;
             if (e.strike) game.raidIntercepts = (game.raidIntercepts || 0) + 1;

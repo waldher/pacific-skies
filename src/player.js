@@ -33,8 +33,12 @@ export function updatePlayer(dt) {
       throttleT = lerp(P.speedBrake, P.speedBoost, clamp(m / 70, 0, 1));
     }
   }
+  // A collision knocks the controls out for a moment.
+  if (player.stun > 0) { player.stun -= dt; turnIn = 0; }
   const previous = { x: player.x, y: player.y };
-  player.a += turnIn * P.turnRate * turnFactor(player.speed, P.speedBrake, P.speedBoost) * dt;
+  const turned = turnIn * P.turnRate * turnFactor(player.speed, P.speedBrake, P.speedBoost) * dt;
+  player.a += turned;
+  player.omega = dt > 0 ? turned / dt : 0;   // gunners lead a turning target along its arc
   player.speed = lerp(player.speed, throttleT, 1 - Math.pow(0.02, dt));
   player.x += Math.cos(player.a) * player.speed * dt;
   player.y += Math.sin(player.a) * player.speed * dt;

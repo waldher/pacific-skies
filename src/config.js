@@ -79,24 +79,27 @@ export const CONFIG = {
   enemy: {
     speed: 245,
     turn: 2.1,
-    hp: 3,                    // collisions no longer do the enemy's work, so guns must
-    fireCooldown: 0.9,
-    ace: { speed: 290, turn: 2.6, hp: 5, fireCooldown: 0.65 },
+    hp: 4,                    // collisions no longer do the enemy's work, so guns must
+    fireCooldown: 0.6,
+    ace: { speed: 290, turn: 2.6, hp: 6, fireCooldown: 0.45 },
     aceFromTerritory: 2,           // first wave that can include aces
     aceEvery: 3,              // every Nth enemy in a wave is an ace
-    bulletSpeed: 560,
-    bulletLife: 1.4,
-    bulletDamage: 9,
+    bulletSpeed: 660,
+    bulletLife: 1.2,
+    bulletDamage: 12,
     engageDist: 470,          // max range to open fire
-    aimCone: 0.28,            // rad off-nose tolerance to fire
-    ramDist: 26,
-    ramDamage: 50,            // a collision costs half a hull and pays no score
-    avoidRange: 190,          // fighters sidestep a head-on closer than this
+    aimCone: 0.34,            // rad off-nose tolerance to fire
+    // Glancing collisions: both aircraft are hurt, shoved apart and briefly
+    // uncontrollable. Nobody dies of one, and ramming pays no score.
+    collision: { radius: 26, damage: 15, enemyDamage: 1, shove: 70, stunSeconds: .5, cooldown: 1 },
+    avoidRange: 260,          // fighters sidestep a head-on closer than this
+    closeRange: 200,          // and any fast closure inside this, whatever the headings
+    recoverSeconds: 1.5,      // after a collision, extend away before re-engaging
     brake: .65, boost: 1.35,  // throttle multipliers of an enemy's base speed
     // Flying styles. Recruits pure-pursue; veterans lead their target and brake
     // to cut inside; aces boom and zoom, extending after a pass and breaking
     // hard when something gets on their tail.
-    styles: { veteran: { brakeAngle: 1.1 }, ace: { extendSeconds: 1.6, breakSeconds: 1, breakRange: 320, passRange: 150 } },
+    styles: { weaveRange: 260, weave: 170, veteran: { brakeAngle: 1.1 }, ace: { extendSeconds: 1.6, breakSeconds: 1, breakRange: 320, passRange: 150 } },
     spawnDistMin: 750,
     spawnDistMax: 1150,
   },
@@ -139,12 +142,17 @@ export const CONFIG = {
     // Wingmen: a squadron that flies off the player's quarters, engages what the
     // player engages and comes home. Slots by rank; losses are replaced only
     // after further combat sorties, so bringing them home matters.
-    wing: { slots: [1, 2, 3], hp: 40, speed: 275, boost: 370, turn: 2.8, fireCooldown: .45, aimCone: .22,
-      formation: [[-70, 62], [-70, -62], [-140, 0]], engageRange: 550, leashRange: 900, rejoinRange: 600,
-      replacementSorties: 2, veteranKills: 3, veteran: { aimCone: .14, fireCooldown: .32, hp: 52 },
+    // Doctrine: cover the player, never play the game for them. Wingmen fight
+    // only what threatens the player (tail-chasers first), shoot slowly and
+    // only clean shots, break off when hurt, and their kills score half.
+    wing: { slots: [1, 2, 3], hp: 40, speed: 275, boost: 370, turn: 2.8, fireCooldown: .9, aimCone: .12,
+      formation: [[-70, 62], [-70, -62], [-140, 0]], engageRange: 450, selfDefence: 220, rejoinRange: 600,
+      retreatHull: .4, killScore: .5,
+      replacementSorties: 2, veteranKills: 3, veteran: { aimCone: .16, fireCooldown: .6, hp: 52 },
       names: ['Hawk', 'Dutch', 'Tex', 'Moose', 'Sparky', 'Duke', 'Red', 'Slim', 'Ace', 'Whiskey', 'Chief', 'Kid'] },
     // Captured airfields fly their own patrols around the neighbourhood.
     patrol: { intervalMin: 55, intervalMax: 90, size: 2, maxActive: 6, duration: 80, radius: 900, engageRange: 600 },
+    gunnery: { aimCone: .22, fireCooldown: .5 },   // patrols and carrier aircraft
     // The carrier keeps a combat air patrol overhead and flies strikes of its own.
     cap: { count: 2, radius: 420, respawn: 60, engageRange: 750 },
     carrierStrike: { intervalMin: 110, intervalMax: 160, size: 2, range: 6500, damage: 10, attackRange: 80 },
