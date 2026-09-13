@@ -201,6 +201,26 @@ function check(name, ok, detail) {
     return campaignChecks(window.__game);
   });
   for (const result of campaign) check(result.name, result.ok);
+  check('tap to intercept tracks the raid and clears when it is over', await page.evaluate(async () => {
+    const { game, CONFIG, update } = window.__game, home = game.airfields.find(f => f.id === 'home-airfield');
+    game.enemies = []; game.allies = []; game.waypoint = null; game.guidanceCleared = false;
+    game.player.flight = 'flying'; game.player.altitude = CONFIG.render.flightHeight; game.player.x = home.x + 400; game.player.y = home.y; game.cam.x = game.player.x; game.cam.y = game.player.y;
+    // Two bombers inbound on the home field, close enough to be detected.
+    for (let i = 0; i < 2; i++) game.enemies.push({ x: home.x - 700, y: home.y + i * 60, a: 0, hp: 3, speed: 205, turn: 1.7, fireCd: 9, wobble: 0,
+      strike: true, strikeRole: 'bomber', sourceId: 'test', targetBaseId: 'home-airfield', phase: 'attack', retreatDistance: 0 });
+    update(.02);
+    await new Promise(r => setTimeout(r, 150));
+    const button = document.getElementById('threat-status');
+    if (button.hidden) return false;
+    button.click(); update(.02);
+    const wp = game.waypoint, near = game.enemies.reduce((a, b) => Math.hypot(b.x - game.player.x, b.y - game.player.y) < Math.hypot(a.x - game.player.x, a.y - game.player.y) ? b : a);
+    const set = !!wp?.defend && wp.baseId === 'home-airfield' && Math.hypot(wp.x - near.x, wp.y - near.y) < 1;
+    for (const e of game.enemies) e.hp = 0;
+    update(.02); update(.02);
+    const cleared = game.waypoint == null || !game.waypoint.defend;
+    game.enemies = [];
+    return set && cleared;
+  }));
   check('head-on fighters sidestep instead of ramming', await page.evaluate(() => {
     const { game, CONFIG, update, keys } = window.__game, p = game.player;
     for (const key of Object.keys(keys)) keys[key] = false;

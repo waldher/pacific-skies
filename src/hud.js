@@ -327,7 +327,9 @@ function drawThreatStatus() {
   const first = threats.reduce((a, b) => Math.hypot(a.x - game.player.x, a.y - game.player.y) < Math.hypot(b.x - game.player.x, b.y - game.player.y) ? a : b);
   const target = raidTarget(first.targetBaseId), formation = threats.filter(e => e.targetBaseId === first.targetBaseId);
   const name = target?.name || (first.targetBaseId === 'home-airfield' ? 'Home airfield' : 'Friendly position');
-  text('threat-title', `${formation.length} attackers → base`);
-  text('threat-detail', 'Tap to defend');
-  el('threat-status').onclick=()=>{if(target){game.waypoint={x:target.x,y:target.y,name,defend:true,auto:false};game.guidanceCleared=false;}};
+  const intercepting = game.waypoint?.defend && game.waypoint.baseId === first.targetBaseId;
+  text('threat-title', `${formation.length} attacker${formation.length === 1 ? '' : 's'} → ${name}`);
+  text('threat-detail', intercepting ? 'Intercepting' : 'Tap to intercept');
+  // An intercept course tracks the nearest attacker (objectives.js) and clears itself when the raid is over.
+  el('threat-status').onclick=()=>{if(target){game.waypoint={x:first.x,y:first.y,name:`Raid on ${name}`,defend:true,baseId:first.targetBaseId,auto:false};game.guidanceCleared=false;game.message='Intercept course set';game.messageTime=CONFIG.conquest.messageDuration;}};
 }

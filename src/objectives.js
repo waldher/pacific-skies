@@ -4,6 +4,9 @@ import { knownInstallations, knownShips, explorationLeads, observedAt, flightSec
 import { availableBases, resolveBase } from './bases.js';
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 const closest=(p,list)=>[...list].sort((a,b)=>distance(p,a)-distance(p,b))[0];
+export function raidAttackers(game, baseId) {
+  return game.enemies.filter(e=>e.strike && e.hp>0 && e.phase!=='retreat' && e.targetBaseId===baseId);
+}
 function siteWaypoint(site) { return {x:site.x,y:site.y,name:site.name,siteId:site.id,role:site.role,owner:site.owner,auto:true}; }
 export function updateGuidance(game) {
   if(!game.player || game.mode!=='play')return;
@@ -11,6 +14,12 @@ export function updateGuidance(game) {
   let wp=game.waypoint;
   if(!wp && game.guidanceCleared)return;
   if(wp?.rescue && game.rescue?.status!=='active')game.waypoint=wp=null;
+  // An intercept course follows the nearest attacker and ends with the raid.
+  if(wp?.defend) {
+    const attackers=raidAttackers(game,wp.baseId);
+    if(!attackers.length){game.waypoint=wp=null;game.message='Raid over · course cleared';game.messageTime=CONFIG.conquest.messageDuration;}
+    else {const near=closest(p,attackers);wp.x=near.x;wp.y=near.y;}
+  }
   if(wp?.rescue){const carrier=knownShips(game).find(s=>s.id===wp.shipId);if(carrier){wp.x=carrier.x;wp.y=carrier.y;}}
   // Preserve chart-selected courses. Automatic guidance advances after completion.
   if(wp?.auto && wp.siteId!=null && game.intelligence.sites[wp.siteId]?.owner==='us' && !wp.returning)game.waypoint=wp=null;
@@ -40,7 +49,7 @@ export function objectiveFor(game) {
   if(!wp)return {target:null,title:p.flight==='landed'?'Ready for takeoff':'Choose a destination',detail:'Tap the map'};
   let title='Fly to destination',reason='';
   const site=knownInstallations(game).find(t=>t.id===wp.siteId || (t.name===wp.name && distance(t,wp)<1));
-  if(wp.defend){title='Defend the base';reason='Shoot down the attackers';}
+  if(wp.defend){const n=raidAttackers(game,wp.baseId).length;title='Defend the base';reason=`${n} attacker${n===1?'':'s'} inbound`;}
   else if(wp.returning || wp.baseId){title='Land to rearm and repair';}
   else if(wp.rescue || (wp.shipId==='carrier' && game.rescue?.status==='active')){title='Defend the carrier';reason=game.rescue?.launched?'Shoot down the attackers':'Fly to the carrier';}
   else if(wp.search){title=wp.region!=null?'Scout the next islands':'Find the enemy outpost';}
