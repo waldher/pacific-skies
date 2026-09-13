@@ -33,8 +33,13 @@ export function updatePlayer(dt) {
       throttleT = lerp(P.speedBrake, P.speedBoost, clamp(m / 70, 0, 1));
     }
   }
-  // A collision knocks the controls out for a moment.
-  if (player.stun > 0) { player.stun -= dt; turnIn = 0; }
+  // A collision sends the aircraft tumbling: the spin winds down as it recovers.
+  const spinning = player.spin > 0;
+  if (spinning) {
+    const C = CONFIG.enemy.collision;
+    player.spin -= dt; turnIn = 0; throttleT = P.speedBrake;
+    player.a += player.spinRate * (.25 + .75 * Math.max(0, player.spin) / C.spinSeconds) * dt;
+  }
   const previous = { x: player.x, y: player.y };
   const turned = turnIn * P.turnRate * turnFactor(player.speed, P.speedBrake, P.speedBoost) * dt;
   player.a += turned;
@@ -67,7 +72,7 @@ export function updatePlayer(dt) {
       });
     }
   }
-  const firing = keys['Space'] || fireTouch.active;
+  const firing = (keys['Space'] || fireTouch.active) && !spinning;
   if (firing && player.fireCd <= 0 && !player.overheated) {
     player.fireCd = P.fireCooldown;
     player.heat += P.heatPerShot;

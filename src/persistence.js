@@ -87,6 +87,9 @@ export function updateCampaignSave(game) {
   const marker = JSON.stringify([game.mode,game.player.flight,game.player.baseId,game.unlockedAircraft,game.rescue?.status,
     game.territories.map(t=>t.owner),Object.keys(game.intelligence?.sites||{}),game.intelligence?.surveyed]);
   if (marker !== lastCheckpoint || game.time-lastSaveTime >= (CONFIG.persistence?.saveInterval ?? 15)) {
-    if (saveCampaign(game)) lastCheckpoint=marker;
+    // A failed save (invalid state, full storage) backs off to the next
+    // interval; retrying every frame costs a full serialisation each time.
+    lastCheckpoint=marker; lastSaveTime=game.time;
+    saveCampaign(game);
   }
 }

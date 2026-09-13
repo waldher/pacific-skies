@@ -50,8 +50,9 @@ const DT = .02, LIMIT = 60;
   // Open water far from every island: nothing but the fight.
   function arena(seed, wingman) {
     api.setSeed(seed); api.startGame();
-    game.raidTimer = Infinity; game.convoyTimer = Infinity; game.allies = []; game.enemies = [];
-    game.airfields.forEach(f => { f.patrolTimer = Infinity; });
+    // Finite "never": Infinity would fail the campaign save's validation every frame.
+    game.raidTimer = 1e9; game.convoyTimer = 1e9; game.allies = []; game.enemies = [];
+    game.airfields.forEach(f => { f.patrolTimer = 1e9; });
     const p = game.player, b = game.theaterBounds;
     p.x = b.maxX + 5000; p.y = b.maxY + 5000; p.a = 0; p.flight = 'flying'; p.altitude = CONFIG.render.flightHeight; p.hp = 100; p.speed = CONFIG.aircraft.p38.speedCruise;
     game.cam.x = p.x; game.cam.y = p.y; game.collisions = 0;

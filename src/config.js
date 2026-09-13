@@ -89,9 +89,11 @@ export const CONFIG = {
     bulletDamage: 12,
     engageDist: 470,          // max range to open fire
     aimCone: 0.34,            // rad off-nose tolerance to fire
-    // Glancing collisions: both aircraft are hurt, shoved apart and briefly
-    // uncontrollable. Nobody dies of one, and ramming pays no score.
-    collision: { radius: 26, damage: 15, enemyDamage: 1, shove: 70, stunSeconds: .5, cooldown: 1 },
+    // Glancing collisions: both aircraft are hurt and shoved apart, the enemy
+    // is briefly uncontrollable and the player spins out. Nobody dies of one,
+    // and ramming pays no score.
+    collision: { radius: 26, damage: 15, enemyDamage: 1, shove: 70, stunSeconds: .5, cooldown: 1,
+      spinSeconds: 1.1, spinTurns: 1.25 },   // the player tumbles: no controls, no guns, speed bleeding off
     avoidRange: 260,          // fighters sidestep a head-on closer than this
     closeRange: 200,          // and any fast closure inside this, whatever the headings
     recoverSeconds: 1.5,      // after a collision, extend away before re-engaging

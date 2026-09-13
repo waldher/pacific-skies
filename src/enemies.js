@@ -146,7 +146,9 @@ export function updateEnemies(dt) {
     if (player.flight === 'flying' && e.collideCd <= 0 && Math.hypot(player.x - e.x, player.y - e.y) < E.collision.radius) {
       // Glancing collision: both hurt, shoved apart, briefly uncontrollable.
       const C = E.collision, dx = e.x - player.x, dy = e.y - player.y, len = Math.hypot(dx, dy) || 1;
-      e.collideCd = C.cooldown; e.hp -= C.enemyDamage; e.stun = C.stunSeconds; e.recover = E.recoverSeconds; player.stun = C.stunSeconds;
+      e.collideCd = C.cooldown; e.hp -= C.enemyDamage; e.stun = C.stunSeconds; e.recover = E.recoverSeconds;
+      // The player tumbles for a while: no controls, no guns, speed bleeding off.
+      player.spin = C.spinSeconds; player.spinRate = (rand(0, 1) < .5 ? -1 : 1) * TAU * C.spinTurns / C.spinSeconds;
       // An impulse that decays over the stun, not a jump: the distance is C.shove.
       const tau = C.stunSeconds / 2, push = C.shove / tau;
       e.shoveX = dx / len * push; e.shoveY = dy / len * push;
