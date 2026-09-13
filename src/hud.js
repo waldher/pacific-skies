@@ -133,10 +133,15 @@ export function hudArrows(game) {
   const p = game.player, arrows = [];
   if (!p || game.mode !== 'play' || p.flight !== 'flying') return arrows;
   const near = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
-  if (game.waypoint) arrows.push({ kind: 'objective', x: game.waypoint.x, y: game.waypoint.y, label: '', arrived: coursePhase(game) === 'arrived' });
+  if (game.waypoint) {
+    const { title, detail } = flightPresentation(game);
+    const site = game.territories.find(t => t.id === game.waypoint.siteId);
+    const progress = site && site.owner !== 'us' && site.progress > 0 ? site.progress / CONFIG.conquest.captureSeconds : 0;
+    arrows.push({ kind: 'objective', x: game.waypoint.x, y: game.waypoint.y, label: title.toUpperCase(), sub: detail, arrived: coursePhase(game) === 'arrived', progress });
+  }
   const bases = availableBases(game).map(b => resolveBase(game, b.id)).filter(Boolean).sort((a, b) => near(p, a) - near(p, b));
   const base = bases[0];
-  if (base && !(game.waypoint && near(game.waypoint, base) < 1)) arrows.push({ kind: 'base', x: base.x, y: base.y, label: `${base.kind === 'carrier' ? 'CARRIER' : 'LAND'} ${flightSeconds(game, base)}s` });
+  if (base && !(game.waypoint && near(game.waypoint, base) < 1)) arrows.push({ kind: 'base', x: base.x, y: base.y, label: 'NEAREST BASE', sub: `${base.kind === 'carrier' ? 'carrier · ' : ''}${flightSeconds(game, base)}s` });
   const raiders = game.enemies.filter(e => e.strike && e.hp > 0 && e.phase !== 'retreat' && !e.rescue && enemyObserved(game, e));
   if (raiders.length) {
     const first = raiders.reduce((a, b) => near(p, a) < near(p, b) ? a : b);
@@ -147,25 +152,35 @@ export function hudArrows(game) {
 }
 function drawArrows() {
   const { W, H } = view, [px, py] = w2s(game.player.x, game.player.y);
-  const arrows = hudArrows(game);
+  const arrows = hudArrows(game), headings = [];
   arrows.forEach((arrow, i) => {
     const [sx, sy] = w2s(arrow.x, arrow.y);
     ctx.save(); ctx.strokeStyle = ctx.fillStyle = ARROWS[arrow.kind]; ctx.lineWidth = 1.5;
     if (arrow.kind === 'objective' && arrow.arrived) {
-      ctx.globalAlpha = .55; ctx.beginPath(); ctx.arc(sx, sy, 18, 0, TAU); ctx.stroke(); ctx.restore(); return;
+      // A ring at the objective; it fills clockwise as a capture progresses.
+      ctx.globalAlpha = .55; ctx.beginPath(); ctx.arc(sx, sy, 18, 0, TAU); ctx.stroke();
+      if (arrow.progress > 0) { ctx.globalAlpha = .95; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.arc(sx, sy, 18, -Math.PI / 2, -Math.PI / 2 + TAU * arrow.progress); ctx.stroke(); }
+      ctx.globalAlpha = .9; ctx.font = '650 9px system-ui'; ctx.textAlign = 'center'; ctx.fillText(arrow.label, sx, sy + 32);
+      if (arrow.sub) { ctx.font = '600 8px system-ui'; ctx.fillText(arrow.sub, sx, sy + 42); }
+      ctx.restore(); return;
     }
     // On-screen targets need no arrow; the raid's attackers already carry labels.
     if (arrow.kind !== 'objective' && sx > 20 && sx < W - 20 && sy > 20 && sy < H - 20) { ctx.restore(); return; }
-    const dx = sx - px, dy = sy - py, d = Math.hypot(dx, dy), radius = Math.min(W * .3, H * .2) + i * 14;
-    const x = px + dx * Math.min(1, radius / (d || 1)), y = py + dy * Math.min(1, radius / (d || 1)), a = Math.atan2(dy, dx);
+    const dx = sx - px, dy = sy - py, d = Math.hypot(dx, dy), a = Math.atan2(dy, dx);
+    // Each arrow has its own ring; two pointing the same way stack outward so their labels stay apart.
+    const stacked = headings.filter(h => Math.abs(angDiff(h, a)) < .5).length; headings.push(a);
+    const radius = Math.min(W * .3, H * .2) + i * 14 + stacked * 30;
+    const x = px + dx * Math.min(1, radius / (d || 1)), y = py + dy * Math.min(1, radius / (d || 1));
     ctx.translate(x, y); ctx.rotate(a);
     ctx.beginPath(); ctx.moveTo(-5, -5); ctx.lineTo(3, 0); ctx.lineTo(-5, 5);
     if (arrow.kind === 'raid') { ctx.closePath(); ctx.fill(); } else ctx.stroke();
     ctx.rotate(-a);
     if (arrow.label) {
+      // A stacked arrow labels above its chevron, the one beneath it below.
+      const above = stacked % 2 === 1, ly = above ? (arrow.sub ? -20 : -10) : 18;
       ctx.font = '650 9px system-ui'; ctx.textAlign = 'center';
-      ctx.fillText(arrow.label, 0, 18);
-      if (arrow.sub) { ctx.font = '600 8px system-ui'; ctx.fillText(arrow.sub, 0, 28); }
+      ctx.fillText(arrow.label, 0, ly);
+      if (arrow.sub) { ctx.font = '600 8px system-ui'; ctx.fillText(arrow.sub, 0, ly + 10); }
     }
     ctx.restore();
   });
@@ -280,15 +295,11 @@ export function drawMenus() {
     el('health-fill').style.background = p.hp > 35 ? '#82dfbc' : '#f18f7c';
     el('heat-fill').style.width = `${p.heat * 100}%`;
     el('heat-fill').style.background = p.overheated ? '#f18f7c' : '#e5b76f';
-    const nearby = game.territories.find(t => installationKnown(game,t) && Math.hypot(t.x - p.x, t.y - p.y) < CONFIG.conquest.captureRadius);
-    let {title,detail} = flightPresentation(game);
-    if (nearby?.progress>0 && nearby.owner!=='us') { title='Capturing'; detail=''; }
-    if (p.landingHint) { title='Approach'; detail=p.landingHint; }
-    el('objective').hidden = !title || p.flight !== 'flying'; text('objective-title', title); text('objective-detail', detail); el('objective-detail').hidden=!detail;
-    el('capture-track').hidden = !nearby || nearby.progress <= 0 || nearby.owner === 'us' || p.flight !== 'flying';
-    el('capture-fill').style.width = `${(nearby?.progress || 0) / CONFIG.conquest.captureSeconds * 100}%`;
-    // Avoid repeating the deck status in a second panel.
-    el('toast').hidden = game.messageTime <= 0 || p.flight === 'landed' || /spotted|follow the gold|select it on the map/i.test(game.message); text('toast', game.message);
+    // One line at the bottom: the landing hint while lining up, otherwise the latest message
+    // (not deck status, which the landed panel already shows).
+    const hint = p.flight === 'flying' && p.landingHint;
+    const message = game.messageTime > 0 && p.flight !== 'landed' && !/spotted|follow the gold|select it on the map/i.test(game.message) ? game.message : '';
+    el('toast').hidden = !hint && !message; text('toast', hint || message);
     const action = carrierAction(game), button = el('carrier-action');
     button.textContent = (isTouchDevice ? '' : 'L · ') + action.label;
     button.disabled = !action.enabled; button.hidden = p.flight !== 'landed';

@@ -424,7 +424,7 @@ function check(name, ok, detail) {
     await mobile.setViewportSize({ width,height }); await mobile.waitForTimeout(100);
     check(`${name} sortie panel fits without overlapping the HUD`, await mobile.evaluate(() => {
       const p = document.getElementById('sortie-panel'), r = p.getBoundingClientRect();
-      const ids = ['stats','objective','campaign-status','flight-controls'];
+      const ids = ['stats','campaign-status','flight-controls'];
       return r.x >= 0 && r.right <= innerWidth && r.y >= 0 && r.bottom <= innerHeight && p.scrollWidth <= p.clientWidth
         && ids.every(id => { const e = document.getElementById(id); if (!e || e.hidden) return true; const b = e.getBoundingClientRect(); return r.right <= b.x || r.x >= b.right || r.bottom <= b.y || r.y >= b.bottom; });
     }));
