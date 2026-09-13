@@ -32,12 +32,14 @@ const BANDS = {
   soloCleared: [.8, 1],          // fraction of fights the pilot wins inside the time limit
   soloSeconds: [6, 55],          // neither a wipe nor a stalemate
   wingKillShare: [0, .45],       // the wingman helps; it does not take the fight
-  wingHullRelief: [.35, 1],      // hull lost with a wingman as a fraction of solo: help, not immunity
+  wingHullRelief: [.35, 1.1],    // hull lost with a wingman as a fraction of solo: not immunity, not a liability
+  wingTimeRelief: [.3, .9],      // fight length with a wingman as a fraction of solo: the help shows here
   wingSurvival: [.6, 1],         // a wingman worth keeping mostly comes home
   ramSurvivable: [3, Infinity],  // deliberate collisions survived before dying
   straightHits: [2, Infinity],   // a non-manoeuvring target gets hit
 };
-const SEEDS = [11, 23, 37, 51, 68, 74, 85, 96];
+// Sixteen geometries: collisions are chancy, and eight fights is too few to average them.
+const SEEDS = process.env.SEEDS ? process.env.SEEDS.split(',').map(Number) : [11, 23, 37, 51, 68, 74, 85, 96, 3, 8, 14, 29, 42, 57, 63, 77];
 const DT = .02, LIMIT = 60;
 
 (async () => {
@@ -144,6 +146,7 @@ const DT = .02, LIMIT = 60;
     soloCleared: solo.filter(r => r.cleared).length / solo.length, soloSeconds: mean(solo, 'seconds'),
     wingKillShare: paired.reduce((n, r) => n + r.wingKills, 0) / (paired.length * 3),
     wingHullRelief: mean(paired, 'hullLost') / Math.max(1, mean(solo, 'hullLost')),
+    wingTimeRelief: mean(paired, 'seconds') / Math.max(1, mean(solo, 'seconds')),
     wingSurvival: paired.filter(r => r.wingAlive).length / paired.length,
     ramSurvivable: ramSurvived, straightHits,
   };

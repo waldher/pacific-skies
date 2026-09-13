@@ -42,6 +42,13 @@ export function updatePlayer(dt) {
   player.speed = lerp(player.speed, throttleT, 1 - Math.pow(0.02, dt));
   player.x += Math.cos(player.a) * player.speed * dt;
   player.y += Math.sin(player.a) * player.speed * dt;
+  if (player.shoveX || player.shoveY) {
+    // Collision impulse, decaying over the stun.
+    player.x += player.shoveX * dt; player.y += player.shoveY * dt;
+    const k = Math.exp(-dt / (CONFIG.enemy.collision.stunSeconds / 2));
+    player.shoveX *= k; player.shoveY *= k;
+    if (Math.abs(player.shoveX) + Math.abs(player.shoveY) < 1) player.shoveX = player.shoveY = 0;
+  }
 
   checkDeckLanding(game, previous);
   if (player.flight !== 'flying') return;

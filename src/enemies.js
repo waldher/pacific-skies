@@ -126,6 +126,12 @@ export function updateEnemies(dt) {
     e.v = lerp(e.v, e.speed * throttle, 1 - Math.pow(.05, dt));
     e.x += Math.cos(e.a) * e.v * dt;
     e.y += Math.sin(e.a) * e.v * dt;
+    if (e.shoveX || e.shoveY) {
+      e.x += e.shoveX * dt; e.y += e.shoveY * dt;
+      const k = Math.exp(-dt / (E.collision.stunSeconds / 2));
+      e.shoveX *= k; e.shoveY *= k;
+      if (Math.abs(e.shoveX) + Math.abs(e.shoveY) < 1) e.shoveX = e.shoveY = 0;
+    }
 
     e.fireCd -= dt;
     if (chase && e.fireCd <= 0 && dist < E.engageDist && aim < E.aimCone) {
@@ -141,8 +147,10 @@ export function updateEnemies(dt) {
       // Glancing collision: both hurt, shoved apart, briefly uncontrollable.
       const C = E.collision, dx = e.x - player.x, dy = e.y - player.y, len = Math.hypot(dx, dy) || 1;
       e.collideCd = C.cooldown; e.hp -= C.enemyDamage; e.stun = C.stunSeconds; e.recover = E.recoverSeconds; player.stun = C.stunSeconds;
-      e.x += dx / len * C.shove; e.y += dy / len * C.shove;
-      player.x -= dx / len * C.shove * .5; player.y -= dy / len * C.shove * .5;
+      // An impulse that decays over the stun, not a jump: the distance is C.shove.
+      const tau = C.stunSeconds / 2, push = C.shove / tau;
+      e.shoveX = dx / len * push; e.shoveY = dy / len * push;
+      player.shoveX = -dx / len * push * .5; player.shoveY = -dy / len * push * .5;
       game.collisions = (game.collisions || 0) + 1;
       for (let i = 0; i < 6; i++) game.particles.push({ x: player.x + dx / 2, y: player.y + dy / 2, vx: rand(-90, 90), vy: rand(-90, 90), life: .3, max: .3, size: 3, kind: 'fire' });
       damagePlayer(C.damage);
