@@ -7,7 +7,7 @@ import { stick, fireTouch, isTouchDevice } from './input.js';
 import { rr } from './sprites.js';
 import { AIRCRAFT, aircraftUnlocked } from './aircraft-types.js';
 import { aircraftPreviews } from './aircraft-previews.js';
-import { availableBases, canUseAircraft, selectSortie } from './bases.js';
+import { availableBases, canUseAircraft, selectSortie, resolveBase } from './bases.js';
 import { carrierAction } from './carrier.js';
 import { sessionSummary } from './session-report.js';
 import { CONFIG } from './config.js';
@@ -121,26 +121,54 @@ function drawNavigation() {
   ctx.fillStyle = 'rgba(8,27,39,.88)'; rr(mx, my, mw, mh, 10);
   drawTheaterMap(ctx, game, {x:mx, y:my, w:mw, h:mh});
   ctx.textAlign='right'; ctx.font='600 9px system-ui'; ctx.fillStyle='#adc6ca'; ctx.fillText('MAP ↗', mx+mw-7,my+mh-5);
-  drawCourseMarker();
+  drawArrows();
 }
 
-// Direction while travelling; a stationary, unlabelled marker once close.
-function drawCourseMarker() {
-  if(game.mode!=='play' || game.player.flight!=='flying' || !game.waypoint)return;
-  const {W,H}=view, target=game.waypoint, [sx,sy]=w2s(target.x,target.y);
-  const phase=coursePhase(game);
-  ctx.save();ctx.strokeStyle='#edce91';ctx.lineWidth=1.5;
-  if(phase==='arrived') {
-    ctx.globalAlpha=.55;
-    ctx.beginPath();ctx.arc(sx,sy,18,0,TAU);ctx.stroke();
-  } else {
-    const [px,py]=w2s(game.player.x,game.player.y);
-    const dx=sx-px,dy=sy-py,d=Math.hypot(dx,dy),radius=Math.min(W*.3,H*.2);
-    const x=px+dx*Math.min(1,radius/(d||1)),y=py+dy*Math.min(1,radius/(d||1));
-    ctx.translate(x,y);ctx.rotate(Math.atan2(dy,dx));
-    ctx.beginPath();ctx.moveTo(-5,-5);ctx.lineTo(3,0);ctx.lineTo(-5,5);ctx.stroke();
+// Guidance arrows, as on a modern flight HUD: gold for the current objective,
+// teal for the nearest base you can land at, red for a raid on a friendly
+// base (pointing at its nearest attacker). Each sits on a ring around the
+// player, off-screen targets only; an objective you have reached is a ring.
+const ARROWS = { objective: '#edce91', base: '#82dfbc', raid: '#ff8a6b' };
+export function hudArrows(game) {
+  const p = game.player, arrows = [];
+  if (!p || game.mode !== 'play' || p.flight !== 'flying') return arrows;
+  const near = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+  if (game.waypoint) arrows.push({ kind: 'objective', x: game.waypoint.x, y: game.waypoint.y, label: '', arrived: coursePhase(game) === 'arrived' });
+  const bases = availableBases(game).map(b => resolveBase(game, b.id)).filter(Boolean).sort((a, b) => near(p, a) - near(p, b));
+  const base = bases[0];
+  if (base && !(game.waypoint && near(game.waypoint, base) < 1)) arrows.push({ kind: 'base', x: base.x, y: base.y, label: `${base.kind === 'carrier' ? 'CARRIER' : 'LAND'} ${flightSeconds(game, base)}s` });
+  const raiders = game.enemies.filter(e => e.strike && e.hp > 0 && e.phase !== 'retreat' && !e.rescue && enemyObserved(game, e));
+  if (raiders.length) {
+    const first = raiders.reduce((a, b) => near(p, a) < near(p, b) ? a : b);
+    const formation = raiders.filter(e => e.targetBaseId === first.targetBaseId), target = raidTarget(first.targetBaseId);
+    arrows.push({ kind: 'raid', x: first.x, y: first.y, label: `RAID ×${formation.length}`, sub: (target?.name || 'friendly base').toUpperCase() });
   }
-  ctx.restore();
+  return arrows;
+}
+function drawArrows() {
+  const { W, H } = view, [px, py] = w2s(game.player.x, game.player.y);
+  const arrows = hudArrows(game);
+  arrows.forEach((arrow, i) => {
+    const [sx, sy] = w2s(arrow.x, arrow.y);
+    ctx.save(); ctx.strokeStyle = ctx.fillStyle = ARROWS[arrow.kind]; ctx.lineWidth = 1.5;
+    if (arrow.kind === 'objective' && arrow.arrived) {
+      ctx.globalAlpha = .55; ctx.beginPath(); ctx.arc(sx, sy, 18, 0, TAU); ctx.stroke(); ctx.restore(); return;
+    }
+    // On-screen targets need no arrow; the raid's attackers already carry labels.
+    if (arrow.kind !== 'objective' && sx > 20 && sx < W - 20 && sy > 20 && sy < H - 20) { ctx.restore(); return; }
+    const dx = sx - px, dy = sy - py, d = Math.hypot(dx, dy), radius = Math.min(W * .3, H * .2) + i * 14;
+    const x = px + dx * Math.min(1, radius / (d || 1)), y = py + dy * Math.min(1, radius / (d || 1)), a = Math.atan2(dy, dx);
+    ctx.translate(x, y); ctx.rotate(a);
+    ctx.beginPath(); ctx.moveTo(-5, -5); ctx.lineTo(3, 0); ctx.lineTo(-5, 5);
+    if (arrow.kind === 'raid') { ctx.closePath(); ctx.fill(); } else ctx.stroke();
+    ctx.rotate(-a);
+    if (arrow.label) {
+      ctx.font = '650 9px system-ui'; ctx.textAlign = 'center';
+      ctx.fillText(arrow.label, 0, 18);
+      if (arrow.sub) { ctx.font = '600 8px system-ui'; ctx.fillText(arrow.sub, 0, 28); }
+    }
+    ctx.restore();
+  });
 }
 
 const el = id => document.getElementById(id);
@@ -233,7 +261,6 @@ export function drawMenus() {
   el('fire-indicator').hidden = !playing || !isTouchDevice || p?.flight !== 'flying';
   el('fire-indicator').dataset.firing = String(fireTouch.active);
   if (playing) {
-    drawThreatStatus();
     text('score-value', game.score.toLocaleString());
     text('hull-value', `${Math.ceil(p.hp)}%`);
     el('hull-value').style.color = p.hp > 35 ? '#82dfbc' : '#f18f7c';
@@ -319,17 +346,4 @@ function raidTarget(id) {
     || (game.airfields || []).find(f => f.id === id)
     || game.ships.find(s => s.id === id || (id === 'fleet-carrier' && s.team === 'us' && s.kind === 'carrier'))
     || game.territories.find(t => `territory-${t.id}` === id);
-}
-function drawThreatStatus() {
-  const threats = game.enemies.filter(e => e.hp > 0 && e.strike && enemyObserved(game,e) && e.phase !== 'retreat' && !e.rescue);
-  el('threat-status').hidden = !threats.length;
-  if (!threats.length) return;
-  const first = threats.reduce((a, b) => Math.hypot(a.x - game.player.x, a.y - game.player.y) < Math.hypot(b.x - game.player.x, b.y - game.player.y) ? a : b);
-  const target = raidTarget(first.targetBaseId), formation = threats.filter(e => e.targetBaseId === first.targetBaseId);
-  const name = target?.name || (first.targetBaseId === 'home-airfield' ? 'Home airfield' : 'Friendly position');
-  const intercepting = game.waypoint?.defend && game.waypoint.baseId === first.targetBaseId;
-  text('threat-title', `${formation.length} attacker${formation.length === 1 ? '' : 's'} → ${name}`);
-  text('threat-detail', intercepting ? 'Intercepting' : 'Tap to intercept');
-  // An intercept course tracks the nearest attacker (objectives.js) and clears itself when the raid is over.
-  el('threat-status').onclick=()=>{if(target){game.waypoint={x:first.x,y:first.y,name:`Raid on ${name}`,defend:true,baseId:first.targetBaseId,auto:false};game.guidanceCleared=false;game.message='Intercept course set';game.messageTime=CONFIG.conquest.messageDuration;}};
 }

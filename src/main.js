@@ -22,7 +22,7 @@ import { hitsShip } from './ships.js';
 import { selectSortie } from './bases.js';
 import { requestCarrier } from './carrier.js';
 import { createRenderer } from './renderer.js';
-import { drawHud, drawMenus } from './hud.js';
+import { drawHud, drawMenus, hudArrows } from './hud.js';
 import { lerp, angDiff, rand, setSeed } from './util.js';
 
 window.addEventListener('pagehide', () => saveCampaign(game));
@@ -159,7 +159,7 @@ function frame(now) {
 }
 // Debug/test API: the playtest harness (and console tinkering) reads
 // live state and drives input through this handle.
-window.__game = { sessionSummary: () => sessionSummary(game), game, CONFIG, startGame, recoverPilot, resumeCampaign, hasSavedCampaign, setSeed, keys, stick, fireTouch, view, angDiff, update, launchTorpedo, launchBomb: () => launchBomb(game), selectSortie: options => selectSortie(game, options), requestCarrier: () => requestCarrier(game), spawnConvoy: () => spawnConvoy(game) };
+window.__game = { sessionSummary: () => sessionSummary(game), game, CONFIG, startGame, recoverPilot, resumeCampaign, hasSavedCampaign, setSeed, keys, stick, fireTouch, view, angDiff, update, launchTorpedo, launchBomb: () => launchBomb(game), selectSortie: options => selectSortie(game, options), requestCarrier: () => requestCarrier(game), spawnConvoy: () => spawnConvoy(game), hudArrows: () => hudArrows(game) };
 
 
 const status = document.getElementById('loading');

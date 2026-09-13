@@ -38,7 +38,6 @@
   .track i { display:block; height:100%; background:var(--accent); border-radius:3px; }
   #objective, #toast { position:absolute; left:50%; transform:translateX(-50%); width:max-content; max-width:calc(100% - 32px);
     box-sizing:border-box; text-align:center; background:var(--panel); border:1px solid #adc6ca26; border-radius:10px; padding:9px 14px; }
-  #flight-hud:has(#threat-status:not([hidden])) #objective { top:165px; }
   #objective { top:145px; } #objective strong { display:block; font-weight:650; }
   #objective-detail { color:var(--muted); font-size:12px; }
   #capture-track { margin-top:7px; height:4px; }
@@ -56,8 +55,6 @@
   #report-grid span { display:block; color:var(--muted); font-size:10px; }
   #report-grid strong { font-size:15px; font-variant-numeric:tabular-nums; }
   #report-unlocks { padding:0 13px 12px; margin:0; color:var(--muted); font-size:11px; }
-  #threat-status { pointer-events:auto; cursor:pointer; border:1px solid #f19b8066; font-family:inherit; position:absolute; top:102px; right:12px; max-width:132px; padding:5px 8px; border-radius:7px; background:var(--panel); font-size:10px; color:#ffad91; text-align:right; }
-  #threat-status strong { display:block; font-size:11px; color:var(--ink); }
   .menu-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; pointer-events:auto; }
   #menu-new { border:1px solid #adc6ca44; border-radius:8px; background:transparent; color:var(--muted); padding:11px 16px; font:inherit; cursor:pointer; }
   #menu-start { background:var(--panel); font:inherit; cursor:pointer; display:inline-block; margin:0; padding:11px 20px; border:1px solid #82dfbc77; border-radius:8px; color:var(--accent); font-weight:650; }
@@ -129,7 +126,6 @@
   #objective strong { display:inline; font-size:12px; font-weight:600; }
   #objective-detail { font-size:11px; margin-left:8px; }
   #qualification summary { font-size:10px; color:var(--muted); cursor:pointer; margin-top:8px; }
-  #flight-hud:has(#threat-status:not([hidden])) #objective { top:150px; }
   @media(min-width:650px) and (max-height:450px) {
     #campaign-overview { position:absolute; right:14px; top:212px; width:224px; max-height:65px; overflow:auto; }
     #operations-panel > p { display:none; }
@@ -145,7 +141,6 @@
       <div><div class="gauge-heading"><span>Gun heat</span></div><div class="track"><i id="heat-fill"></i></div></div></div>
   </div>
 
-  <button id="threat-status" hidden type="button"><strong id="threat-title"></strong><span id="threat-detail"></span></button>
   <div id="objective" hidden><strong id="objective-title"></strong><span id="objective-detail"></span><div id="capture-track" class="track" hidden><i id="capture-fill"></i></div></div>
   <div id="toast" hidden></div>
 </div>
