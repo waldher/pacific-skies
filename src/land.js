@@ -241,13 +241,23 @@ function groundShader(shared) {
           // Farmland: whole plots in the lowlands, each a rectangle of one crop with
           // a hedge around it. Deciding per plot (not per pixel) keeps hedges closed.
           vec2 cell = floor(q / 72.0), f = fract(q / 72.0), centre = (cell + .5) * 72.0;
+          // Derive coverage from continuous coordinates, rather than the discontinuous floor/fract results.
+          // MSAA only covers geometry edges, not these shader-painted plots.
+          vec2 pixel = max(fwidth(q), vec2(.0001));
+          vec2 edge = min(f, 1.0 - f) * 72.0;
+          vec2 coverage = smoothstep(vec2(0.0), pixel, edge);
           vec2 world = origin + mat2(ca, sa, -sa, ca) * centre;
           float farm = vnoise2(centre * .0045 + 7.3);
           float plotHill = vnoise(world * HILL) * .72 + vnoise(world * HILL * 3.1 + 5.0) * .28;
-          float use = step(.52, farm) * step(plotHill, .55);
+          float use = step(.52, farm) * step(plotHill, .55) * coverage.x * coverage.y;
           float pick = vnoise2(cell * 5.3 + 1.5);
           vec3 crop = pick < .3 ? cropA : pick < .55 ? cropB : pick < .8 ? cropC : cropD;
-          crop *= .9 + .1 * step(.5, fract(q.x / 6.0 + pick * 3.0));
+          // Integrate the alternating crop rows over a pixel footprint. This
+          // filters both edges of the repeat and converges to average brightness when tiny.
+          float row = q.x / 6.0 + pick * 3.0, span = pixel.x / 6.0;
+          vec2 ends = vec2(row - span * .5, row + span * .5);
+          vec2 integral = floor(ends) * .5 + max(fract(ends) - .5, 0.0);
+          crop *= .9 + .1 * clamp((integral.y - integral.x) / span, 0.0, 1.0);
           float hedge = smoothstep(.0, .045, f.x) * smoothstep(.0, .045, f.y) * (1.0 - smoothstep(.955, 1.0, f.x)) * (1.0 - smoothstep(.955, 1.0, f.y));
           albedo = mix(albedo, mix(hedgeColor, crop, hedge), use);
         }

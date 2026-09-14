@@ -413,6 +413,18 @@ function check(name, ok, detail) {
   mobile.on('pageerror', e => results.errors.push(String(e)));
   await mobile.goto(`http://127.0.0.1:${port}/pacific-skies/?quality=1`);
   await mobile.waitForFunction(() => window.__game?.rendering?.ready);
+  check('touch renderer keeps multisampled edges at native and reduced quality', await mobile.evaluate(() => {
+    const { graphics, game, view } = window.__game;
+    const gl = graphics.renderer.getContext();
+    let smooth = true;
+    for (const level of [2, 3, 4]) {
+      graphics.quality.set(level);
+      graphics.render(game, view, 0, 0, 0);
+      smooth &&= gl.getContextAttributes().antialias && gl.getParameter(gl.SAMPLES) > 1;
+    }
+    graphics.quality.set(1);
+    return smooth;
+  }));
   await mobile.waitForTimeout(150);
   check('phone title shows touch instructions without keyboard shortcuts', await mobile.locator('#menu').innerText().then(t => t.includes('Begin expedition') && !/Space|WASD|Arrows|T to|L to/.test(t)));
   await mobile.screenshot({ path: path.join(SHOT_DIR, '06-phone-title.png') });

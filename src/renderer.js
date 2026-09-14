@@ -17,7 +17,9 @@ import { renderAircraftPreviews } from './aircraft-previews.js';
 
 export async function createRenderer(canvas) {
   const touchDevice = window.matchMedia?.('(pointer: coarse)').matches ?? false;
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !touchDevice, powerPreference: 'high-performance' });
+  // Input type is not a reason to remove edge coverage: at the touch quality
+  // ladder's 1x resolution, thin runway markings especially need MSAA.
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -49,6 +51,7 @@ export async function createRenderer(canvas) {
     ready: true, engine: 'Three.js', revision: THREE.REVISION,
     aircraft: 0, drawCalls: 0, triangles: 0, chunks: 0,
     quality: 0, pixelRatio: 1, frameMs: 0,
+    antialias: renderer.getContext().getContextAttributes().antialias,
   };
 
   const Q = CONFIG.render.quality;
