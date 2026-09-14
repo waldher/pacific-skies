@@ -2,6 +2,7 @@
 import { onHull, onLand } from './surface.js';
 import { CONFIG } from './config.js';
 import { damageShip } from './ships.js';
+import { damageTransport } from './convoys.js';
 import { explosion, splash } from './particles.js';
 import { notify } from './campaign.js';
 
@@ -34,9 +35,10 @@ export function updateBombs(game, dt) {
         notify(game, 'Enemy airfield disabled · launches stopped');
       }
     }
-    for (const s of game.ships) {
+    for (const s of [...game.ships, ...(game.convoys || [])]) {
       if (s.hp <= 0 || s.active === false || !onHull(b, s)) continue;
-      if (s.team === 'jp') damageShip(s, damage);
+      if (s.kind === 'transport') damageTransport(game, s, damage);
+      else if (s.team === 'jp') damageShip(s, damage);
       hit = true; break;
     }
     if (hit || land) explosion(b.x, b.y, true);

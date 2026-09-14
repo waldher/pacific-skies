@@ -27,5 +27,6 @@ export function sessionSummary(game) {
   const report = game.sessionReport;
   return report ? { elapsed: report.elapsed, captured: report.captured, lost: report.lost,
     carrierLosses: report.carrierLosses, unlocks: report.unlocks.map(u => ({ ...u })),
-    raids: { impacts: game.raidImpacts || 0, damage: game.raidDamage || 0, intercepted: game.raidIntercepts || 0 } } : null;
+    raids: { impacts: game.raidImpacts || 0, damage: game.raidDamage || 0, intercepted: game.raidIntercepts || 0 },
+    wing: { kills: game.wing?.kills || 0, lost: game.wing?.lost || 0 } } : null;
 }

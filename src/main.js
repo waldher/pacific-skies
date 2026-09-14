@@ -17,10 +17,12 @@ import { updateAirWar } from './airwar.js';
 import { updateTorpedoes, launchTorpedo } from './torpedoes.js';
 import { launchBomb, updateBombs } from './bombs.js';
 import { updateStrikes } from './strikes.js';
+import { updateConvoys, spawnConvoy, damageTransport } from './convoys.js';
+import { hitsShip } from './ships.js';
 import { selectSortie } from './bases.js';
 import { requestCarrier } from './carrier.js';
 import { createRenderer } from './renderer.js';
-import { drawHud, drawMenus } from './hud.js';
+import { drawHud, drawMenus, hudArrows } from './hud.js';
 import { lerp, angDiff, rand, setSeed } from './util.js';
 
 window.addEventListener('pagehide', () => saveCampaign(game));
@@ -39,6 +41,7 @@ function update(dt) {
   updateEnemies(dt);
   updateStrikes(game, dt);
   updateShips(dt);
+  updateConvoys(game, dt);
   updateTorpedoes(dt);
   updateBombs(game, dt);
   game.messageTime = Math.max(0, game.messageTime - dt);
@@ -59,15 +62,26 @@ function update(dt) {
         game.particles.push({ x: b.x, y: b.y, vx: rand(-40, 40), vy: rand(-40, 40), life: 0.2, max: 0.2, size: 3, kind: 'fire' });
         if (e.hp <= 0) {
           if (e.rescue) game.rescue.intercepts = (game.rescue.intercepts || 0) + 1;
-          game.score += e.ace ? CONFIG.score.aceKill : CONFIG.score.kill;
+          game.score += Math.round((e.ace ? CONFIG.score.aceKill : CONFIG.score.kill) * (b.pilot ? CONFIG.airWar.wing.killScore : 1));
           if (!b.fromAlly && !b.fromShip) {
             game.playerMerit = (game.playerMerit || 0) + 1;
             if (e.strike) game.raidIntercepts = (game.raidIntercepts || 0) + 1;
           }
+          if (b.pilot) creditKill(b.pilot);
           explosion(e.x, e.y, false);
         }
         break;
       }
+    }
+  }
+  // Transports are soft targets: any round that crosses a hull counts.
+  for (const b of game.bullets) {
+    if (b.life <= 0) continue;
+    for (const s of game.convoys) {
+      if (s.hp <= 0 || !hitsShip(b, s)) continue;
+      b.life = 0; damageTransport(game, s, 1);
+      game.particles.push({ x: b.x, y: b.y, vx: rand(-40, 40), vy: rand(-40, 40), life: 0.2, max: 0.2, size: 3, kind: 'fire' });
+      break;
     }
   }
   for (const b of game.ebullets) {
@@ -79,7 +93,7 @@ function update(dt) {
     if (b.life > 0) for (const ally of game.allies) {
       if (ally.hp <= 0 || Math.hypot(b.x - ally.x, b.y - ally.y) >= 15) continue;
       b.life = 0; ally.hp -= b.damage ?? CONFIG.enemy.bulletDamage; ally.hitFlash = .25;
-      if (ally.hp <= 0) explosion(ally.x, ally.y, false);
+      if (ally.hp <= 0) { explosion(ally.x, ally.y, false); wingmanLost(ally); }
       break;
     }
   }
@@ -103,6 +117,21 @@ function update(dt) {
   game.cam.x = lerp(game.cam.x, player.x + Math.cos(player.a) * lead, 1 - Math.pow(0.005, dt));
   game.cam.y = lerp(game.cam.y, player.y + Math.sin(player.a) * lead, 1 - Math.pow(0.005, dt));
   game.shake = Math.max(0, game.shake - 30 * dt);
+}
+
+// Wingmen keep a tally; losing one delays the replacement by further sorties.
+function creditKill(name) {
+  const pilot = game.allies.find(f => f.name === name && f.role === 'wing');
+  if (!pilot) return;
+  pilot.kills = (pilot.kills || 0) + 1;
+  if (game.wing) game.wing.kills = (game.wing.kills || 0) + 1;
+}
+function wingmanLost(ally) {
+  if (ally.role !== 'wing' || !game.wing) return;
+  game.wing.lost++;
+  game.wing.replacementAt = (game.combatSorties || 0) + CONFIG.airWar.wing.replacementSorties;
+  game.message = `${ally.name} is down · replacement after ${CONFIG.airWar.wing.replacementSorties} more combat sorties`;
+  game.messageTime = CONFIG.conquest.messageDuration;
 }
 
 function render(dt) {
@@ -130,7 +159,7 @@ function frame(now) {
 }
 // Debug/test API: the playtest harness (and console tinkering) reads
 // live state and drives input through this handle.
-window.__game = { sessionSummary: () => sessionSummary(game), game, CONFIG, startGame, recoverPilot, resumeCampaign, hasSavedCampaign, setSeed, keys, stick, fireTouch, view, angDiff, update, launchTorpedo, launchBomb: () => launchBomb(game), selectSortie: options => selectSortie(game, options), requestCarrier: () => requestCarrier(game) };
+window.__game = { sessionSummary: () => sessionSummary(game), game, CONFIG, startGame, recoverPilot, resumeCampaign, hasSavedCampaign, setSeed, keys, stick, fireTouch, view, angDiff, update, launchTorpedo, launchBomb: () => launchBomb(game), selectSortie: options => selectSortie(game, options), requestCarrier: () => requestCarrier(game), spawnConvoy: () => spawnConvoy(game), hudArrows: () => hudArrows(game) };
 
 
 const status = document.getElementById('loading');

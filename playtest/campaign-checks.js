@@ -290,9 +290,10 @@ export async function campaignChecks(api) {
   check('new campaign resets territory ownership, fleet and flight state', game.mode === 'play'
     && game.territories[0].owner === 'us' && game.territories.slice(1).every(t => t.owner === 'enemy' && !t.activated) && game.player.flight === 'landed'
     && game.ships.every(s => s.hp === s.maxHp));
-  check('two friendly patrols start each sortie', game.allies.length === 2 && game.allies.every(f => f.team === 'us'));
+  update(.02);
+  check('a wingman musters at the start of a campaign', game.allies.filter(f => f.role === 'wing').length === api.CONFIG.airWar.wing.slots[0] && game.allies.every(f => f.team === 'us'));
   fly(); game.player.x = 20000; game.player.y = 20000;
-  const friendStart = game.allies.map(f => ({ x: f.x, y: f.y }));
+  const friendStart = game.allies.map(f => ({ x: f.x, y: f.y, d: Math.hypot(f.x - 20000, f.y - 20000) }));
   game.raidTimer = 0; update(.02);
   const raider = game.enemies.find(e => e.raider);
   check('roaming Zero can spawn far from all territories', !!raider && raider.territory === undefined);
@@ -303,11 +304,12 @@ export async function campaignChecks(api) {
   const pursuitTarget = { x: game.player.x, y: game.player.y };
   for (let i = 0; i < 100; i++) { update(.02); Object.assign(game.player, pursuitTarget); }
   check('roaming Zero pursues outside island defense boundaries', Math.hypot(raider.x - game.player.x, raider.y - game.player.y) < raidDistance);
-  check('allies patrol independently of the distant player', game.allies.every((f, i) => Math.hypot(f.x - friendStart[i].x, f.y - friendStart[i].y) > 100 && Math.hypot(f.x - game.player.x, f.y - game.player.y) > 10000));
+  check('wingmen fly to rejoin a distant player', game.allies.every((f, i) => Math.hypot(f.x - game.player.x, f.y - game.player.y) < friendStart[i].d - 100));
   const friendly = game.allies[0]; friendly.x = 0; friendly.y = 0; friendly.a = 0; friendly.fireCd = 0;
   raider.x = 200; raider.y = 0;
-  update(.02);
-  check('allies fire at nearby enemy fighters', game.bullets.some(b => b.fromAlly));
+  // Wingmen shoot at the lead point, so allow a few ticks to bring the guns onto it.
+  for (let i = 0; i < 10; i++) update(.02);
+  check('wingmen fire at nearby enemy fighters', game.bullets.some(b => b.fromAlly));
   const hp = friendly.hp;
   game.ebullets.push({ x: friendly.x, y: friendly.y, vx: 0, vy: 0, life: 1 }); update(.02);
   check('friendly fighters can be damaged by hostile fire', friendly.hp < hp);

@@ -17,9 +17,9 @@ export function generate(seed=1942) {
       for(let attempt=0;attempt<120;attempt++) {
         if(attempt%20===0)parent=Math.floor(between(0,i));
         const p=regions[parent];heading=p.heading+between(-1.15,1.15);
-        const d=between(10000,15000)*(attempt>90?1.3:1);
+        const d=between(7500,10500)*(attempt>90?1.3:1);
         x=p.x+Math.cos(heading)*d;y=p.y+Math.sin(heading)*d;
-        if(regions.every(r=>Math.hypot(x-r.x,y-r.y)>9000)){accepted=true;break;}
+        if(regions.every(r=>Math.hypot(x-r.x,y-r.y)>6500)){accepted=true;break;}
       }
       if(!accepted)throw new Error('Could not place a separated region');
       links.push([parent,i]);
@@ -29,7 +29,7 @@ export function generate(seed=1942) {
   // Occasional lateral sea passages make loops, without imposing a diamond template.
   for(let a=1;a<count;a++)for(let b=a+1;b<count;b++) {
     if(links.some(([i,j])=>(i===a&&j===b)||(i===b&&j===a)))continue;
-    if(Math.hypot(regions[a].x-regions[b].x,regions[a].y-regions[b].y)<18500&&random()<.35)links.push([a,b]);
+    if(Math.hypot(regions[a].x-regions[b].x,regions[a].y-regions[b].y)<13500&&random()<.35)links.push([a,b]);
   }
   function land(region,x,y,rx,ry,a,kind='island') {
     const extent=Math.max(rx,ry);

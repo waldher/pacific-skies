@@ -123,7 +123,7 @@ function check(name, ok, detail) {
       orthographic: graphics.camera.isOrthographicCamera,
     };
   });
-  check('friendly patrols use P38 models', await page.evaluate(() => window.__game.game.allies.every(f => window.__game.graphics.aircraft.get(f)?.model.name === 'P38_Lightning')));
+  check('wingmen use P38 models', await page.evaluate(() => window.__game.game.allies.length > 0 && window.__game.game.allies.every(f => window.__game.graphics.aircraft.get(f)?.model.name === 'P38_Lightning')));
   check('friendly aircraft have independent damage flash materials', await page.evaluate(() => {
     const { graphics, game } = window.__game;
     const p = graphics.aircraft.get(game.player), f = graphics.aircraft.get(game.allies[0]);
@@ -156,6 +156,36 @@ function check(name, ok, detail) {
       return graphics.quality.level>0;
     } finally {delete performance.now;graphics.quality.set(1);}
   }));
+  check('failed quality levels are never retried', await page.evaluate(() => {
+    const {graphics,game,view,CONFIG}=window.__game, Q=CONFIG.render.quality;
+    const original=performance.now.bind(performance); let now=original();
+    graphics.quality.set(1); graphics.quality.unlock();
+    performance.now=()=>now;
+    try {
+      // Six slow seconds: the change hold eats the first three, settle needs two more.
+      for(let i=0;i<60;i++){now+=100;graphics.render(game,view,0,0,0);}
+      const dropped=graphics.quality.level;
+      for(let i=0;i<(Q.hold+Q.recover)*100+50;i++){now+=10;graphics.render(game,view,0,0,0);}
+      return dropped===2 && graphics.quality.level===2;
+    } finally {delete performance.now;graphics.quality.set(1);}
+  }));
+  const scenery = await page.evaluate(() => {
+    const { graphics } = window.__game, chunks = [...graphics.world.chunks.values()];
+    const batches = chunks.map(group => group.children.filter(node => node.material?.vertexColors).length);
+    return { chunks: chunks.length, biomes: chunks.map(g => g.userData.biome), trees: chunks.reduce((n, g) => n + g.userData.trees, 0),
+      villages: chunks.reduce((n, g) => n + g.userData.villages, 0), batches, drawCalls: graphics.diagnostics.drawCalls };
+  });
+  check('islands carry biome scenery in one batched draw each', scenery.chunks > 0 && scenery.trees > 0 && scenery.batches.every(n => n === 1), `${scenery.biomes.join(',')} · ${scenery.trees} trees · ${scenery.villages} villages`);
+  check('home airfield view stays under 80 draw calls', scenery.drawCalls < 80, `${scenery.drawCalls} draws`);
+  results.metrics.homeDrawCalls = scenery.drawCalls;
+  check('island traffic moves between frames', await page.evaluate(() => {
+    const { graphics, game, view } = window.__game, pools = graphics.world.traffic.pools;
+    const snapshot = () => Object.fromEntries(Object.entries(pools).map(([k, m]) => [k, [m.count, Array.from(m.instanceMatrix.array.slice(0, m.count * 16))]]));
+    graphics.render(game, view, .5, 0, 0); const before = snapshot();
+    game.time += .5; graphics.render(game, view, .5, 0, 0); const after = snapshot();
+    const moved = Object.keys(pools).filter(k => before[k][0] > 0 && before[k][1].some((v, i) => Math.abs(v - after[k][1][i]) > .01));
+    return before.people[0] > 0 && moved.includes('people') && (before.trucks[0] === 0 || moved.includes('trucks'));
+  }));
   const propAngle = await page.evaluate(() => window.__game.graphics.aircraft.get(window.__game.game.player).propeller.rotation.z);
   await page.keyboard.down('KeyD');
   await page.waitForTimeout(350);
@@ -171,6 +201,67 @@ function check(name, ok, detail) {
     return campaignChecks(window.__game);
   });
   for (const result of campaign) check(result.name, result.ok);
+  check('HUD shows objective, nearest landing and raid arrows', await page.evaluate(() => {
+    const { game, CONFIG, update, hudArrows } = window.__game, home = game.airfields.find(f => f.id === 'home-airfield');
+    game.enemies = []; game.allies = []; game.guidanceCleared = false;
+    game.player.flight = 'flying'; game.player.altitude = CONFIG.render.flightHeight; game.player.x = home.x + 2500; game.player.y = home.y; game.cam.x = game.player.x; game.cam.y = game.player.y;
+    update(.02);
+    const quiet = hudArrows().map(a => a.kind);
+    const calm = quiet.includes('objective') && quiet.includes('base') && !quiet.includes('raid');
+    // Two bombers inbound on the home field, close enough to be detected.
+    for (let i = 0; i < 2; i++) game.enemies.push({ x: home.x - 700, y: home.y + i * 60, a: 0, hp: 3, speed: 205, turn: 1.7, fireCd: 9, wobble: 0,
+      strike: true, strikeRole: 'bomber', sourceId: 'test', targetBaseId: 'home-airfield', phase: 'attack', retreatDistance: 0 });
+    update(.02);
+    const raid = hudArrows().find(a => a.kind === 'raid');
+    const near = game.enemies.reduce((a, b) => Math.hypot(b.x - game.player.x, b.y - game.player.y) < Math.hypot(a.x - game.player.x, a.y - game.player.y) ? b : a);
+    const pointed = !!raid && Math.hypot(raid.x - near.x, raid.y - near.y) < 1 && raid.label === 'RAID ×2';
+    for (const e of game.enemies) e.hp = 0;
+    update(.02);
+    const gone = !hudArrows().some(a => a.kind === 'raid');
+    game.enemies = [];
+    return calm && pointed && gone;
+  }));
+  check('head-on fighters sidestep instead of ramming', await page.evaluate(() => {
+    const { game, CONFIG, update, keys } = window.__game, p = game.player;
+    for (const key of Object.keys(keys)) keys[key] = false;
+    const far = game.theaterBounds; p.x = far.maxX + 4000; p.y = far.maxY + 4000; p.a = 0; p.flight = 'flying'; p.hp = 100; p.speed = CONFIG.aircraft.p38.speedCruise;
+    game.cam.x = p.x; game.cam.y = p.y; game.enemies = []; game.allies = []; game.raidTimer = 999; game.convoyTimer = 999; game.time = 10;
+    const e = { x: p.x + 500, y: p.y, a: Math.PI, hp: 2, speed: CONFIG.enemy.speed, turn: CONFIG.enemy.turn, fireCd: 99, wobble: 0, raider: true, style: 'recruit' };
+    game.enemies.push(e);
+    for (let i = 0; i < 150; i++) { e.fireCd = 99; update(.02); }
+    const survived = p.hp === 100 && e.hp > 0;
+    game.enemies = [];
+    return survived;
+  }));
+  check('captured airfields launch patrols and the carrier flies a CAP', await page.evaluate(() => {
+    const { game, CONFIG, update } = window.__game;
+    game.allies = []; game.raidTimer = 999;
+    const home = game.airfields.find(f => f.id === 'home-airfield'); home.patrolTimer = 0;
+    const carrier = game.ships.find(s => s.id === 'carrier'); carrier.active = true; carrier.hp = carrier.maxHp; carrier.capTimer = 0;
+    update(.02); update(.02); update(.02);
+    const patrols = game.allies.filter(f => f.role === 'patrol'), cap = game.allies.filter(f => f.role === 'cap');
+    const ok = patrols.length === CONFIG.airWar.patrol.size && cap.length >= 1 && cap.every(f => f.aircraft === 'corsair') && patrols.every(f => f.aircraft === 'p38');
+    game.allies = game.allies.filter(f => f.role === 'wing'); carrier.active = false;
+    return ok;
+  }));
+  const convoy = await page.evaluate(() => {
+    const { game, CONFIG, update, spawnConvoy, graphics, view } = window.__game;
+    game.convoys = []; game.convoyTimer = 999; game.allies = []; game.time = 10; game.enemies = [];
+    if (!spawnConvoy()) return { ok: false, why: `no convoy route (${game.territories.filter(t => t.owner === 'enemy').length} enemy holdings, mode ${game.mode})` };
+    const s = game.convoys[0], before = game.score, count = game.convoys.length;
+    game.player.x = s.x - 200; game.player.y = s.y; game.player.flight = 'flying'; game.cam.x = s.x; game.cam.y = s.y;
+    graphics.render(game, view, 0, 0, 0);
+    const drawn = graphics.naval.ships.get(s)?.root.name === 'SupplyTransport';
+    for (let i = 0; i < 40 && s.hp > 0; i++) {
+      game.bullets.push({ x: s.x - 40, y: s.y, prevX: s.x - 40, prevY: s.y, vx: 860, vy: 0, life: .5 });
+      update(.05);
+    }
+    // Parking beside an enemy holding wakes its defenders; leave none behind for later checks.
+    game.convoys = []; game.enemies = []; game.bullets = [];
+    return { ok: count >= CONFIG.convoy.size[0] && drawn && s.hp === 0 && game.score >= before + CONFIG.convoy.score,
+      why: `count ${count} drawn ${drawn} hp ${s.hp} score +${game.score - before}` };
+  });
+  check('supply convoys spawn between enemy holdings and sink to gunfire', convoy.ok, convoy.why);
   await page.evaluate(() => {
     const { game, CONFIG } = window.__game, t = game.territories.find(t => t.owner === 'enemy');
     game.player.flight = 'flying'; game.player.altitude = CONFIG.render.flightHeight;
@@ -333,7 +424,7 @@ function check(name, ok, detail) {
     await mobile.setViewportSize({ width,height }); await mobile.waitForTimeout(100);
     check(`${name} sortie panel fits without overlapping the HUD`, await mobile.evaluate(() => {
       const p = document.getElementById('sortie-panel'), r = p.getBoundingClientRect();
-      const ids = ['stats','objective','campaign-status','flight-controls'];
+      const ids = ['stats','campaign-status','flight-controls'];
       return r.x >= 0 && r.right <= innerWidth && r.y >= 0 && r.bottom <= innerHeight && p.scrollWidth <= p.clientWidth
         && ids.every(id => { const e = document.getElementById(id); if (!e || e.hidden) return true; const b = e.getBoundingClientRect(); return r.right <= b.x || r.x >= b.right || r.bottom <= b.y || r.y >= b.bottom; });
     }));

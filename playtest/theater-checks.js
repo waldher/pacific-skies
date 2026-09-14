@@ -12,7 +12,7 @@ export async function theaterChecks(api) {
     finite &&= snapshot() === first;
     layouts.add(first);
     terrainRich &&= game.terrain.length > game.territories.length * 2 && game.sectors.length >= 4 && game.sectors.length <= 7;
-    for(const [a,b] of game.sectorLinks) waterways &&= Math.hypot(game.sectors[a].x-game.sectors[b].x,game.sectors[a].y-game.sectors[b].y)>9000;
+    for(const [a,b] of game.sectorLinks) waterways &&= Math.hypot(game.sectors[a].x-game.sectors[b].x,game.sectors[a].y-game.sectors[b].y)>6500;
     for (const t of game.terrain) finite &&= t.shoreline.every(p=>p.every(Number.isFinite));
     for (const field of game.airfields) {
       for (const along of [-CONFIG.airfield.length/2,0,CONFIG.airfield.length/2]) {

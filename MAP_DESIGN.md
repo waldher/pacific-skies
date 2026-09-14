@@ -22,7 +22,7 @@ We should replace that structure, not add another layer of coordinate jitter. Ge
 |---|---|---|
 | Local encounter | 5–15 seconds between nearby tactical choices | Immediate fighting, approach routes, cover from ship fire, useful landmarks |
 | Regional sortie | 15–30 seconds between useful bases or discoveries | Learn a coast, choose an objective, return with two spent weapons |
-| New expedition | Typically 30–55 seconds between regional centers; occasional longer branches | Feel a departure and arrival; secure a forward base to shorten repeat journeys |
+| New expedition | Typically 25–40 seconds between regional centers; occasional longer branches | Feel a departure and arrival; secure a forward base to shorten repeat journeys |
 
 These are cruise-time targets, not minimum waiting periods. Measure actual airfield-to-target-to-rearm journeys before tuning. A flight around a large island can have more decisions than a shorter featureless crossing.
 

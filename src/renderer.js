@@ -4,7 +4,8 @@
 // so it can't see slow frames). While frames stay slow the renderer steps
 // down CONFIG.render.quality.levels: costly shadows first, then pixel ratio
 // while retaining ocean detail. It requires sustained headroom before stepping
-// back up, so short hitches do not cause oscillation. ?quality=N pins a level.
+// back up, so short hitches do not cause oscillation, and never back into a
+// level that already failed. ?quality=N pins a level.
 import * as THREE from 'three';
 import { enemyObserved } from './intelligence.js';
 import { CONFIG } from './config.js';
@@ -25,9 +26,11 @@ export async function createRenderer(canvas) {
   scene.background = new THREE.Color('#155e8a');
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 1, 2000);
   camera.up.set(0, 0, -1);
-  const hemisphere = new THREE.HemisphereLight('#c5e6ff', '#506273', 2.2);
+  // The island ground shader lights itself from the same numbers (land.js).
+  const LIGHT = CONFIG.render.lighting;
+  const hemisphere = new THREE.HemisphereLight(LIGHT.sky, LIGHT.ground, LIGHT.hemisphere);
   scene.add(hemisphere);
-  const sun = new THREE.DirectionalLight('#fff0d2', 2.5);
+  const sun = new THREE.DirectionalLight(LIGHT.sun, LIGHT.sunIntensity);
   sun.castShadow = true;
   sun.shadow.mapSize.set(1024, 1024);
   sun.shadow.bias = -.0002;
@@ -93,7 +96,10 @@ export async function createRenderer(canvas) {
       state.failed.add(state.level);
       applyLevel(state.level + 1);
     } else if (state.fast > Q.recover && state.level > 0) {
-      state.failed.delete(state.level - 1);
+      // Never climb back into a level that already proved too slow: the
+      // retry itself (shader rebuilds, a few seconds of dropped frames) is
+      // the stutter a weak tablet notices most.
+      if (state.failed.has(state.level - 1)) { state.fast = 0; return; }
       applyLevel(state.level - 1);
     }
   }
@@ -119,7 +125,7 @@ export async function createRenderer(canvas) {
   return {
     diagnostics,
     // Exposed via __game for meaningful renderer checks and visual inspection.
-    scene, camera, aircraft, renderer, naval,
+    scene, camera, aircraft, renderer, naval, world,
     quality: {
       get level() { return state.level; },
       get locked() { return state.locked; },
@@ -134,7 +140,7 @@ export async function createRenderer(canvas) {
       const [sx, sy, sz] = CONFIG.render.sunOffset;
       sun.position.set(game.cam.x + sx, sy, game.cam.y + sz);
       sun.target.position.set(game.cam.x, 0, game.cam.y);
-      world.update(game.cam, view, game.time, lastRatio, game.terrain || game.territories);
+      world.update(game, view, dt, lastRatio);
       const live = new Set([...game.enemies.filter(e => enemyObserved(game, e)), ...game.allies]);
       if (game.player && game.mode === 'play') live.add(game.player);
       for (const [entity, visual] of aircraft) {

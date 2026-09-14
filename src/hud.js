@@ -7,24 +7,25 @@ import { stick, fireTouch, isTouchDevice } from './input.js';
 import { rr } from './sprites.js';
 import { AIRCRAFT, aircraftUnlocked } from './aircraft-types.js';
 import { aircraftPreviews } from './aircraft-previews.js';
-import { availableBases, canUseAircraft, selectSortie } from './bases.js';
+import { availableBases, canUseAircraft, selectSortie, resolveBase } from './bases.js';
 import { carrierAction } from './carrier.js';
 import { sessionSummary } from './session-report.js';
 import { CONFIG } from './config.js';
-import { clamp, TAU } from './util.js';
+import { clamp, angDiff, TAU } from './util.js';
 import { installationKnown, shipObserved, enemyObserved, observedAt, flightSeconds } from './intelligence.js';
 import { drawTheaterMap } from './operations.js';
 
 export function drawHud() {
   const { W, H } = view, player = game.player;
   drawNavigation();
-  for (const ship of game.ships) {
+  for (const ship of [...game.ships, ...(game.convoys || [])]) {
     if (ship.hp <= 0 || ship.active === false || !shipObserved(game, ship)) continue;
     const [sx, sy] = w2s(ship.x, ship.y);
     if (sx < -100 || sx > W + 100 || sy < -150 || sy > H + 150) continue;
     ctx.textAlign = 'center'; ctx.font = '700 11px monospace';
     ctx.fillStyle = ship.team === 'us' ? '#83edcb' : '#ffad91';
     if(ship.team==='jp' && ship.kind==='carrier')ctx.fillText('CARRIER',sx,sy-ship.length/2-18);
+    if(ship.kind==='transport')ctx.fillText('CONVOY',sx,sy-ship.length/2-18);
     if (ship.team === 'jp') {
       ctx.fillStyle = '#172e3a'; rr(sx - 23, sy + 26, 46, 4, 2);
       ctx.fillStyle = '#ed876c'; rr(sx - 23, sy + 26, 46 * ship.hp / ship.maxHp, 4, 2);
@@ -53,6 +54,29 @@ export function drawHud() {
       ctx.fillStyle = '#172e3a'; rr(sx - 23, sy - 33, 46, 4, 2);
       ctx.fillStyle = territory.owner === 'us' ? '#82dfbc' : '#ed876c';
       rr(sx - 23, sy - 33, 46 * territory.integrity / territory.maxIntegrity, 4, 2);
+    }
+  }
+  // Wingmen wear their call signs; a lead pipper marks where to shoot the nearest fighter.
+  for (const f of game.allies) {
+    if ((f.role ?? 'wing') !== 'wing' || f.hp <= 0 || !f.name) continue;
+    const [sx, sy] = w2s(f.x, f.y);
+    if (sx < -20 || sx > W + 20 || sy < -20 || sy > H + 20) continue;
+    ctx.textAlign = 'center'; ctx.font = '600 9px system-ui'; ctx.fillStyle = '#9fe6cf';
+    ctx.fillText(f.name + (f.kills >= CONFIG.airWar.wing.veteranKills ? ' ★' : ''), sx, sy + 30);
+  }
+  if (player.flight === 'flying') {
+    let mark = null, best = 650;
+    for (const e of game.enemies) {
+      if (e.hp <= 0 || !enemyObserved(game, e)) continue;
+      const d = Math.hypot(e.x - player.x, e.y - player.y);
+      if (d < best && Math.abs(angDiff(player.a, Math.atan2(e.y - player.y, e.x - player.x))) < 1.1) { best = d; mark = e; }
+    }
+    if (mark) {
+      const t = best / CONFIG.player.bulletSpeed, v = mark.v ?? mark.speed;
+      const [lx, ly] = w2s(mark.x + Math.cos(mark.a) * v * t, mark.y + Math.sin(mark.a) * v * t);
+      ctx.strokeStyle = 'rgba(255,214,122,.9)'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(lx, ly, 6, 0, TAU); ctx.stroke();
+      ctx.fillStyle = 'rgba(255,214,122,.9)'; ctx.fillRect(lx - 1, ly - 1, 2, 2);
     }
   }
   // off-screen enemy arrows
@@ -97,26 +121,69 @@ function drawNavigation() {
   ctx.fillStyle = 'rgba(8,27,39,.88)'; rr(mx, my, mw, mh, 10);
   drawTheaterMap(ctx, game, {x:mx, y:my, w:mw, h:mh});
   ctx.textAlign='right'; ctx.font='600 9px system-ui'; ctx.fillStyle='#adc6ca'; ctx.fillText('MAP ↗', mx+mw-7,my+mh-5);
-  drawCourseMarker();
+  drawArrows();
 }
 
-// Direction while travelling; a stationary, unlabelled marker once close.
-function drawCourseMarker() {
-  if(game.mode!=='play' || game.player.flight!=='flying' || !game.waypoint)return;
-  const {W,H}=view, target=game.waypoint, [sx,sy]=w2s(target.x,target.y);
-  const phase=coursePhase(game);
-  ctx.save();ctx.strokeStyle='#edce91';ctx.lineWidth=1.5;
-  if(phase==='arrived') {
-    ctx.globalAlpha=.55;
-    ctx.beginPath();ctx.arc(sx,sy,18,0,TAU);ctx.stroke();
-  } else {
-    const [px,py]=w2s(game.player.x,game.player.y);
-    const dx=sx-px,dy=sy-py,d=Math.hypot(dx,dy),radius=Math.min(W*.3,H*.2);
-    const x=px+dx*Math.min(1,radius/(d||1)),y=py+dy*Math.min(1,radius/(d||1));
-    ctx.translate(x,y);ctx.rotate(Math.atan2(dy,dx));
-    ctx.beginPath();ctx.moveTo(-5,-5);ctx.lineTo(3,0);ctx.lineTo(-5,5);ctx.stroke();
+// Guidance arrows, as on a modern flight HUD: gold for the current objective,
+// teal for the nearest base you can land at, red for a raid on a friendly
+// base (pointing at its nearest attacker). Each sits on a ring around the
+// player, off-screen targets only; an objective you have reached is a ring.
+const ARROWS = { objective: '#edce91', base: '#82dfbc', raid: '#ff8a6b' };
+export function hudArrows(game) {
+  const p = game.player, arrows = [];
+  if (!p || game.mode !== 'play' || p.flight !== 'flying') return arrows;
+  const near = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+  if (game.waypoint) {
+    const { title, detail } = flightPresentation(game);
+    const site = game.territories.find(t => t.id === game.waypoint.siteId);
+    const progress = site && site.owner !== 'us' && site.progress > 0 ? site.progress / CONFIG.conquest.captureSeconds : 0;
+    arrows.push({ kind: 'objective', x: game.waypoint.x, y: game.waypoint.y, label: title.toUpperCase(), sub: detail, arrived: coursePhase(game) === 'arrived', progress });
   }
-  ctx.restore();
+  const bases = availableBases(game).map(b => resolveBase(game, b.id)).filter(Boolean).sort((a, b) => near(p, a) - near(p, b));
+  const base = bases[0];
+  if (base && !(game.waypoint && near(game.waypoint, base) < 1)) arrows.push({ kind: 'base', x: base.x, y: base.y, label: 'NEAREST BASE', sub: `${base.kind === 'carrier' ? 'carrier · ' : ''}${flightSeconds(game, base)}s` });
+  const raiders = game.enemies.filter(e => e.strike && e.hp > 0 && e.phase !== 'retreat' && !e.rescue && enemyObserved(game, e));
+  if (raiders.length) {
+    const first = raiders.reduce((a, b) => near(p, a) < near(p, b) ? a : b);
+    const formation = raiders.filter(e => e.targetBaseId === first.targetBaseId), target = raidTarget(first.targetBaseId);
+    arrows.push({ kind: 'raid', x: first.x, y: first.y, label: `RAID ×${formation.length}`, sub: (target?.name || 'friendly base').toUpperCase() });
+  }
+  return arrows;
+}
+function drawArrows() {
+  const { W, H } = view, [px, py] = w2s(game.player.x, game.player.y);
+  const arrows = hudArrows(game), headings = [];
+  arrows.forEach((arrow, i) => {
+    const [sx, sy] = w2s(arrow.x, arrow.y);
+    ctx.save(); ctx.strokeStyle = ctx.fillStyle = ARROWS[arrow.kind]; ctx.lineWidth = 1.5;
+    if (arrow.kind === 'objective' && arrow.arrived) {
+      // A ring at the objective; it fills clockwise as a capture progresses.
+      ctx.globalAlpha = .55; ctx.beginPath(); ctx.arc(sx, sy, 18, 0, TAU); ctx.stroke();
+      if (arrow.progress > 0) { ctx.globalAlpha = .95; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.arc(sx, sy, 18, -Math.PI / 2, -Math.PI / 2 + TAU * arrow.progress); ctx.stroke(); }
+      ctx.globalAlpha = .9; ctx.font = '650 9px system-ui'; ctx.textAlign = 'center'; ctx.fillText(arrow.label, sx, sy + 32);
+      if (arrow.sub) { ctx.font = '600 8px system-ui'; ctx.fillText(arrow.sub, sx, sy + 42); }
+      ctx.restore(); return;
+    }
+    // On-screen targets need no arrow; the raid's attackers already carry labels.
+    if (arrow.kind !== 'objective' && sx > 20 && sx < W - 20 && sy > 20 && sy < H - 20) { ctx.restore(); return; }
+    const dx = sx - px, dy = sy - py, d = Math.hypot(dx, dy), a = Math.atan2(dy, dx);
+    // Each arrow has its own ring; two pointing the same way stack outward so their labels stay apart.
+    const stacked = headings.filter(h => Math.abs(angDiff(h, a)) < .5).length; headings.push(a);
+    const radius = Math.min(W * .3, H * .2) + i * 14 + stacked * 30;
+    const x = px + dx * Math.min(1, radius / (d || 1)), y = py + dy * Math.min(1, radius / (d || 1));
+    ctx.translate(x, y); ctx.rotate(a);
+    ctx.beginPath(); ctx.moveTo(-5, -5); ctx.lineTo(3, 0); ctx.lineTo(-5, 5);
+    if (arrow.kind === 'raid') { ctx.closePath(); ctx.fill(); } else ctx.stroke();
+    ctx.rotate(-a);
+    if (arrow.label) {
+      // A stacked arrow labels above its chevron, the one beneath it below.
+      const above = stacked % 2 === 1, ly = above ? (arrow.sub ? -20 : -10) : 18;
+      ctx.font = '650 9px system-ui'; ctx.textAlign = 'center';
+      ctx.fillText(arrow.label, 0, ly);
+      if (arrow.sub) { ctx.font = '600 8px system-ui'; ctx.fillText(arrow.sub, 0, ly + 10); }
+    }
+    ctx.restore();
+  });
 }
 
 const el = id => document.getElementById(id);
@@ -209,7 +276,6 @@ export function drawMenus() {
   el('fire-indicator').hidden = !playing || !isTouchDevice || p?.flight !== 'flying';
   el('fire-indicator').dataset.firing = String(fireTouch.active);
   if (playing) {
-    drawThreatStatus();
     text('score-value', game.score.toLocaleString());
     text('hull-value', `${Math.ceil(p.hp)}%`);
     el('hull-value').style.color = p.hp > 35 ? '#82dfbc' : '#f18f7c';
@@ -229,15 +295,11 @@ export function drawMenus() {
     el('health-fill').style.background = p.hp > 35 ? '#82dfbc' : '#f18f7c';
     el('heat-fill').style.width = `${p.heat * 100}%`;
     el('heat-fill').style.background = p.overheated ? '#f18f7c' : '#e5b76f';
-    const nearby = game.territories.find(t => installationKnown(game,t) && Math.hypot(t.x - p.x, t.y - p.y) < CONFIG.conquest.captureRadius);
-    let {title,detail} = flightPresentation(game);
-    if (nearby?.progress>0 && nearby.owner!=='us') { title='Capturing'; detail=''; }
-    if (p.landingHint) { title='Approach'; detail=p.landingHint; }
-    el('objective').hidden = !title || p.flight !== 'flying'; text('objective-title', title); text('objective-detail', detail); el('objective-detail').hidden=!detail;
-    el('capture-track').hidden = !nearby || nearby.progress <= 0 || nearby.owner === 'us' || p.flight !== 'flying';
-    el('capture-fill').style.width = `${(nearby?.progress || 0) / CONFIG.conquest.captureSeconds * 100}%`;
-    // Avoid repeating the deck status in a second panel.
-    el('toast').hidden = game.messageTime <= 0 || p.flight === 'landed' || /spotted|follow the gold|select it on the map/i.test(game.message); text('toast', game.message);
+    // One line at the bottom: the landing hint while lining up, otherwise the latest message
+    // (not deck status, which the landed panel already shows).
+    const hint = p.flight === 'flying' && p.landingHint;
+    const message = game.messageTime > 0 && p.flight !== 'landed' && !/spotted|follow the gold|select it on the map/i.test(game.message) ? game.message : '';
+    el('toast').hidden = !hint && !message; text('toast', hint || message);
     const action = carrierAction(game), button = el('carrier-action');
     button.textContent = (isTouchDevice ? '' : 'L · ') + action.label;
     button.disabled = !action.enabled; button.hidden = p.flight !== 'landed';
@@ -277,6 +339,7 @@ function drawSessionReport() {
   const rows = [['Campaign time', clock(report.elapsed)], ['Territory gained / lost', `${report.captured} / ${report.lost}`], ['Carriers lost', report.carrierLosses]];
   if (Number.isFinite(report.raids.intercepted)) rows.push(['Your raid interceptions', report.raids.intercepted]);
   if (Number.isFinite(report.raids.damage)) rows.push(['Raid damage sustained', Math.round(report.raids.damage)]);
+  if (report.wing) rows.push(['Wingman kills / lost', `${report.wing.kills} / ${report.wing.lost}`]);
   const signature = JSON.stringify(report);
   if (node.dataset.report === signature) return;
   node.dataset.report = signature;
@@ -294,15 +357,4 @@ function raidTarget(id) {
     || (game.airfields || []).find(f => f.id === id)
     || game.ships.find(s => s.id === id || (id === 'fleet-carrier' && s.team === 'us' && s.kind === 'carrier'))
     || game.territories.find(t => `territory-${t.id}` === id);
-}
-function drawThreatStatus() {
-  const threats = game.enemies.filter(e => e.hp > 0 && e.strike && enemyObserved(game,e) && e.phase !== 'retreat' && !e.rescue);
-  el('threat-status').hidden = !threats.length;
-  if (!threats.length) return;
-  const first = threats.reduce((a, b) => Math.hypot(a.x - game.player.x, a.y - game.player.y) < Math.hypot(b.x - game.player.x, b.y - game.player.y) ? a : b);
-  const target = raidTarget(first.targetBaseId), formation = threats.filter(e => e.targetBaseId === first.targetBaseId);
-  const name = target?.name || (first.targetBaseId === 'home-airfield' ? 'Home airfield' : 'Friendly position');
-  text('threat-title', `${formation.length} attackers → base`);
-  text('threat-detail', 'Tap to defend');
-  el('threat-status').onclick=()=>{if(target){game.waypoint={x:target.x,y:target.y,name,defend:true,auto:false};game.guidanceCleared=false;}};
 }

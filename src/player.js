@@ -8,6 +8,12 @@ import { sfxGun, sfxOverheat } from './audio.js';
 import { explosion } from './particles.js';
 import { clamp, lerp, angDiff, rand } from './util.js';
 
+// Turn-rate multiplier for a speed between an aircraft's brake and boost.
+export function turnFactor(speed, brake, boost) {
+  const T = CONFIG.flight.turnScale, t = clamp((speed - brake) / Math.max(1, boost - brake), 0, 1);
+  return lerp(T.brake, T.boost, t);
+}
+
 export function updatePlayer(dt) {
   const player = game.player, P = { ...CONFIG.player, ...CONFIG.aircraft[player.aircraft] };
   if (updateCarrierFlight(game, dt)) return;
@@ -27,11 +33,27 @@ export function updatePlayer(dt) {
       throttleT = lerp(P.speedBrake, P.speedBoost, clamp(m / 70, 0, 1));
     }
   }
+  // A collision sends the aircraft tumbling: the spin winds down as it recovers.
+  const spinning = player.spin > 0;
+  if (spinning) {
+    const C = CONFIG.enemy.collision;
+    player.spin -= dt; turnIn = 0; throttleT = P.speedBrake;
+    player.a += player.spinRate * (.25 + .75 * Math.max(0, player.spin) / C.spinSeconds) * dt;
+  }
   const previous = { x: player.x, y: player.y };
-  player.a += turnIn * P.turnRate * dt;
+  const turned = turnIn * P.turnRate * turnFactor(player.speed, P.speedBrake, P.speedBoost) * dt;
+  player.a += turned;
+  player.omega = dt > 0 ? turned / dt : 0;   // gunners lead a turning target along its arc
   player.speed = lerp(player.speed, throttleT, 1 - Math.pow(0.02, dt));
   player.x += Math.cos(player.a) * player.speed * dt;
   player.y += Math.sin(player.a) * player.speed * dt;
+  if (player.shoveX || player.shoveY) {
+    // Collision impulse, decaying over the stun.
+    player.x += player.shoveX * dt; player.y += player.shoveY * dt;
+    const k = Math.exp(-dt / (CONFIG.enemy.collision.stunSeconds / 2));
+    player.shoveX *= k; player.shoveY *= k;
+    if (Math.abs(player.shoveX) + Math.abs(player.shoveY) < 1) player.shoveX = player.shoveY = 0;
+  }
 
   checkDeckLanding(game, previous);
   if (player.flight !== 'flying') return;
@@ -50,7 +72,7 @@ export function updatePlayer(dt) {
       });
     }
   }
-  const firing = keys['Space'] || fireTouch.active;
+  const firing = (keys['Space'] || fireTouch.active) && !spinning;
   if (firing && player.fireCd <= 0 && !player.overheated) {
     player.fireCd = P.fireCooldown;
     player.heat += P.heatPerShot;

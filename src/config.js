@@ -8,22 +8,25 @@ export const CONFIG = {
     bankResponse: 8,
     propellerSpeed: 55,      // radians/s
     sunOffset: [-240, 800, -320], // sun position relative to the camera; shadows and ocean lighting share it
+    lighting: { sky: '#c5e6ff', ground: '#506273', hemisphere: 2.2, sun: '#fff0d2', sunIntensity: 2.5 },
     quality: {
       // Adaptive quality ladder, best first. The renderer steps down while
       // frames stay slow and back up only into levels that never failed.
-      // pixelRatio caps the device ratio; ocean is the shader detail
-      // (2 full, 1 no glitter/whitecaps, 0 two octaves, no clouds).
+      // pixelRatio caps the device ratio (below 1 the world renders soft but
+      // the HUD stays crisp); ocean is the shader detail (2 full, 1 no
+      // glitter/whitecaps, 0 two octaves, no clouds).
       // Pin a level for testing with ?quality=N in the URL.
       levels: [
         { pixelRatio: 2, ocean: 2, shadows: true },
-        // Preserve the water and scene lighting as resolution falls. Shadow
-        // maps cost a second scene pass, so they go before visible detail.
         { pixelRatio: 1.5, ocean: 2, shadows: false },
-        { pixelRatio: 1.25, ocean: 2, shadows: false },
-        { pixelRatio: 1.1, ocean: 2, shadows: false },
+        // Native 1:1 is where cheap tablets start: the top-down world is
+        // authored at one unit per CSS pixel, so nothing is lost.
+        { pixelRatio: 1, ocean: 2, shadows: false },
+        { pixelRatio: .8, ocean: 1, shadows: false },
+        { pixelRatio: .65, ocean: 0, shadows: false },
       ],
       start: 1,
-      touchStart: 1,
+      touchStart: 2,
       slowFrame: .024,         // s; frames longer than this count as slow (≈42 fps)
       fastFrame: .0175,        // s; frames shorter than this count as fast (holds 60 fps)
       settle: 2,               // s of net slow frames before stepping down
@@ -39,6 +42,23 @@ export const CONFIG = {
       surf: .55,               // shoreline foam ring opacity
       deep: '#0f4468', mid: '#1c6b8a', shallows: '#39aeb0',
       shallowsRadius: 1.9,     // lagoon fade-out distance, in island radii
+      shallowsOpacity: .6,     // strength of the turquoise skirt at the shoreline
+    },
+    land: {
+      // Island scenery. Everything is authored in world units (1 ≈ one CSS
+      // pixel; an aircraft is 48 wide) and batched into one draw per island.
+      treeSpacing: 21,         // grid step between forest trees
+      maxTrees: 2600,          // spacing widens on large islands to stay under this
+      forestCover: .48,        // fraction of an island's interior that becomes forest
+      villageRadius: 220,      // islands smaller than this get a hut at most
+      houseSize: 16,           // footprint of a village house
+      roadWidth: 9,
+      clearRadius: { airfield: 240, port: 190, radar: 170 }, // scenery keeps off installations
+      traffic: {
+        trucks: 64, people: 256, boats: 32,   // instance pool sizes
+        truckSpeed: 34, walkSpeed: 7, boatSpeed: 18,
+        peoplePerVillage: [4, 9], trucksPerRoad: [1, 3],
+      },
     },
   },
   player: {
@@ -59,18 +79,29 @@ export const CONFIG = {
   enemy: {
     speed: 245,
     turn: 2.1,
-    hp: 2,
-    fireCooldown: 1.2,
-    ace: { speed: 290, turn: 2.6, hp: 4, fireCooldown: 0.8 },
+    hp: 4,                    // collisions no longer do the enemy's work, so guns must
+    fireCooldown: 0.6,
+    ace: { speed: 290, turn: 2.6, hp: 6, fireCooldown: 0.45 },
     aceFromTerritory: 2,           // first wave that can include aces
     aceEvery: 3,              // every Nth enemy in a wave is an ace
-    bulletSpeed: 560,
-    bulletLife: 1.4,
-    bulletDamage: 9,
+    bulletSpeed: 660,
+    bulletLife: 1.2,
+    bulletDamage: 12,
     engageDist: 470,          // max range to open fire
-    aimCone: 0.22,            // rad off-nose tolerance to fire
-    ramDist: 26,
-    ramDamage: 30,
+    aimCone: 0.34,            // rad off-nose tolerance to fire
+    // Glancing collisions: both aircraft are hurt and shoved apart, the enemy
+    // is briefly uncontrollable and the player spins out. Nobody dies of one,
+    // and ramming pays no score.
+    collision: { radius: 26, damage: 15, enemyDamage: 1, shove: 70, stunSeconds: .5, cooldown: 1,
+      spinSeconds: 1.1, spinTurns: 1.25 },   // the player tumbles: no controls, no guns, speed bleeding off
+    avoidRange: 260,          // fighters sidestep a head-on closer than this
+    closeRange: 200,          // and any fast closure inside this, whatever the headings
+    recoverSeconds: 1.5,      // after a collision, extend away before re-engaging
+    brake: .65, boost: 1.35,  // throttle multipliers of an enemy's base speed
+    // Flying styles. Recruits pure-pursue; veterans lead their target and brake
+    // to cut inside; aces boom and zoom, extending after a pass and breaking
+    // hard when something gets on their tail.
+    styles: { weaveRange: 260, weave: 170, veteran: { brakeAngle: 1.1 }, ace: { extendSeconds: 1.6, breakSeconds: 1, breakRange: 320, passRange: 150 } },
     spawnDistMin: 750,
     spawnDistMax: 1150,
   },
@@ -81,6 +112,13 @@ export const CONFIG = {
     p51: { speedCruise: 315, speedBoost: 430, speedBrake: 180, turnRate: 3.3, fireCooldown: .1, heatPerShot: .075, gunOffsets: [-6, 6] },
   },
   navigation: { repairHull: 30, arrivalRadius: 500, departureRadius: 700 },
+  // Speed trades for turn: braked aircraft turn tight, boosted ones turn wide.
+  // Applies to every aircraft, so cutting inside a circle is a choice.
+  flight: { turnScale: { brake: 1.3, boost: .75 } },
+  // Enemy supply convoys run between holdings and resupply the destination.
+  // Transports are soft: guns sink them, and each one is worth score.
+  convoy: { firstDelay: 45, intervalMin: 50, intervalMax: 80, size: [2, 3], maxActive: 2, speed: 32, hp: 8,
+    length: 64, width: 20, spacing: 95, offshore: 260, supply: 12, score: 150, sightRadius: 1600 },
   persistence: { saveInterval: 15 },
   theater: { homeCoastSetback: 115, portSetback: 80, fleetCoastClearance: 650, fleetPatrolLength: 4200 },
   fleet: { turnRate: .25, enemyCarrierHp: 80, speed: 24, escortAhead: 180, escortLateral: 230, approachHoldDistance: 650, approachHoldAngle: .65 },
@@ -103,8 +141,24 @@ export const CONFIG = {
   },
   airWar: {
     raidFirst: 40, raidMin: 35, raidMax: 55, raidSpeed: 270, raidSpawnDistance: 850,
-    allyCount: 2, allyHp: 36, allySpeed: 235, allyTurn: 2.3,
-    allyRange: 600, allyFireCooldown: .45, waypointRadius: 150,
+    // Wingmen: a squadron that flies off the player's quarters, engages what the
+    // player engages and comes home. Slots by rank; losses are replaced only
+    // after further combat sorties, so bringing them home matters.
+    // Doctrine: cover the player, never play the game for them. Wingmen fight
+    // only what threatens the player (tail-chasers first), shoot slowly and
+    // only clean shots, break off when hurt, and their kills score half.
+    wing: { slots: [1, 2, 3], hp: 40, speed: 275, boost: 370, turn: 2.8, fireCooldown: .9, aimCone: .12,
+      formation: [[-70, 62], [-70, -62], [-140, 0]], engageRange: 450, selfDefence: 220, rejoinRange: 600,
+      retreatHull: .4, killScore: .5,
+      replacementSorties: 2, veteranKills: 3, veteran: { aimCone: .16, fireCooldown: .6, hp: 52 },
+      names: ['Hawk', 'Dutch', 'Tex', 'Moose', 'Sparky', 'Duke', 'Red', 'Slim', 'Ace', 'Whiskey', 'Chief', 'Kid'] },
+    // Captured airfields fly their own patrols around the neighbourhood.
+    patrol: { intervalMin: 55, intervalMax: 90, size: 2, maxActive: 6, duration: 80, radius: 900, engageRange: 600 },
+    gunnery: { aimCone: .22, fireCooldown: .5 },   // patrols and carrier aircraft
+    // The carrier keeps a combat air patrol overhead and flies strikes of its own.
+    cap: { count: 2, radius: 420, respawn: 60, engageRange: 750 },
+    carrierStrike: { intervalMin: 110, intervalMax: 160, size: 2, range: 6500, damage: 10, attackRange: 80 },
+    allyRange: 600, waypointRadius: 150,
   },
   torpedo: { capacity: 2, rearmSeconds: 0, speed: 220, range: 1100, damage: 20, cooldown: 5, armingDistance: 45 },
   ship: {

@@ -6,7 +6,7 @@ export const CAMPAIGN_SAVE_KEY = 'pacific-skies-expedition-v1';
 const VERSION = 1;
 const FIELDS = ['player','score','time','flightSeconds','combatSorties','playerMerit','raidImpacts','raidDamage','raidIntercepts',
   'strikeLaunchCooldown','raidTimer','territories','terrain','sectors','regions','theaterBounds','fleetRoutes','theaterSeed','geographySeed','sectorLinks','regionLinks',
-  'ships','airfields','bases','unlockedAircraft','rank','rescue','intelligence','sessionReport','pilotLosses',
+  'ships','airfields','bases','unlockedAircraft','rank','rescue','intelligence','sessionReport','pilotLosses','wing',
   'enemies','allies','bullets','ebullets','torpedoes','bombs','waypoint','guidanceCleared','endReason'];
 const arrays = ['territories','terrain','ships','airfields','bases','unlockedAircraft','enemies','allies','bullets','ebullets','torpedoes','bombs'];
 let lastCheckpoint = '', lastSaveTime = -Infinity, savedAvailable;
@@ -87,6 +87,9 @@ export function updateCampaignSave(game) {
   const marker = JSON.stringify([game.mode,game.player.flight,game.player.baseId,game.unlockedAircraft,game.rescue?.status,
     game.territories.map(t=>t.owner),Object.keys(game.intelligence?.sites||{}),game.intelligence?.surveyed]);
   if (marker !== lastCheckpoint || game.time-lastSaveTime >= (CONFIG.persistence?.saveInterval ?? 15)) {
-    if (saveCampaign(game)) lastCheckpoint=marker;
+    // A failed save (invalid state, full storage) backs off to the next
+    // interval; retrying every frame costs a full serialisation each time.
+    lastCheckpoint=marker; lastSaveTime=game.time;
+    saveCampaign(game);
   }
 }

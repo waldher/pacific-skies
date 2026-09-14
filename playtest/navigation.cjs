@@ -4,7 +4,7 @@ async function load(f){if(cache.has(f))return cache.get(f);const m=new vm.Source
 async function ns(f){const m=await load(path.join(root,f));if(m.status==='unlinked')await m.link(link);if(m.status==='linked')await m.evaluate();return m.namespace;}
 (async()=>{
  const {game,startGame}=await ns('src/state.js'),{updateIntelligence}=await ns('src/intelligence.js'),{objectiveFor,updateGuidance,coursePhase,flightPresentation}=await ns('src/objectives.js'),persist=await ns('src/persistence.js');
- startGame();assert.ok(game.waypoint);assert.ok(['Find the enemy outpost','Capture radar','Bomb the runway'].includes(objectiveFor(game).title));
+ startGame();assert.ok(game.waypoint);assert.ok(['Find the enemy outpost','Capture radar station','Capture enemy airfield'].includes(objectiveFor(game).title));
  const field=game.airfields.find(f=>f.owner==='enemy'),site=game.territories.find(t=>t.id===field.territory);
  Object.assign(game.player,{x:site.x,y:site.y,flight:'flying'});site.activated=true;updateIntelligence(game);
  game.waypoint={x:site.x,y:site.y,name:site.name,siteId:site.id,auto:true};assert.equal(objectiveFor(game).title,'Bomb the runway');

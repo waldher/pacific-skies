@@ -11,7 +11,6 @@ export function updateGuidance(game) {
   let wp=game.waypoint;
   if(!wp && game.guidanceCleared)return;
   if(wp?.rescue && game.rescue?.status!=='active')game.waypoint=wp=null;
-  if(wp?.rescue){const carrier=knownShips(game).find(s=>s.id===wp.shipId);if(carrier){wp.x=carrier.x;wp.y=carrier.y;}}
   // Preserve chart-selected courses. Automatic guidance advances after completion.
   if(wp?.auto && wp.siteId!=null && game.intelligence.sites[wp.siteId]?.owner==='us' && !wp.returning)game.waypoint=wp=null;
   if(wp?.returning && p.flight==='landed')game.waypoint=wp=null;
@@ -40,14 +39,13 @@ export function objectiveFor(game) {
   if(!wp)return {target:null,title:p.flight==='landed'?'Ready for takeoff':'Choose a destination',detail:'Tap the map'};
   let title='Fly to destination',reason='';
   const site=knownInstallations(game).find(t=>t.id===wp.siteId || (t.name===wp.name && distance(t,wp)<1));
-  if(wp.defend){title='Defend the base';reason='Shoot down the attackers';}
-  else if(wp.returning || wp.baseId){title='Land to rearm and repair';}
+  if(wp.returning || wp.baseId){title='Return to base';}
   else if(wp.rescue || (wp.shipId==='carrier' && game.rescue?.status==='active')){title='Defend the carrier';reason=game.rescue?.launched?'Shoot down the attackers':'Fly to the carrier';}
-  else if(wp.search){title=wp.region!=null?'Scout the next islands':'Find the enemy outpost';}
+  else if(wp.search){title=wp.region!=null?'Explore uncharted islands':'Find the enemy outpost';}
   else if(site){
-    if(site.owner==='us'){title=site.role==='airfield'?'Land to rearm and repair':'Fly to friendly outpost';}
+    if(site.owner==='us'){title=site.role==='airfield'?'Return to base':'Fly to friendly outpost';}
     else {
-      title=site.role==='airfield'?'Bomb the runway':site.role==='radar'?'Capture radar':'Capture the port';
+      title=site.role==='airfield'?'Capture enemy airfield':site.role==='radar'?'Capture radar station':'Capture enemy port';
       const actual=game.territories.find(t=>t.id===site.id), near=distance(p,site)<CONFIG.conquest.activateRadius;
       if(actual && near && observedAt(game,actual)) {
         const fighters=game.enemies.filter(e=>e.territory===site.id&&e.hp>0&&!e.strike).length;
@@ -74,19 +72,10 @@ export function coursePhase(game) {
     ? d<CONFIG.navigation.departureRadius : d<CONFIG.navigation.arrivalRadius;
   arrivalState.set(game,{key,arrived,world:game.terrain});return arrived?'arrived':'travel';
 }
+// What the objective arrow says: the objective itself, and how far or how much is left.
 export function flightPresentation(game) {
   const goal=objectiveFor(game),phase=coursePhase(game);
   if(!goal.target)return {title:'',detail:''};
-  const names={
-    'Fly to destination':'Destination', 'Defend the base':'Base defense',
-    'Land to rearm and repair':'Return to base', 'Defend the carrier':'Carrier defense',
-    'Scout the next islands':'Uncharted islands', 'Find the enemy outpost':'Reported activity',
-    'Fly to friendly outpost':'Friendly outpost', 'Bomb the runway':'Enemy airfield',
-    'Capture radar':'Radar station', 'Capture the port':'Enemy port',
-    'Shoot down the defenders':'Contested airspace', 'Circle to capture':'Capturing',
-    'Find the fleet contact':'Fleet contact', 'Fly to the carrier':'Carrier',
-  };
-  const title=names[goal.title]||'Destination';
-  // Counts belong to the map or visible target bars. Capture progress has its own bar.
-  return {title,detail:phase==='travel'?`${flightSeconds(game,goal.target)}s`:''};
+  // Counts belong to the map or visible target bars. Capture progress has its own ring.
+  return {title:goal.title,detail:phase==='travel'?`${flightSeconds(game,goal.target)}s`:goal.detail.endsWith('s flight')?'':goal.detail};
 }
