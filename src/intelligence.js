@@ -22,7 +22,8 @@ export function enemyObserved(game, enemy) { return enemy.hp>0 && observedAt(gam
 export function updateIntelligence(game, dt=0) {
   if (!game.intelligence) resetIntelligence(game);
   const intel=game.intelligence; intel.time+=dt;
-  for (const t of game.territories||[]) if (t.owner==='us'||siteObserved(game,t)) {
+  // Our own holdings report in, including the moment one is overrun.
+  for (const t of game.territories||[]) if (t.owner==='us'||intel.sites[t.id]?.owner==='us'||siteObserved(game,t)) {
     intel.sites[t.id]={ id:t.id,x:t.x,y:t.y,name:t.name,role:t.role,owner:t.owner,sector:t.sector,seenAt:intel.time };
   }
   intel.surveyed ||= {};

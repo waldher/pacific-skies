@@ -121,6 +121,18 @@ whether enemies can hit a straight-flying target. Change a number in
 and this is what tells you whether fights are still decided by flying.
 Bands are at the top of the file; move one only with a reason in the diff.
 
+`playtest/campaign-pilot.cjs` (part of `npm test`, ~1 min) plays whole
+campaigns headless on six seeds: a bot follows the gold marker, fights,
+bombs runways and the enemy carrier, captures, flies manual landings,
+rearms and recovers — keys and HUD calls only, no state edits. It reports
+where the time goes (idle, transit, explore, home, combat, attack,
+capture, ground), milestones and victory time, and fails on a band
+(victory rate, idle share, travel share, stalls: seven minutes with no
+change in the war). Anything touching objectives, intelligence, conquest
+or map scale should be checked here. `VERBOSE=1` prints the event log,
+`TRACE=seed:from:to` samples the fight every 2 s; the full report lands in
+`playtest/shots/campaign-pilot.json`.
+
 When evaluating gameplay changes, look at the screenshots too —
 visual readability is part of the game being good.
 

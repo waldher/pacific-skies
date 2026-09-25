@@ -12,13 +12,17 @@
 
 ## Balance work
 
-- Measure first-aircraft timing with human sessions; score and combat-sortie gates are initial tuning, not a validated 10–15 minute guarantee.
-- Add conquest and defensive-return bots, including ordnance accuracy and manual landings.
+- Travel is about half of play. `npm run test:campaign` (six seeds, marker-following bot) splits it 28% outbound transit, 18% exploring, 8% flying home (plus 4% final approach), against 28% combat, 2% bomb runs and 8% circling to capture. Candidates: forward airfields that rearm closer to the front, shorter survey legs, or content en route. The band is 0.6; tighten it when this moves.
+- Campaigns end in victory in 17–39 minutes for that bot, which dies well under once per 10 minutes: it sees everything visible and flies the combat-balance average pilot. Human sessions will be slower and bloodier; measure first-aircraft timing with them too.
+- Bomb runs are ~2% of play. Runway bombing may be too quick to matter as a decision, or the bot's release is simply accurate; watch a human do it.
+- Torpedo attacks are not exercised by the campaign bot yet (it bombs the enemy carrier).
 - Extend seeded coverage beyond the three smoke-test seeds and compare full campaigns with similar skill levels.
 - Inspect time spent travelling without useful decisions as the map and fleet expand. Region spacing was tightened and enemy convoys fill the empty stretches; measure whether rearm round-trips still dominate a sortie.
 - Use the optional end report and playtest/balance.cjs together; isolated defense simulations do not prove overall fun or campaign difficulty.
 
 ## Implemented
+
+- Campaign pilot harness (`playtest/campaign-pilot.cjs`). It found and now guards: a reached survey with no contact left the marker on empty sea forever; overrun garrisons stayed "ours" on the chart, so the marker never pointed back; once every island fell there was no objective at all (up to a third of a campaign idle) because guidance never pointed at the enemy fleet.
 
 - Enemy supply convoys between holdings, sunk by guns; recovery at the nearest base.
 - Wingman squadron with rank slots, replacements and veterans; airfield patrols; carrier CAP and strikes.
