@@ -10,19 +10,36 @@
 - Visible enemy bomb and torpedo releases; current strikes damage their target on arrival.
 - Persistent campaign saves and service records, paint schemes and nose art.
 
+## Fun audit findings
+
+`npm run test:fun` (see CLAUDE.md) tracks these; the report in
+`playtest/shots/fun-report.md` has the numbers. Bots are models, not
+people: treat a finding as a question to answer with a human session.
+
+Fun-killers today:
+- **Weak players cannot win** (rookie win rate 0 in 45 min, ~5 deaths per 10 min). The rookie gets stuck in fights nobody wins and abandons ~14 per 10 minutes: roaming Zeros chase forever and never break off. Mechanic candidates: enemy fuel or morale so dragged-out fights end; assists that fade with rank (pipper that leads along the arc, wider hit radius); fewer, weaker defenders on the first islands.
+
+Warnings:
+- **No death stakes for a competent pilot** (average dies ~0 per 10 min). Losing an aircraft is not part of the experience; stakes are only on the war map.
+- **Skill is a cliff, not a slope**: aces win in ~18 min, average ~24, rookies never. Wants a middle: catch-up help, not only harder enemies.
+- **Low pressure**: a player who defends home and never advances first loses a holding after ~22 min. The war does not force the player's hand; consider an enemy offensive clock.
+- **Travel is half of flying** (0.51). Forward rearm points, shorter survey legs, or decisions en route.
+- **The starter aircraft is abandoned at once**: the Dauntless unlocks after one combat sortie and the P-38 has no job only it does.
+- **Seeds differ 2.3× in length** (18 to 39 min): region count and link lengths in expedition-geography.
+
+Healthy: guns matter (pacifist never wins), no dominant strategy (fastest strategy varies by seed), fights pay (rushing is ~10% slower), rhythm of 2–3 intensity peaks per 10 min, novelty continues to the end, the second half differs from the first, objective and encounter variety.
+
+Sensitivity notes (`npm run test:fun:sensitivity`): quadrupling enemy damage makes hunting fighters the dominant strategy on every seed and one campaign in three unwinnable; slowing aircraft to 60% also makes one in three unwinnable.
+
 ## Balance work
 
-- Travel is about half of play. `npm run test:campaign` (six seeds, marker-following bot) splits it 28% outbound transit, 18% exploring, 8% flying home (plus 4% final approach), against 28% combat, 2% bomb runs and 8% circling to capture. Candidates: forward airfields that rearm closer to the front, shorter survey legs, or content en route. The band is 0.6; tighten it when this moves.
-- Campaigns end in victory in 17–39 minutes for that bot, which dies well under once per 10 minutes: it sees everything visible and flies the combat-balance average pilot. Human sessions will be slower and bloodier; measure first-aircraft timing with them too.
+- Measure first-aircraft timing and rookie outcomes with human sessions to calibrate the rookie persona.
+- Torpedo attacks are not exercised by the bots yet (they bomb the enemy carrier).
 - Bomb runs are ~2% of play. Runway bombing may be too quick to matter as a decision, or the bot's release is simply accurate; watch a human do it.
-- Torpedo attacks are not exercised by the campaign bot yet (it bombs the enemy carrier).
-- Extend seeded coverage beyond the three smoke-test seeds and compare full campaigns with similar skill levels.
-- Inspect time spent travelling without useful decisions as the map and fleet expand. Region spacing was tightened and enemy convoys fill the empty stretches; measure whether rearm round-trips still dominate a sortie.
-- Use the optional end report and playtest/balance.cjs together; isolated defense simulations do not prove overall fun or campaign difficulty.
 
 ## Implemented
 
-- Campaign pilot harness (`playtest/campaign-pilot.cjs`). It found and now guards: a reached survey with no contact left the marker on empty sea forever; overrun garrisons stayed "ours" on the chart, so the marker never pointed back; once every island fell there was no objective at all (up to a third of a campaign idle) because guidance never pointed at the enemy fleet.
+- Campaign pilot harness (now `playtest/lib/pilot.cjs`, run by the fun audit). It found and now guards: a reached survey with no contact left the marker on empty sea forever; overrun garrisons stayed "ours" on the chart, so the marker never pointed back; once every island fell there was no objective at all (up to a third of a campaign idle) because guidance never pointed at the enemy fleet.
 
 - Enemy supply convoys between holdings, sunk by guns; recovery at the nearest base.
 - Wingman squadron with rank slots, replacements and veterans; airfield patrols; carrier CAP and strikes.
