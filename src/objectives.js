@@ -1,6 +1,6 @@
 // One destination and one concrete action, shared by the HUD and operations chart.
 import { CONFIG } from './config.js';
-import { knownInstallations, knownShips, explorationLeads, observedAt, flightSeconds } from './intelligence.js';
+import { knownInstallations, knownShips, explorationLeads, observedAt, flightSeconds, installationKnown } from './intelligence.js';
 import { availableBases, resolveBase } from './bases.js';
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 const closest=(p,list)=>[...list].sort((a,b)=>distance(p,a)-distance(p,b))[0];
@@ -14,6 +14,15 @@ export function updateGuidance(game) {
   // Preserve chart-selected courses. Automatic guidance advances after completion.
   if(wp?.auto && wp.siteId!=null && game.intelligence.sites[wp.siteId]?.owner==='us' && !wp.returning)game.waypoint=wp=null;
   if(wp?.returning && p.flight==='landed')game.waypoint=wp=null;
+  // A search reached without a contact is done: move on rather than circle empty sea.
+  if(wp?.search && wp.auto && p.flight==='flying' && distance(p,wp)<CONFIG.navigation.arrivalRadius) {
+    if(wp.fleetSearch!=null)game.intelligence.fleetSearch=wp.fleetSearch+1;
+    game.waypoint=wp=null;
+  }
+  // A fleet course follows the contact while it is reported and ends when it goes stale or sinks.
+  const contact=wp?.auto && wp.team==='jp' && game.intelligence.ships[wp.shipId];
+  if(wp?.auto && wp.team==='jp'){ if(contact){wp.x=contact.x;wp.y=contact.y;} else game.waypoint=wp=null; }
+  if(wp?.fleetSearch!=null && enemyCarrierContact(game))game.waypoint=wp=null;
   const target=wp && (game.territories||[]).find(t=>t.id===wp.siteId);
   const field=target && game.airfields.find(f=>f.territory===target.id);
   const empty=p.loadout==='bombs' ? !p.bombAmmo : !p.torpedoAmmo;
@@ -31,8 +40,20 @@ export function updateGuidance(game) {
   const site=closest(p,knownInstallations(game).filter(t=>t.owner!=='us'));
   if(site){game.waypoint=siteWaypoint(site);return;}
   const lead=closest(p,explorationLeads(game));
-  if(lead)game.waypoint={...lead,auto:true};
+  if(lead){game.waypoint={...lead,auto:true};return;}
+  // Every region surveyed but a holding still uncharted: a coarse search, never its exact position.
+  const hidden=closest(p,(game.territories||[]).filter(t=>t.owner!=='us' && !installationKnown(game,t)));
+  if(hidden){const cell=CONFIG.intelligence.searchRadius;game.waypoint={x:Math.round(hidden.x/cell)*cell,y:Math.round(hidden.y/cell)*cell,name:'Enemy outpost',search:true,radius:cell,auto:true};return;}
+  // The islands are done; the enemy carrier is what remains. Its last contact, or else a sweep of its patrol waters.
+  const fleet=enemyCarrierContact(game);
+  if(fleet){game.waypoint={x:fleet.x,y:fleet.y,name:fleet.name,shipId:fleet.id,team:'jp',auto:true};return;}
+  const route=game.fleetRoutes?.jp;
+  if(route?.length && game.ships.some(s=>s.id==='enemy-carrier' && s.hp>0 && s.active!==false)) {
+    const leg=(game.intelligence.fleetSearch||0)%route.length,[x,y]=route[leg];
+    game.waypoint={x,y,name:'Enemy fleet waters',search:true,fleetSearch:leg,radius:CONFIG.intelligence.searchRadius,auto:true};
+  }
 }
+function enemyCarrierContact(game){ return knownShips(game).find(s=>s.team==='jp' && s.kind==='carrier'); }
 export function objectiveFor(game) {
   const p=game.player,wp=game.waypoint;
   if(!p)return {target:null,title:'',detail:''};
@@ -41,6 +62,7 @@ export function objectiveFor(game) {
   const site=knownInstallations(game).find(t=>t.id===wp.siteId || (t.name===wp.name && distance(t,wp)<1));
   if(wp.returning || wp.baseId){title='Return to base';}
   else if(wp.rescue || (wp.shipId==='carrier' && game.rescue?.status==='active')){title='Defend the carrier';reason=game.rescue?.launched?'Shoot down the attackers':'Fly to the carrier';}
+  else if(wp.fleetSearch!=null){title='Find the enemy fleet';}
   else if(wp.search){title=wp.region!=null?'Explore uncharted islands':'Find the enemy outpost';}
   else if(site){
     if(site.owner==='us'){title=site.role==='airfield'?'Return to base':'Fly to friendly outpost';}
@@ -55,7 +77,11 @@ export function objectiveFor(game) {
         else if(actual.activated){title='Circle to capture';reason=`${Math.max(0,Math.ceil(CONFIG.conquest.captureSeconds-actual.progress))}s remaining`;}
       }
     }
-  }else if(wp.team==='jp'){title='Find the fleet contact';reason='Last known position';}
+  }else if(wp.team==='jp'){
+    const ship=game.ships.find(s=>s.id===wp.shipId);
+    if(ship?.kind==='carrier' && distance(p,ship)<CONFIG.intelligence.tacticalRadius && observedAt(game,ship)){title='Sink the enemy carrier';}
+    else {title='Find the fleet contact';reason='Last known position';}
+  }
   else if(wp.team==='us'){title='Fly to the carrier';}
   const time=`${flightSeconds(game,wp)}s flight`;
   return {target:wp,title,detail:p.flight==='landed'?`Take off · ${time}`:reason||time};

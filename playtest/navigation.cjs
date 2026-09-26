@@ -3,7 +3,7 @@ const root=path.resolve(__dirname,'..'),records=new Map(),context=vm.createConte
 async function load(f){if(cache.has(f))return cache.get(f);const m=new vm.SourceTextModule(fs.readFileSync(f,'utf8'),{context,identifier:f});cache.set(f,m);return m;}const link=(s,p)=>load(path.resolve(path.dirname(p.identifier),s));
 async function ns(f){const m=await load(path.join(root,f));if(m.status==='unlinked')await m.link(link);if(m.status==='linked')await m.evaluate();return m.namespace;}
 (async()=>{
- const {game,startGame}=await ns('src/state.js'),{updateIntelligence}=await ns('src/intelligence.js'),{objectiveFor,updateGuidance,coursePhase,flightPresentation}=await ns('src/objectives.js'),persist=await ns('src/persistence.js');
+ const {game,startGame}=await ns('src/state.js'),{CONFIG}=await ns('src/config.js'),{updateIntelligence}=await ns('src/intelligence.js'),{objectiveFor,updateGuidance,coursePhase,flightPresentation}=await ns('src/objectives.js'),persist=await ns('src/persistence.js');
  startGame();assert.ok(game.waypoint);assert.ok(['Find the enemy outpost','Capture radar station','Capture enemy airfield'].includes(objectiveFor(game).title));
  const field=game.airfields.find(f=>f.owner==='enemy'),site=game.territories.find(t=>t.id===field.territory);
  Object.assign(game.player,{x:site.x,y:site.y,flight:'flying'});site.activated=true;updateIntelligence(game);
@@ -22,6 +22,23 @@ async function ns(f){const m=await load(path.join(root,f));if(m.status==='unlink
  game.waypoint.x=game.player.x+701;assert.equal(coursePhase(game),'travel');
  game.waypoint.x=game.player.x+600;assert.equal(coursePhase(game),'travel');
  game.waypoint.x=game.player.x+499;assert.equal(coursePhase(game),'arrived');
+ // Guidance never strands the player: surveys end on arrival, uncharted holdings and overrun garrisons are pointed at, and the enemy fleet is hunted last.
+ startGame();const {explorationLeads}=await ns('src/intelligence.js');
+ game.player.flight='flying';for(const r of game.sectors)game.intelligence.surveyed[r.id]=true;
+ const unknown=game.territories.find(t=>t.owner!=='us'&&!game.intelligence.sites[t.id]);
+ game.waypoint={x:unknown.x+50000,y:unknown.y,name:'Survey Empty',search:true,radius:2600,region:0,auto:true};
+ Object.assign(game.player,{x:game.waypoint.x,y:game.waypoint.y});updateIntelligence(game);updateGuidance(game);
+ assert.equal(explorationLeads(game).length,0);assert.equal(game.waypoint?.name,'Enemy outpost','reached survey is replaced by a coarse search for an uncharted holding');
+ assert.ok(game.territories.some(t=>t.owner!=='us'&&!game.intelligence.sites[t.id]&&Math.hypot(game.waypoint.x-t.x,game.waypoint.y-t.y)<CONFIG.intelligence.searchRadius),'search is coarse but near an uncharted holding');
+ const ours=game.territories.find(t=>t.owner==='us'&&t.id!==0)||game.territories.find(t=>t.id!==0);ours.owner='us';updateIntelligence(game);
+ ours.owner='enemy';Object.assign(game.player,{x:ours.x+50000,y:ours.y+50000});updateIntelligence(game);
+ assert.equal(game.intelligence.sites[ours.id].owner,'enemy','an overrun garrison reports its loss');
+ for(const t of game.territories)if(t.id!==0){t.owner='us';}updateIntelligence(game);game.waypoint=null;updateGuidance(game);
+ assert.equal(objectiveFor(game).title,'Find the enemy fleet','islands done: search the enemy fleet waters');
+ const enemyCarrier=game.ships.find(x=>x.id==='enemy-carrier');Object.assign(game.player,{x:enemyCarrier.x+300,y:enemyCarrier.y});updateIntelligence(game);updateGuidance(game);
+ assert.equal(game.waypoint.shipId,'enemy-carrier');assert.equal(objectiveFor(game).title,'Sink the enemy carrier');
+ enemyCarrier.x+=400;updateIntelligence(game);updateGuidance(game);assert.equal(game.waypoint.x,enemyCarrier.x,'fleet course follows the live contact');
+ console.log('PASS guidance ends reached surveys, finds uncharted and overrun holdings, then hunts the enemy fleet');
  console.log('PASS stable arrival state and quiet flight presentation');
  console.log('PASS actionable objective phases, completion, manual courses, clear course and legacy coastal-save migration');
 })().catch(e=>{console.error(e);process.exitCode=1});

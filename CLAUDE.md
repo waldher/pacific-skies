@@ -121,6 +121,25 @@ whether enemies can hit a straight-flying target. Change a number in
 and this is what tells you whether fights are still decided by flying.
 Bands are at the top of the file; move one only with a reason in the diff.
 
+`playtest/fun-audit.cjs` (part of `npm test`, ~2.5 min on 4 cores) asks
+whether the game is still fun. Seven procedural personas (`lib/pilot.cjs`)
+play whole seeded campaigns headless with keys and HUD calls only: rookie,
+average and ace follow the marker; brawler hunts everything, rusher skips
+fights, pacifist never fires (restricted play: if giving something up does
+not hurt, it does not matter); passive defends home and never advances.
+`lib/fun-metrics.cjs` turns their telemetry into ~30 findings in
+categories smoke, difficulty, pacing, repetition, flying, strategy,
+variety and map, each ok / warn / killer with design advice. It fails on
+a smoke invariant (softlock, unwinnable, no objective), on a finding that
+becomes a killer, or on a known killer getting worse, all against
+`playtest/fun-baseline.json`. When a change moves fun on purpose, run
+`npm run test:fun:baseline` and commit the baseline with the reason.
+Reports: `playtest/shots/fun-report.md` and `fun-audit.json` (every run's
+events and sorties). `SEEDS=`, `PERSONAS=`, `MINUTES=` narrow a run (no
+ratchet). `npm run test:fun:sensitivity` breaks the game on purpose via
+`FUN_CONFIG` overrides and checks the right findings move; run it after
+editing a metric.
+
 When evaluating gameplay changes, look at the screenshots too —
 visual readability is part of the game being good.
 
