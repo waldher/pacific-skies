@@ -12,8 +12,23 @@ function batchMeshes(source, relativeTo) {
     if (!node.isMesh) return;
     const geometry = node.geometry.clone();
     geometry.applyMatrix4(new THREE.Matrix4().multiplyMatrices(inverse, node.matrixWorld));
-    const key = node.material.uuid;
-    if (!groups.has(key)) groups.set(key, { material: node.material, geometries: [] });
+    // Paint differs only in colour: bake it into vertices and batch identical
+    // shading properties together. Preserve PBR response and all markings.
+    const m = node.material, descriptor = m.toJSON();
+    delete descriptor.uuid; delete descriptor.name; delete descriptor.color;
+    const key = JSON.stringify(descriptor);
+    const colors = new Float32Array(geometry.attributes.position.count * 3);
+    const existing = geometry.getAttribute('color');
+    for (let i = 0; i < colors.length / 3; i++) {
+      colors[i*3] = m.color.r * (existing ? existing.getX(i) : 1);
+      colors[i*3+1] = m.color.g * (existing ? existing.getY(i) : 1);
+      colors[i*3+2] = m.color.b * (existing ? existing.getZ(i) : 1);
+    }
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    if (!groups.has(key)) {
+      const material = m.clone(); material.color.set(0xffffff); material.vertexColors = true;
+      groups.set(key, { material, geometries: [] });
+    }
     groups.get(key).geometries.push(geometry);
   });
   const result = new THREE.Group();

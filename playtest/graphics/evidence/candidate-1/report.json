@@ -1,0 +1,324 @@
+{
+  "schema": 1,
+  "sourceHash": "ab2eafd309b4ea601d3ad4a9fbe9aab3edd3c6aafed803c25f8137ee39f7872a",
+  "suiteHash": "ba635eb9e624b4215b296c834207e980ba07f00da6bc3f8e9727544435a52735",
+  "commit": "184edfef7d5914c1bf2069e73ff428fda97b8374",
+  "dirty": true,
+  "seed": 1942,
+  "samples": 30,
+  "timing": "SwiftShader completed GPU render cost; NOT phone FPS",
+  "results": [
+    {
+      "profile": {
+        "name": "phone",
+        "width": 852,
+        "height": 393,
+        "quality": 2
+      },
+      "scene": "airfield",
+      "camera": {
+        "x": 1635.1159343712861,
+        "y": 1112.3515476414532
+      },
+      "meanMs": 40.62000000002639,
+      "p50Ms": 24,
+      "p95Ms": 31.300000000046566,
+      "maxMs": 525.6000000000931,
+      "ready": true,
+      "engine": "Three.js",
+      "revision": "185",
+      "aircraft": 1,
+      "drawCalls": 20,
+      "triangles": 14403,
+      "chunks": 1,
+      "quality": 2,
+      "pixelRatio": 1,
+      "frameMs": 25.850535718315943,
+      "geometries": 27,
+      "textures": 2,
+      "screenshot": "phone-airfield.png",
+      "sha256": "7ddbce4269ffb1637db9f1a3bffa07b525b0458df94a9d5db521750b6330e1b0"
+    },
+    {
+      "profile": {
+        "name": "phone",
+        "width": 852,
+        "height": 393,
+        "quality": 2
+      },
+      "scene": "coast",
+      "camera": {
+        "x": 1945.1159343712861,
+        "y": 1292.3515476414532
+      },
+      "meanMs": 34.90000000000776,
+      "p50Ms": 19.800000000046566,
+      "p95Ms": 26.300000000046566,
+      "maxMs": 452.4000000001397,
+      "ready": true,
+      "engine": "Three.js",
+      "revision": "185",
+      "aircraft": 1,
+      "drawCalls": 20,
+      "triangles": 14403,
+      "chunks": 1,
+      "quality": 2,
+      "pixelRatio": 1,
+      "frameMs": 21.896912696813576,
+      "geometries": 27,
+      "textures": 2,
+      "screenshot": "phone-coast.png",
+      "sha256": "4d8664403042fdb44a9b3fd664397dc60cf7bc82dd483d9ec183d337785fd1a0"
+    },
+    {
+      "profile": {
+        "name": "phone",
+        "width": 852,
+        "height": 393,
+        "quality": 2
+      },
+      "scene": "fleet",
+      "camera": {
+        "x": 5244.452492778936,
+        "y": 2919.5680056559972
+      },
+      "meanMs": 19.970000000010867,
+      "p50Ms": 11.399999999906868,
+      "p95Ms": 18,
+      "maxMs": 263,
+      "ready": true,
+      "engine": "Three.js",
+      "revision": "185",
+      "aircraft": 1,
+      "drawCalls": 7,
+      "triangles": 3407,
+      "chunks": 0,
+      "quality": 2,
+      "pixelRatio": 1,
+      "frameMs": 12.031300642725526,
+      "geometries": 19,
+      "textures": 2,
+      "screenshot": "phone-fleet.png",
+      "sha256": "04674e74313d219e14828a1fc9cc8cdada81ceee04fa078552c5a2d6af295391"
+    },
+    {
+      "profile": {
+        "name": "phone",
+        "width": 852,
+        "height": 393,
+        "quality": 2
+      },
+      "scene": "dogfight",
+      "camera": {
+        "x": 5244.452492778936,
+        "y": 2919.5680056559972
+      },
+      "meanMs": 26.84333333336593,
+      "p50Ms": 14.5,
+      "p95Ms": 20.5,
+      "maxMs": 372.60000000009313,
+      "ready": true,
+      "engine": "Three.js",
+      "revision": "185",
+      "aircraft": 7,
+      "drawCalls": 25,
+      "triangles": 19661,
+      "chunks": 0,
+      "quality": 2,
+      "pixelRatio": 1,
+      "frameMs": 15.554260009183798,
+      "geometries": 21,
+      "textures": 2,
+      "screenshot": "phone-dogfight.png",
+      "sha256": "63446affb6c6b03705660d3236fe3bba74e97263e5947e4b08597c229bf45f60"
+    },
+    {
+      "profile": {
+        "name": "phone",
+        "width": 852,
+        "height": 393,
+        "quality": 2
+      },
+      "scene": "stress",
+      "camera": {
+        "x": 5244.452492778936,
+        "y": 2919.5680056559972
+      },
+      "meanMs": 33.46333333333799,
+      "p50Ms": 20,
+      "p95Ms": 29.5,
+      "maxMs": 404.80000000004657,
+      "ready": true,
+      "engine": "Three.js",
+      "revision": "185",
+      "aircraft": 25,
+      "drawCalls": 79,
+      "triangles": 68423,
+      "chunks": 0,
+      "quality": 2,
+      "pixelRatio": 1,
+      "frameMs": 21.200230713658517,
+      "geometries": 21,
+      "textures": 2,
+      "screenshot": "phone-stress.png",
+      "sha256": "12fce1de152e162c980650c58477c9a53fa7ed656a701644e5058aa509346618"
+    },
+    {
+      "profile": {
+        "name": "fallback",
+        "width": 852,
+        "height": 393,
+        "quality": 4
+      },
+      "scene": "airfield",
+      "camera": {
+        "x": 1635.1159343712861,
+        "y": 1112.3515476414532
+      },
+      "meanMs": 21.710000000001553,
+      "p50Ms": 10.5,
+      "p95Ms": 15.699999999953434,
+      "maxMs": 332.29999999981374,
+      "ready": true,
+      "engine": "Three.js",
+      "revision": "185",
+      "aircraft": 1,
+      "drawCalls": 20,
+      "triangles": 14403,
+      "chunks": 1,
+      "quality": 4,
+      "pixelRatio": 0.65,
+      "frameMs": 12.365242756148323,
+      "geometries": 27,
+      "textures": 2,
+      "screenshot": "fallback-airfield.png",
+      "sha256": "7b8e4f375599c3fd88fbddc624986cd46bcf46373e1faf4ee65e460cad6074fb"
+    },
+    {
+      "profile": {
+        "name": "fallback",
+        "width": 852,
+        "height": 393,
+        "quality": 4
+      },
+      "scene": "coast",
+      "camera": {
+        "x": 1945.1159343712861,
+        "y": 1292.3515476414532
+      },
+      "meanMs": 20.41333333333023,
+      "p50Ms": 9,
+      "p95Ms": 15.399999999906868,
+      "maxMs": 344.79999999981374,
+      "ready": true,
+      "engine": "Three.js",
+      "revision": "185",
+      "aircraft": 1,
+      "drawCalls": 20,
+      "triangles": 14403,
+      "chunks": 1,
+      "quality": 4,
+      "pixelRatio": 0.65,
+      "frameMs": 10.080519112868718,
+      "geometries": 27,
+      "textures": 2,
+      "screenshot": "fallback-coast.png",
+      "sha256": "dd11f26eba69efced0745374a5fa48ce13d2a07e115c76cfbe13a2f068127d93"
+    },
+    {
+      "profile": {
+        "name": "fallback",
+        "width": 852,
+        "height": 393,
+        "quality": 4
+      },
+      "scene": "fleet",
+      "camera": {
+        "x": 5244.452492778936,
+        "y": 2919.5680056559972
+      },
+      "meanMs": 9.609999999993791,
+      "p50Ms": 4.199999999953434,
+      "p95Ms": 6.099999999860302,
+      "maxMs": 164.80000000004657,
+      "ready": true,
+      "engine": "Three.js",
+      "revision": "185",
+      "aircraft": 1,
+      "drawCalls": 7,
+      "triangles": 3407,
+      "chunks": 0,
+      "quality": 4,
+      "pixelRatio": 0.65,
+      "frameMs": 4.871606890451702,
+      "geometries": 19,
+      "textures": 2,
+      "screenshot": "fallback-fleet.png",
+      "sha256": "d21e6e25c1828e8f090b70ce74c45d762d25150ca15ba00291f1273a3d36def8"
+    },
+    {
+      "profile": {
+        "name": "fallback",
+        "width": 852,
+        "height": 393,
+        "quality": 4
+      },
+      "scene": "dogfight",
+      "camera": {
+        "x": 5244.452492778936,
+        "y": 2919.5680056559972
+      },
+      "meanMs": 13.423333333339542,
+      "p50Ms": 6,
+      "p95Ms": 13.399999999906868,
+      "maxMs": 217.60000000009313,
+      "ready": true,
+      "engine": "Three.js",
+      "revision": "185",
+      "aircraft": 7,
+      "drawCalls": 25,
+      "triangles": 19661,
+      "chunks": 0,
+      "quality": 4,
+      "pixelRatio": 0.65,
+      "frameMs": 7.195933475848133,
+      "geometries": 21,
+      "textures": 2,
+      "screenshot": "fallback-dogfight.png",
+      "sha256": "ebd260149469bd0adf7f3d2e77ba876581dc2c2314d76c2d248f6742db722946"
+    },
+    {
+      "profile": {
+        "name": "fallback",
+        "width": 852,
+        "height": 393,
+        "quality": 4
+      },
+      "scene": "stress",
+      "camera": {
+        "x": 5244.452492778936,
+        "y": 2919.5680056559972
+      },
+      "meanMs": 20.966666666666665,
+      "p50Ms": 11.399999999906868,
+      "p95Ms": 16.199999999953434,
+      "maxMs": 289.69999999995343,
+      "ready": true,
+      "engine": "Three.js",
+      "revision": "185",
+      "aircraft": 25,
+      "drawCalls": 79,
+      "triangles": 68423,
+      "chunks": 0,
+      "quality": 4,
+      "pixelRatio": 0.65,
+      "frameMs": 12.528532687684153,
+      "geometries": 21,
+      "textures": 2,
+      "screenshot": "fallback-stress.png",
+      "sha256": "a9759a7573742e7d22cf91ebbafbbfb06903cc5272c70688e2d413feb9600601"
+    }
+  ],
+  "errors": [],
+  "browser": "141.0.7390.37"
+}

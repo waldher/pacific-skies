@@ -18,7 +18,7 @@ const FOREST_SCALE = .02;
 
 const BIOMES = {
   jungle:    { sand: '#e6d7a4', low: '#3f7f3c', high: '#2c5a2f', patch: '#5c9a45', rock: '#5d6552', trees: ['#2e6d35', '#3b8342', '#27612c', '#4a8f3d'], palms: true, forest: .62, huts: 'thatch', road: '#8a7a58', mountains: true },
-  temperate: { sand: '#e3d49b', low: '#7aa650', high: '#537d3c', patch: '#a6bf66', rock: '#7a7468', trees: ['#4d8b3a', '#63a04a', '#8c9a3a', '#3f7a35'], palms: false, forest: .45, huts: 'house', road: '#5b5a57', fields: true, mountains: true, snow: true },
+  temperate: { sand: '#e3d49b', low: '#6f8054', high: '#4d6342', patch: '#8d9868', rock: '#7a7468', trees: ['#4d8b3a', '#63a04a', '#8c9a3a', '#3f7a35'], palms: false, forest: .45, huts: 'house', road: '#5b5a57', fields: true, mountains: true, snow: true },
   volcanic:  { sand: '#4d4945', low: '#4c7040', high: '#454240', patch: '#6a8150', rock: '#4a4744', trees: ['#2f6a37', '#3d7f44', '#356f3a'], palms: true, forest: .38, huts: 'thatch', road: '#6b625a', volcano: true },
   atoll:     { sand: '#f3ead0', low: '#b8c586', high: '#8ea86a', patch: '#d3d49a', rock: '#b5ad95', trees: ['#4d9a4b', '#5faa53', '#3f8a44'], palms: true, forest: .34, huts: 'thatch', road: '#cbb98e', palmOnly: true },
   desert:    { sand: '#ecd9a3', low: '#dcbd78', high: '#b98a55', patch: '#c9a465', rock: '#8f6a4c', trees: ['#6c7a3f', '#7b8746'], palms: true, forest: .1, huts: 'adobe', road: '#a88d62', dunes: true, oasis: true, scrub: true },
@@ -211,8 +211,9 @@ function groundShader(shared) {
       skyLight: { value: new THREE.Color(L.sky).multiplyScalar(L.hemisphere) },
       groundLight: { value: new THREE.Color(L.ground).multiplyScalar(L.hemisphere) },
       low: { value: new THREE.Color() }, high: { value: new THREE.Color() }, patchColor: { value: new THREE.Color() }, rock: { value: new THREE.Color() },
+      clearings: { value: Array.from({length:8},()=>new THREE.Vector3()) }, clearingCount: {value:0},
       fields: { value: 0 }, dunes: { value: 0 }, relief: { value: 60 }, origin: { value: new THREE.Vector2() }, angle: { value: 0 },
-      cropA: { value: new THREE.Color('#d1b04e') }, cropB: { value: new THREE.Color('#9ab84f') }, cropC: { value: new THREE.Color('#a87f4c') }, cropD: { value: new THREE.Color('#4f8040') }, hedgeColor: { value: new THREE.Color('#2f4a24') },
+      cropA: { value: new THREE.Color('#9c9164') }, cropB: { value: new THREE.Color('#879265') }, cropC: { value: new THREE.Color('#887253') }, cropD: { value: new THREE.Color('#61734d') }, hedgeColor: { value: new THREE.Color('#536344') },
     },
     vertexShader: `varying vec2 worldXZ;
       void main() {
@@ -222,6 +223,7 @@ function groundShader(shared) {
       }`,
     fragmentShader: `varying vec2 worldXZ;
       uniform float time, cloudSpeed, cloudStrength, fields, dunes, relief, angle;
+      uniform vec3 clearings[8]; uniform int clearingCount;
       uniform vec2 wind, origin; uniform vec3 sunDir, sunLight, skyLight, groundLight, low, high, patchColor, rock, cropA, cropB, cropC, cropD, hedgeColor;
       ${NOISE_GLSL}
       const float HILL = ${HILL_SCALE};
@@ -233,10 +235,11 @@ function groundShader(shared) {
         float hill = coarse.x;
         float h = hill * .72 + fine.x * .28;
         vec2 g = (coarse.yz * .72 + fine.yz * (.28 * 3.1)) * HILL;
-        float speck = vnoise2(p * .045);
+        float speck = vnoise2(p * .24);
         vec3 albedo = mix(low, high, smoothstep(.34, .8, h));
-        albedo = mix(albedo, patchColor, smoothstep(.55, .75, speck) * .55);
+        albedo = mix(albedo, patchColor, smoothstep(.35, .8, speck) * .18);
         albedo = mix(albedo, rock, smoothstep(.76, .9, h));
+        albedo *= .92 + speck * .16;
         if (fields > .5) {
           // Farmland: whole plots in the lowlands, each a rectangle of one crop with
           // a hedge around it. Deciding per plot (not per pixel) keeps hedges closed.
@@ -245,10 +248,17 @@ function groundShader(shared) {
           float farm = vnoise2(centre * .0045 + 7.3);
           float plotHill = vnoise(world * HILL) * .72 + vnoise(world * HILL * 3.1 + 5.0) * .28;
           float use = step(.52, farm) * step(plotHill, .55);
+          // Keep cultivation outside airfields, ports and radar compounds.
+          for (int i=0; i<8; i++) {
+            if (i>=clearingCount) break;
+            vec2 delta=p-clearings[i].xy;
+            float radius=clearings[i].z;
+            use *= smoothstep(radius*radius,(radius+50.0)*(radius+50.0),dot(delta,delta));
+          }
           float pick = vnoise2(cell * 5.3 + 1.5);
           vec3 crop = pick < .3 ? cropA : pick < .55 ? cropB : pick < .8 ? cropC : cropD;
-          crop *= .9 + .1 * step(.5, fract(q.x / 6.0 + pick * 3.0));
-          float hedge = smoothstep(.0, .045, f.x) * smoothstep(.0, .045, f.y) * (1.0 - smoothstep(.955, 1.0, f.x)) * (1.0 - smoothstep(.955, 1.0, f.y));
+          crop *= .96 + .04 * step(.5, fract(q.x / 6.0 + pick * 3.0));
+          float hedge = smoothstep(.0, .10, f.x) * smoothstep(.0, .10, f.y) * (1.0 - smoothstep(.90, 1.0, f.x)) * (1.0 - smoothstep(.90, 1.0, f.y));
           albedo = mix(albedo, mix(hedgeColor, crop, hedge), use);
         }
         if (dunes > .5) {
@@ -366,7 +376,9 @@ export function createLand(scene, shared) {
     ground.uniforms.low.value.set(B.low); ground.uniforms.high.value.set(B.high);
     ground.uniforms.patchColor.value.set(B.patch); ground.uniforms.rock.value.set(B.rock);
     ground.uniforms.fields.value = B.fields ? 1 : 0; ground.uniforms.dunes.value = B.dunes ? 1 : 0;
-    ground.uniforms.relief.value = B.dunes ? 40 : 60;
+    ground.uniforms.relief.value = B.dunes ? 40 : 22;
+    ground.uniforms.clearingCount.value = Math.min(8, clears.length);
+    clears.slice(0,8).forEach((c,i)=>ground.uniforms.clearings.value[i].set(t.x+c.x,t.y+c.y,c.r));
     ground.uniforms.origin.value.set(t.x, t.y); ground.uniforms.angle.value = t.a ?? 0;
     const GROUND = 8.5;
     group.add(flat(new THREE.ShapeGeometry(shapeOf(interior)), ground, GROUND));

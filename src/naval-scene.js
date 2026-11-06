@@ -14,7 +14,23 @@ const solid = hex => new THREE.MeshLambertMaterial({ color: hex });
 const hangarMat = solid('#a7a189'), rubbleMat = solid('#343534'), dark = solid('#263743'), cabin = solid('#839296');
 const friend = new THREE.MeshBasicMaterial({ color: '#62ddba' });
 const hostile = new THREE.MeshBasicMaterial({ color: '#ee7964' });
-const wakeMat = new THREE.MeshBasicMaterial({ color: '#b1e4e4', transparent: true, opacity: .22, depthWrite: false });
+// Analytic foam envelope: no texture, shadow map or extra draw calls.
+const wakeMat = new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false,
+  vertexShader: `varying vec2 vUv;
+    void main() { vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+  fragmentShader: `varying vec2 vUv;
+    void main() {
+      float aft=1.0-vUv.y;
+      float width=mix(.12,.48,aft);
+      float edge=abs(vUv.x-.5)/width;
+      float envelope=(1.0-smoothstep(.55,1.0,edge))*smoothstep(0.0,.12,aft)*(1.0-smoothstep(.25,1.0,aft));
+      float foam=.78+.22*sin(aft*23.0+vUv.x*13.0)*sin(aft*37.0-vUv.x*17.0);
+      gl_FragColor=vec4(.62,.83,.82,envelope*foam*.32);
+      #include <tonemapping_fragment>
+      #include <colorspace_fragment>
+    }`,
+});
 const HULL = '#314453', DECK = '#6c7270', WOOD = '#8b8060', CABIN = '#839296', DARK = '#263743', WHITE = '#ece5bf';
 const FRIEND = '#62ddba', HOSTILE = '#ee7964', RUNWAY = '#4d5753';
 

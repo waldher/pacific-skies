@@ -29,7 +29,10 @@ export function createEffects(scene, renderer) {
     fragmentShader: `varying vec4 tint; varying float isRing;
       void main() {
         float r = length(gl_PointCoord - .5) * 2.0;
-        float alpha = 1.0 - smoothstep(.82, 1.0, r);
+        // Soft volume falloff, avoiding the old opaque coin-shaped smoke.
+        float alpha = (1.0 - smoothstep(.05, 1.0, r));
+        alpha *= alpha;
+        if (isRing > .5) alpha = 1.0 - smoothstep(.82, 1.0, r);
         if (isRing > .5) alpha *= smoothstep(.65, .8, r);
         if (alpha < .01) discard;
         gl_FragColor = vec4(tint.rgb, tint.a * alpha);
