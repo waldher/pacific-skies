@@ -1,0 +1,74 @@
+{
+  "sourceHash": "1cc6f79ea42505417cee0192aec536611462ceaefd95fdfc6a0bcbb7013b20d5",
+  "suiteHash": "1752796c1a7733426decf637c020c2c53b75b800b9cacb64b35244f9c2a0fe2e",
+  "seed": 1942,
+  "errors": [],
+  "results": [
+    {
+      "profile": {
+        "name": "phone",
+        "width": 852,
+        "height": 393,
+        "quality": 2
+      },
+      "visible": {
+        "hull": "27%",
+        "ordnance": "Bomb 2/2",
+        "mapVisible": true
+      },
+      "chartOpened": true,
+      "file": "phone.png",
+      "sha256": "f8be9bfe5a5d89e6471b05cb83925cc88b070d01493ac6db6cd58d6080fd9e24"
+    },
+    {
+      "profile": {
+        "name": "fallback",
+        "width": 852,
+        "height": 393,
+        "quality": 4
+      },
+      "visible": {
+        "hull": "27%",
+        "ordnance": "Bomb 2/2",
+        "mapVisible": true
+      },
+      "chartOpened": true,
+      "file": "fallback.png",
+      "sha256": "38aaec318d837d2141018991db657ddc33509375067a2b486f9ea588d5ae69db"
+    },
+    {
+      "profile": {
+        "name": "short-landscape",
+        "width": 640,
+        "height": 360,
+        "quality": 4
+      },
+      "visible": {
+        "hull": "27%",
+        "ordnance": "Bomb 2/2",
+        "mapVisible": true
+      },
+      "chartOpened": true,
+      "file": "short-landscape.png",
+      "sha256": "7448e5a8f90aaefbf0066c3304904a80fd2cd0351a9cbb325fcb21a555eb8700"
+    },
+    {
+      "profile": {
+        "name": "portrait",
+        "width": 320,
+        "height": 568,
+        "quality": 4
+      },
+      "visible": {
+        "hull": "27%",
+        "ordnance": "Bomb 2/2",
+        "mapVisible": true
+      },
+      "chartOpened": true,
+      "file": "portrait.png",
+      "sha256": "f4bd1de70f40f4c82b535d330b6e92a91092ffa83a353720c4462b9994759fcf"
+    }
+  ],
+  "browser": "141.0.7390.37",
+  "sourceHashAfter": "1cc6f79ea42505417cee0192aec536611462ceaefd95fdfc6a0bcbb7013b20d5"
+}

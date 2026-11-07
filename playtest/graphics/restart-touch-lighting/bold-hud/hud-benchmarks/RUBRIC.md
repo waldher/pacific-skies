@@ -22,6 +22,7 @@ Score HUD change separately from world-render quality. A candidate can be bolder
 
 - `dead-space-rig.jpg` is the in-engine development still from the linked EA article, at its official 1023px rendition. SHA-256 `8a8a09ed990546e6bb9c2f5abb46d4b1eafeff7acb1cc8b43c35749472f1fdcb`.
 - `ghost-guiding-wind.webp` is the official poster frame embedded in the linked Sucker Punch effects article’s Wind section, showing directional particles with debug overlays. Use it to corroborate the environmental cue mechanism, not as a finished HUD screenshot. The official State of Play is the finished-presentation reference.
+- Sony's [beginner’s guide](https://www.playstation.com/en-us/editorial/ghost-of-tsushima-beginners-guide/) provides two clean gameplay stills. `ghost-exploration.jpg` shows a player-facing exploration frame with no visible persistent HUD. `ghost-combat.jpg` shows compact contextual control palettes for Sticky Bomb and Stone Stance at the bottom corners, with the center open. Use these to judge hierarchy across states and the State of Play footage for directional motion.
 - Keep these publisher images as local review evidence. Link to the official sources in a repository record.
 
 At the end of each review, state where the challenger falls short of, matches,

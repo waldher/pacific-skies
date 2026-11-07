@@ -1,0 +1,12 @@
+{
+  "judge": "B",
+  "framesInspected": 36,
+  "acceptSampledProgression": true,
+  "findings": [
+    "At coast 000 the banner reads ACTIVE COURSE and FIND THE ENEMY OUTPOST. By 006 it reads ON STATION and RETURN TO BASE, the runway has a RECOVERY label and a ground marker, and the aircraft no longer carries the floating gold transit chevron. At fleet 006–180 the goal is also RETURN TO BASE, but ACTIVE COURSE, travel time and an off-aircraft gold double chevron distinguish transit from the coast recovery state. Neither sequence demonstrates a completed landing, capture progress, or a raid.",
+    "The hull reading drops to 27% in both profiles and remains readable in the corner. The white hit flash at coast and fleet 006–012 is clearly inside the controlled-aircraft brackets. The corner heat bar rises from 006 to 120 and falls by 180, but the sample shows no explicit overheat state. The low hull bracket markers are considerably less obvious over the deck than the precise percentage.",
+    "At fleet 024–036 the brackets track the controlled aircraft over the carrier bow across both profiles. The port bracket intersects the bow at 036 and bright deck markings compete with the bracket ends. The unlabeled pale aircraft-shaped object lower-right at 036 separates from the bracketed plane in later samples, which does not support a persistent duplicate over the player in this sequence. Hawk remains separately labeled when close.",
+    "At coast 120 the runway recovery brackets and label are distinguishable from the white runway arrow. At coast 180 the runway moves under the hull panel and the recovery mark is partly crowded by the upper-left overlay. The top bearing remains available. At fleet 180, a ship crosses behind the ordnance button at the right margin. No required control disappears in these sampled layouts."
+  ],
+  "limitations": "Inspected 36 discrete frames across native and fallback profiles, including detailed enlargements. This evidence cannot establish continuous flicker, frame pacing, sustained ghosting, actual touch hit boxes, two-thumb ergonomics, safe-area handling across hardware, urgent overheat legibility, or device performance."
+}

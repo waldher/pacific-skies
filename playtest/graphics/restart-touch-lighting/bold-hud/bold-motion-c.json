@@ -1,0 +1,12 @@
+{
+  "judge": "C",
+  "method": "sampled-still-progression",
+  "framesViewed": 36,
+  "accept": true,
+  "findings": [
+    "In both profiles of both scenes, the sampled HUD shows 35% Hull at 000 and 27% by 006, with an unmistakably shorter and warm-colored top-left bar. Heat fills separately through the burst sequence and falls back by 180. The bracket-edge colored slivers remain associated with the aircraft but are too small to be the only urgent readout; white silhouette at 006–012 gives a conspicuous damage event. No overheated terminal state was visible.",
+    "Fleet 006–180 replaces outpost and reserve rows with RETURN TO BASE and one gold directional cue; coast 006–180 shows ON STATION above RETURN TO BASE. Coast 024 includes a small RECOVERY label beside runway markers, giving the earlier circle a clearer meaning. At coast fallback 180 the upper-left gauge partially occludes the gold recovery locator area. ON STATION remains visible while banking over shallows at coast 090 and 180, so it reads as an area state rather than evidence of touchdown or completed repair.",
+    "Brackets keep the correct subject during the white hit flash, adjacent Hawk, fleet bow overlap at 024–036, and narrow bank at 090; through the steepest views the brackets feel wide around the reduced wingspan. No second blue silhouette is evident in these sampled frames; a separate darker shape offset on the sea is visible near the fleet 090 bank and reads as a projected shadow.",
+    "No confirmed sampled blocker for HUD availability or the two shown mission states. Continuous motion and flicker, arrival/capture completion, the overheat endpoint, hit targets, device safe areas and two-thumb interaction remain unverified."
+  ]
+}

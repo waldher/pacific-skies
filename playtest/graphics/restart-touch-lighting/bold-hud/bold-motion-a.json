@@ -1,0 +1,119 @@
+{
+  "scope": "Individually inspected 36 ordered sample frames across fleet and coast in phone and fallback profiles. This is a sampled sequence, not continuous playback.",
+  "verdict": "Positive for finding the aircraft and reading the next action at a glance. Contextual return state is visible. Overlapping carrier geometry and hit feedback still obscure the aircraft itself, and status information on the brackets is too small to decode in a busy scene.",
+  "remaining": [
+    "Critical hull percentage is legible off-airframe. During a hit the airframe flashes solid white in sampled frames 006 and 012; this does not establish the flash duration.",
+    "An offset blue-gray shape near the fleet and steep bank remains ambiguous.",
+    "Coast shows the recovery marker at the runway. Arrival at an outpost, active capture, overheated feedback, touch targets, safe areas, and continuous motion remain unverified."
+  ],
+  "frames": {
+    "coast-fallback-000.png": {
+      "evidence": "The active-course header and nearest-base line separate the two instructions. Brackets identify the plane on runway. The hull readout already shows 35%."
+    },
+    "coast-fallback-006.png": {
+      "evidence": "The damage flash masks the aircraft texture. Brackets retain ownership. The header switches to IN STATION and RETURN TO BASE, removing the old secondary line."
+    },
+    "coast-fallback-012.png": {
+      "evidence": "The plane remains a solid pale shape with dark brackets. The yellow recovery mark near the runway and cyan Hawk cue compete mildly."
+    },
+    "coast-fallback-024.png": {
+      "evidence": "Camouflage returns as the aircraft heads off runway. The fixed bracket orientation is useful for tracking despite bank."
+    },
+    "coast-fallback-036.png": {
+      "evidence": "The bracketed profile narrows near a tree and threshold. Recovery marker is still visible behind the aircraft."
+    },
+    "coast-fallback-060.png": {
+      "evidence": "Orange blast brightens the right bracket momentarily. Player remains at the midpoint of the two brackets while the base instruction persists."
+    },
+    "coast-fallback-090.png": {
+      "evidence": "Bank over dark water reduces plane contrast. Nearby bright paired tracers look more prominent than the local status markings."
+    },
+    "coast-fallback-120.png": {
+      "evidence": "Runway is clearly behind the bank. Recovery label appears near the runway, and the top course arrow and map player move relative to it."
+    },
+    "coast-fallback-180.png": {
+      "evidence": "Aircraft still framed near water edge, with the left bracket dark against grass. IN STATION remains while the player is visually offshore, so the exact station bounds are unclear."
+    },
+    "coast-phone-000.png": {
+      "evidence": "The active-course header and nearest-base line separate the two instructions. Brackets identify the plane on runway. The hull readout already shows 35%."
+    },
+    "coast-phone-006.png": {
+      "evidence": "The damage flash masks the aircraft texture. Brackets retain ownership. The header switches to IN STATION and RETURN TO BASE, removing the old secondary line."
+    },
+    "coast-phone-012.png": {
+      "evidence": "The plane remains a solid pale shape with dark brackets. The yellow recovery mark near the runway and cyan Hawk cue compete mildly."
+    },
+    "coast-phone-024.png": {
+      "evidence": "Camouflage returns as the aircraft heads off runway. The fixed bracket orientation is useful for tracking despite bank."
+    },
+    "coast-phone-036.png": {
+      "evidence": "The bracketed profile narrows near a tree and threshold. Recovery marker is still visible behind the aircraft."
+    },
+    "coast-phone-060.png": {
+      "evidence": "Orange blast brightens the right bracket momentarily. Player remains at the midpoint of the two brackets while the base instruction persists."
+    },
+    "coast-phone-090.png": {
+      "evidence": "Bank over dark water reduces plane contrast. Nearby bright paired tracers look more prominent than the local status markings."
+    },
+    "coast-phone-120.png": {
+      "evidence": "Runway is clearly behind the bank. Recovery label appears near the runway, and the top course arrow and map player move relative to it."
+    },
+    "coast-phone-180.png": {
+      "evidence": "Aircraft still framed near water edge, with the left bracket dark against grass. IN STATION remains while the player is visually offshore, so the exact station bounds are unclear."
+    },
+    "fleet-fallback-000.png": {
+      "evidence": "On deep blue water the brackets pick out the blue aircraft below the carrier. The thin amber course marker points beyond it."
+    },
+    "fleet-fallback-006.png": {
+      "evidence": "The switch to RETURN TO BASE keeps ACTIVE COURSE and an ETA. White flash hides damage detail, and the ally label is kept apart from the course arrow."
+    },
+    "fleet-fallback-012.png": {
+      "evidence": "White hit silhouette persists at this sampled instant. The urgent order and shrinking hull bar remain readable outside the effect."
+    },
+    "fleet-fallback-024.png": {
+      "evidence": "The right bracket competes with the carrier bow and deck trim. The left bracket maintains the aircraft position."
+    },
+    "fleet-fallback-036.png": {
+      "evidence": "The airframe and bow still merge briefly. The lower Hawk label reads as a different aircraft, and a pale offset shape near the water remains ambiguous."
+    },
+    "fleet-fallback-060.png": {
+      "evidence": "A bright blast just past the right bracket interrupts its contrast. Left-side framing preserves a clear position."
+    },
+    "fleet-fallback-090.png": {
+      "evidence": "At steep bank, wing and shadow contrast is weak. The brackets let me track the thin silhouette. Small amber arrows and pale tracers remain distinct on water."
+    },
+    "fleet-fallback-120.png": {
+      "evidence": "Aircraft opens into a readable cross-shaped silhouette while leaving the ship behind. Heat grows in the fixed top meter; integrated state meaning remains small."
+    },
+    "fleet-fallback-180.png": {
+      "evidence": "Bow and ally are clear of the local bracket. The distant base remains a heading and ETA rather than a landmark."
+    },
+    "fleet-phone-000.png": {
+      "evidence": "On deep blue water the brackets pick out the blue aircraft below the carrier. The thin amber course marker points beyond it."
+    },
+    "fleet-phone-006.png": {
+      "evidence": "The switch to RETURN TO BASE keeps ACTIVE COURSE and an ETA. White flash hides damage detail, and the ally label is kept apart from the course arrow."
+    },
+    "fleet-phone-012.png": {
+      "evidence": "White hit silhouette persists at this sampled instant. The urgent order and shrinking hull bar remain readable outside the effect."
+    },
+    "fleet-phone-024.png": {
+      "evidence": "The right bracket competes with the carrier bow and deck trim. The left bracket maintains the aircraft position."
+    },
+    "fleet-phone-036.png": {
+      "evidence": "The airframe and bow still merge briefly. The lower Hawk label reads as a different aircraft, and a pale offset shape near the water remains ambiguous."
+    },
+    "fleet-phone-060.png": {
+      "evidence": "A bright blast just past the right bracket interrupts its contrast. Left-side framing preserves a clear position."
+    },
+    "fleet-phone-090.png": {
+      "evidence": "At steep bank, wing and shadow contrast is weak. The brackets let me track the thin silhouette. Small amber arrows and pale tracers remain distinct on water."
+    },
+    "fleet-phone-120.png": {
+      "evidence": "Aircraft opens into a readable cross-shaped silhouette while leaving the ship behind. Heat grows in the fixed top meter; integrated state meaning remains small."
+    },
+    "fleet-phone-180.png": {
+      "evidence": "Bow and ally are clear of the local bracket. The distant base remains a heading and ETA rather than a landmark."
+    }
+  }
+}
