@@ -1,0 +1,164 @@
+From ab9f6347981b762b73dedf8a3e139f71ebd18cd1 Mon Sep 17 00:00:00 2001
+From: Codex <codex@openai.com>
+Date: Sat, 7 Nov 2026 08:36:52 +0100
+Subject: [PATCH] Try cached pressure transients for player gunfire
+
+---
+ playtest/gun-audio.mjs | 71 ++++++++++++++++++++++++++++++++++++++++++
+ src/audio.js           | 53 ++++++++++++++++++++++++++-----
+ 2 files changed, 117 insertions(+), 7 deletions(-)
+ create mode 100644 playtest/gun-audio.mjs
+
+diff --git a/playtest/gun-audio.mjs b/playtest/gun-audio.mjs
+new file mode 100644
+index 0000000..479a391
+--- /dev/null
++++ b/playtest/gun-audio.mjs
+@@ -0,0 +1,71 @@
++import assert from 'node:assert/strict';
++import { test } from 'node:test';
++import { audioInit, sfxGun } from '../src/audio.js';
++import { rand, setSeed } from '../src/util.js';
++
++test('gunfire preserves gameplay RNG, reuses bounded transients and starts immediately', () => {
++  const buffers = [];
++  const starts = [];
++  const destination = {};
++  let resumes = 0;
++  class TestAudioContext {
++    state = 'suspended';
++    currentTime = 3.5;
++    destination = destination;
++    resume() {
++      this.state = 'running';
++      resumes++;
++    }
++    createBuffer(channels, length, sampleRate) {
++      assert.equal(channels, 1);
++      const data = new Float32Array(length);
++      const buffer = { sampleRate, data, getChannelData: () => data };
++      buffers.push(buffer);
++      return buffer;
++    }
++    createBufferSource() {
++      return {
++        connect(target) { assert.equal(target, destination); },
++        start(time) { starts.push({ time, buffer: this.buffer }); },
++      };
++    }
++  }
++
++  setSeed(1942);
++  const expected = Array.from({ length: 12 }, () => {
++    sfxGun();
++    return rand(0, 1);
++  });
++  globalThis.window = { AudioContext: TestAudioContext };
++  try {
++    setSeed(1942);
++    audioInit();
++    audioInit();
++    const actual = Array.from({ length: 12 }, () => {
++      sfxGun();
++      return rand(0, 1);
++    });
++    assert.deepEqual(actual, expected);
++    assert.equal(resumes, 1);
++    assert.equal(starts.length, 12);
++    assert.equal(buffers.length, 4);
++    assert.equal(new Set(starts.map(({ buffer }) => buffer)).size, 4);
++    for (const { time, buffer } of starts) {
++      assert.equal(time, 3.5);
++      assert.ok(buffers.includes(buffer));
++    }
++    for (const { data, sampleRate } of buffers) {
++      assert.ok(data.length / sampleRate < .1, 'shot ends before the fastest player fire interval');
++      assert.equal(Math.abs(data[0]), 0);
++      assert.equal(Math.abs(data.at(-1)), 0);
++      assert.ok(data.every(Number.isFinite));
++      const peak = Math.max(...data.map(Math.abs));
++      assert.ok(peak > .05 && peak < .09, 'audible signal with headroom');
++      const energy = samples => samples.reduce((sum, sample) => sum + sample ** 2, 0);
++      const span = Math.round(sampleRate * .02);
++      assert.ok(energy(data.subarray(0, span)) > 25 * energy(data.subarray(-span)));
++    }
++  } finally {
++    delete globalThis.window;
++  }
++});
+diff --git a/src/audio.js b/src/audio.js
+index 593a83a..819ea36 100644
+--- a/src/audio.js
++++ b/src/audio.js
+@@ -1,22 +1,61 @@
+ // Tiny procedural audio: gunfire and explosions, no assets.
+-import { rand } from './util.js';
+-
+ let AC = null;
++let gunShots;
++let nextGunShot = 0;
++
++const GUN_SAMPLE_RATE = 24000;
++const GUN_DURATION = .075;
++const GUN_PEAK = .08;
++
++function createGunShot(context, seed) {
++  const length = Math.round(GUN_DURATION * GUN_SAMPLE_RATE);
++  const buffer = context.createBuffer(1, length, GUN_SAMPLE_RATE);
++  const samples = buffer.getChannelData(0);
++  const smooth = frequency => 1 - Math.exp(-2 * Math.PI * frequency / GUN_SAMPLE_RATE);
++  const pressureBand = smooth(430);
++  const reportBand = smooth(2600);
++  let pressure = 0;
++  let report = 0;
++  let peak = 0;
++
++  for (let i = 0; i < length; i++) {
++    // Each buffer has its own repeatable noise. Firing never draws from the
++    // gameplay random stream, regardless of whether audio has been unlocked.
++    seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
++    const noise = seed / 2147483648 - 1;
++    pressure += pressureBand * (noise - pressure);
++    report += reportBand * (noise - report);
++    const t = i / GUN_SAMPLE_RATE;
++    const crack = (report - pressure) * Math.exp(-t / .005);
++    const body = pressure * Math.exp(-t / .014);
++    const returnTime = t - .014;
++    const action = returnTime < 0 ? 0 :
++      (noise - report) * Math.min(1, returnTime / .001) * Math.exp(-returnTime / .002);
++    const edge = Math.min(1, t / .0005, (length - 1 - i) / 96);
++    const sample = edge * (.7 * crack + body + .14 * action);
++    samples[i] = sample;
++    peak = Math.max(peak, Math.abs(sample));
++  }
++  const scale = GUN_PEAK / peak;
++  for (let i = 0; i < length; i++) samples[i] *= scale;
++  return buffer;
++}
+ 
+ export function audioInit() {
+   if (!AC) {
+     try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
++    if (AC) gunShots = [1942, 1943, 1944, 1945].map(seed => createGunShot(AC, seed));
+   }
+   if (AC && AC.state === 'suspended') AC.resume();
+ }
+ 
+ export function sfxGun() {
+   if (!AC) return;
+-  const t = AC.currentTime, o = AC.createOscillator(), g = AC.createGain();
+-  o.type = 'square'; o.frequency.setValueAtTime(rand(620, 700), t);
+-  o.frequency.exponentialRampToValueAtTime(140, t + 0.06);
+-  g.gain.setValueAtTime(0.05, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+-  o.connect(g).connect(AC.destination); o.start(t); o.stop(t + 0.08);
++  const source = AC.createBufferSource();
++  source.buffer = gunShots[nextGunShot];
++  nextGunShot = (nextGunShot + 1) % gunShots.length;
++  source.connect(AC.destination);
++  source.start(AC.currentTime);
+ }
+ 
+ export function sfxOverheat() {
+-- 
+2.51.1
+

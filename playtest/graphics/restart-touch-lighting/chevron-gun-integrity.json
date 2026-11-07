@@ -1,0 +1,62 @@
+{
+  "motion": {
+    "reportSha256": "88187c4de09d1f8d4c8419404e76936659ba5a4412334f22fe139c63b5bc4a2d",
+    "sourceHash": "9e4ed772b06add08f585990d1c5aeff4dd7d6b7f309d503f6e814956e2e8aa37",
+    "suiteHash": "3116fd688562276c1035e26924ee6938e86a54c4b96d04eeac3fe5b465791b17",
+    "frames": 36
+  },
+  "av": {
+    "phone": {
+      "reportSha256": "b6696091882c512bb9c23f71617017bf9084a59a1ab34b1bd1fccc62016670da",
+      "sourceHash": "b7a317d81004b791cd3d4f27a8f4a45a3d789f926b483024e4144129ae5b4bbb",
+      "suiteHash": "aecd1b1e90dfe07d3559fae8745cf344152b4d0850cd9cfbef7f2e43371a7a2d",
+      "audioPeakDbFS": -14.10838297107757,
+      "artifacts": [
+        {
+          "file": "gameplay.mp4",
+          "bytes": 1454472,
+          "sha256": "9cf35e61440fe3d047f03ad0f90ad8a20a7ded1eb4a4ece2e1bb3f5fbd41e152"
+        },
+        {
+          "file": "gameplay-audio.wav",
+          "bytes": 191908,
+          "sha256": "1d6dc3adcd09224d3a01489f4a2e18960d8c2992ae51fd9a10ece5130f6f5f69"
+        }
+      ],
+      "audioTiming": {
+        "packets": 50,
+        "maxPacketGapSeconds": 0.7389999999999999,
+        "gapsOver60Ms": 33,
+        "gapPolicy": "Preserve elapsed time by filling omitted recorder samples with silence.",
+        "decodedSeconds": 5.9946875
+      },
+      "videoFrameCount": 148
+    },
+    "fallback": {
+      "reportSha256": "7af63395e0279da90fe2c7478a3204381a650306cae49c40eaca866ab2790553",
+      "sourceHash": "b7a317d81004b791cd3d4f27a8f4a45a3d789f926b483024e4144129ae5b4bbb",
+      "suiteHash": "aecd1b1e90dfe07d3559fae8745cf344152b4d0850cd9cfbef7f2e43371a7a2d",
+      "audioPeakDbFS": -16.457347453696176,
+      "artifacts": [
+        {
+          "file": "gameplay.mp4",
+          "bytes": 1417675,
+          "sha256": "39842d20ff621facbb28dd9154af7a18d63efc15113182ee7f9ffc267d4ab87e"
+        },
+        {
+          "file": "gameplay-audio.wav",
+          "bytes": 193272,
+          "sha256": "454cba1284410769e0d858e865fdf0d4f0ef17c34eb54cf0649ac0c7b21ceef7"
+        }
+      ],
+      "audioTiming": {
+        "packets": 56,
+        "maxPacketGapSeconds": 0.659,
+        "gapsOver60Ms": 34,
+        "gapPolicy": "Preserve elapsed time by filling omitted recorder samples with silence.",
+        "decodedSeconds": 6.0373125
+      },
+      "videoFrameCount": 192
+    }
+  }
+}
