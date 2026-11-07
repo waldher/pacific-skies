@@ -1,0 +1,26 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> pacific-skies@0.2.0 test:scenery-reset
+> node playtest/scenery-reset.cjs
+
+{
+  "resumed": true,
+  "reset": {
+    "time": 0.17219999999995392,
+    "loading": "Preparing island scenery…",
+    "stats": {
+      "mode": "worker",
+      "reason": null,
+      "builds": 2,
+      "lastBuildMs": 90.89999999990687,
+      "lastSerializeMs": 32.89999999990687,
+      "generation": 3,
+      "pending": 0,
+      "inFlight": false,
+      "staleResults": 0,
+      "hydrateMs": 0.30000000004656613
+    }
+  },
+  "errors": []
+}
+PASS scenery reset resumes simulation and enemy territory teleport spawns defenders
