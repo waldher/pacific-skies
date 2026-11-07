@@ -1,0 +1,26 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> pacific-skies@0.2.0 test:graphics:unit
+> node --test playtest/graphics/gate.test.cjs && node --experimental-vm-modules --no-warnings playtest/world-cache.cjs && node --experimental-vm-modules --no-warnings playtest/projection.cjs && node --experimental-vm-modules --no-warnings playtest/projectile-visual.cjs && node --experimental-vm-modules --no-warnings playtest/particle-visual.cjs && node --experimental-vm-modules --no-warnings playtest/shore-winding.cjs
+
+✔ valid synthetic evidence (65.702964ms)
+✔ stale source (59.963559ms)
+✔ missing judge (58.04696ms)
+✔ missing motion (65.70362ms)
+✔ tampered screenshot (56.809711ms)
+✔ slow candidate (65.071283ms)
+✔ wrong performance source (61.897619ms)
+✔ duplicate scene (60.074911ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 574.79304
+PASS cached revisit, bounded 36-island transit, LRU disposal, seed reset and full release (37 builds)
+PASS affine projection: ground invariance, altitude/HUD agreement, resize idempotence, inverse, elevated frustum and visual clearance
+PASS render-only projectile heights: aircraft emission, AA interpolation/clamp, legacy fallback, zero range, gameplay fields untouched
+PASS particle visuals: water-only splash, surface altitude, distinct large core, expiration and budget
+PASS shore bands: CW/CCW convex and concave coverage, duplicate/collapsed edges, invalid rings, fades and 988 upward real-home surf triangles

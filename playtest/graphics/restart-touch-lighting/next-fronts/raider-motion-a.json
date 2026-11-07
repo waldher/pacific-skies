@@ -1,0 +1,123 @@
+{
+  "scope": "36 sampled frames in temporal order, across coast and fleet on phone and fallback.",
+  "verdict": "The sampled change is a HUD regression in both tiers. The cyan ring helps locate the player over empty water but competes with the aircraft over decks and runway markings, and the Hawk label collisions return.",
+  "changes": [
+    "Player brackets are replaced by a cyan ring that follows the player, with visibly more overlay near the runway circle and the bow.",
+    "Hawk grazes the return banner at coast 180 and the minimap at fleet 120 in both tiers."
+  ],
+  "remaining": [
+    "The white damage silhouette still interrupts airframe detail at 006 and 012.",
+    "The offset dark or blue shapes remain visible over water.",
+    "No clear material improvement is discernible at this sampled play scale."
+  ],
+  "frames": {
+    "coast-fallback-000.png": {
+      "evidence": "Cyan ring stays centered over the player on the runway and adds a slight blue tint to the surface."
+    },
+    "coast-fallback-006.png": {
+      "evidence": "Player turns solid white with hull loss and Return to Base. The cyan circle sits near the separate runway circle."
+    },
+    "coast-fallback-012.png": {
+      "evidence": "White silhouette remains visible. Two circles and a separate cyan Hawk label compete with the tracers."
+    },
+    "coast-fallback-024.png": {
+      "evidence": "Aircraft material returns. Ring crosses the runway threshold markings and adds a sense of a separate zone."
+    },
+    "coast-fallback-036.png": {
+      "evidence": "Bank reduces visible wing area. The larger cyan circle tracks the aircraft, with the smaller runway circle lower in the view."
+    },
+    "coast-fallback-060.png": {
+      "evidence": "An orange blast stands out beyond the circle. The tinted ring crosses the edge of the sea and light beach."
+    },
+    "coast-fallback-090.png": {
+      "evidence": "Ring keeps the low-contrast player easy to locate as the orange blast falls off to flecks. Thin dark trailing smoke is visible."
+    },
+    "coast-fallback-120.png": {
+      "evidence": "Cyan ring stays with the player over water. It reads brighter and larger than the aircraft itself at this scale."
+    },
+    "coast-fallback-180.png": {
+      "evidence": "Hawk label grazes the top of Return to Base again. The same sampled frame previously hid the label to keep the mission banner clear."
+    },
+    "coast-phone-000.png": {
+      "evidence": "Cyan ring stays centered over the player on the runway and adds a slight blue tint to the surface."
+    },
+    "coast-phone-006.png": {
+      "evidence": "Player turns solid white with hull loss and Return to Base. The cyan circle sits near the separate runway circle."
+    },
+    "coast-phone-012.png": {
+      "evidence": "White silhouette remains visible. Two circles and a separate cyan Hawk label compete with the tracers."
+    },
+    "coast-phone-024.png": {
+      "evidence": "Aircraft material returns. Ring crosses the runway threshold markings and adds a sense of a separate zone."
+    },
+    "coast-phone-036.png": {
+      "evidence": "Bank reduces visible wing area. The larger cyan circle tracks the aircraft, with the smaller runway circle lower in the view."
+    },
+    "coast-phone-060.png": {
+      "evidence": "An orange blast stands out beyond the circle. The tinted ring crosses the edge of the sea and light beach."
+    },
+    "coast-phone-090.png": {
+      "evidence": "Ring keeps the low-contrast player easy to locate as the orange blast falls off to flecks. Thin dark trailing smoke is visible."
+    },
+    "coast-phone-120.png": {
+      "evidence": "Cyan ring stays with the player over water. It reads brighter and larger than the aircraft itself at this scale."
+    },
+    "coast-phone-180.png": {
+      "evidence": "Hawk label grazes the top of Return to Base again. The same sampled frame previously hid the label to keep the mission banner clear."
+    },
+    "fleet-fallback-000.png": {
+      "evidence": "Carrier and wake stay distinct. Cyan circle emphasizes the player but the surrounding halo hints at a shield or range marker."
+    },
+    "fleet-fallback-006.png": {
+      "evidence": "White hit silhouette remains under the ring, with the nearby orange spark outside it. The return order is stable."
+    },
+    "fleet-fallback-012.png": {
+      "evidence": "Dark trails and white damage response remain. The player ring is close to the carrier bow and adds competing linework."
+    },
+    "fleet-fallback-024.png": {
+      "evidence": "Cyan circle overlays the carrier deck as the player crosses the bow. It competes with diagonal deck markings and a second aircraft."
+    },
+    "fleet-fallback-036.png": {
+      "evidence": "Player airframe and deck are difficult to distinguish at overlap despite the ring. The ring itself remains very obvious."
+    },
+    "fleet-fallback-060.png": {
+      "evidence": "Orange blast stands out. The offset blue mark over water remains visible below the group."
+    },
+    "fleet-fallback-090.png": {
+      "evidence": "Ring carries player identity while banked. The curved dark trail and separate offset marks remain visible."
+    },
+    "fleet-fallback-120.png": {
+      "evidence": "Hawk label again touches the minimap edge. The cyan circle and darker blue mark below it can both be mistaken for effects."
+    },
+    "fleet-fallback-180.png": {
+      "evidence": "Hawk label sits clear of the minimap. Cyan ring remains brighter than the grey-blue player and its dark trail."
+    },
+    "fleet-phone-000.png": {
+      "evidence": "Carrier and wake stay distinct. Cyan circle emphasizes the player but the surrounding halo hints at a shield or range marker."
+    },
+    "fleet-phone-006.png": {
+      "evidence": "White hit silhouette remains under the ring, with the nearby orange spark outside it. The return order is stable."
+    },
+    "fleet-phone-012.png": {
+      "evidence": "Dark trails and white damage response remain. The player ring is close to the carrier bow and adds competing linework."
+    },
+    "fleet-phone-024.png": {
+      "evidence": "Cyan circle overlays the carrier deck as the player crosses the bow. It competes with diagonal deck markings and a second aircraft."
+    },
+    "fleet-phone-036.png": {
+      "evidence": "Player airframe and deck are difficult to distinguish at overlap despite the ring. The ring itself remains very obvious."
+    },
+    "fleet-phone-060.png": {
+      "evidence": "Orange blast stands out. The offset blue mark over water remains visible below the group."
+    },
+    "fleet-phone-090.png": {
+      "evidence": "Ring carries player identity while banked. The curved dark trail and separate offset marks remain visible."
+    },
+    "fleet-phone-120.png": {
+      "evidence": "Hawk label again touches the minimap edge. The cyan circle and darker blue mark below it can both be mistaken for effects."
+    },
+    "fleet-phone-180.png": {
+      "evidence": "Hawk label sits clear of the minimap. Cyan ring remains brighter than the grey-blue player and its dark trail."
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "judge": "C",
+  "method": "sampled-still-progression",
+  "framesViewed": 36,
+  "accept": true,
+  "motionImprovement": "none measured",
+  "findings": [
+    "All 36 decoded RGB samples match the earlier same-ring Raider diffuse control exactly. This is visual equivalence across the sampled coast and fleet views in both profiles.",
+    "The player remains in the cyan ring as the white hit flash appears at 006–012 and as the aircraft banks and crosses the carrier bow at fleet 024–036. Wakes, tracers, fireball at 060 and subsequent smoke remain distinct. No blue aircraft overlay appears in the inspected samples.",
+    "The shared ring baseline still has a second gold runway circle and has Hawk label collisions at coast 180 and fleet 120. These observations concern the common HUD in this comparison.",
+    "The sampled sequences do not demonstrate the change in motion in a crowded Raider swarm. Continuous playback, frame pacing and device performance are outside this review."
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "judge": "C",
+  "method": "sampled-still-progression",
+  "framesViewed": 36,
+  "accept": true,
+  "motionImprovement": "none measured",
+  "findings": [
+    "All 36 decoded RGB frames are pixel-identical to the earlier same-ring touch-lighting sequence. These runs provide no visual evidence for the changed Raider livery in motion and no difference from the same-marker control.",
+    "The cyan ring tracks the dark player through the white damage flash at 006 and 012 and into the turns on both profiles. At coast 006–036 it sits near the similarly shaped gold runway ring, and at fleet 024–036 it crosses busy deck edges and markings. The slimmer cyan brackets in the separate HUD sequence gave those cues more room.",
+    "Relative to the HUD-clearance sequence, the coast 180 Hawk label again meets RETURN TO BASE and the fleet 120 label again crowds the minimap. Preserve the accepted HUD clearance and bracket cues when combining the changes.",
+    "The bright damage flash remains visually distinct from the ordinary blue-gray airframe. No blue silhouette overlays it in the samples. Frame pacing, continuous transitions, and handset performance were outside this review."
+  ]
+}

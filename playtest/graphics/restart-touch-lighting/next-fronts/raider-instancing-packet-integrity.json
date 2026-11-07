@@ -1,0 +1,30 @@
+{
+  "suiteHash": "68068d6fc3d154ab81b5c22ecd8832a2533367231b3cd07d68b93dc04fba3076",
+  "reports": {
+    "original-baseline": {
+      "sourceHash": "6a9bbae3c7f0741952c5830c4c1c3a5a1ece142b9129884353297e3c96bdc0ad",
+      "reportSha256": "5b2a6dc55d522cdcaf68a07beeb55d64b9bc17014ab5bc5c4626a9b5d15594d4",
+      "browser": "141.0.7390.37",
+      "dirty": true
+    },
+    "retained-six": {
+      "sourceHash": "61c5ca830e59baece895abdcc1d35c1fb082468616ac99e2cd9c16e6c1fd4514",
+      "reportSha256": "6c3a7df5e4d98ff29d468e7b69cfa008fdfbcdec3b0055f9375a33b12c0419ab",
+      "browser": "141.0.7390.37",
+      "dirty": true
+    },
+    "raider-physical-paired": {
+      "sourceHash": "84aac84bb34faf2573d768ea1fd519378fa7bf838524a7ccdc336357b141068d",
+      "reportSha256": "1c38e4012e35383a73c81ded83bcaca659f4e74071c060d2d813b2849add3825",
+      "browser": "141.0.7390.37",
+      "dirty": true
+    },
+    "raider-instancing": {
+      "sourceHash": "38e8d5c18ea75258b3aa7448cc9a469ea01dec4ed60631350bc2f22879425b7c",
+      "reportSha256": "3b1968416cbac1ff35cc5f3c48a77985fc273927c3e580d373f1990c3b523d05",
+      "browser": "141.0.7390.37",
+      "dirty": false
+    }
+  },
+  "images": 45
+}
