@@ -1,0 +1,3 @@
+# Aircraft-integrated HUD trial
+
+Apply `bold-hud.patch` to the exact combined candidate reconstructed in the sibling next-fronts archive, source 3c87e6492c912bfb583fb65ffb39c193a0e74cc2203ea3eaf4fc8da8c54f894e. Resulting runtime source 57ef64029c36ad72ecf4307bc703827bf811335ea6e363145e8b69b693ec4aa9. Adds segmented hull, conditional gun heat, one primary bearing and named arrival marks with angular control plates. The official publisher references inform a separate HUD rubric. Existing graphics and performance rules remain in force. This checkpoint contains source and reports while review is pending. No preview update.
