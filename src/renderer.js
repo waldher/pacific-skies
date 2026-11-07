@@ -14,7 +14,8 @@ import { CONFIG } from './config.js';
 import { loadAircraft, createAircraft, updateAircraft, setShadowMode } from './aircraft.js';
 import { createWorld, preloadOceanMaterial } from './world.js';
 import { preloadTerrainMaterial } from './land.js';
-import { createNavalScene } from './naval-scene.js';
+import { preloadCanopyMaterial } from './canopy.js';
+import { createNavalScene, preloadNavalMaterials } from './naval-scene.js';
 import { createEffects, preloadEffectAtlas } from './effects.js';
 import { renderAircraftPreviews } from './aircraft-previews.js';
 
@@ -41,8 +42,12 @@ export async function createRenderer(canvas) {
   sun.shadow.camera.near = 1;
   sun.shadow.camera.far = 2200;
   scene.add(sun, sun.target);
-  const environment = createEnvironment(renderer, scene);
-  await Promise.all([preloadTerrainMaterial(), preloadOceanMaterial()]);
+  // A single sky/ground light supplies broad fill on touch devices without
+  // sampling the reflection probe in every shaded aircraft fragment.
+  const environment = touchDevice
+    ? { mode: 'hemisphere-touch', reason: null, bytes: 0, dispose() {} }
+    : createEnvironment(renderer, scene);
+  await Promise.all([preloadTerrainMaterial(), preloadOceanMaterial(), preloadCanopyMaterial(), preloadNavalMaterials()]);
   const world = createWorld(scene);
   await preloadEffectAtlas();
   const effects = createEffects(scene, renderer);
@@ -190,6 +195,7 @@ export async function createRenderer(canvas) {
       diagnostics.triangles = renderer.info.render.triangles;
       diagnostics.chunks = world.chunkCount;
       diagnostics.oceanMaterial = world.oceanMaterialInfo;
+      diagnostics.navalMaterial = naval.materialMode;
       diagnostics.effectAtlas = effects.atlasMode;
       diagnostics.terrainWorker = world.workerStats;
     },

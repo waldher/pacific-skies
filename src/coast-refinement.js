@@ -2,14 +2,25 @@
 // No simulation RNG calls: facility placement and campaign seeds stay unchanged.
 const cross=(a,b,c)=>(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
 export function simpleCoast(p) {
-  const n=p.length;
+  const n=p.length,edges=[];
   for(let i=0;i<n;i++) {
     const a=p[i],b=p[(i+1)%n];
     if(!a.every(Number.isFinite)||Math.hypot(b[0]-a[0],b[1]-a[1])<1e-7)return false;
-    for(let j=i+2;j<n;j++) {
-      if(i===0&&j===n-1)continue;
-      const c=p[j],d=p[(j+1)%n];
-      if(Math.max(a[0],b[0])<Math.min(c[0],d[0])||Math.max(c[0],d[0])<Math.min(a[0],b[0])||Math.max(a[1],b[1])<Math.min(c[1],d[1])||Math.max(c[1],d[1])<Math.min(a[1],b[1]))continue;
+    edges.push({i,a,b,minX:Math.min(a[0],b[0]),maxX:Math.max(a[0],b[0]),minY:Math.min(a[1],b[1]),maxY:Math.max(a[1],b[1])});
+  }
+  // Exact broad phase only: a pair can intersect only while its X intervals
+  // overlap. Keep the original adjacency and cross-product predicates, with
+  // original index ordering to preserve floating-point operation order.
+  edges.sort((a,b)=>a.minX-b.minX);
+  for(let i=0;i<n;i++) {
+    const first=edges[i];
+    for(let j=i+1;j<n;j++) {
+      const second=edges[j];
+      if(second.minX>first.maxX)break;
+      const low=first.i<second.i?first:second,high=first.i<second.i?second:first;
+      if(high.i===low.i+1||(low.i===0&&high.i===n-1))continue;
+      if(first.maxY<second.minY||second.maxY<first.minY)continue;
+      const a=low.a,b=low.b,c=high.a,d=high.b;
       if(cross(a,b,c)*cross(a,b,d)<=0&&cross(c,d,a)*cross(c,d,b)<=0)return false;
     }
   }

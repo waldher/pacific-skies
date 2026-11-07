@@ -8,6 +8,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { CONFIG } from './config.js';
 import { withRelief } from './projection.js';
+import { noiseTexture, NOISE_GLSL } from './noise.js';
 import { shipObserved, installationKnown, observedAt } from './intelligence.js';
 
 const paint = withRelief(new THREE.MeshLambertMaterial({ vertexColors: true }));
@@ -77,45 +78,96 @@ const solid = hex => new THREE.MeshLambertMaterial({ color: hex });
 const hangarMat = paint, rubbleMat = withRelief(solid('#343534')), dark = solid('#263743'), cabin = withRelief(solid('#839296'));
 const friend = new THREE.MeshBasicMaterial({ color: '#62ddba' });
 const hostile = new THREE.MeshBasicMaterial({ color: '#ee7964' });
+// A single linear modulation atlas, shared by existing merged batches. White
+// tiles preserve the original vertex colors on untextured markings/details.
+const SURFACE_TILES={wood:0,roof:1,concrete:2,asphalt:3,steel:4};
+let surfaceReady, surfaceMode='vertex-color-fallback';
+export function preloadNavalMaterials() {
+  if(surfaceReady)return surfaceReady;
+  surfaceReady=new Promise(resolve=>{
+    let done=false;
+    const timer=setTimeout(()=>{done=true;resolve(false);},2500);
+    new THREE.TextureLoader().load(new URL('../assets/materials/naval-surfaces.png',import.meta.url).href,texture=>{
+      if(done){texture.dispose();return;}
+      done=true;clearTimeout(timer);
+      texture.colorSpace=THREE.NoColorSpace; // scalar linear albedo modulation
+      texture.minFilter=THREE.LinearMipmapLinearFilter;texture.magFilter=THREE.LinearFilter;
+      texture.generateMipmaps=true;
+      for(const material of [paint,shipPaint,carrierPaint,destroyerPaint]){material.map=texture;material.needsUpdate=true;}
+      surfaceMode='single-atlas-linear-512';resolve(true);
+    },undefined,()=>{if(!done){done=true;clearTimeout(timer);resolve(false);}});
+  });
+  return surfaceReady;
+}
+function surfaceUV(geometry, tile) {
+  const pos=geometry.attributes.position,normals=geometry.attributes.normal,uv=new Float32Array(pos.count*2);
+  geometry.computeBoundingBox();const lo=geometry.boundingBox.min,hi=geometry.boundingBox.max;
+  const index=SURFACE_TILES[tile];
+  for(let i=0;i<pos.count;i++) {
+    if(index===undefined){uv[i*2]=.875;uv[i*2+1]=.125;continue;}
+    const x=pos.getX(i),y=pos.getY(i),z=pos.getZ(i);
+    let u,v;
+    if(tile==='wood'){u=x/CONFIG.carrier.width+.5;v=z/CONFIG.carrier.length+.5;}
+    else {
+      const nx=Math.abs(normals.getX(i)),ny=Math.abs(normals.getY(i)),nz=Math.abs(normals.getZ(i));
+      if(ny>=nx&&ny>=nz){u=(x-lo.x)/Math.max(.001,hi.x-lo.x);v=(z-lo.z)/Math.max(.001,hi.z-lo.z);}
+      else if(nx>nz){u=(z-lo.z)/Math.max(.001,hi.z-lo.z);v=(y-lo.y)/Math.max(.001,hi.y-lo.y);}
+      else{u=(x-lo.x)/Math.max(.001,hi.x-lo.x);v=(y-lo.y)/Math.max(.001,hi.y-lo.y);}
+    }
+    u=Math.max(0,Math.min(1,u));v=Math.max(0,Math.min(1,v));
+    uv[i*2]=((index%4)*128+8.5+u*111)/512;
+    uv[i*2+1]=1-(Math.floor(index/4)*128+8.5+v*111)/512;
+  }
+  geometry.setAttribute('uv',new THREE.BufferAttribute(uv,2));return geometry;
+}
 // One surface draw carries both the thin hull-water contact shadow and the
-// moving wake. No noise texture, shadow-map sampling or additional mesh pass.
+// moving wake. One shared noise tap replaces periodic sine bands; no new
+// texture allocation, shadow-map sampling or additional mesh pass.
 const wakeMat = new THREE.ShaderMaterial({
   transparent: true, depthWrite: false,
-  uniforms: { moving:{value:1}, time:{value:0} },
+  uniforms: { moving:{value:1}, time:{value:0}, noiseTex:{value:noiseTexture()} },
   vertexShader: `varying vec2 vUv;
     void main() { vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
-  fragmentShader: `varying vec2 vUv; uniform float moving,time;
-    void main() {
-      // Coordinates normalized to hull width/length. Bow is negative z.
-      float x=(vUv.x-.5)*1.45, z=(.5-vUv.y)*1.9+.2;
-      float h;
-      if(z<-.35) h=mix(0.0,.36,clamp((z+.5)/.15,0.0,1.0));
-      else if(z<-.15) h=mix(.36,.45,(z+.35)/.20);
-      else if(z<.43) h=.45;
-      else h=mix(.45,.288,clamp((z-.43)/.07,0.0,1.0));
-      float lateral=abs(x)-h;
-      float hullLength=smoothstep(-.54,-.485,z)*(1.0-smoothstep(.49,.54,z));
-      float contact=(1.0-smoothstep(-.01,.075,lateral))*hullLength*.35;
-      // Narrow broken bow/sheer foam ties the hull to water without a white
-      // selection outline. The interior is depth-occluded by the real hull.
-      float edgeFoam=smoothstep(-.01,.015,lateral)*(1.0-smoothstep(.015,.06,lateral));
-      edgeFoam*=smoothstep(-.51,-.45,z)*(1.0-smoothstep(-.1,.35,z));
-      float aft=clamp((z-.4)/.72,0.0,1.0);
-      float spread=mix(.25,.57,aft);
-      float envelope=(1.0-smoothstep(.25,1.0,abs(x)/spread));
-      envelope*=smoothstep(.40,.52,z)*(1.0-smoothstep(.52,1.12,z));
-      // Short transverse eddies keep the trail connected. Longitudinal
-      // sinusoids previously split the wake into two searchlight-like beams.
-      float churn=.78+.22*sin(z*69.0-time*3.0+x*x*31.0)*sin(z*41.0+x*7.0-time*2.0);
-      float stern=(1.0-smoothstep(.10,.30,abs(x)))*smoothstep(.43,.51,z)*(1.0-smoothstep(.51,.68,z));
-      float foam=moving*(envelope*churn*.34+stern*.12+edgeFoam*.24);
-      float alpha=contact+foam*(1.0-contact);
-      if(alpha<.006) discard;
-      vec3 color=mix(vec3(.015,.06,.065),vec3(.65,.85,.81),foam/max(alpha,.001));
-      gl_FragColor=vec4(color,alpha);
-      #include <tonemapping_fragment>
-      #include <colorspace_fragment>
-    }`,
+  fragmentShader: `varying vec2 vUv;
+uniform float moving,time;
+${NOISE_GLSL}
+void main() {
+  float x=(vUv.x-.5)*1.45,z=(.5-vUv.y)*1.9+.2;
+  float hullHalf;
+  if(z<-.35)hullHalf=mix(0.0,.36,clamp((z+.5)/.15,0.0,1.0));
+  else if(z<-.15)hullHalf=mix(.36,.45,(z+.35)/.20);
+  else if(z<.43)hullHalf=.45;
+  else hullHalf=mix(.45,.288,clamp((z-.43)/.07,0.0,1.0));
+  float lateral=abs(x)-hullHalf;
+  float hullLength=smoothstep(-.54,-.485,z)*(1.0-smoothstep(.49,.54,z));
+  float contact=(1.0-smoothstep(-.01,.075,lateral))*hullLength*.35;
+  // Shared noise's independent R/A fields supply non-repeating eddies and
+  // shoulder breakup with ONE tap; no periodic sinusoids or train of puffs.
+  vec4 churn=vnoise4(vec2(x*11.0+13.7,z*19.0-time*.95+7.3));
+  float along=clamp((z-.44)/.68,0.0,1.0);
+  float tail=1.0-smoothstep(.66,1.12,z);
+  float start=smoothstep(.43,.52,z);
+  float width=mix(.24,.43,along)+(churn.a-.5)*.05;
+  float center=1.0-smoothstep(width*.25,width,abs(x));
+  // A connected whitewater base never falls to zero between noise cells.
+  float body=center*start*tail*(.31+.13*churn.r)*(1.0-.35*along);
+  float stern=(1.0-smoothstep(.09,.24,abs(x)))*smoothstep(.44,.51,z)*(1.0-smoothstep(.53,.69,z))*.16;
+  // Weak broad shoulders blend into the aerated trail, never bright rails.
+  float shoulderAt=.25+along*.30+(churn.a-.5)*.035;
+  float shoulder=1.0-smoothstep(.025,.09+along*.055,abs(abs(x)-shoulderAt));
+  shoulder*=start*tail*(1.0-along)*(.025+.055*churn.a);
+  float edge=smoothstep(-.01,.015,lateral)*(1.0-smoothstep(.015,.06,lateral))*hullLength;
+  float bow=edge*(1.0-smoothstep(-.1,.35,z))*.20;
+  float ripple=edge*(.018+.018*churn.r);
+  float foam=ripple+moving*(body+stern+shoulder+bow);
+  float alpha=contact+foam*(1.0-contact);
+  if(alpha<.006)discard;
+  vec3 color=mix(vec3(.015,.06,.065),vec3(.65,.85,.81),foam/max(alpha,.001));
+  gl_FragColor=vec4(color,alpha);
+  #include <tonemapping_fragment>
+  #include <colorspace_fragment>
+}`,
+
 });
 const HULL = '#314453', DECK = '#6c7270', WOOD = '#8b8060', CABIN = '#839296', DARK = '#263743', WHITE = '#ece5bf';
 const FRIEND = '#62ddba', HOSTILE = '#ee7964', RUNWAY = '#4d5753';
@@ -123,17 +175,18 @@ const FRIEND = '#62ddba', HOSTILE = '#ee7964', RUNWAY = '#4d5753';
 // Collects coloured parts and merges them into one geometry.
 class Parts {
   constructor() { this.list = []; }
-  add(geometry, hex, position = [0, 0, 0], rotation = null) {
+  add(geometry, hex, position = [0, 0, 0], rotation = null, tile = null) {
     const c = new THREE.Color(hex);
     if (rotation) geometry.applyMatrix4(new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(...rotation)));
     geometry.translate(...position);
+    surfaceUV(geometry,tile);
     const colors = new Float32Array(geometry.attributes.position.count * 3);
     for (let i = 0; i < colors.length; i += 3) { colors[i] = c.r; colors[i + 1] = c.g; colors[i + 2] = c.b; }
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     this.list.push(geometry.index ? geometry.toNonIndexed() : geometry);
     return this;
   }
-  box(dimensions, position, hex) { return this.add(new THREE.BoxGeometry(...dimensions), hex, position); }
+  box(dimensions, position, hex, tile=null) { return this.add(new THREE.BoxGeometry(...dimensions), hex, position, null, tile); }
   // Chamfered steel catches the directional sun without a PBR fragment pass.
   // Kept inside the requested box bounds, including its bevel vertices.
   steelBox(dimensions, position, hex) {
@@ -146,8 +199,8 @@ class Parts {
     return this.add(g,hex,[position[0],position[1]-h/2+b,position[2]],[-Math.PI/2,0,0]);
   }
   // Opaque contact/deck detail is merged with its owner: no transparent pass.
-  plane(width, depth, position, hex) {
-    return this.add(new THREE.PlaneGeometry(width, depth), hex, position, [-Math.PI / 2, 0, 0]);
+  plane(width, depth, position, hex, tile=null) {
+    return this.add(new THREE.PlaneGeometry(width, depth), hex, position, [-Math.PI / 2, 0, 0], tile);
   }
   cylinder(radius, height, position, hex, segments = 8) {
     return this.add(new THREE.CylinderGeometry(radius, radius, height, segments), hex, position);
@@ -164,18 +217,19 @@ class Parts {
     const center=new THREE.Color(centerHex),edge=new THREE.Color(edgeHex),colors=[];
     for(let i=0;i<g.attributes.position.count;i++)colors.push(...(i?edge:center).toArray());
     g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
+    surfaceUV(g,null);
     this.list.push(g.toNonIndexed());g.dispose();return this;
   }
-  roof(width, depth, base, rise, position, hex) {
+  roof(width, depth, base, rise, position, hex, tile=null) {
     const shape = new THREE.Shape();
     shape.moveTo(-width/2, base); shape.lineTo(0, base+rise); shape.lineTo(width/2, base); shape.closePath();
     return this.add(new THREE.ExtrudeGeometry(shape, {depth, bevelEnabled:false}), hex,
-      [position[0],position[1],position[2]-depth/2]);
+      [position[0],position[1],position[2]-depth/2],null,tile);
   }
-  // CPU-baked panel/grain variation: identical runtime vertex-colour shader,
-  // no texture sample or procedural fragment noise. Changes every 14 world units
+  // CPU-baked panel variation complements the shared atlas without procedural
+  // fragment noise. Vertex modulation changes every 14 world units
   // rather than subpixel speckle, preserving the low-resolution phone tier.
-  panel(width,depth,position,hex,seed=1) {
+  panel(width,depth,position,hex,seed=1,tile='wood') {
     const segments=Math.max(1,Math.ceil(depth/14));
     const g=new THREE.PlaneGeometry(width,depth,1,segments).rotateX(-Math.PI/2);
     g.translate(...position);
@@ -185,7 +239,7 @@ class Parts {
       const factor=.965+(noise-Math.floor(noise))*.07+(i%2?-.012:.012);
       colors.push(base.r*factor,base.g*factor,base.b*factor);
     }
-    g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
+    g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));surfaceUV(g,tile);
     this.list.push(g.toNonIndexed());g.dispose();return this;
   }
   mesh(shadows = true, material = paint) {
@@ -216,7 +270,7 @@ function shipTemplate(carrier, enemy = false) {
   // The bevel extends .28 above the extrusion; its upper face must stay
   // below the wood overlay at 11.18, or it occludes the bow and planking.
   parts.add(hullOutline(width, length * .95, 2, .7), '#43565b', [0, 8.7, 0], [-Math.PI / 2, 0, 0]);
-  parts.add(hullOutline(width * .92, length * .925, .15), carrier ? '#807258' : DECK, [0, 11.03, 0], [-Math.PI / 2, 0, 0]);
+  parts.add(hullOutline(width * .92, length * .925, .15), carrier ? '#807258' : DECK, [0, 11.03, 0], [-Math.PI / 2, 0, 0],carrier?'wood':'steel');
   const light = enemy ? HOSTILE : FRIEND;
   if (carrier) {
     // Broad panels read at 0.65x. Very fine texture would shimmer on a phone.
@@ -254,7 +308,7 @@ function shipTemplate(carrier, enemy = false) {
     parts.steelBox([15,1.3,44],[30,25.6,-14],'#9aaba6');
     parts.steelBox([16,6,19],[30,29,-22],'#637b82');
     parts.steelBox([17.5,.8,21],[30,32.4,-22],'#b1bab0');
-    parts.panel(15.7,19.2,[30,32.82,-22],'#8e9d96',31);
+    parts.panel(15.7,19.2,[30,32.82,-22],'#8e9d96',31,'steel');
     // Bridge glazing and funnel caps contrast with the roof rather than
     // depending on vertical faces that the camera cannot see.
     parts.plane(12,4,[30,32.9,-29],'#203c48');
@@ -310,20 +364,27 @@ export function createNavalScene(scene) {
   const wakeGeometry = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
   const ringGeometry = new THREE.RingGeometry(CONFIG.conquest.captureRadius - 2, CONFIG.conquest.captureRadius, 64).rotateX(-Math.PI / 2);
   const flagGeometry = new THREE.BoxGeometry(24, 12, .8);
-  const hangarParts = new Parts()
-    .box([35,12,40],[0,-3,0],'#858779')
-    .roof(38,43,3,8,[0,0,0],'#4a5d63')
-    .box([1.2,.7,43],[0,11.3,0],'#a1aaa2')
-    .box([1.5,.8,43],[-18.5,3.2,0],'#293c41')
-    .box([1.5,.8,43],[18.5,3.2,0],'#738486')
-    .box([.7,9,30],[-17.8,-3,0],'#263c42');
-  for(const x of [-1,1]) {
-    const g=new THREE.PlaneGeometry(17.4,40);
-    g.rotateX(-Math.PI/2);g.rotateZ(-x*Math.atan2(8,19));
-    hangarParts.add(g,x<0?'#657d80':'#4c646b',[x*9.5,7.18,0]);
-  }
-  for(const z of [-13,0,13])hangarParts.box([4,2.2,5],[0,12,z],'#6f8488');
-  const hangarGeometry = hangarParts.mesh(false).geometry, beaconGeometry = new THREE.BoxGeometry(8,1,8);
+  // Three distinct service buildings retain the existing anchors, envelopes,
+  // draw count and damage slots. Their roofs differ before tiny texture detail.
+  const maintenance=new Parts().box([35,12,40],[0,-3,0],'#858779','steel');
+  const arch=new THREE.Shape();arch.moveTo(-19,3);arch.lineTo(19,3);
+  arch.absellipse(0,3,19,9,0,Math.PI,false);arch.closePath();
+  maintenance.add(new THREE.ExtrudeGeometry(arch,{depth:43,bevelEnabled:false,curveSegments:8}),'#526b73',[0,0,-21.5],null,'roof');
+  maintenance.box([29,9,.5],[0,-3,-20.3],'#263b42');
+  for(const x of [-14.5,0,14.5])maintenance.box([.8,9,.7],[x,-3,-20.7],'#7c8c89');
+  const operations=new Parts().box([31,10,36],[0,-4,0],'#858779','steel')
+    .roof(34,39,1,5,[0,0,0],'#566d70','roof')
+    .box([9,10,10],[10,6,11],'#6c7c7b','steel')
+    .box([9.4,2,.4],[10,9,5.8],'#294852')
+    .box([10,1,11],[10,11.5,11],'#9aa49b')
+    .box([5,7,.5],[-8,-5,-18.3],'#2b4145');
+  const stores=new Parts().box([35,8,40],[0,-5,0],'#7a7e6c','steel')
+    .roof(27,43,-1,7,[-5,0,0],'#57665d','roof')
+    .roof(10,40,-1,3,[13,0,0],'#677261','roof')
+    .box([10,6,.4],[-6,-5,-20.3],'#35473f')
+    .box([6,4,5],[14,-7,-18],'#5a624c');
+  const hangarGeometries=[maintenance,operations,stores].map(parts=>parts.mesh(false).geometry);
+  const beaconGeometry=new THREE.BoxGeometry(8,1,8);
   const length = CONFIG.airfield?.length ?? 300, width = CONFIG.airfield?.width ?? 70;
   // Runway, markings, approach arrow and aprons: one mesh shared by every airfield.
   const runwayParts = new Parts();
@@ -333,9 +394,9 @@ export function createNavalScene(scene) {
   runwayParts.plane(width+12,length+12,[0,8.65,0],'#777763');
   runwayParts.box([width,.5,length],[0,9,0],'#303d3d');
   runwayParts.plane(width-7,length-5,[0,9.31,0],'#455250');
-  runwayParts.plane(width-13,length-7,[0,9.32,0],'#4e5953');
+  runwayParts.plane(width-13,length-7,[0,9.32,0],'#4e5953','asphalt');
   runwayParts.plane(65,length*.64,[width/2+34,8.8,0],'#686e60');
-  runwayParts.plane(57,length*.60,[width/2+34,8.9,0],'#828675');
+  runwayParts.plane(57,length*.60,[width/2+34,8.9,0],'#828675','concrete');
   // Slab joints remain low contrast, unlike the previous checkerboard farms.
   for(let z=-80;z<=80;z+=20)runwayParts.plane(57,.55,[width/2+34,9.02,z],'#656f64');
   runwayParts.plane(.7,180,[width/2+11,9.08,0],'#b5aa76');
@@ -376,6 +437,7 @@ export function createNavalScene(scene) {
   const lit = (geometry, material) => { const mesh = new THREE.Mesh(geometry, material); mesh.castShadow = true; mesh.receiveShadow = true; return mesh; };
   return {
     ships, zones, airfields, bombs,
+    get materialMode(){return surfaceMode;},
     update(game) {
       wakeMat.uniforms.time.value=game.time;
       const liveShips = new Set([...game.ships, ...(game.convoys || [])].filter(s => s.active !== false && !(s.hp <= 0 && s.sinking > CONFIG.ship.sinkingSeconds)));
@@ -415,7 +477,7 @@ export function createNavalScene(scene) {
           root.add(new THREE.Mesh(runwayGeometry, paint));
           const hangars = [];
           for (const z of [-65, 0, 65]) {
-            const hangar = lit(hangarGeometry, hangarMat);
+            const hangar = lit(hangarGeometries[hangars.length], hangarMat);
             hangar.position.set(width / 2 + 33, 18, z);
             hangars.push(hangar); root.add(hangar);
           }

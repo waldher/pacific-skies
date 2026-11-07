@@ -87,8 +87,13 @@ export function setOperationsOpen(game,open) {
 }
 export function initOperations(game) {
   if(bound)return;bound=true;
-  document.getElementById('map-open').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();setOperationsOpen(game,true);});
-  document.getElementById('map-open').addEventListener('click',e=>{if(e.detail===0)setOperationsOpen(game,true);});
+  const mapButton = document.getElementById('map-open');
+  // Open on activation so the same tap cannot also land on the newly visible close button.
+  mapButton.addEventListener('pointerdown', e => e.stopPropagation());
+  mapButton.addEventListener('click', e => {
+    e.stopPropagation();
+    setOperationsOpen(game, true);
+  });
   document.getElementById('operations-close').addEventListener('click',()=>setOperationsOpen(game,false));
   document.getElementById('waypoint-clear').addEventListener('click',()=>{game.waypoint=null;game.guidanceCleared=true;});
   const panel=document.getElementById('operations-panel');

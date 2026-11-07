@@ -22,8 +22,7 @@
   .readout [hidden], .readout[hidden] { display:none !important; }
   #flight-hud { position:fixed; inset:0; }
   #stats { box-sizing:border-box; position:absolute; top:12px; left:12px; width:176px; height:44px;
-    background:linear-gradient(135deg,#132f3aee,#081b27ee); border:1px solid #adc6ca33; border-radius:12px; padding:8px 11px;
-    box-shadow:inset 0 1px 0 #ffffff0c,0 3px 12px #00131d22; }
+    background:#091d27e8; border:1px solid #799da455; border-left:3px solid #a5e4cb; padding:8px 9px; }
   .mission-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
   .eyebrow { font-size:8px; letter-spacing:.16em; color:var(--muted); text-transform:uppercase; }
   #score-value { display:block; font-size:23px; line-height:1.15; font-weight:700; letter-spacing:-.04em; font-variant-numeric:tabular-nums; }
@@ -32,10 +31,10 @@
   #island-pips { display:flex; flex-wrap:nowrap; width:72px; justify-content:flex-end; gap:2px; margin-top:5px; }
   #island-pips i { flex:1; min-width:1px; height:4px; border-radius:2px; background:#36505c; box-shadow:inset 0 0 0 1px #adc6ca33; }
   .gauges { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:1px; }
-  .gauge-heading { display:flex; justify-content:space-between; color:var(--muted); font-size:9px; margin-bottom:3px; line-height:1; }
+  .gauge-heading { display:flex; justify-content:space-between; color:#c5d8d7; font:700 9px/1 ui-monospace,monospace; letter-spacing:.07em; margin-bottom:5px; }
   #hull-value { color:var(--accent); font-variant-numeric:tabular-nums; }
-  .track { height:4px; background:#36505c; border-radius:3px; overflow:hidden; }
-  .track i { display:block; height:100%; background:var(--accent); border-radius:3px; }
+  .track { height:4px; background:#36505c; overflow:hidden; }
+  .track i { display:block; height:100%; background:var(--accent); }
   #toast { position:absolute; left:50%; transform:translateX(-50%); width:max-content; max-width:calc(100% - 32px);
     box-sizing:border-box; text-align:center; background:var(--panel); border:1px solid #adc6ca26; border-radius:10px; padding:9px 14px; }
   #toast { bottom:124px; font-size:12px; }
@@ -56,9 +55,12 @@
   #menu-new { border:1px solid #adc6ca44; border-radius:8px; background:transparent; color:var(--muted); padding:11px 16px; font:inherit; cursor:pointer; }
   #menu-start { background:var(--panel); font:inherit; cursor:pointer; display:inline-block; margin:0; padding:11px 20px; border:1px solid #82dfbc77; border-radius:8px; color:var(--accent); font-weight:650; }
   #flight-controls button, #fire-indicator { box-sizing:border-box; width:112px; height:56px; min-width:112px; min-height:56px;
-    padding:8px; font:650 12px/1.25 system-ui,sans-serif; border:1px solid #83b5bc; border-radius:14px;
-    background:var(--panel); color:var(--ink); box-shadow:inset 0 1px 0 #ffffff0c; }
-  #fire-indicator { position:fixed; right:18px; bottom:56px; display:grid; place-content:center; pointer-events:none; }
+    padding:8px; font:700 12px/1.25 ui-monospace,monospace; border:1px solid #a4babd88; border-right:3px solid #cbe5dd; border-radius:2px;
+    background:#091d27e8; color:#fff5db; }
+  #fire-indicator { position:fixed; right:18px; bottom:56px; display:grid; place-content:center; text-align:center; pointer-events:none; background:#091d27bb; }
+  #fire-indicator small { display:block; margin-top:3px; color:#c5d8d7; font:700 8px/1 ui-monospace,monospace; letter-spacing:.13em; }
+  #flight-controls button:focus-visible { outline:2px solid #fff5db; outline-offset:3px; }
+  #fire-indicator[data-cooling="true"] { color:#ffd4bd; border-color:#f0a18d; }
   #fire-indicator[data-firing="true"] { background:#953f34db; border-color:#f0a18d; }
   #campaign-status { position:absolute; left:12px; top:102px; font-size:10px; color:var(--muted); background:var(--panel); border-radius:7px; padding:4px 8px; max-width:160px; }
   #rank-value { color:var(--accent); } #carrier-status { margin-top:2px; }
@@ -95,7 +97,7 @@
  #menu { padding:12px; } #menu-kicker { margin-bottom:7px; } #menu-title { font-size:28px; margin-bottom:10px; } #menu-summary { margin-bottom:10px; } #menu-instructions { gap:3px; margin-bottom:12px; } #toast { bottom:14px; } }
 
   #operations-panel[hidden], #map-open[hidden] { display:none; }
-  #map-open { position:fixed; right:12px; top:12px; width:clamp(100px,30vw,140px); height:84px; z-index:3; background:transparent; border:1px solid #adc6ca33; border-radius:10px; cursor:pointer; touch-action:manipulation; }
+  #map-open { position:fixed; right:12px; top:12px; width:clamp(100px,30vw,140px); height:84px; z-index:3; background:transparent; border:1px solid #adc6ca33; border-radius:2px; cursor:pointer; touch-action:manipulation; }
   #map-open:focus-visible { outline:2px solid var(--accent); }
   #operations-panel { position:fixed; inset:0; z-index:20; background:#061924; padding:clamp(12px,3vw,30px); box-sizing:border-box; display:flex; flex-direction:column; gap:12px; color:var(--ink); font:500 13px/1.4 system-ui,sans-serif; }
   #operations-panel header { flex-wrap:wrap; display:flex; align-items:center; justify-content:space-between; gap:12px; }
@@ -130,8 +132,8 @@
 <canvas id="c" aria-label="Pacific Skies game and controls"></canvas>
 <div id="flight-hud" class="readout" hidden>
   <div id="stats">
-    <div class="gauges"><div><div class="gauge-heading"><span>Hull</span><span id="hull-value">100%</span></div><div class="track"><i id="health-fill"></i></div></div>
-      <div><div class="gauge-heading"><span>Gun heat</span></div><div class="track"><i id="heat-fill"></i></div></div></div>
+    <div class="gauges"><div><div class="gauge-heading"><span>HULL</span><span id="hull-value">100%</span></div><div class="track"><i id="health-fill"></i></div></div>
+      <div><div class="gauge-heading"><span id="heat-label">HEAT</span></div><div class="track"><i id="heat-fill"></i></div></div></div>
   </div>
 
   <div id="toast" hidden></div>
@@ -145,7 +147,7 @@
 <details id="qualification"><summary>Aircraft unlocks</summary><p id="sortie-unlock" hidden></p></details>
 </section>
 <div id="flight-controls" hidden><button id="torpedo-action">TORPEDO</button><button id="carrier-action">CARRIER</button></div>
-<div id="fire-indicator" class="readout" hidden>Fire</div>
+<div id="fire-indicator" class="readout" hidden><span id="fire-label">FIRE</span><small id="fire-hint">HOLD RIGHT</small></div>
 <button id="map-open" aria-label="Open operations chart" hidden></button>
 <section id="operations-panel" role="dialog" aria-modal="true" aria-labelledby="operations-title" hidden>
 <header><div><h2 id="operations-title">Operations chart</h2><small>Campaign paused</small></div><button id="operations-close">Return to flight</button></header>

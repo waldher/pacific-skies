@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { CONFIG } from './config.js';
+import { recordPilotMarkerExtents } from './projection.js';
 import { angDiff, clamp } from './util.js';
 
 function surfaceResponse(material) {
@@ -109,6 +110,20 @@ export async function loadAircraft() {
     // Models are built in metres (tools/build-aircraft.mjs); scale each to the
     // shared 48-unit wingspan so hitboxes and aiming still agree.
     const span = new THREE.Box3().setFromObject(template);
+    // Keep a template-local box for the marker. Include the full propeller
+    // sweep so the marker never bobs with an individual blade.
+    template.pilotMarkerBounds = span.clone();
+    for (const prop of template.children.slice(1)) {
+      const sweep = new THREE.Box3().setFromObject(prop);
+      const { x, y } = prop.position;
+      const radius = Math.hypot(
+        Math.max(Math.abs(sweep.min.x - x), Math.abs(sweep.max.x - x)),
+        Math.max(Math.abs(sweep.min.y - y), Math.abs(sweep.max.y - y)),
+      );
+      sweep.min.set(x - radius, y - radius, sweep.min.z);
+      sweep.max.set(x + radius, y + radius, sweep.max.z);
+      template.pilotMarkerBounds.union(sweep);
+    }
     template.scale.setScalar(CONFIG.render.aircraftWingspan / (span.max.x - span.min.x));
     template.silhouetteMaterial = bakeSilhouette(template);
     templates[kind] = template;
@@ -163,27 +178,9 @@ export function createAircraft(template, entity, shadows = true, selected = fals
   root.add(model);
   // Altitude marks the surface under the aircraft, not its fuselage center.
   const clearance = Math.max(0, -new THREE.Box3().setFromObject(model).min.y) + .5;
-  if (selected && template.silhouetteMaterial) {
-    // A restrained silhouette edge distinguishes the pilot in crowded fights.
-    // Unlike a selection ring it follows the actual airframe and stays beneath it.
-    const edgeMaterial = new THREE.ShaderMaterial({
-      transparent: true, depthWrite: false,
-      uniforms: {mask:{value:template.silhouetteMaterial.map}},
-      vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
-      fragmentShader:`varying vec2 vUv;uniform sampler2D mask;void main(){
-        float r=length(vUv-.5)*2.0;
-        float ring=smoothstep(.78,.80,r)*(1.0-smoothstep(.83,.85,r));
-        float alpha=max(texture2D(mask,vUv).a*.55,ring*.7);
-        gl_FragColor=vec4(.54,.88,.96,alpha);
-      }`,
-    });
-    const edge = new THREE.Mesh(receiverGeometry, edgeMaterial);
-    edge.scale.set(70,1,70); edge.position.y=-clearance+.1;
-    root.add(edge); ownedMaterials.push(edgeMaterial);
-  }
   const shadow = new THREE.Mesh(receiverGeometry, shadowMaterial);
   shadow.position.y = .1;
-  const visual = { root, model, clearance, shadow, silhouette: selected ? template.silhouetteMaterial || blobMaterial : blobMaterial, ownedMaterials, propeller: model.getObjectByName('Propeller'), propellers: model.children.filter(node => node.name.startsWith('Propeller')), heading: entity.a, bank: 0 };
+  const visual = { root, model, clearance, shadow, silhouette: selected ? template.silhouetteMaterial || blobMaterial : blobMaterial, pilotMarkerBounds: selected ? template.pilotMarkerBounds : null, ownedMaterials, propeller: model.getObjectByName('Propeller'), propellers: model.children.filter(node => node.name.startsWith('Propeller')), heading: entity.a, bank: 0 };
   setShadowMode(visual, shadows);
   return visual;
 }
@@ -201,6 +198,11 @@ export function updateAircraft(visual, entity, dt, turnRate, flash = false) {
   visual.shadow.rotation.y = visual.root.rotation.y;
   visual.shadow.visible = entity.flight !== 'landed';
   visual.model.rotation.z = visual.bank;
+  if (visual.pilotMarkerBounds) {
+    visual.model.updateWorldMatrix(true, false);
+    const { min, max } = visual.pilotMarkerBounds;
+    recordPilotMarkerExtents(entity, visual.model.matrixWorld, min, max, visual.root.position);
+  }
   visual.propellers.forEach((prop, i) => {
     prop.rotation.z = (prop.rotation.z + (i ? -1 : 1) * dt * R.propellerSpeed * (entity.flight === 'landed' ? .12 : 1)) % (Math.PI * 2);
   });

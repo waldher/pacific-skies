@@ -20,36 +20,52 @@ import { createLandWorker } from './land-worker-client.js';
 import { createTraffic } from './traffic.js';
 import { DetachedLandCache, estimateLandBytes, LAND_CACHE_BYTES, LAND_BUILD_RESERVE_BYTES } from './world-cache.js';
 
+// Display bake contract: exposure 1, ACESFilmicToneMapping, sRGB output and
+// the fixed ocean tint below. Re-bake/revalidate if the renderer changes them.
+// Exported pure helpers also support CPU error checks without a WebGL context.
+export function oceanDisplayRGB(linear, shadow = 0) {
+  const c=linear.map((v,i)=>(v*(1-shadow)*1.10+[.003,.010,.012][i])/.6);
+  const v=[.59719*c[0]+.35458*c[1]+.04823*c[2],.076*c[0]+.90834*c[1]+.01566*c[2],.0284*c[0]+.13383*c[1]+.83777*c[2]];
+  const f=v.map(n=>(n*(n+.0245786)-.000090537)/(n*(.983729*n+.432951)+.238081));
+  return [1.60475*f[0]-.53108*f[1]-.07367*f[2],-.10208*f[0]+1.10813*f[1]-.00605*f[2],-.00327*f[0]-.07276*f[1]+1.07602*f[2]].map(n=>{
+    n=Math.max(0,Math.min(1,n));return n<=.0031308?n*12.92:Math.pow(n,.41666)*1.055-.055;
+  });
+}
+export function bakeOceanDisplay(rgba) {
+  const pixels=new Uint8Array(rgba.length), table=new Float64Array(256);
+  for(let i=0;i<256;i++) {
+    const v=i/255, linear=v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4);
+    // Preserve the incumbent's .125-range RGBA8 quantization exactly.
+    table[i]=Math.min(255,Math.round(linear/.125*255))/255*.125;
+  }
+  for(let i=0;i<rgba.length;i+=4) {
+    const display=oceanDisplayRGB([table[rgba[i]],table[rgba[i+1]],table[rgba[i+2]]]);
+    pixels[i]=Math.round(display[0]*255);pixels[i+1]=Math.round(display[1]*255);pixels[i+2]=Math.round(display[2]*255);pixels[i+3]=255;
+  }
+  return pixels;
+}
+
 let oceanTexture = null, oceanReady;
 export function preloadOceanMaterial() {
   if (oceanReady) return oceanReady;
   oceanReady = new Promise(resolve => {
     let done = false;
     const timeout = setTimeout(() => { done = true; resolve(false); }, 2500);
-    new THREE.TextureLoader().load(new URL('../assets/ocean/ocean-512.webp', import.meta.url).href, texture => {
+    new THREE.TextureLoader().load(new URL('../assets/ocean/ocean-fine-256.webp', import.meta.url).href, texture => {
       if (done) { texture.dispose(); return; }
       done = true; clearTimeout(timeout);
-      // Decode once into range-scaled linear RGBA8. The source's maximum
-      // linear channel is .1145, so a .125 range retains dark-wave precision
-      // without the bandwidth/conversion cost of sRGB or half-float samples.
+      // Bake display-referred RGB once; avoid fullscreen ACES and gamma math.
       try {
         const size = 256, canvas = document.createElement('canvas');
         canvas.width = canvas.height = size;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(texture.image, 0, 0, size, size);
         const rgba = ctx.getImageData(0, 0, size, size).data;
-        const linear = new Uint8Array(rgba.length), table = new Uint8Array(256);
-        for (let i=0; i<256; i++) {
-          const v=i/255;
-          table[i]=Math.min(255,Math.round((v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4))/.125*255));
-        }
-        for (let i=0; i<rgba.length; i+=4) {
-          linear[i]=table[rgba[i]];linear[i+1]=table[rgba[i+1]];linear[i+2]=table[rgba[i+2]];linear[i+3]=255;
-        }
+        const display = bakeOceanDisplay(rgba);
         texture.dispose();
-        const prepared = new THREE.DataTexture(linear,size,size,THREE.RGBAFormat,THREE.UnsignedByteType);
+        const prepared = new THREE.DataTexture(display,size,size,THREE.RGBAFormat,THREE.UnsignedByteType);
         prepared.wrapS = prepared.wrapT = THREE.MirroredRepeatWrapping;
-        prepared.colorSpace = THREE.LinearSRGBColorSpace;
+        prepared.colorSpace = THREE.NoColorSpace; // already display-encoded; never sRGB-decode
         prepared.minFilter = THREE.LinearMipmapLinearFilter;
         prepared.magFilter = THREE.LinearFilter;
         prepared.generateMipmaps = true; prepared.flipY = true; prepared.needsUpdate = true;
@@ -98,14 +114,17 @@ export function createWorld(scene) {
         if (materialReady > .5) {
           // One natural wave-material tap at every tier; native adds cloud
           // shade. Keep full-screen sampling cheaper than the old noise stack.
-          vec3 surface = texture2D(oceanTex, p / 640.0 + drift * .00012).rgb * .125;
+          vec3 surface = texture2D(oceanTex, p / 640.0 + drift * .00012).rgb;
           if (detail > .5) {
             float cloud = vnoise((p + drift * cloudSpeed) * .0011);
-            surface *= 1.0 - smoothstep(.5,.78,cloud) * cloudStrength;
+            // Darken the display-encoded material without shifting its hue.
+            // This is an artistic response, not a fit to linear-light shading.
+            float shade=smoothstep(.5,.78,cloud)*cloudStrength;
+            surface *= 1.0 - .68 * shade;
           }
-          gl_FragColor = vec4(surface * 1.10 + vec3(.003,.010,.012), 1.0);
-          #include <tonemapping_fragment>
-          #include <colorspace_fragment>
+          // Already ACES/sRGB encoded. The procedural fallback below retains
+          // both normal conversion chunks and works without the loaded asset.
+          gl_FragColor = vec4(surface, 1.0);
           return;
         }
         // A shared wind basis gives long coherent swell crests. Subordinate
@@ -289,7 +308,7 @@ export function createWorld(scene) {
     }
   }
   return {
-    get oceanMaterialInfo() { return { loaded: !!oceanTexture, width: oceanTexture?.image?.width || 0, type: oceanTexture?.type || null }; },
+    get oceanMaterialInfo() { return { loaded: !!oceanTexture, width: oceanTexture?.image?.width || 0, type: oceanTexture?.type || null, mode: oceanTexture ? 'display-prebake-aces-srgb-exposure1' : 'procedural-linear-fallback' }; },
     setDetail(level) { oceanMaterial.uniforms.detail.value = level; },
     prepare, prewarm:prepare, isReady,
     async settle() { await worker.ready; while (inFlight) await inFlight; },
@@ -300,6 +319,7 @@ export function createWorld(scene) {
       shared.time.value = game.time;
       syncLand(game,view,dt); traffic.update(dt,chunks.values(),game.time);
     },
+    get oceanMaterialMode() { return oceanTexture ? 'display-prebake-aces-srgb-exposure1' : 'procedural-linear-fallback'; },
     get cacheStats() {
       let activeBytes = 0;
       for (const group of chunks.values()) activeBytes += estimateLandBytes(group);

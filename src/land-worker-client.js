@@ -1,6 +1,7 @@
+import { hasCanopyMaterial } from './canopy.js';
 // One worker and one transferred result at a time. Scheduling/priority belongs
 // to world.js; this transport never owns an unbounded payload queue.
-export function createLandWorker(useMaterial) {
+export function createLandWorker(useMaterial, useCanopy = hasCanopyMaterial()) {
   let worker = null, nextId = 0, pending = null, mode = 'initializing', reason = null;
   const stats = { builds:0, lastBuildMs:0, lastSerializeMs:0 };
   let resolveReady;
@@ -25,7 +26,7 @@ export function createLandWorker(useMaterial) {
       }
     };
     timeout = setTimeout(() => fail('Terrain worker initialization timed out'), 10000);
-    worker.postMessage({type:'init',useMaterial});
+    worker.postMessage({type:'init',useMaterial,useCanopy});
   } catch (error) { fail(error); }
   return {
     ready, fallback:fail,

@@ -1,11 +1,13 @@
 import * as THREE from '../vendor/three/three.module.min.js';
 import { createLand, preloadTerrainMaterial } from './land.js';
+import { preloadCanopyMaterial } from './canopy.js';
 let land;
 self.onmessage = async ({ data }) => {
   try {
     if (data.type === 'init') {
       if (typeof OffscreenCanvas === 'undefined' || !new OffscreenCanvas(1,1).getContext('2d') || typeof createImageBitmap !== 'function') throw Error('OffscreenCanvas 2D/ImageBitmap unavailable');
       if (data.useMaterial && !await preloadTerrainMaterial()) throw Error('Worker terrain material unavailable');
+      if (data.useCanopy && !await preloadCanopyMaterial()) throw Error('Worker canopy material unavailable');
       land = createLand(null, { time:{value:0}, wind:{value:new THREE.Vector2()}, cloudSpeed:{value:0}, cloudStrength:{value:0}, surfMaterial:new THREE.ShaderMaterial() });
       self.postMessage({type:'ready'}); return;
     }

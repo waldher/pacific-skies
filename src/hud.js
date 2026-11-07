@@ -3,7 +3,7 @@ import { objectiveFor, flightPresentation, coursePhase } from './objectives.js';
 import { ctx, view, w2s } from './canvas.js';
 import { game } from './state.js';
 import { hasSavedCampaign } from './persistence.js';
-import { stick, fireTouch, isTouchDevice } from './input.js';
+import { stick, fireTouch, isTouchDevice, keys } from './input.js';
 import { rr } from './sprites.js';
 import { AIRCRAFT, aircraftUnlocked } from './aircraft-types.js';
 import { aircraftPreviews } from './aircraft-previews.js';
@@ -14,13 +14,15 @@ import { CONFIG } from './config.js';
 import { clamp, angDiff, TAU } from './util.js';
 import { installationKnown, shipObserved, enemyObserved, observedAt, flightSeconds } from './intelligence.js';
 import { drawTheaterMap } from './operations.js';
-import { visualHeight } from './projection.js';
+import { pilotMarkerBounds, visualHeight } from './projection.js';
+import { wingLabelBaseline } from './hud-labels.js';
 const aircraftHeight = entity => visualHeight(entity, CONFIG.render.flightHeight);
 const baseHeight = base => base.kind === 'carrier' ? CONFIG.carrier.deckHeight : CONFIG.airfield.deckHeight;
 
 export function drawHud() {
   const { W, H } = view, player = game.player;
-  drawNavigation();
+  const navigationPanels = drawNavigation();
+  drawPilotMarker(player, navigationPanels);
   for (const ship of [...game.ships, ...(game.convoys || [])]) {
     if (ship.hp <= 0 || ship.active === false || !shipObserved(game, ship)) continue;
     const [sx, sy] = w2s(ship.x, ship.y, ship.kind === 'transport' ? 10 : 11.5);
@@ -63,9 +65,11 @@ export function drawHud() {
   for (const f of game.allies) {
     if ((f.role ?? 'wing') !== 'wing' || f.hp <= 0 || !f.name) continue;
     const [sx, sy] = w2s(f.x, f.y, aircraftHeight(f));
-    if (sx < -20 || sx > W + 20 || sy < -20 || sy > H + 20) continue;
+    if (sx < 0 || sx >= W || sy < 0 || sy >= H) continue;
     ctx.textAlign = 'center'; ctx.font = '600 9px system-ui'; ctx.fillStyle = '#9fe6cf';
-    ctx.fillText(f.name + (f.kills >= CONFIG.airWar.wing.veteranKills ? ' ★' : ''), sx, sy + 30);
+    const name = f.name + (f.kills >= CONFIG.airWar.wing.veteranKills ? ' ★' : '');
+    const baseline = wingLabelBaseline(sx, sy, ctx.measureText(name), view, navigationPanels);
+    if (baseline !== null) ctx.fillText(name, sx, baseline);
   }
   if (player.flight === 'flying') {
     let mark = null, best = 650;
@@ -77,9 +81,16 @@ export function drawHud() {
     if (mark) {
       const t = best / CONFIG.player.bulletSpeed, v = mark.v ?? mark.speed;
       const [lx, ly] = w2s(mark.x + Math.cos(mark.a) * v * t, mark.y + Math.sin(mark.a) * v * t, aircraftHeight(mark));
-      ctx.strokeStyle = 'rgba(255,214,122,.9)'; ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.arc(lx, ly, 6, 0, TAU); ctx.stroke();
-      ctx.fillStyle = 'rgba(255,214,122,.9)'; ctx.fillRect(lx - 1, ly - 1, 2, 2);
+      if (!panelAt(lx, ly, navigationPanels, 9)) {
+        // Weapon cue has an open cross, distinct from the pilot frame and course.
+        ctx.beginPath();
+        ctx.moveTo(lx - 7, ly); ctx.lineTo(lx - 3, ly);
+        ctx.moveTo(lx + 3, ly); ctx.lineTo(lx + 7, ly);
+        ctx.moveTo(lx, ly - 7); ctx.lineTo(lx, ly - 3);
+        ctx.moveTo(lx, ly + 3); ctx.lineTo(lx, ly + 7);
+        ctx.strokeStyle = '#111b20'; ctx.lineWidth = 3; ctx.stroke();
+        ctx.strokeStyle = '#ffda91'; ctx.lineWidth = 1.3; ctx.stroke();
+      }
     }
   }
   // off-screen enemy arrows
@@ -118,19 +129,114 @@ export function drawHud() {
   }
 }
 
-function drawNavigation() {
-  const { W, H } = view, p = game.player;
-  const mw = Math.min(140, Math.max(100, W * .3)), mh = 84, mx = W - mw - 12, my = 12;
-  ctx.fillStyle = 'rgba(8,27,39,.88)'; rr(mx, my, mw, mh, 10);
-  drawTheaterMap(ctx, game, {x:mx, y:my, w:mw, h:mh});
-  ctx.textAlign='right'; ctx.font='600 9px system-ui'; ctx.fillStyle='#adc6ca'; ctx.fillText('MAP ↗', mx+mw-7,my+mh-5);
-  drawArrows();
+const statsPanel = { x:12, y:12, w:176, h:44 };
+const firing = () => Boolean(keys.Space || fireTouch.active);
+
+function boxClear(x, y, w, h, panels) {
+  return x >= 4 && y >= 4 && x + w <= view.W - 4 && y + h <= view.H - 4 &&
+    !panels.some(p => p && x < p.x + p.w + 3 && x + w > p.x - 3 &&
+      y < p.y + p.h + 3 && y + h > p.y - 3);
 }
 
-// Guidance arrows, as on a modern flight HUD: gold for the current objective,
-// teal for the nearest base you can land at, red for a raid on a friendly
-// base (pointing at its nearest attacker). Each sits on a ring around the
-// player, off-screen targets only; an objective you have reached is a ring.
+function panelAt(x, y, panels, pad = 0) {
+  return panels.some(p => p && x >= p.x - pad && x <= p.x + p.w + pad &&
+    y >= p.y - pad && y <= p.y + p.h + pad);
+}
+
+function drawPilotMarker(player, panels) {
+  if (game.mode !== 'play') return;
+  const bounds = pilotMarkerBounds(player);
+  if (!bounds) return;
+  const [x, centerY] = w2s(player.x, player.y, aircraftHeight(player));
+  // Screen-upright corners identify the pilot even at zero hull or maximum heat.
+  // The left spine is the integrated hull meter; its four cells empty top-down.
+  const left = x + bounds.left - 7;
+  const right = x + bounds.right + 7;
+  const y = centerY + bounds.centerY;
+  const status = clamp(player.hp / CONFIG.player.hp, 0, 1);
+  const heat = clamp(player.heat || 0, 0, 1);
+  const activeHeat = player.flight === 'flying' && (heat > .04 || player.overheated || firing());
+  ctx.save();
+  ctx.lineCap = 'butt';
+  let leftBracket = null, rightBracket = null;
+  for (const [edge, side] of [[left, -1], [right, 1]]) {
+    if (edge < 10 || edge > view.W - 10 || y < 14 || y > view.H - 14 ||
+        panelAt(edge, y, panels, 12)) continue;
+    const spine = edge + side * 5;
+    if (side === -1) leftBracket = spine; else rightBracket = spine;
+    const top = y - 9, bottom = y + 9;
+    ctx.beginPath();
+    ctx.moveTo(edge, top); ctx.lineTo(spine, top); ctx.lineTo(spine, bottom); ctx.lineTo(edge, bottom);
+    ctx.strokeStyle = '#09191f'; ctx.lineWidth = 5; ctx.stroke();
+    ctx.strokeStyle = '#c5d9d7'; ctx.lineWidth = 1.4; ctx.stroke();
+    if (side === -1) {
+      for (let i = 0; i < 4; i++) {
+        const cell = clamp(status * 4 - i, 0, 1);
+        const base = bottom - 1 - i * 4;
+        ctx.fillStyle = '#59716e'; ctx.fillRect(spine - 1.5, base - 3, 3, 3);
+        ctx.fillStyle = status <= .35 ? '#ff9a82' : '#a2eadb';
+        if (cell > 0) ctx.fillRect(spine - 1.5, base - 3 * cell, 3, 3 * cell);
+      }
+    } else if (activeHeat) {
+      ctx.fillStyle = '#09191f'; ctx.fillRect(spine + 3, top - 1, 4, 20);
+      ctx.fillStyle = player.overheated ? '#ff9a82' : '#ebbe78';
+      ctx.fillRect(spine + 4, bottom - 18 * heat, 2, 18 * heat);
+      if (player.overheated) ctx.fillRect(spine + 4, top - 4, 2, 2);
+    }
+  }
+  if (player.flight === 'flying' && status < .85) {
+    const labelW = 33, labelH = 23, labelY = Math.round(y - labelH / 2);
+    // Add the exact hull readout only when damaged, outside the projected wing.
+    // Swap sides when a panel or edge blocks the label, keeping the pilot frame.
+    const labelLeft = leftBracket === null ? null : Math.round(leftBracket - labelW - 6);
+    const labelRight = rightBracket === null ? null : Math.round(rightBracket + (activeHeat ? 11 : 6));
+    for (const [labelX, spine] of [[labelLeft, leftBracket], [labelRight, rightBracket]]) {
+      if (labelX === null || !boxClear(labelX, labelY, labelW, labelH, panels)) continue;
+      const tint = status <= .35 ? '#ffad98' : '#c3f2e4';
+      ctx.fillStyle = '#101e24'; ctx.fillRect(labelX, labelY, labelW, labelH);
+      ctx.strokeStyle = tint; ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(spine, y); ctx.lineTo(labelX < spine ? labelX + labelW : labelX, y);
+      ctx.stroke();
+      ctx.textAlign = 'center'; ctx.fillStyle = tint; ctx.font = '700 8px monospace';
+      ctx.fillText('HULL', labelX + labelW / 2, labelY + 9);
+      ctx.font = '750 11px system-ui';
+      ctx.fillText(`${Math.ceil(status * 100)}%`, labelX + labelW / 2, labelY + 20);
+      break;
+    }
+  }
+  ctx.restore();
+}
+
+function drawNavigation() {
+  const { W, H } = view;
+  const mw = Math.min(140, Math.max(100, W * .3)), mh = 84, mx = W - mw - 12, my = 12;
+  ctx.fillStyle = '#101e24'; rr(mx, my, mw, mh, 3);
+  ctx.strokeStyle = '#617579'; ctx.lineWidth = 1; ctx.strokeRect(mx + .5, my + .5, mw - 1, mh - 1);
+  drawTheaterMap(ctx, game, {x:mx, y:my, w:mw, h:mh});
+  ctx.textAlign='right'; ctx.font='600 9px system-ui'; ctx.fillStyle='#adc6ca'; ctx.fillText('MAP ↗', mx+mw-7,my+mh-5);
+  const map = { x: mx, y: my, w: mw, h: mh };
+  const reserved = [map, statsPanel];
+  if (game.player.flight === 'flying' && game.mode === 'play') {
+    reserved.push({ x:W - 130, y:H - 231, w:112, h:56 });
+    if (isTouchDevice) reserved.push({ x:W - 130, y:H - 112, w:112, h:56 });
+  }
+  const notice = flightNotice(game.player);
+  if (notice) {
+    // The centered toast can wrap on a narrow viewport. Reserve its line box
+    // conservatively without forcing a DOM layout read on each frame.
+    ctx.save(); ctx.font = '500 12px system-ui';
+    const maxW = Math.max(40, W - 32), advance = ctx.measureText(notice).width;
+    const toastW = Math.min(maxW, Math.ceil(advance + 32));
+    const lines = Math.ceil(advance / Math.max(12, toastW - 32));
+    const toastH = 20 + 18 * Math.max(1, lines);
+    reserved.push({ x:(W - toastW) / 2, y:H - (H <= 450 ? 14 : 124) - toastH, w:toastW, h:toastH });
+    ctx.restore();
+  }
+  return [...reserved, ...drawArrows(map, reserved)];
+}
+
+// Gold is the assigned course, teal the nearest recovery point, red a detected raid.
 const ARROWS = { objective: '#edce91', base: '#82dfbc', raid: '#ff8a6b' };
 export function hudArrows(game) {
   const p = game.player, arrows = [];
@@ -142,7 +248,7 @@ export function hudArrows(game) {
     const targetShip = game.ships.find(s => s.id === game.waypoint.shipId);
     const height = targetShip ? 11.5 : site ? 8.5 : 0;
     const progress = site && site.owner !== 'us' && site.progress > 0 ? site.progress / CONFIG.conquest.captureSeconds : 0;
-    arrows.push({ kind: 'objective', height, x: game.waypoint.x, y: game.waypoint.y, label: title.toUpperCase(), sub: detail, arrived: coursePhase(game) === 'arrived', progress });
+    arrows.push({ kind: 'objective', height, x: game.waypoint.x, y: game.waypoint.y, label: title.toUpperCase(), sub: detail, arrived: coursePhase(game) === 'arrived', progress, arrival: title === 'Return to base' ? 'RECOVERY' : title === 'Circle to capture' ? 'CAPTURE' : 'OBJECTIVE' });
   }
   const bases = availableBases(game).map(b => resolveBase(game, b.id)).filter(Boolean).sort((a, b) => near(p, a) - near(p, b));
   const base = bases[0];
@@ -155,52 +261,100 @@ export function hudArrows(game) {
   }
   return arrows;
 }
-function drawArrows() {
-  const { W, H } = view, [px, py] = w2s(game.player.x, game.player.y, aircraftHeight(game.player));
-  const arrows = hudArrows(game), headings = [], labels = [];
-  // Navigation text stays in a stable margin panel, not across the aircraft.
-  // The matching colored chevron still points from the player toward the target.
-  arrows.forEach((arrow, i) => {
-    const [sx, sy] = w2s(arrow.x, arrow.y, arrow.height ?? 0);
-    ctx.save(); ctx.strokeStyle = ctx.fillStyle = ARROWS[arrow.kind]; ctx.lineWidth = 1.5;
-    if (arrow.kind === 'objective' && arrow.arrived) {
-      // A ring at the objective; it fills clockwise as a capture progresses.
-      ctx.globalAlpha = .55; ctx.beginPath(); ctx.arc(sx, sy, 18, 0, TAU); ctx.stroke();
-      if (arrow.progress > 0) { ctx.globalAlpha = .95; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.arc(sx, sy, 18, -Math.PI / 2, -Math.PI / 2 + TAU * arrow.progress); ctx.stroke(); }
-      labels.push({arrow,angle:Math.atan2(sy-py,sx-px)});
-      ctx.restore(); return;
+function drawArrows(map, reserved) {
+  const { W, H } = view;
+  const arrows = hudArrows(game);
+  const main = arrows.find(a => a.kind === 'objective') || arrows.find(a => a.kind === 'base') || arrows[0];
+  if (!main) return [];
+  const secondary = arrows.filter(a => a !== main && (!firing() || a.kind === 'raid'));
+  const gapStart = statsPanel.x + statsPanel.w + 10, gapEnd = map.x - 10;
+  const gap = gapEnd - gapStart;
+  const compact = gap < 224;
+  const top = compact ? map.y + map.h + 10 : map.y;
+  const height = secondary.length ? 52 : 34;
+  let width = compact ? Math.min(294, W - 28) : Math.min(294, gap);
+  let left = compact ? Math.round((W - width) / 2)
+    : Math.round(clamp((W - width) / 2, gapStart, gapEnd - width));
+  if (compact && !boxClear(left, top, width, height, reserved)) {
+    const rightColumn = reserved.find(p => p.x === W - 130 &&
+      p.y < top + height + 3 && p.y + p.h > top - 3);
+    if (rightColumn) {
+      left = 14;
+      width = Math.min(width, rightColumn.x - left - 7);
     }
-    // On-screen targets need no arrow; the raid's attackers already carry labels.
-    if (arrow.kind !== 'objective' && sx > 20 && sx < W - 20 && sy > 20 && sy < H - 20) { ctx.restore(); return; }
-    const dx = sx - px, dy = sy - py, d = Math.hypot(dx, dy), a = Math.atan2(dy, dx);
-    // Each arrow has its own ring; two pointing the same way stack outward so their labels stay apart.
-    const stacked = headings.filter(h => Math.abs(angDiff(h, a)) < .5).length; headings.push(a);
-    const radius = Math.min(W * .3, H * .2) + i * 14 + stacked * 30;
-    const x = px + dx * Math.min(1, radius / (d || 1)), y = py + dy * Math.min(1, radius / (d || 1));
-    ctx.translate(x, y); ctx.rotate(a);
-    ctx.beginPath(); ctx.moveTo(-5, -5); ctx.lineTo(3, 0); ctx.lineTo(-5, 5);
-    if (arrow.kind === 'raid') { ctx.closePath(); ctx.fill(); } else ctx.stroke();
-    ctx.rotate(-a);
-    if (arrow.label) labels.push({arrow,angle:a});
-    ctx.restore();
-  });
-  if(labels.length) {
-    const landscape=W>=600, width=landscape?Math.min(310,W-370):Math.min(310,W-28);
-    const left=landscape?(W-width)/2:14, top=landscape?12:106;
-    ctx.save();
-    labels.forEach(({arrow,angle},i)=>{
-      const y=top+i*25;
-      ctx.globalAlpha=1;ctx.fillStyle='rgba(8,27,39,.86)';rr(left,y,width,22,6);
-      ctx.strokeStyle=ctx.fillStyle=ARROWS[arrow.kind];ctx.lineWidth=1.5;
-      ctx.save();ctx.translate(left+12,y+11);ctx.rotate(angle);
-      ctx.beginPath();ctx.moveTo(-4,-4);ctx.lineTo(2,0);ctx.lineTo(-4,4);ctx.stroke();ctx.restore();
-      ctx.font='650 9px system-ui';ctx.textAlign='left';
-      const detail=arrow.sub?' · '+arrow.sub:'';
-      // Canvas maxWidth keeps long translated/objective names inside the panel.
-      ctx.fillText(arrow.label+detail,left+24,y+14,width-34);
-    });
-    ctx.restore();
   }
+  const panel = { x:left, y:top, w:width, h:height };
+  const [px, py] = w2s(game.player.x, game.player.y, aircraftHeight(game.player));
+  const [sx, sy] = w2s(main.x, main.y, main.height);
+  const dx = sx - px, dy = sy - py;
+  const angle = Math.atan2(dy, dx);
+  const color = ARROWS[main.kind];
+  ctx.save();
+  if (main.arrived) {
+    // Arrival is a specific contact marker. An active capture alone has progress.
+    if (sx > 30 && sx < W - 30 && sy > 30 && sy < H - 30 &&
+        !panelAt(sx, sy, [...reserved, panel], 27)) {
+      ctx.strokeStyle = '#101b22'; ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(sx - 15, sy - 7); ctx.lineTo(sx - 21, sy); ctx.lineTo(sx - 15, sy + 7);
+      ctx.moveTo(sx + 15, sy - 7); ctx.lineTo(sx + 21, sy); ctx.lineTo(sx + 15, sy + 7);
+      ctx.stroke(); ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.font = '700 8px monospace'; ctx.textAlign = 'center';
+      ctx.strokeStyle = '#0d191f'; ctx.lineWidth = 3; ctx.strokeText(main.arrival, sx, sy + 21);
+      ctx.fillStyle = color; ctx.fillText(main.arrival, sx, sy + 21);
+      if (main.arrival === 'CAPTURE') {
+        ctx.fillStyle = '#213339'; ctx.fillRect(sx - 18, sy + 25, 36, 3);
+        ctx.fillStyle = color; ctx.fillRect(sx - 18, sy + 25, 36 * clamp(main.progress, 0, 1), 3);
+      }
+    }
+  } else {
+    // Follow the air current to the course. Keep its tail clear of the pilot.
+    const d = Math.hypot(dx, dy), reach = Math.min(104, d);
+    const ux = Math.cos(angle), uy = Math.sin(angle);
+    const tail = Math.max(40, reach - 45);
+    const x = px + ux * reach, y = py + uy * reach;
+    const fromX = px + ux * tail, fromY = py + uy * tail;
+    const length = reach - tail;
+    if (length >= 16 && boxClear(Math.min(x, fromX) - 8, Math.min(y, fromY) - 8,
+        Math.abs(x - fromX) + 16, Math.abs(y - fromY) + 16, [...reserved, panel])) {
+      ctx.save(); ctx.translate(x, y); ctx.rotate(angle);
+      ctx.strokeStyle = '#142022'; ctx.lineWidth = 3.5;
+      ctx.beginPath(); ctx.moveTo(-8, -4); ctx.lineTo(0, 0); ctx.lineTo(-8, 4); ctx.stroke();
+      ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.stroke();
+      // The strokes increase in weight toward the tip so direction survives
+      // at a glance, including when the main stroke crosses pale surf.
+      const traces = [[-length, 2.5, -.56 * length, 1.5], [-.73 * length, -3, -10, -1]];
+      ctx.fillStyle = color;
+      traces.forEach(([x0, y0, x1, y1], i) => {
+        ctx.globalAlpha = i ? .82 : .46;
+        ctx.beginPath(); ctx.moveTo(x0, y0); ctx.quadraticCurveTo((x0 + x1) / 2, y0, x1, y1);
+        ctx.lineTo(x1, y1 + (i ? 1.9 : 1.25)); ctx.closePath(); ctx.fill();
+      });
+      ctx.restore();
+    }
+  }
+
+  // One compact instrument strip. Secondary reports never add another world arrow.
+  ctx.fillStyle = '#101e24'; rr(left, top, width, panel.h, 3);
+  ctx.fillStyle = color; ctx.fillRect(left, top, 3, 34);
+  ctx.textAlign = 'left'; ctx.font = '700 8px monospace';
+  ctx.fillText(main.arrived ? 'ON STATION' : 'ACTIVE COURSE', left + 12, top + 12);
+  ctx.font = '750 11px system-ui'; ctx.fillStyle = '#f2eee1';
+  ctx.fillText(main.label + (main.sub ? '  ·  ' + main.sub : ''), left + 12, top + 27, width - 34);
+  ctx.save(); ctx.translate(left + width - 15, top + 17); ctx.rotate(angle);
+  ctx.beginPath(); ctx.moveTo(-4, -4); ctx.lineTo(3, 0); ctx.lineTo(-4, 4);
+  ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore();
+  if (secondary.length) {
+    ctx.fillStyle = '#39484a'; ctx.fillRect(left + 12, top + 34, width - 24, 1);
+    ctx.font = '650 8px system-ui';
+    const span = (width - 24) / secondary.length;
+    secondary.forEach((report, i) => {
+      ctx.fillStyle = ARROWS[report.kind];
+      ctx.fillText(report.label + (report.sub ? '  ·  ' + report.sub : ''), left + 12 + span * i, top + 46, span - 5);
+    });
+  }
+  ctx.restore();
+  return [panel];
 }
 
 const el = id => document.getElementById(id);
@@ -284,6 +438,13 @@ function drawSortie(p, playing) {
 
 
 
+function flightNotice(player) {
+  if (!player || game.mode !== 'play') return '';
+  if (player.flight === 'flying' && player.landingHint) return player.landingHint;
+  return game.messageTime > 0 && player.flight !== 'landed' &&
+    !/spotted|follow the gold|select it on the map/i.test(game.message) ? game.message : '';
+}
+
 export function drawMenus() {
   const playing = game.mode === 'play', p = game.player;
   drawSortie(p, playing);
@@ -291,7 +452,12 @@ export function drawMenus() {
   el('flight-controls').hidden = !playing;
   el('menu').hidden = playing;
   el('fire-indicator').hidden = !playing || !isTouchDevice || p?.flight !== 'flying';
-  el('fire-indicator').dataset.firing = String(fireTouch.active);
+  const cooling = Boolean(playing && p.flight === 'flying' && p.overheated);
+  const fireIndicator = el('fire-indicator');
+  fireIndicator.dataset.cooling = String(cooling);
+  fireIndicator.dataset.firing = String(fireTouch.active && !cooling);
+  text('fire-label', cooling ? 'GUNS HOT' : 'FIRE');
+  text('fire-hint', cooling ? 'COOLING' : 'HOLD RIGHT');
   if (playing) {
     text('score-value', game.score.toLocaleString());
     text('hull-value', `${Math.ceil(p.hp)}%`);
@@ -310,13 +476,13 @@ export function drawMenus() {
     text('islands-value', `${game.territories.filter(t => t.owner === 'us').length} / ${game.territories.length}`);
     el('health-fill').style.width = `${clamp(p.hp / CONFIG.player.hp, 0, 1) * 100}%`;
     el('health-fill').style.background = p.hp > 35 ? '#82dfbc' : '#f18f7c';
+    text('heat-label', cooling ? 'GUNS COOLING' : 'HEAT');
     el('heat-fill').style.width = `${p.heat * 100}%`;
     el('heat-fill').style.background = p.overheated ? '#f18f7c' : '#e5b76f';
     // One line at the bottom: the landing hint while lining up, otherwise the latest message
     // (not deck status, which the landed panel already shows).
-    const hint = p.flight === 'flying' && p.landingHint;
-    const message = game.messageTime > 0 && p.flight !== 'landed' && !/spotted|follow the gold|select it on the map/i.test(game.message) ? game.message : '';
-    el('toast').hidden = !hint && !message; text('toast', hint || message);
+    const notice = flightNotice(p);
+    el('toast').hidden = !notice; text('toast', notice);
     const action = carrierAction(game), button = el('carrier-action');
     button.textContent = (isTouchDevice ? '' : 'L · ') + action.label;
     button.disabled = !action.enabled; button.hidden = p.flight !== 'landed';
