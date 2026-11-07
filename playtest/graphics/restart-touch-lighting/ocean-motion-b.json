@@ -1,0 +1,13 @@
+{
+  "judge": "B",
+  "framesReviewed": 36,
+  "accept": true,
+  "findings": {
+    "movement": "The selection ring follows the active plane as it turns from the runway over water and around the carrier. Fleet escorts, Hawk and parallel tracers change position coherently. The curved damage trail communicates turning.",
+    "wakes": "Visible pale plumes remain attached aft of both carrier and escorts. They read at a glance against dark water and still resemble narrow soft streaks, with little visible lateral churn.",
+    "coastline": "Sand, shallows and segmented foam remain aligned with the shore as it scrolls. Sea accents remain subordinate to the aircraft and tracers. The thin foam segments sometimes appear detached from the sand.",
+    "impacts": "Both scenes and profiles show the white damage flash at 006–012 and the larger warm burst at 060 followed by dispersed residue at 090. Paired tracers retain contrast offshore.",
+    "consistency": "Phone and fallback show the same sampled beats and cue placement, with softer outlines in fallback. The ocean has visible short horizontal patches and banding in open water. No large discontinuity, loss of contrast, or disappearance of a visible wake is evident in the sampled frames."
+  },
+  "limits": "Nine sampled stills per scene and profile. They support visual state progression only and cannot establish water-animation phase independent of camera movement, continuous smoothness, shimmer, input response or performance."
+}

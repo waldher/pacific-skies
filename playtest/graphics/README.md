@@ -2,6 +2,7 @@
 
 Optimize visual quality subject to performance, never by inventing judge scores.
 Current experiment status and unresolved gates: [STATUS.md](STATUS.md).
+The [HUD, video and sound protocol](EXPERIENCE.md) adds three separate acceptance checks.
 
 ## Fixed protocol
 

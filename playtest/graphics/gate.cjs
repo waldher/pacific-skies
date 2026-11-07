@@ -10,12 +10,38 @@ const key=r=>r.profile.name+'-'+r.scene;
 const failures=[];
 const check=(ok,msg)=>{if(!ok)failures.push(msg);};
 const valid=a=>Array.isArray(a)&&a.length===5&&a.every(x=>Number.isFinite(x)&&x>=1&&x<=10);
+function checkExperience(experience, sourceHash) {
+ check(experience?.sourceHash===sourceHash,'HUD, video and sound evidence missing or stale');
+ if(experience?.sourceHash!==sourceHash)return;
+ const clips=Array.isArray(experience.clips)?experience.clips:[];
+ for(const profile of ['phone','fallback']){
+  const matches=clips.filter(clip=>clip?.profile===profile);
+  check(matches.length===1,`Continuous ${profile} recording required`);
+  if(matches.length!==1)continue;
+  const {file,sha256}=matches[0];
+  const safe=typeof file==='string'&&file.startsWith('evidence/')&&
+    !file.split(/[\\/]/).includes('..')&&/\.(webm|mp4)$/i.test(file);
+  check(safe,`Invalid ${profile} recording path`);
+  if(!safe)continue;
+  const artifact=path.join(__dirname,file);
+  check(fs.existsSync(artifact)&&sha(fs.readFileSync(artifact))===sha256,`Continuous ${profile} recording missing or modified`);
+ }
+ for(const [lane,method] of Object.entries({hud:'task-review',video:'continuous-playback',audio:'listened'})){
+  const record=experience[lane];
+  const scores=record?.scores;
+  const complete=typeof record?.judge==='string'&&record.judge.trim()&&record.method===method&&
+    Array.isArray(scores)&&scores.length===4&&scores.every(x=>Number.isFinite(x)&&x>=1&&x<=10)&&
+    typeof record.findings==='string'&&record.findings.trim();
+  check(complete&&record.accept===true,`${lane} experience review missing or rejected`);
+ }
+}
 function evaluate(){
  const review=read('reviews.json'),refs=read('references.json').references;
  const rounds=review.rounds;
  check(Array.isArray(rounds)&&rounds.length>=2&&new Set(rounds).size===rounds.length,'Unique baseline/candidate round list required');
  if(failures.length)return;
  const baseline=rounds[0],latest=rounds.at(-1),suiteHash=sha(fs.readFileSync(path.join(ROOT,'playtest/graphics.cjs')));
+ checkExperience(review.experience, review.sourceHash);
  check(review.sourceHash===require('./source-hash.cjs')(ROOT),'Stale review: runtime/assets changed');
  check(review.referenceManifestHash===sha(fs.readFileSync(path.join(__dirname,'references.json'))),'Reference set changed; recalibrate judges');
  const keys=['phone','fallback'].flatMap(p=>['airfield','coast','fleet','dogfight','stress'].map(s=>p+'-'+s));

@@ -12,6 +12,9 @@ Reviewers must give evidence, rate the same rubric, and report regressions.
 Do not rate images they have not seen. Prefer anonymized randomized A/B packets;
 record honestly when review is unblinded and when agents share a model.
 
+Use a dedicated UI/UX judge and record continuous video and listened audio reviews
+as specified in `playtest/graphics/EXPERIENCE.md`.
+
 Keep changes only when the visual and performance gates pass. Reject or revise
 failed candidates; preserve their evidence. Do not lower thresholds, change
 reference crops, hide expensive scenes, or selectively retain fast runs to win.

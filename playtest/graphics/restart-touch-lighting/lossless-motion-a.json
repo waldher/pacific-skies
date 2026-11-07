@@ -1,0 +1,113 @@
+{
+  "reviewer": "A",
+  "framesReviewed": 36,
+  "sequences": {
+    "coast-phone": {
+      "framesViewed": [
+        0,
+        6,
+        12,
+        24,
+        36,
+        60,
+        90,
+        120,
+        180
+      ],
+      "evidence": {
+        "movement": "Runway translates under camera-followed aircraft from 000\u2013036. Aircraft turns at beach by 060, flies beyond the surf at 090\u2013120, and tracks past the shoreline bend by 180.",
+        "wakes": "No ship wake in this scene. Broken pale surf streaks follow the bank and the water darkens toward open sea. A fine smoke trail behind the damaged plane remains separate from surf.",
+        "coastline": "Trees, rocks, runway and bank agree spatially as the camera advances. Beige beach varies around bend, but an angular, darker, narrow shoreline section stands out at 120 and 180.",
+        "impacts": "Hull falls from 35% to 27% by 006, matching white player silhouette and orange burst nearby. Flash remains visible at 012, clears by 024, and a distinct large offshore orange bloom at 060 gives way to sparse sparks and smoke by 090.",
+        "consistency": "Aircraft ring remains attached and silhouettes remain recognizable. Direction changes are readable across sampled frames. Tree and roof edges preserve more detail.",
+        "ocean": "Fine irregular dark-water ripples remain distinct from the brighter shallow strip and coast-aligned surf across the nine samples."
+      },
+      "regressions": [
+        "White flash temporarily removes aircraft materials, especially against runway markings.",
+        "Small orange sparks become hard to locate at a distance.",
+        "Broad groups of crests retain a repeating texture in open water."
+      ]
+    },
+    "fleet-phone": {
+      "framesViewed": [
+        0,
+        6,
+        12,
+        24,
+        36,
+        60,
+        90,
+        120,
+        180
+      ],
+      "evidence": {
+        "movement": "Player closes on carrier from below-left, passes the bow at 024\u2013036, then banks away into open water at 060\u2013120. Escort relative positions and Hawk passes make progress legible.",
+        "wakes": "Carrier and escorts show pale narrow streaks extending directly behind their sterns while visible, stable in direction across frames. The player's darker curved smoke trail is distinguishable from ship wakes.",
+        "coastline": "No coast appears in this sequence.",
+        "impacts": "Small warm hit and white player flash at 006\u2013012, dark trailing particles by 024, readable orange bloom to player right at 060, embers and smoke by 090. Paired yellow tracers move across the field then clear by 180.",
+        "consistency": "Carrier deck marks and cyan player ring follow their subjects consistently across samples. Ship rail, markings and the unselected aircraft remain more legible.",
+        "ocean": "Fine connected ripples provide a continuous field around aircraft and hulls. Pale stern plumes read above the ripples while smoke trails remain distinct."
+      },
+      "regressions": [
+        "Wakes are soft straight plumes with little visible spread or foam breakup.",
+        "Aircraft over the deck compete with deck paint and the tan Hawk livery especially blends near the carrier bow at 060.",
+        "At 180 the right-side Bomb panel partially covers an escort.",
+        "Broad groups of crests retain a repeating texture in open water."
+      ]
+    },
+    "coast-fallback": {
+      "framesViewed": [
+        0,
+        6,
+        12,
+        24,
+        36,
+        60,
+        90,
+        120,
+        180
+      ],
+      "evidence": {
+        "movement": "Runway translates under camera-followed aircraft from 000\u2013036. Aircraft turns at beach by 060, flies beyond the surf at 090\u2013120, and tracks past the shoreline bend by 180.",
+        "wakes": "No ship wake in this scene. Broken pale surf streaks follow the bank and the water darkens toward open sea. A fine smoke trail behind the damaged plane remains separate from surf.",
+        "coastline": "Trees, rocks, runway and bank agree spatially as the camera advances. Beige beach varies around bend, but an angular, darker, narrow shoreline section stands out at 120 and 180.",
+        "impacts": "Hull falls from 35% to 27% by 006, matching white player silhouette and orange burst nearby. Flash remains visible at 012, clears by 024, and a distinct large offshore orange bloom at 060 gives way to sparse sparks and smoke by 090.",
+        "consistency": "Aircraft ring remains attached and silhouettes remain recognizable. Direction changes are readable across sampled frames. Softening is apparent on the runway, aircraft wings and terrain props.",
+        "ocean": "Fine irregular dark-water ripples remain distinct from the brighter shallow strip and coast-aligned surf across the nine samples."
+      },
+      "regressions": [
+        "White flash temporarily removes aircraft materials, especially against runway markings.",
+        "Small orange sparks become hard to locate at a distance.",
+        "Broad groups of crests retain a repeating texture in open water."
+      ]
+    },
+    "fleet-fallback": {
+      "framesViewed": [
+        0,
+        6,
+        12,
+        24,
+        36,
+        60,
+        90,
+        120,
+        180
+      ],
+      "evidence": {
+        "movement": "Player closes on carrier from below-left, passes the bow at 024\u2013036, then banks away into open water at 060\u2013120. Escort relative positions and Hawk passes make progress legible.",
+        "wakes": "Carrier and escorts show pale narrow streaks extending directly behind their sterns while visible, stable in direction across frames. The player's darker curved smoke trail is distinguishable from ship wakes.",
+        "coastline": "No coast appears in this sequence.",
+        "impacts": "Small warm hit and white player flash at 006\u2013012, dark trailing particles by 024, readable orange bloom to player right at 060, embers and smoke by 090. Paired yellow tracers move across the field then clear by 180.",
+        "consistency": "Carrier deck marks and cyan player ring follow their subjects consistently across samples. Carrier and wing details are visibly softer, especially while aircraft overlap the deck.",
+        "ocean": "Fine connected ripples provide a continuous field around aircraft and hulls. Pale stern plumes read above the ripples while smoke trails remain distinct."
+      },
+      "regressions": [
+        "Wakes are soft straight plumes with little visible spread or foam breakup.",
+        "Aircraft over the deck compete with deck paint and the tan Hawk livery especially blends near the carrier bow at 060.",
+        "At 180 the right-side Bomb panel partially covers an escort.",
+        "Broad groups of crests retain a repeating texture in open water."
+      ]
+    }
+  },
+  "limits": "Nine discrete PNG snapshots per sequence establish event progression and sampled spatial alignment. They cannot establish ripple motion quality, shimmer, frame pacing, or actual device performance."
+}

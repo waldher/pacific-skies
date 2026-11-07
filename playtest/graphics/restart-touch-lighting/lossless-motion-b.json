@@ -1,0 +1,13 @@
+{
+  "judge": "B",
+  "framesReviewed": 36,
+  "accept": true,
+  "findings": {
+    "movement": "Selection ring tracks turns across the coast and around the carrier. Relative aircraft positions, paired tracers and the curling damage trail make the sampled progression easy to follow.",
+    "wakes": "Pale wakes follow carrier and escort sterns throughout their sampled presence. Their diffuse taper stands out against the finer sea texture. A narrow plume shape limits visible interaction with the surrounding water.",
+    "coastline": "Light blue shallows, sand and separated foam strokes stay aligned with the shoreline while the runway scrolls across the frame. Foam remains sparse at the bend.",
+    "impacts": "Both profiles show a white damage flash at 006–012, a warm burst at 060 and dispersed residue at 090 in coast and fleet scenes. The denser water texture leaves yellow tracers readable.",
+    "consistency": "Both profiles retain finer, less visibly blocky ripples while preserving cue contrast. Fallback softens aircraft and terrain edges. No obvious large water discontinuity or wake dropout appears in the sampled frames."
+  },
+  "limits": "Nine sampled stills per scene and profile. These cannot establish between-frame shimmer, smoothness, water motion independent of camera movement, input response, or hardware performance."
+}

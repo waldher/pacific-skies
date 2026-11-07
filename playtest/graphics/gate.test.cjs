@@ -13,6 +13,10 @@ function fixture(){
  write('references.json',{references:[{id:'reference'}]});
  const review={rounds:['baseline','candidate'],sourceHash:'candidate-source',referenceManifestHash:sha(fs.readFileSync(path.join(dir,'references.json'))),reportHashes:{},reviewers:[],motion:{sourceHash:'candidate-source',file:'motion.txt',sha256:sha('motion-fixture'),reviews:[1,2,3].map(i=>({judge:'j'+i,accept:true,findings:'fixture'}))}};
  fs.writeFileSync(path.join(dir,'motion.txt'),'motion-fixture');
+ fs.mkdirSync(path.join(dir,'evidence'),{recursive:true});
+ review.experience={sourceHash:review.sourceHash,clips:['phone','fallback'].map(profile=>({profile,file:`evidence/${profile}.webm`,sha256:sha(profile)}))};
+ for(const {profile,file} of review.experience.clips)fs.writeFileSync(path.join(dir,file),profile);
+ for(const [lane,method] of Object.entries({hud:'task-review',video:'continuous-playback',audio:'listened'}))review.experience[lane]={judge:`test-${lane}`,method,accept:true,scores:[6,6,6,6],findings:'synthetic fixture'};
  for(const name of review.rounds){write(`evidence/${name}/report.json`,report(name==='baseline'?'base-source':'candidate-source'));for(const [p,s] of keys)fs.writeFileSync(path.join(dir,`evidence/${name}/${p}-${s}.png`),'fixture-image');review.reportHashes[name]=sha(fs.readFileSync(path.join(dir,`evidence/${name}/report.json`)));}
  for(let i=1;i<=3;i++){write(`evidence/perf-base-${i}.json`,report('base-source'));write(`evidence/perf-candidate-${i}.json`,report('candidate-source'));review.reviewers.push({judge:'j'+i,method:'synthetic unit-test fixture',findings:['fixture'],baseline:Object.fromEntries(keys.map(([p,s])=>[p+'-'+s,[5,5,5,5,5]])),candidate:Object.fromEntries(keys.map(([p,s])=>[p+'-'+s,[6,6,6,6,6]])),references:{reference:[9,9,9,9,9]}});}
  write('reviews.json',review);
@@ -23,6 +27,9 @@ for(const [name,mutate,expected] of [
  ['stale source',f=>{f.review.sourceHash='old';f.write('reviews.json',f.review);},'Stale review'],
  ['missing judge',f=>{f.review.reviewers.pop();f.write('reviews.json',f.review);},'Three distinct judge'],
  ['missing motion',f=>{delete f.review.motion;f.write('reviews.json',f.review);},'Motion review pending'],
+ ['missing HUD review',f=>{delete f.review.experience.hud;f.write('reviews.json',f.review);},'hud experience review missing'],
+ ['analysis without listening',f=>{f.review.experience.audio.method='waveform';f.write('reviews.json',f.review);},'audio experience review missing'],
+ ['modified continuous recording',f=>fs.writeFileSync(path.join(f.dir,'evidence/phone.webm'),'changed'),'Continuous phone recording missing or modified'],
  ['tampered screenshot',f=>fs.writeFileSync(path.join(f.dir,'evidence/candidate/phone-coast.png'),'changed'),'image mismatch'],
  ['slow candidate',f=>{for(let i=1;i<=3;i++){const p=`evidence/perf-candidate-${i}.json`,r=JSON.parse(fs.readFileSync(path.join(f.dir,p)));r.results[0].p95Ms=12;f.write(p,r);}},'regressed >5%'],
  ['wrong performance source',f=>{const p='evidence/perf-base-1.json',r=JSON.parse(fs.readFileSync(path.join(f.dir,p)));r.sourceHash='wrong';f.write(p,r);},'different source'],
