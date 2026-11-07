@@ -1,0 +1,108 @@
+{
+  "reviewer": "A",
+  "framesReviewed": 36,
+  "sequences": {
+    "coast-phone": {
+      "framesViewed": [
+        0,
+        6,
+        12,
+        24,
+        36,
+        60,
+        90,
+        120,
+        180
+      ],
+      "evidence": {
+        "movement": "Runway translates under camera-followed aircraft from 000\u2013036. Aircraft turns at beach by 060, flies beyond the surf at 090\u2013120, and tracks past the shoreline bend by 180.",
+        "wakes": "No ship wake in this scene. Broken pale surf streaks follow the bank and the water darkens toward open sea. A fine smoke trail behind the damaged plane remains separate from surf.",
+        "coastline": "Trees, rocks, runway and bank agree spatially as the camera advances. Beige beach varies around bend, but an angular, darker, narrow shoreline section stands out at 120 and 180.",
+        "impacts": "Hull falls from 35% to 27% by 006, matching white player silhouette and orange burst nearby. Flash remains visible at 012, clears by 024, and a distinct large offshore orange bloom at 060 gives way to sparse sparks and smoke by 090.",
+        "consistency": "Chevron follows beneath the player in all nine samples from runway through bank (036\u2013090) to offshore and coast bend (120\u2013180). It stays dark-outlined and cyan on runway, grass, beach, and dark water, including the white damage flash. At 006\u2013012 it lies close to the separate gold objective ring and runway graphics."
+      },
+      "regressions": [
+        "At 006\u2013012, cyan chevron and gold objective ring are adjacent or overlap while the player is above them.",
+        "At 180 the Hawk label intrudes on the return-to-base banner.",
+        "The damaged plane is less distinct in the fallback tier, but the marker remains high contrast."
+      ]
+    },
+    "fleet-phone": {
+      "framesViewed": [
+        0,
+        6,
+        12,
+        24,
+        36,
+        60,
+        90,
+        120,
+        180
+      ],
+      "evidence": {
+        "movement": "Player closes on carrier from below-left, passes the bow at 024\u2013036, then banks away into open water at 060\u2013120. Escort relative positions and Hawk passes make progress legible.",
+        "wakes": "Carrier and escorts show pale narrow streaks extending directly behind their sterns while visible, stable in direction across frames. The player's darker curved smoke trail is distinguishable from ship wakes.",
+        "coastline": "No coast appears in this sequence.",
+        "impacts": "Small warm hit and white player flash at 006\u2013012, dark trailing particles by 024, readable orange bloom to player right at 060, embers and smoke by 090. Paired yellow tracers move across the field then clear by 180.",
+        "consistency": "Chevron follows beneath the player throughout the sampled banking and heading changes, remaining separate from the aircraft and its white flash. On dark water it stays legible through bright tracers and orange impacts, including fallback. At 024\u2013036 the bow runs between the aircraft and the marker, making the owner briefly ambiguous."
+      },
+      "regressions": [
+        "At 024\u2013036 the chevron can appear to mark the bow edge rather than the plane over it.",
+        "Wakes are narrow soft plumes; right-side Bomb panel partially covers an escort at 180.",
+        "Fallback softens airframe identity more than the chevron."
+      ]
+    },
+    "coast-fallback": {
+      "framesViewed": [
+        0,
+        6,
+        12,
+        24,
+        36,
+        60,
+        90,
+        120,
+        180
+      ],
+      "evidence": {
+        "movement": "Runway translates under camera-followed aircraft from 000\u2013036. Aircraft turns at beach by 060, flies beyond the surf at 090\u2013120, and tracks past the shoreline bend by 180.",
+        "wakes": "No ship wake in this scene. Broken pale surf streaks follow the bank and the water darkens toward open sea. A fine smoke trail behind the damaged plane remains separate from surf.",
+        "coastline": "Trees, rocks, runway and bank agree spatially as the camera advances. Beige beach varies around bend, but an angular, darker, narrow shoreline section stands out at 120 and 180.",
+        "impacts": "Hull falls from 35% to 27% by 006, matching white player silhouette and orange burst nearby. Flash remains visible at 012, clears by 024, and a distinct large offshore orange bloom at 060 gives way to sparse sparks and smoke by 090.",
+        "consistency": "Chevron follows beneath the player in all nine samples from runway through bank (036\u2013090) to offshore and coast bend (120\u2013180). It stays dark-outlined and cyan on runway, grass, beach, and dark water, including the white damage flash. At 006\u2013012 it lies close to the separate gold objective ring and runway graphics."
+      },
+      "regressions": [
+        "At 006\u2013012, cyan chevron and gold objective ring are adjacent or overlap while the player is above them.",
+        "At 180 the Hawk label intrudes on the return-to-base banner.",
+        "The damaged plane is less distinct in the fallback tier, but the marker remains high contrast."
+      ]
+    },
+    "fleet-fallback": {
+      "framesViewed": [
+        0,
+        6,
+        12,
+        24,
+        36,
+        60,
+        90,
+        120,
+        180
+      ],
+      "evidence": {
+        "movement": "Player closes on carrier from below-left, passes the bow at 024\u2013036, then banks away into open water at 060\u2013120. Escort relative positions and Hawk passes make progress legible.",
+        "wakes": "Carrier and escorts show pale narrow streaks extending directly behind their sterns while visible, stable in direction across frames. The player's darker curved smoke trail is distinguishable from ship wakes.",
+        "coastline": "No coast appears in this sequence.",
+        "impacts": "Small warm hit and white player flash at 006\u2013012, dark trailing particles by 024, readable orange bloom to player right at 060, embers and smoke by 090. Paired yellow tracers move across the field then clear by 180.",
+        "consistency": "Chevron follows beneath the player throughout the sampled banking and heading changes, remaining separate from the aircraft and its white flash. On dark water it stays legible through bright tracers and orange impacts, including fallback. At 024\u2013036 the bow runs between the aircraft and the marker, making the owner briefly ambiguous."
+      },
+      "regressions": [
+        "At 024\u2013036 the chevron can appear to mark the bow edge rather than the plane over it.",
+        "Wakes are narrow soft plumes; right-side Bomb panel partially covers an escort at 180.",
+        "Fallback softens airframe identity more than the chevron."
+      ]
+    }
+  },
+  "limits": "Nine discrete PNG snapshots per sequence confirm progression and visible alignment only. They cannot establish frame pacing, perceived smoothness, subtle flicker or shimmer, animation quality between samples, actual hardware performance, or superiority over an earlier build without a matched motion baseline.",
+  "limitations": "All 36 stills individually inspected. This is sampled progression, not continuous playback. Flicker, frame pacing, between-frame tracking and sound not evaluated."
+}

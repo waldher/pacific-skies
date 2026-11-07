@@ -1,0 +1,12 @@
+{
+  "judge": "B",
+  "framesInspected": 36,
+  "acceptSampledProgression": true,
+  "findings": [
+    "The cyan tick tracks horizontally below the pilot in every sampled bank and translation. It does not rotate over or tint the aircraft. Separation varies with the pose, but the tick is consistently visible against both grass and water in both profiles.",
+    "Fleet 024–036: the tick is close to the carrier's bow and can read as a ship cue even while it correctly moves with the crossing player. Coast 006–012: the tick coincides with or is close to the amber return-to-base circle, reducing cue distinctness.",
+    "The fallback world and aircraft silhouettes are softer than the native captures. The screen-space tick stays crisp across profiles; the remaining problem is which object it denotes rather than its local contrast.",
+    "Ship wakes follow sterns, shore foam follows the coastline, and damage flash, tracers, impact bloom and smoke are visible. Hawk still encroaches on the objective banner in coast 180."
+  ],
+  "limitations": "This is a discrete-frame review. It cannot establish continuous tracking, flicker, frame pacing or physical-device performance."
+}

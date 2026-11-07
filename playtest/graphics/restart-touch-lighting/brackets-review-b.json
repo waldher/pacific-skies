@@ -1,0 +1,497 @@
+{
+  "view-01.png": {
+    "scores": [
+      6,
+      5,
+      4,
+      4.5,
+      4
+    ],
+    "evidence": "Runway stripes and geometric fields make navigation cues visible.",
+    "regressions": "Plane is buried in overlaid text, hills and trees are faceted, and offshore flecks lack a shore interaction."
+  },
+  "view-02.png": {
+    "scores": [
+      7.5,
+      8,
+      7.5,
+      7.5,
+      5.5
+    ],
+    "evidence": "The cyan tick sits below the hangar roofs and leaves the blue aircraft unpainted; runway and roof silhouettes read distinctly.",
+    "regressions": "The tick seems to tag the apron at first glance, while the pilot overlaps a matching blue roof."
+  },
+  "view-03.png": {
+    "scores": [
+      8.5,
+      9,
+      8.5,
+      8.5,
+      7.5
+    ],
+    "evidence": "Crisp walls, material changes and tactical paths give rooms a clear structure.",
+    "regressions": "Unit markers and routes can crowd the narrow hallway; effects are subdued."
+  },
+  "view-04.png": {
+    "scores": [
+      5.5,
+      4.5,
+      4,
+      4,
+      4
+    ],
+    "evidence": "A few clear aircraft silhouettes survive the central cluster.",
+    "regressions": "Overlapping labels and disk-shaped hits cover the deck; wake is abrupt."
+  },
+  "view-05.png": {
+    "scores": [
+      7.5,
+      8,
+      7,
+      7,
+      5.5
+    ],
+    "evidence": "An unobscured blue aircraft and a crisp teal tick contrast with the grass, with the broad shoreline easy to orient against.",
+    "regressions": "The gap is noticeable, the aircraft edges soften, and the tick can be mistaken for another world direction cue."
+  },
+  "view-06.png": {
+    "scores": [
+      7,
+      7,
+      7,
+      6.5,
+      6
+    ],
+    "evidence": "Deck geometry, tower and trail establish ship direction.",
+    "regressions": "Blue plane merges into the narrow bow; broad teal swirls repeat."
+  },
+  "view-07.png": {
+    "scores": [
+      5.5,
+      4.5,
+      4,
+      4,
+      4
+    ],
+    "evidence": "Wing markings remain distinct in isolated positions.",
+    "regressions": "Soft central silhouettes, disk effects and inline labels muddy the fight."
+  },
+  "view-08.png": {
+    "scores": [
+      8,
+      8,
+      7.5,
+      7,
+      5.5
+    ],
+    "evidence": "A pair of high-contrast brackets makes the dark aircraft easy to locate over the blue hangar and keeps its wings visible.",
+    "regressions": "The left bracket sits over adjacent ground, so the pair reads as a wider targeting overlay in a quiet scene."
+  },
+  "view-09.png": {
+    "scores": [
+      6.5,
+      8,
+      7.5,
+      7,
+      7
+    ],
+    "evidence": "Sparks remain visible and the detached tick is crisper than the ships and aircraft.",
+    "regressions": "The bow/aircraft overlap is ambiguous and the tick lies outside both shapes, making it easier to associate with the ship."
+  },
+  "view-10.png": {
+    "scores": [
+      7,
+      7,
+      7,
+      6.5,
+      6.5
+    ],
+    "evidence": "Carrier tower and plane insignia establish targets clearly away from the bow.",
+    "regressions": "Soft outlines and wake have little structure; bow overlap compromises player identification."
+  },
+  "view-11.png": {
+    "scores": [
+      6,
+      5,
+      4,
+      4.5,
+      3.5
+    ],
+    "evidence": "Beach boundary and runway are immediately recognizable.",
+    "regressions": "Field grid and mottling compete with the tiny player plane; little shoreline effect."
+  },
+  "view-12.png": {
+    "scores": [
+      7,
+      8,
+      7.5,
+      7,
+      7
+    ],
+    "evidence": "The bow remains dimensional and wing insignia, orange impacts, and the turquoise bow-area tick are visible.",
+    "regressions": "The tick reads as if attached to the ship at first glance; the allied plane is hard to isolate in the overlap above it."
+  },
+  "view-13.png": {
+    "scores": [
+      5.5,
+      4.5,
+      4.5,
+      4,
+      4.5
+    ],
+    "evidence": "Aircraft silhouettes remain distinct away from the deck.",
+    "regressions": "Center overlay, rounded smoke disks and hard-edged wake flatten the encounter."
+  },
+  "view-14.png": {
+    "scores": [
+      6.5,
+      8,
+      7.5,
+      7,
+      7.5
+    ],
+    "evidence": "Removing the field-sized circle leaves the bow and planes untinted; sparks remain distinct from soft smoke.",
+    "regressions": "The small detached tick below the bow is easy to miss amid many aircraft and looks ship-related; finding the player from it takes a second look."
+  },
+  "view-15.png": {
+    "scores": [
+      7,
+      7,
+      7,
+      6.5,
+      6.5
+    ],
+    "evidence": "Distinct aircraft markings, hull and quiet smoke preserve much of the formation.",
+    "regressions": "Center remains crowded; pale wave pattern and soft small details limit definition."
+  },
+  "view-16.png": {
+    "scores": [
+      6,
+      8,
+      7,
+      7,
+      7
+    ],
+    "evidence": "The small tick stays sharp on dark sea while outlines and insignia around the ship soften.",
+    "regressions": "The cue still looks like it belongs to the hull rather than one plane; overlap around the bow and fallback softness make player identification harder."
+  },
+  "view-17.png": {
+    "scores": [
+      8,
+      9,
+      9,
+      9,
+      8
+    ],
+    "evidence": "Strong directional light and props give the market density and depth; colored routes identify activity.",
+    "regressions": "Warm shadows hide figures among crowded stalls, and route lines cross nearby props."
+  },
+  "view-18.png": {
+    "scores": [
+      6,
+      5,
+      4.5,
+      4.5,
+      4
+    ],
+    "evidence": "Hard coastline and runway edge organize the frame.",
+    "regressions": "Tiny overlaid labels and plane compete with the field grid; isolated white flecks distract at sea."
+  },
+  "view-19.png": {
+    "scores": [
+      7,
+      6.5,
+      6,
+      6.5,
+      5
+    ],
+    "evidence": "Runway markings, rocks and shoreline form clear landmarks.",
+    "regressions": "Low contrast around the blue plane, repeated tree blobs and a nearly bare waterline."
+  },
+  "view-20.png": {
+    "scores": [
+      6,
+      4.5,
+      4,
+      4,
+      3.5
+    ],
+    "evidence": "Ship placement and runway markings are straightforward.",
+    "regressions": "Blurred bare deck, hard wake rectangle and text over the ship flatten the scene."
+  },
+  "view-21.png": {
+    "scores": [
+      7,
+      9,
+      9,
+      9.5,
+      9
+    ],
+    "evidence": "Fog separates depth layers and vehicle flashes read against detailed autumn terrain.",
+    "regressions": "Distant silhouettes recede into fog; unit status is not visible."
+  },
+  "view-22.png": {
+    "scores": [
+      7.5,
+      7,
+      7,
+      6.5,
+      6.5
+    ],
+    "evidence": "Marked planes stand out on the teal sea and deck markings survive the crowd.",
+    "regressions": "Effects read as scattered flecks, and selected plane is harder to find in the cluster."
+  },
+  "view-23.png": {
+    "scores": [
+      8,
+      7.5,
+      7.5,
+      7,
+      7
+    ],
+    "evidence": "Paired corners give the player's horizontal position quickly against tan deck, white aircraft and sea. The aircraft silhouette stays clear inside the span.",
+    "regressions": "The right corner sits near deck trim and the small gold ring still competes at the center of the bow."
+  },
+  "view-24.png": {
+    "scores": [
+      7.5,
+      6.5,
+      7,
+      6.5,
+      5.5
+    ],
+    "evidence": "Sharp runway and roof lines organize the field.",
+    "regressions": "Player blends against a blue roof, left hill looks faceted, and offshore flecks seem unrelated."
+  },
+  "view-25.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7.5,
+      7,
+      7
+    ],
+    "evidence": "Sharp corners identify the player area through the softer ship and aircraft edges.",
+    "regressions": "The bracket remains crisper than the aircraft, and there is ambiguity between nearby aircraft and deck cues inside the span."
+  },
+  "view-26.png": {
+    "scores": [
+      6,
+      4.5,
+      4,
+      4,
+      3.5
+    ],
+    "evidence": "Isolated deck silhouette and markings are easy to locate.",
+    "regressions": "Uniform deck has little volume; wake is a hard rectangle and labels sit across play space."
+  },
+  "view-27.png": {
+    "scores": [
+      5.5,
+      4.5,
+      4.5,
+      4,
+      4.5
+    ],
+    "evidence": "Aircraft markings and sea contrast separate units at the perimeter.",
+    "regressions": "Overlapping translucent disks and labels obscure the flat center deck; wake is a rectangular strip."
+  },
+  "view-28.png": {
+    "scores": [
+      7.5,
+      8,
+      7,
+      7,
+      5.5
+    ],
+    "evidence": "Both bracket strokes remain sharp around the dark aircraft on the softer blue hangar.",
+    "regressions": "The brackets identify an area wider than the aircraft's silhouette."
+  },
+  "view-29.png": {
+    "scores": [
+      8,
+      8,
+      7.5,
+      7.5,
+      5.5
+    ],
+    "evidence": "The black and light cyan corners keep the aircraft distinct from shoreline rocks. The airframe remains unobscured.",
+    "regressions": "The corners are conspicuous in an otherwise quiet shoreline scene."
+  },
+  "view-30.png": {
+    "scores": [
+      8,
+      8,
+      7.5,
+      7.5,
+      5.5
+    ],
+    "evidence": "The lone blue plane is unobstructed and the teal tick is clear against the grass; the shore gradient and rocks ground the scene.",
+    "regressions": "The tick sits far below the aircraft and resembles a destination arrow rather than a marker for a nearby unit."
+  },
+  "view-31.png": {
+    "scores": [
+      7,
+      7.5,
+      7,
+      7,
+      7
+    ],
+    "evidence": "The contrasting bracket edges guide the eye to the carrier bow even through a very dense swarm.",
+    "regressions": "An enemy wing near the left corner and another aircraft near the right corner make the selected plane ambiguous inside the span. The gold ring adds another cue in the same area."
+  },
+  "view-32.png": {
+    "scores": [
+      7.5,
+      7,
+      7.5,
+      6.5,
+      6.5
+    ],
+    "evidence": "Sharp wings, ship shadow and deck lines give a legible air-and-sea composition.",
+    "regressions": "Closest aircraft overlaps the bow and pale flecks add competing accents."
+  },
+  "view-33.png": {
+    "scores": [
+      7,
+      8,
+      7.5,
+      7,
+      6.5
+    ],
+    "evidence": "The tick stands out on dark water and the bow paint is unobstructed.",
+    "regressions": "It appears to label the bow at first glance, with only a softened aircraft shape above it; wake remains diffuse."
+  },
+  "view-34.png": {
+    "scores": [
+      8,
+      8,
+      8,
+      7,
+      6.5
+    ],
+    "evidence": "Two small corners center attention on the blue plane while retaining visible deck markings and both wings.",
+    "regressions": "The right corner overlays deck clutter and is markedly more conspicuous than the plane against some backgrounds."
+  },
+  "view-35.png": {
+    "scores": [
+      6.5,
+      9,
+      9.5,
+      9,
+      9
+    ],
+    "evidence": "Wet ground, raking light and shadows create strong volume; rain, smoke and tracer share the scene lighting.",
+    "regressions": "Dark distant units and shaded infantry are difficult to identify quickly."
+  },
+  "view-36.png": {
+    "scores": [
+      7,
+      6.5,
+      6.5,
+      6.5,
+      5
+    ],
+    "evidence": "Hangars and runway form a clear airfield; tree shadows add anchoring.",
+    "regressions": "Plane overlaps a roof, soft foliage edges and faceted hill clash with broad ground mottling."
+  },
+  "view-37.png": {
+    "scores": [
+      7.5,
+      6.5,
+      6.5,
+      6.5,
+      5.5
+    ],
+    "evidence": "Runway and sand strip define the coast; aircraft contour is fairly clear.",
+    "regressions": "Broad grass mottling and scattered offshore flecks undercut material scale."
+  },
+  "view-38.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7.5,
+      7,
+      7.5
+    ],
+    "evidence": "Two high-contrast corners make the controlled area easier to find in the swarm. Crisp wings and smoke retain depth cues.",
+    "regressions": "An enemy is close to each corner, and the nearby gold ring pulls the eye back toward deck detail. The bracket pair gives a zone more immediately than a single silhouette."
+  },
+  "view-39.png": {
+    "scores": [
+      7.5,
+      7,
+      7.5,
+      6.5,
+      6.5
+    ],
+    "evidence": "Clear deck markings and tower define direction and ship volume.",
+    "regressions": "Aircraft is low contrast at the bow; offshore flecks resemble stray particles."
+  },
+  "view-40.png": {
+    "scores": [
+      6,
+      5,
+      4,
+      4.5,
+      3.5
+    ],
+    "evidence": "Runway arrow and field boundaries organize the airfield.",
+    "regressions": "Overlaid objective crosses the player, geometric trees and soft mottling dominate, no integrated shoreline effect."
+  },
+  "view-41.png": {
+    "scores": [
+      7.5,
+      8,
+      7,
+      7,
+      5.5
+    ],
+    "evidence": "The brackets remain distinct at reduced detail and keep the player findable against grass and rocks.",
+    "regressions": "The plane is less distinct than the marker on the softer scenery."
+  },
+  "view-42.png": {
+    "scores": [
+      7,
+      8,
+      7,
+      7,
+      5.5
+    ],
+    "evidence": "The detached keylined tick stays crisp against the softened grass, and the aircraft is unobstructed.",
+    "regressions": "The gap and soft blue roof make the tick read as a marker on the apron before it reads as the pilot."
+  },
+  "view-43.png": {
+    "scores": [
+      7.5,
+      8,
+      7.5,
+      7,
+      6.5
+    ],
+    "evidence": "The sharp bracket pair keeps the aircraft readable through softer wood and hull detail.",
+    "regressions": "The right bracket partially shares a position with deck detail and the pair is visually wider than the plane."
+  },
+  "view-44.png": {
+    "scores": [
+      7,
+      9,
+      9,
+      9,
+      9.5
+    ],
+    "evidence": "Dark aircraft silhouettes and layered rocky terrain converge on a high-energy tracer and fire burst.",
+    "regressions": "The bright burst occludes several nearby units; overlapping dark forms are harder to parse."
+  },
+  "view-45.png": {
+    "scores": [
+      7.5,
+      8,
+      8,
+      7,
+      6.5
+    ],
+    "evidence": "The airframe over the bow retains its own shape and paint, and the cyan tick reads against the dark sea.",
+    "regressions": "The cue is sufficiently far below the aircraft to suggest it labels the bow rather than the aircraft; the wake is diffuse."
+  }
+}

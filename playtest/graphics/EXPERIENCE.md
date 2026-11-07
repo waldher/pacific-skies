@@ -93,3 +93,17 @@ add overhead. This clip supplements the unchanged fixed still/motion gates
 and physical-device validation. Play the MP4 with sound for complete review.
 
 The current combat fixture does not cover every listening scenario above. Record additional scenarios before approving the sound review.
+
+### Audio continuity check
+
+Set `GRAPHICS_AV_AUDIO=pcm` for the bounded stereo AudioWorklet recorder. It
+captures the same game mix directly as PCM and reports missing render blocks,
+clock drift, and padding. The default remains the Opus recorder for reproducing
+older captures. Match the audio mode across paired listening comparisons.
+
+The PCM trial on the gunfire prototype observed zero missing blocks after
+startup on both phone profiles. The fallback run had an 11.6 ms leading delay.
+Opus runs on the same source had maximum packet gaps around 0.75 seconds.
+These are separate live runs and assess recorder continuity. The compositor
+still dropped video frames in both modes. Reviewers should check capture gaps
+before attributing a missing cue or visible jump to the game.

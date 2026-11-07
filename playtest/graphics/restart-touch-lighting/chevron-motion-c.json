@@ -1,0 +1,12 @@
+{
+  "judge": "C",
+  "method": "sampled-still-progression",
+  "framesViewed": 36,
+  "accept": true,
+  "findings": [
+    "Coast at both tiers: cyan chevron remains beneath the blue player during the runway crossing, the white damage flash at ticks 006 and 012, the coastal bank at 060, and the move offshore by 090. It stays crisp at fallback resolution and the dark keyline separates it from grass, runway paint, and sea. At 006 the gold objective ring briefly surrounds the marker; by 012 it is visibly separate. At 180 Hawk's label crowds the objective banner.",
+    "Fleet at both tiers: cyan chevron follows the same aircraft as it banks past the carrier and heads out over water, with no sampled overlap over the pilot paint. At 024 and especially 036 its proximity to the carrier bow leaves the association briefly ambiguous, and at 060 bright tracers compete for attention. Association is clear in the separated later samples. This motion pass does not cancel the separate crowded-still readability regression.",
+    "The white impact flash, 35% to 27% hull change, sparks, gun tracers, fireball and later smoke are distinguishable in both tiers. Ship wakes stay attached and coastal foam remains coast-aligned during the sampled pan.",
+    "The sampled sequence does not establish interframe tracking, flicker, frame pacing, or handset performance."
+  ]
+}

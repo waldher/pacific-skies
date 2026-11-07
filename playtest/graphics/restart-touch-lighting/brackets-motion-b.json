@@ -1,0 +1,12 @@
+{
+  "judge": "B",
+  "framesInspected": 36,
+  "acceptSampledProgression": true,
+  "findings": [
+    "The upright bracket pair stays centered on the player through the sampled banks and translation in both routes and profiles. The aircraft silhouette remains visible between the brackets. I saw no blue overlay from the bracket pair.",
+    "At fleet 024–036 the player moves across the carrier bow. One or both brackets overlap deck detail, but the second corner keeps the cue centered on the plane, so I no longer read it as a carrier marker. The wide span still takes in nearby detail, especially on the softer fallback deck.",
+    "At coast 006–012 the bright damage silhouette and runway arrow occupy the same area. The brackets hold the aircraft position and remain visibly separate from the gold runway circle. Their light fill and dark stroke keep them legible on grass, sea and deck in both profiles.",
+    "Stern wakes, shore foam, damage flash, tracers, orange impacts and trailing smoke remain identifiable. Hawk's label still encroaches on the objective banner at coast 180."
+  ],
+  "limitations": "This is a discrete-frame review. It cannot establish continuous tracking, flicker, frame pacing or physical-device performance."
+}

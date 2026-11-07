@@ -12,6 +12,7 @@ const root = path.resolve(__dirname, '..');
 const out = path.resolve(process.env.GRAPHICS_AV_OUT || path.join(__dirname, 'shots/graphics-av'));
 const profile = process.env.GRAPHICS_AV_PROFILE || 'phone';
 const quality = { phone: 2, fallback: 4 }[profile];
+const audioMode = process.env.GRAPHICS_AV_AUDIO || 'opus';
 const durationSeconds = 6;
 const width = 852;
 const height = 393;
@@ -21,7 +22,61 @@ const ffmpeg = (...args) => execFileSync('ffmpeg', ['-hide_banner', '-nostdin', 
 
 // This hook exists only in the capture page. Tee nodes connected to the game's
 // own speakers to a MediaStream, without replacing the original connection.
-function installAudioCapture() {
+function pcmWorklet() {
+  class GameplayPcm extends AudioWorkletProcessor {
+    constructor() {
+      super();
+      // Six seconds are requested. Allow room for the stop message under load.
+      this.samples = new Float32Array(2 * sampleRate * 10);
+      this.startFrame = null;
+      this.nextFrame = null;
+      this.firstFrame = null;
+      this.missingFrames = 0;
+      this.maxFrameGap = 0;
+      this.quantumCount = 0;
+      this.overflow = false;
+      this.port.onmessage = ({ data }) => {
+        if (data.startFrame !== undefined) this.startFrame = data.startFrame;
+        if (data.stop) {
+          const frames = Math.min(this.samples.length / 2, Math.max(0, (this.nextFrame ?? this.startFrame) - this.startFrame));
+          const samples = this.samples.buffer;
+          this.port.postMessage({
+            samples, frames, firstFrame: this.firstFrame, quantumCount: this.quantumCount,
+            missingFrames: this.missingFrames, maxFrameGap: this.maxFrameGap, overflow: this.overflow,
+          }, [samples]);
+          this.startFrame = null;
+        }
+      };
+    }
+    process([input], [output]) {
+      if (this.startFrame === null || currentFrame < this.startFrame) return true;
+      const count = output[0].length;
+      const gap = Math.max(0, currentFrame - (this.nextFrame ?? this.startFrame));
+      this.firstFrame ??= currentFrame;
+      this.missingFrames += gap;
+      this.maxFrameGap = Math.max(this.maxFrameGap, gap);
+      this.nextFrame = currentFrame + count;
+      this.quantumCount++;
+      const offset = (currentFrame - this.startFrame) * 2;
+      if (offset + count * 2 > this.samples.length) {
+        this.overflow = true;
+        return true;
+      }
+      if (input.length) {
+        const [left, right = left] = input;
+        for (let i = 0; i < count; i++) {
+          this.samples[offset + 2 * i] = left[i];
+          this.samples[offset + 2 * i + 1] = right[i];
+        }
+      }
+      // Leave output silent. The game still has its normal speaker connection.
+      return true;
+    }
+  }
+  registerProcessor('gameplay-pcm', GameplayPcm);
+}
+
+function installAudioCapture({ mode, workletSource }) {
   let context;
   let tap;
   let recorder;
@@ -48,6 +103,24 @@ function installAudioCapture() {
       if (!context) throw Error('The game did not initialize WebAudio');
       await context.resume();
       if (context.state !== 'running') throw Error('The game audio context did not start');
+      if (mode === 'pcm') {
+        const module = URL.createObjectURL(new Blob([workletSource], { type: 'text/javascript' }));
+        try { await context.audioWorklet.addModule(module); }
+        finally { URL.revokeObjectURL(module); }
+        tap = new AudioWorkletNode(context, 'gameplay-pcm', {
+          channelCount: 2, channelCountMode: 'explicit', outputChannelCount: [2],
+        });
+        nativeConnect.call(tap, context.destination);
+        stopped = new Promise((resolve, reject) => {
+          tap.port.onmessage = ({ data }) => resolve(data);
+          tap.onprocessorerror = () => reject(Error('AudioWorklet PCM processor failed'));
+        });
+        stopped.catch(() => {}); // Surface early failures when stop awaits the recording.
+        const epochSeconds = (performance.timeOrigin + performance.now()) / 1000;
+        const startFrame = Math.round(context.currentTime * context.sampleRate);
+        tap.port.postMessage({ startFrame });
+        return { epochSeconds, sampleRate: context.sampleRate, startFrame };
+      }
       tap = context.createMediaStreamDestination();
       const chunks = [];
       recorder = new MediaRecorder(tap.stream, { mimeType: 'audio/webm;codecs=opus' });
@@ -66,14 +139,35 @@ function installAudioCapture() {
       return { epochSeconds, sampleRate: context.sampleRate };
     },
     async stop() {
+      if (mode === 'pcm') {
+        const stopFrame = Math.round(context.currentTime * context.sampleRate);
+        tap.port.postMessage({ stop: true });
+        let timeout;
+        const expired = new Promise((_, reject) => {
+          timeout = setTimeout(() => reject(Error('AudioWorklet PCM stop timed out')), 5000);
+        });
+        const { samples, ...timing } = await Promise.race([stopped, expired]).finally(() => {
+          clearTimeout(timeout);
+          tap.disconnect();
+        });
+        if (timing.overflow || !timing.frames) throw Error('AudioWorklet PCM buffer overflowed or was empty');
+        const data = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onerror = () => reject(reader.error);
+          reader.onload = () => resolve(String(reader.result).split(',')[1]);
+          reader.readAsDataURL(new Blob([new Float32Array(samples, 0, timing.frames * 2)]));
+        });
+        return { data, routedNodes, timing: { ...timing, stopFrame } };
+      }
       recorder.stop();
-      return { webm: await stopped, routedNodes };
+      return { data: await stopped, routedNodes };
     },
   };
 }
 
 async function capture() {
   if (!quality) throw Error('GRAPHICS_AV_PROFILE must be phone or fallback');
+  if (!['opus', 'pcm'].includes(audioMode)) throw Error('GRAPHICS_AV_AUDIO must be opus or pcm');
   fs.mkdirSync(out, { recursive: true });
   const temp = fs.mkdtempSync(path.join(out, 'mux-'));
   const report = {
@@ -105,7 +199,7 @@ async function capture() {
     });
     report.browser = browser.version();
     const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1, hasTouch: true, isMobile: true });
-    await page.addInitScript(installAudioCapture);
+    await page.addInitScript(installAudioCapture, { mode: audioMode, workletSource: `(${pcmWorklet.toString()})();` });
     page.on('pageerror', error => report.errors.push(String(error)));
     page.on('console', message => {
       if (message.type() === 'error' && /WebGL|shader|GL_INVALID|GL_OUT_OF_MEMORY|GL_CONTEXT_LOST/i.test(message.text())) {
@@ -199,11 +293,11 @@ async function capture() {
       return {
         audio, endEpochSeconds, events, samples, elapsedGameSeconds: game.time - startGameTime,
         actualPixelRatio: graphics.diagnostics.pixelRatio,
-        audioWebm: recordedAudio.webm, routedAudioNodes: recordedAudio.routedNodes,
+        audioData: recordedAudio.data, pcmTiming: recordedAudio.timing, routedAudioNodes: recordedAudio.routedNodes,
       };
     }, durationSeconds);
     await cdp.send('Page.stopScreencast');
-    const { audioWebm, ...timeline } = result;
+    const { audioData, ...timeline } = result;
     report.timeline = timeline;
     if (timeline.events.length !== 2 || !timeline.routedAudioNodes) throw Error('Live RAF fixture did not reach both impact events and real audio');
     const inRange = frames.filter(frame => frame.timestamp >= result.audio.epochSeconds && frame.timestamp <= result.endEpochSeconds);
@@ -229,25 +323,47 @@ async function capture() {
     });
     list.push(`file frame-${String(ordered.length - 1).padStart(4, '0')}.jpg`, 'option framerate 1000');
     const concat = path.join(temp, 'frames.ffconcat');
-    const audioFile = path.join(temp, 'game.webm');
+    const audioFile = path.join(temp, audioMode === 'pcm' ? 'game.f32le' : 'game.webm');
     fs.writeFileSync(concat, list.join('\n') + '\n');
-    fs.writeFileSync(audioFile, Buffer.from(audioWebm, 'base64'));
-    const inputAudio = JSON.parse(execFileSync('ffprobe', [
-      '-v', 'error', '-select_streams', 'a:0', '-show_entries', 'packet=pts_time', '-of', 'json', audioFile,
-    ]));
-    const audioTimestamps = inputAudio.packets.map(packet => Number(packet.pts_time)).filter(Number.isFinite);
-    const audioGaps = audioTimestamps.slice(1).map((stamp, index) => stamp - audioTimestamps[index]);
-    report.audioTiming = {
-      packets: audioTimestamps.length,
-      maxPacketGapSeconds: Math.max(0, ...audioGaps),
-      gapsOver60Ms: audioGaps.filter(gap => gap > .06).length,
-      gapPolicy: 'Preserve elapsed time by filling omitted recorder samples with silence.',
-    };
+    fs.writeFileSync(audioFile, Buffer.from(audioData, 'base64'));
+    let audioInput = [];
+    let audioFilter = 'aresample=48000:async=1:min_hard_comp=0.001:first_pts=0,apad';
+    if (audioMode === 'pcm') {
+      const { sampleRate, startFrame } = timeline.audio;
+      const { frames, stopFrame, firstFrame, quantumCount, missingFrames, maxFrameGap } = timeline.pcmTiming;
+      if (fs.statSync(audioFile).size !== frames * 2 * 4) throw Error('Wrong PCM byte count');
+      audioInput = ['-f', 'f32le', '-ar', String(sampleRate), '-ac', '2'];
+      audioFilter = 'aresample=48000,apad';
+      const renderedSeconds = frames / sampleRate;
+      const hostSeconds = result.endEpochSeconds - timeline.audio.epochSeconds;
+      report.audioTiming = {
+        mode: audioMode, quantumCount, renderedSeconds, hostSeconds,
+        missingSeconds: missingFrames / sampleRate,
+        maxQuantumGapSeconds: maxFrameGap / sampleRate,
+        startDelaySeconds: (firstFrame - startFrame) / sampleRate,
+        clockDriftSeconds: (stopFrame - startFrame) / sampleRate - hostSeconds,
+        trailingPaddingSeconds: Math.max(0, hostSeconds - renderedSeconds),
+        gapPolicy: 'Keep missing WebAudio render quanta silent without collapsing the audio clock.',
+      };
+    } else {
+      const inputAudio = JSON.parse(execFileSync('ffprobe', [
+        '-v', 'error', '-select_streams', 'a:0', '-show_entries', 'packet=pts_time', '-of', 'json', audioFile,
+      ]));
+      const audioTimestamps = inputAudio.packets.map(packet => Number(packet.pts_time)).filter(Number.isFinite);
+      const audioGaps = audioTimestamps.slice(1).map((stamp, index) => stamp - audioTimestamps[index]);
+      report.audioTiming = {
+        mode: audioMode,
+        packets: audioTimestamps.length,
+        maxPacketGapSeconds: Math.max(0, ...audioGaps),
+        gapsOver60Ms: audioGaps.filter(gap => gap > .06).length,
+        gapPolicy: 'Preserve elapsed time by filling omitted recorder samples with silence.',
+      };
+    }
     const videoFile = path.join(out, 'gameplay.mp4');
     const wavFile = path.join(out, 'gameplay-audio.wav');
-    ffmpeg('-y', '-f', 'concat', '-safe', '0', '-i', concat, '-ss', audioTrim.toFixed(6), '-i', audioFile,
+    ffmpeg('-y', '-f', 'concat', '-safe', '0', '-i', concat, '-ss', audioTrim.toFixed(6), ...audioInput, '-i', audioFile,
       '-map', '0:v:0', '-map', '1:a:0', '-vf', 'fps=60,pad=ceil(iw/2)*2:ceil(ih/2)*2:0:0:black',
-      '-af', 'aresample=48000:async=1:min_hard_comp=0.001:first_pts=0,apad', '-t', actualDuration.toFixed(6), '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-preset', 'fast',
+      '-af', audioFilter, '-t', actualDuration.toFixed(6), '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-preset', 'fast',
       '-crf', '18', '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', videoFile);
     ffmpeg('-y', '-i', videoFile, '-vn', '-ac', '1', '-ar', '16000', wavFile);
     const probe = JSON.parse(execFileSync('ffprobe', ['-v', 'error', '-show_streams', '-show_format', '-of', 'json', videoFile]));

@@ -1,0 +1,151 @@
+diff --git a/playtest/projection.cjs b/playtest/projection.cjs
+index 4a2a061..4737924 100644
+--- a/playtest/projection.cjs
++++ b/playtest/projection.cjs
+@@ -5,7 +5,7 @@ async function load(f){if(cache.has(f))return cache.get(f);const m=new vm.Source
+ async function ns(f){const m=await load(path.join(root,f));await m.link((s,p)=>load(path.resolve(path.dirname(p.identifier),s)));await m.evaluate();return m.namespace;}
+ (async()=>{
+  const T=await ns('vendor/three/three.core.min.js');
+- const {OBLIQUE,applyObliqueProjection,projectWorld,recordVisualHeight,visualHeight,withRelief}=await ns('src/projection.js');
++ const {OBLIQUE,applyObliqueProjection,projectWorld,recordVisualHeight,visualHeight,withRelief,recordPilotMarkerExtents,pilotMarkerBounds}=await ns('src/projection.js');
+  const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-7,`${a} != ${b}`);
+  for(const view of [{W:852,H:393},{W:393,H:852}])for(const cam of [{x:0,y:0},{x:8311,y:-9123}]){
+   const camera=new T.OrthographicCamera(-view.W/2,view.W/2,view.H/2,-view.H/2,1,2000);
+@@ -27,6 +27,21 @@ async function ns(f){const m=await load(path.join(root,f));await m.link((s,p)=>l
+   assert.ok(frustum.containsPoint(high));
+  }
+  const entity={altitude:15};near(visualHeight(entity,32),15);recordVisualHeight(entity,22);near(visualHeight(entity,32),22);
++ const rootPosition=new T.Vector3(124,49,-415),min=new T.Vector3(-8,-2,-3),max=new T.Vector3(9,4,6);
++ const screenOrigin=projectWorld(rootPosition.x,rootPosition.z,rootPosition.y,{x:0,y:0},{W:852,H:393});
++ assert.equal(pilotMarkerBounds(entity),undefined);
++ for(const yaw of [-2.2,-.7,0,1.2])for(const bank of [-.6,0,.6]){
++  const matrix=new T.Matrix4().compose(rootPosition.clone().add(new T.Vector3(1,2,-1)),new T.Quaternion().setFromEuler(new T.Euler(0,yaw,bank,'YXZ')),new T.Vector3(3,3,3));
++  recordPilotMarkerExtents(entity,matrix,min,max,rootPosition);
++  const points=[];
++  for(const x of [min.x,max.x])for(const y of [min.y,max.y])for(const z of [min.z,max.z]){
++   const p=new T.Vector3(x,y,z).applyMatrix4(matrix);
++   points.push(projectWorld(p.x,p.z,p.y,{x:0,y:0},{W:852,H:393}));
++  }
++  const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),marker=pilotMarkerBounds(entity);
++  near(marker.left+screenOrigin[0],Math.min(...xs));near(marker.right+screenOrigin[0],Math.max(...xs));
++  near(marker.centerY+screenOrigin[1],(Math.min(...ys)+Math.max(...ys))/2);
++ }
+  const mat={};assert.equal(withRelief(mat,8.5),mat);assert.equal(mat.onBeforeCompile,undefined);
+  console.log('PASS affine projection: ground invariance, altitude/HUD agreement, resize idempotence, inverse, elevated frustum and visual clearance');
+ })().catch(e=>{console.error(e);process.exitCode=1});
+diff --git a/src/aircraft.js b/src/aircraft.js
+index 4f9a376..c44e427 100644
+--- a/src/aircraft.js
++++ b/src/aircraft.js
+@@ -3,7 +3,7 @@ import * as THREE from 'three';
+ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+ import { CONFIG } from './config.js';
+-import { OBLIQUE, recordPilotMarkerOffset } from './projection.js';
++import { recordPilotMarkerExtents } from './projection.js';
+ import { angDiff, clamp } from './util.js';
+ 
+ function surfaceResponse(material) {
+@@ -200,18 +200,8 @@ export function updateAircraft(visual, entity, dt, turnRate, flash = false) {
+   visual.model.rotation.z = visual.bank;
+   if (visual.pilotMarkerBounds) {
+     visual.model.updateWorldMatrix(true, false);
+-    const e = visual.model.matrixWorld.elements;
+     const { min, max } = visual.pilotMarkerBounds;
+-    // Screen Y is world Z minus the oblique elevation term. The projected
+-    // box bottom is its affine maximum, so select one corner by slope sign.
+-    const x = e[2] - OBLIQUE.up * e[1];
+-    const y = e[6] - OBLIQUE.up * e[5];
+-    const z = e[10] - OBLIQUE.up * e[9];
+-    const bottom = x * (x < 0 ? min.x : max.x)
+-      + y * (y < 0 ? min.y : max.y) + z * (z < 0 ? min.z : max.z);
+-    const originOffset = e[14] - visual.root.position.z
+-      - OBLIQUE.up * (e[13] - visual.root.position.y);
+-    recordPilotMarkerOffset(entity, bottom + originOffset);
++    recordPilotMarkerExtents(entity, visual.model.matrixWorld, min, max, visual.root.position);
+   }
+   visual.propellers.forEach((prop, i) => {
+     prop.rotation.z = (prop.rotation.z + (i ? -1 : 1) * dt * R.propellerSpeed * (entity.flight === 'landed' ? .12 : 1)) % (Math.PI * 2);
+diff --git a/src/hud.js b/src/hud.js
+index 2c02e72..1d67ed2 100644
+--- a/src/hud.js
++++ b/src/hud.js
+@@ -14,7 +14,7 @@ import { CONFIG } from './config.js';
+ import { clamp, angDiff, TAU } from './util.js';
+ import { installationKnown, shipObserved, enemyObserved, observedAt, flightSeconds } from './intelligence.js';
+ import { drawTheaterMap } from './operations.js';
+-import { pilotMarkerOffset, visualHeight } from './projection.js';
++import { pilotMarkerBounds, visualHeight } from './projection.js';
+ const aircraftHeight = entity => visualHeight(entity, CONFIG.render.flightHeight);
+ const baseHeight = base => base.kind === 'carrier' ? CONFIG.carrier.deckHeight : CONFIG.airfield.deckHeight;
+ 
+@@ -121,19 +121,23 @@ export function drawHud() {
+ 
+ function drawPilotMarker(player) {
+   if (game.mode !== 'play') return;
+-  const bottom = pilotMarkerOffset(player);
+-  if (bottom === undefined) return;
++  const bounds = pilotMarkerBounds(player);
++  if (!bounds) return;
+   const [x, centerY] = w2s(player.x, player.y, aircraftHeight(player));
+-  // A 6px gap leaves clear space even with the 5px dark keyline.
+-  // The marker stays screen-upright and disappears if its bounds clip.
+-  const y = centerY + bottom + 6;
+-  if (x < 8 || x > view.W - 8 || y < 3 || y > view.H - 8) return;
++  // Keep both brackets outside the aircraft, including the dark keyline.
++  const left = x + bounds.left - 6;
++  const right = x + bounds.right + 6;
++  const y = centerY + bounds.centerY;
++  if (left < 7 || right > view.W - 7 || y < 8 || y > view.H - 8) return;
+   ctx.save();
+   ctx.lineJoin = ctx.lineCap = 'round';
+   ctx.beginPath();
+-  ctx.moveTo(x - 5, y + 4); ctx.lineTo(x, y); ctx.lineTo(x + 5, y + 4);
++  ctx.moveTo(left, y - 5); ctx.lineTo(left - 4, y - 5);
++  ctx.lineTo(left - 4, y + 5); ctx.lineTo(left, y + 5);
++  ctx.moveTo(right, y - 5); ctx.lineTo(right + 4, y - 5);
++  ctx.lineTo(right + 4, y + 5); ctx.lineTo(right, y + 5);
+   ctx.strokeStyle = '#071a22'; ctx.lineWidth = 5; ctx.stroke();
+-  ctx.strokeStyle = '#a5f1dc'; ctx.lineWidth = 2; ctx.stroke();
++  ctx.strokeStyle = '#d8f8ef'; ctx.lineWidth = 2; ctx.stroke();
+   ctx.restore();
+ }
+ 
+diff --git a/src/projection.js b/src/projection.js
+index fd4d86f..e02b244 100644
+--- a/src/projection.js
++++ b/src/projection.js
+@@ -24,9 +24,30 @@ const visualHeights = new WeakMap();
+ export function recordVisualHeight(entity, height) { visualHeights.set(entity, height); }
+ export function visualHeight(entity, fallback) { return visualHeights.get(entity) ?? entity.altitude ?? fallback; }
+ 
+-const pilotMarkerOffsets = new WeakMap();
+-export function recordPilotMarkerOffset(entity, offset) { pilotMarkerOffsets.set(entity, offset); }
+-export function pilotMarkerOffset(entity) { return pilotMarkerOffsets.get(entity); }
++const pilotMarkerExtents = new WeakMap();
++export function recordPilotMarkerExtents(entity, matrix, min, max, origin) {
++  const e = matrix.elements;
++  let extents = pilotMarkerExtents.get(entity);
++  if (!extents) {
++    extents = {};
++    pilotMarkerExtents.set(entity, extents);
++  }
++  // Project the local bounds to screen axes relative to the aircraft root.
++  // Affine extrema occur at a corner chosen by the sign of each axis slope.
++  const x = e[0] + OBLIQUE.x * e[1];
++  const y = e[4] + OBLIQUE.x * e[5];
++  const z = e[8] + OBLIQUE.x * e[9];
++  const offsetX = e[12] - origin.x + OBLIQUE.x * (e[13] - origin.y);
++  extents.left = offsetX + x * (x < 0 ? max.x : min.x)
++    + y * (y < 0 ? max.y : min.y) + z * (z < 0 ? max.z : min.z);
++  extents.right = offsetX + x * (x < 0 ? min.x : max.x)
++    + y * (y < 0 ? min.y : max.y) + z * (z < 0 ? min.z : max.z);
++  extents.centerY = e[14] - origin.z - OBLIQUE.up * (e[13] - origin.y)
++    + ((e[2] - OBLIQUE.up * e[1]) * (min.x + max.x)
++      + (e[6] - OBLIQUE.up * e[5]) * (min.y + max.y)
++      + (e[10] - OBLIQUE.up * e[9]) * (min.z + max.z)) / 2;
++}
++export function pilotMarkerBounds(entity) { return pilotMarkerExtents.get(entity); }
+ 
+ // Existing model builders retain this API, but all projection now happens in
+ // the camera, including custom shaders and instanced meshes. No double shear.

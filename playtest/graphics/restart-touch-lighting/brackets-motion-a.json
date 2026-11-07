@@ -1,0 +1,110 @@
+{
+  "reviewer": "A",
+  "framesReviewed": 36,
+  "sequences": {
+    "coast-phone": {
+      "framesViewed": [
+        0,
+        6,
+        12,
+        24,
+        36,
+        60,
+        90,
+        120,
+        180
+      ],
+      "evidence": {
+        "movement": "Runway translates under camera-followed aircraft from 000\u2013036. Aircraft turns at beach by 060, flies beyond the surf at 090\u2013120, and tracks past the shoreline bend by 180.",
+        "wakes": "No ship wake in this scene. Broken pale surf streaks follow the bank and the water darkens toward open sea. A fine smoke trail behind the damaged plane remains separate from surf.",
+        "coastline": "Trees, rocks, runway and bank agree spatially as the camera advances. Beige beach varies around bend, but an angular, darker, narrow shoreline section stands out at 120 and 180.",
+        "impacts": "Hull falls from 35% to 27% by 006, matching white player silhouette and orange burst nearby. Flash remains visible at 012, clears by 024, and a distinct large offshore orange bloom at 060 gives way to sparse sparks and smoke by 090.",
+        "consistency": "The two cyan-outlined brackets stay centered on the aircraft in all nine samples, in a fixed horizontal orientation as the plane rotates from runway to beach to sea. They remain legible on both halves of the shoreline, during the white damage flash at 006/012, and beside the orange burst at 060. The runway ring is visibly separate from the player brackets."
+      },
+      "regressions": [
+        "The fixed gap looks generous around the narrow silhouettes over water, so the markers can dominate the aircraft.",
+        "At 012 and 024 the left bracket is close to white runway markings, though its dark outline maintains separation.",
+        "At 180 the Hawk label intrudes on the return-to-base banner."
+      ]
+    },
+    "fleet-phone": {
+      "framesViewed": [
+        0,
+        6,
+        12,
+        24,
+        36,
+        60,
+        90,
+        120,
+        180
+      ],
+      "evidence": {
+        "movement": "Player closes on carrier from below-left, passes the bow at 024\u2013036, then banks away into open water at 060\u2013120. Escort relative positions and Hawk passes make progress legible.",
+        "wakes": "Carrier and escorts show pale narrow streaks extending directly behind their sterns while visible, stable in direction across frames. The player's darker curved smoke trail is distinguishable from ship wakes.",
+        "coastline": "No coast appears in this sequence.",
+        "impacts": "Small warm hit and white player flash at 006\u2013012, dark trailing particles by 024, readable orange bloom to player right at 060, embers and smoke by 090. Paired yellow tracers move across the field then clear by 180.",
+        "consistency": "The bracket midpoint follows the aircraft through all nine sampled positions and bank angles. At 024 one bracket is on water and the other on deck, framing the same aircraft across the ship edge. At 036 both frame it above deck markings. Both remain distinguishable from the white player flash and orange hit burst. No separate solid blue player-shaped overlay is apparent in the reviewed samples."
+      },
+      "regressions": [
+        "At 036 the left bracket is near pale deck markings, and the blue airframe is similar in value to the deck. At 090 a yellow tracer passes close to the left bracket, remaining distinct by shape and color.",
+        "Wakes are narrow soft plumes. The right-side Bomb panel partially covers an escort at 180."
+      ]
+    },
+    "coast-fallback": {
+      "framesViewed": [
+        0,
+        6,
+        12,
+        24,
+        36,
+        60,
+        90,
+        120,
+        180
+      ],
+      "evidence": {
+        "movement": "Runway translates under camera-followed aircraft from 000\u2013036. Aircraft turns at beach by 060, flies beyond the surf at 090\u2013120, and tracks past the shoreline bend by 180.",
+        "wakes": "No ship wake in this scene. Broken pale surf streaks follow the bank and the water darkens toward open sea. A fine smoke trail behind the damaged plane remains separate from surf.",
+        "coastline": "Trees, rocks, runway and bank agree spatially as the camera advances. Beige beach varies around bend, but an angular, darker, narrow shoreline section stands out at 120 and 180.",
+        "impacts": "Hull falls from 35% to 27% by 006, matching white player silhouette and orange burst nearby. Flash remains visible at 012, clears by 024, and a distinct large offshore orange bloom at 060 gives way to sparse sparks and smoke by 090.",
+        "consistency": "The two cyan-outlined brackets stay centered on the aircraft in all nine samples, in a fixed horizontal orientation as the plane rotates from runway to beach to sea. They remain legible on both halves of the shoreline, during the white damage flash at 006/012, and beside the orange burst at 060. The runway ring is visibly separate from the player brackets."
+      },
+      "regressions": [
+        "The fixed gap looks generous around the narrow silhouettes over water, so the markers can dominate the aircraft.",
+        "At 012 and 024 the left bracket is close to white runway markings, though its dark outline maintains separation.",
+        "At 180 the Hawk label intrudes on the return-to-base banner.",
+        "Fallback softens the airframe and background while the brackets stay crisp, emphasizing the marker and keeping the player findable."
+      ]
+    },
+    "fleet-fallback": {
+      "framesViewed": [
+        0,
+        6,
+        12,
+        24,
+        36,
+        60,
+        90,
+        120,
+        180
+      ],
+      "evidence": {
+        "movement": "Player closes on carrier from below-left, passes the bow at 024\u2013036, then banks away into open water at 060\u2013120. Escort relative positions and Hawk passes make progress legible.",
+        "wakes": "Carrier and escorts show pale narrow streaks extending directly behind their sterns while visible, stable in direction across frames. The player's darker curved smoke trail is distinguishable from ship wakes.",
+        "coastline": "No coast appears in this sequence.",
+        "impacts": "Small warm hit and white player flash at 006\u2013012, dark trailing particles by 024, readable orange bloom to player right at 060, embers and smoke by 090. Paired yellow tracers move across the field then clear by 180.",
+        "consistency": "The bracket midpoint follows the aircraft through all nine sampled positions and bank angles. At 024 one bracket is on water and the other on deck, framing the same aircraft across the ship edge. At 036 both frame it above deck markings. Both remain distinguishable from the white player flash and orange hit burst. No separate solid blue player-shaped overlay is apparent in the reviewed samples."
+      },
+      "regressions": [
+        "At 036 the left bracket is near pale deck markings, and the blue airframe is similar in value to the deck. At 090 a yellow tracer passes close to the left bracket, remaining distinct by shape and color.",
+        "Wakes are narrow soft plumes. The right-side Bomb panel partially covers an escort at 180.",
+        "Fallback softens the airframe and background while the brackets stay crisp, emphasizing the marker and keeping the player findable."
+      ]
+    }
+  },
+  "limits": "Nine discrete PNG snapshots per sequence confirm progression and visible alignment only. They cannot establish frame pacing, perceived smoothness, subtle flicker or shimmer, animation quality between samples, actual hardware performance, or superiority over an earlier build without a matched motion baseline.",
+  "limitations": "All 36 stills individually inspected. This is sampled progression, not continuous playback. Flicker, frame pacing, between-frame tracking and sound not evaluated.",
+  "summary": "The centered bracket pair resolves the previous ambiguous bow attachment in both profiles at the reviewed samples. The pair remains screen-horizontal and high contrast through banking, impact flashes, terrain transitions and deck overlap. The primary tradeoff is that the fixed-width cue is relatively conspicuous when the aircraft has a narrow projected silhouette.",
+  "method": "36 sampled still frames in chronological order, nine per scene and rendering profile. Inter-frame continuity and real-time playback were not observed."
+}

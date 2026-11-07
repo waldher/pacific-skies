@@ -1,0 +1,33 @@
+{
+  "reportSha256": "b432aeb9625247c4a9964c272de9c9d48c14644ed0bd6c9b2b81dfb797579315",
+  "sourceHash": "417fc5c1a4f613bd13fc8ded847ab201b5748313550e9a570015474edc3e73c0",
+  "suiteHash": "3116fd688562276c1035e26924ee6938e86a54c4b96d04eeac3fe5b465791b17",
+  "frames": 36,
+  "artifact": {
+    "file": "motion.html",
+    "sha256": "84a6b8f0ce11b8d23552247c460c67f1724faa125d33524c526d24448738aad4",
+    "contains": "36 embedded PNGs: fleet and coastal sequences, nine timestamps each, both phone profiles"
+  },
+  "results": [
+    {
+      "scene": "fleet",
+      "profile": "phone",
+      "p95Ms": 18.899999999441206
+    },
+    {
+      "scene": "fleet",
+      "profile": "fallback",
+      "p95Ms": 13.199999999254942
+    },
+    {
+      "scene": "coast",
+      "profile": "phone",
+      "p95Ms": 27.09999999962747
+    },
+    {
+      "scene": "coast",
+      "profile": "fallback",
+      "p95Ms": 14.599999999627471
+    }
+  ]
+}
