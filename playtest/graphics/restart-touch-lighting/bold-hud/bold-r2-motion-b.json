@@ -1,0 +1,12 @@
+{
+  "judge": "B",
+  "framesInspected": 36,
+  "acceptSampledProgression": true,
+  "findings": [
+    "The aircraft-local HULL callout reads 35% at coast 000 and 27% after the hit. It stays alongside the same bracket as the plane crosses the runway, grass, littoral strip, and carrier bow. The white hit flash does not hide the percentage, and the 27% warning remains visible over the bright deck at fleet fallback 036.",
+    "Coast changes from ACTIVE COURSE / FIND THE ENEMY OUTPOST at 000 to ON STATION / RETURN TO BASE by 006. At 036 the labeled RECOVERY ground marker and painted white runway arrow are distinct. At 180 the runway moves under the corner overlay and the RECOVERY ground marker is no longer visible. The main return instruction, heading glyph and minimap remain visible.",
+    "Fleet retains ACTIVE COURSE / RETURN TO BASE, ETA and a slim gold world-bearing stroke at 036 and 180. At 060 Hawk's label comes close above the HULL warning, but both labels remain readable. Ordnance stays visible when a ship crosses under the button at 180.",
+    "The pale aircraft-shaped object near fleet 036 separates from the bracketed player in later samples. There is no persistent blue overlay established here. These samples never show the full lockout state, so they do not clear the round 2 cooling ambiguity."
+  ],
+  "limitations": "Reviewed 36 discrete native and fallback captures. This does not establish continuous flicker, frame pacing, physical touch ergonomics, hardware safe areas, or device performance. No completed landing or active capture is shown."
+}

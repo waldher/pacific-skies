@@ -1,0 +1,120 @@
+{
+  "scope": "36 individually inspected ordered PNG samples in fleet and coast at phone and fallback profiles.",
+  "verdict": "Positive. Local hull is continuously present in the sampled 35% and 27% states and strongly reinforces the brackets during bank and impact. Revised arrows differentiate destination from subject selection.",
+  "remaining": [
+    "The white flash still obscures plane detail at samples 006 and 012.",
+    "The offset blue-gray shape at the fleet bow remains ambiguous.",
+    "Fleet 060 puts Hawk briefly close to the hull tag.",
+    "No continuous timing or duration, overheating, touch ergonomics, or outpost capture claims from these frame samples."
+  ],
+  "frames": {
+    "coast-fallback-000.png": {
+      "evidence": "HULL 35% is legible beside the pilot bracket on the runway. The longer bearing mark sits offshore."
+    },
+    "coast-fallback-006.png": {
+      "evidence": "Tag changes to 27% and stays visible while the white damage silhouette hides aircraft detail. IN STATION / RETURN TO BASE replaces the outpost order."
+    },
+    "coast-fallback-012.png": {
+      "evidence": "The local readout remains readable next to the hit flash. Recovery marker and Hawk label are in separate areas."
+    },
+    "coast-fallback-024.png": {
+      "evidence": "Local hull and brackets remain attached as the plane clears the threshold and its normal colors return."
+    },
+    "coast-fallback-036.png": {
+      "evidence": "Dark local tag remains readable against grass. Recovery marker is further back on the runway."
+    },
+    "coast-fallback-060.png": {
+      "evidence": "The left tag is unaffected by the orange flash beside the right bracket. The shoreline still gives spatial context."
+    },
+    "coast-fallback-090.png": {
+      "evidence": "The plane is blue-gray on dark water and hard to read at steep bank. The tag and brackets still identify the aircraft."
+    },
+    "coast-fallback-120.png": {
+      "evidence": "Recovery cue is readable on runway, and the pilot remains separately labeled over the sea edge."
+    },
+    "coast-fallback-180.png": {
+      "evidence": "HULL 27% remains attached as the aircraft banks back toward the shoreline. Exact in-station boundary still unclear."
+    },
+    "coast-phone-000.png": {
+      "evidence": "HULL 35% is legible beside the pilot bracket on the runway. The longer bearing mark sits offshore."
+    },
+    "coast-phone-006.png": {
+      "evidence": "Tag changes to 27% and stays visible while the white damage silhouette hides aircraft detail. IN STATION / RETURN TO BASE replaces the outpost order."
+    },
+    "coast-phone-012.png": {
+      "evidence": "The local readout remains readable next to the hit flash. Recovery marker and Hawk label are in separate areas."
+    },
+    "coast-phone-024.png": {
+      "evidence": "Local hull and brackets remain attached as the plane clears the threshold and its normal colors return."
+    },
+    "coast-phone-036.png": {
+      "evidence": "Dark local tag remains readable against grass. Recovery marker is further back on the runway."
+    },
+    "coast-phone-060.png": {
+      "evidence": "The left tag is unaffected by the orange flash beside the right bracket. The shoreline still gives spatial context."
+    },
+    "coast-phone-090.png": {
+      "evidence": "The plane is blue-gray on dark water and hard to read at steep bank. The tag and brackets still identify the aircraft."
+    },
+    "coast-phone-120.png": {
+      "evidence": "Recovery cue is readable on runway, and the pilot remains separately labeled over the sea edge."
+    },
+    "coast-phone-180.png": {
+      "evidence": "HULL 27% remains attached as the aircraft banks back toward the shoreline. Exact in-station boundary still unclear."
+    },
+    "fleet-fallback-000.png": {
+      "evidence": "HULL 35% anchors the pilot left of carrier. The extra line in the arrow makes it easier to identify the course before reading text."
+    },
+    "fleet-fallback-006.png": {
+      "evidence": "The course turns toward base and its text updates. HULL 27% stays readable during the white flash."
+    },
+    "fleet-fallback-012.png": {
+      "evidence": "The ship, nearby ally, amber course and local tag remain distinct despite the white plane fill."
+    },
+    "fleet-fallback-024.png": {
+      "evidence": "HULL 27% stays legible over water during bow overlap even when the blue wings blend into the deck."
+    },
+    "fleet-fallback-036.png": {
+      "evidence": "The left tag and bracket hold their link to the bow-crossing pilot. A pale blue-gray offset shape is still visible over the water."
+    },
+    "fleet-fallback-060.png": {
+      "evidence": "Orange blast remains off the right bracket. The ally name approaches the HULL tag on the left, creating a brief stacked-label moment."
+    },
+    "fleet-fallback-090.png": {
+      "evidence": "Thin banked wings have little contrast against blue water. HULL and brackets still give a dependable position."
+    },
+    "fleet-fallback-120.png": {
+      "evidence": "A clearer airframe opens as the player exits bank. The directional arrow has enough distance from white-yellow tracer pairs."
+    },
+    "fleet-fallback-180.png": {
+      "evidence": "Return arrow and hull readout stay separate over open sea. Carrier is leaving the frame, and the ally tag is higher and right."
+    },
+    "fleet-phone-000.png": {
+      "evidence": "HULL 35% anchors the pilot left of carrier. The extra line in the arrow makes it easier to identify the course before reading text."
+    },
+    "fleet-phone-006.png": {
+      "evidence": "The course turns toward base and its text updates. HULL 27% stays readable during the white flash."
+    },
+    "fleet-phone-012.png": {
+      "evidence": "The ship, nearby ally, amber course and local tag remain distinct despite the white plane fill."
+    },
+    "fleet-phone-024.png": {
+      "evidence": "HULL 27% stays legible over water during bow overlap even when the blue wings blend into the deck."
+    },
+    "fleet-phone-036.png": {
+      "evidence": "The left tag and bracket hold their link to the bow-crossing pilot. A pale blue-gray offset shape is still visible over the water."
+    },
+    "fleet-phone-060.png": {
+      "evidence": "Orange blast remains off the right bracket. The ally name approaches the HULL tag on the left, creating a brief stacked-label moment."
+    },
+    "fleet-phone-090.png": {
+      "evidence": "Thin banked wings have little contrast against blue water. HULL and brackets still give a dependable position."
+    },
+    "fleet-phone-120.png": {
+      "evidence": "A clearer airframe opens as the player exits bank. The directional arrow has enough distance from white-yellow tracer pairs."
+    },
+    "fleet-phone-180.png": {
+      "evidence": "Return arrow and hull readout stay separate over open sea. Carrier is leaving the frame, and the ally tag is higher and right."
+    }
+  }
+}

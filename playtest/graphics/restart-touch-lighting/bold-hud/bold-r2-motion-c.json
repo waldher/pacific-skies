@@ -1,0 +1,12 @@
+{
+  "judge": "C",
+  "method": "sampled-still-progression",
+  "framesViewed": 36,
+  "accept": true,
+  "findings": [
+    "Across both render profiles and scenes, the small label remains beside the left pilot bracket during the change from 35% at 000 to 27% by 006, white flash at 006–012, bow overlap at fleet 024–036, and steep banks around 090. The fixed Hull and Heat panel remains available as a second readout. The sampled burst does not establish the overheat endpoint.",
+    "The top card switches from FIND THE ENEMY OUTPOST to RETURN TO BASE by 006. In fleet the card reports ACTIVE COURSE with a time and the narrow gold trace remains visible over the sea. In coast the card reports ON STATION and the runway RECOVERY label visibly coexists with the player marker around 024 and 120. At 180 the runway locator is small and near the hull gauge; later recovery completion was not sampled.",
+    "At coast 060 the orange hit effect sits close to the right bracket without masking the HULL value on the left. The dark wings remain identifiable through the bank at 090. No separate blue aircraft silhouette overlays the player in the reviewed sequence; a darker offset shape reads as the cast shadow.",
+    "No confirmed blocker within these sampled states. Continuous motion, flicker, touchdown or capture completion, safe areas and two-thumb interaction are unverified."
+  ]
+}
