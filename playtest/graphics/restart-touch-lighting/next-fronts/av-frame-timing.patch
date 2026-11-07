@@ -1,0 +1,114 @@
+From a45ef688ec7da6be52a4001d979ede778bcb900a Mon Sep 17 00:00:00 2001
+From: Codex <codex@openai.com>
+Date: Sat, 7 Nov 2026 14:00:05 +0100
+Subject: [PATCH] Report observer and compositor gaps on the gameplay timeline
+
+---
+ playtest/graphics-av.cjs | 53 +++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 49 insertions(+), 4 deletions(-)
+
+diff --git a/playtest/graphics-av.cjs b/playtest/graphics-av.cjs
+index 3bba65b..13bb1e8 100644
+--- a/playtest/graphics-av.cjs
++++ b/playtest/graphics-av.cjs
+@@ -20,6 +20,44 @@ const seed = 1942;
+ const sha = file => createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+ const ffmpeg = (...args) => execFileSync('ffmpeg', ['-hide_banner', '-nostdin', ...args], { stdio: ['ignore', 'ignore', 'pipe'] });
+ 
++// Compare the page observer's actual callback arrivals with the compositor
++// timestamps already used for the MP4. Neither timeline measures presentation
++// on a physical display.
++function frameTiming(raf, frames, events, first) {
++  const majorGapSeconds = .05;
++  const cueWindowSeconds = .15;
++  const gapList = times => times.slice(1).map((end, i) => ({
++    startSeconds: times[i], endSeconds: end, durationSeconds: end - times[i],
++  }));
++  const rafCallbackSeconds = raf.map(sample => sample.arrival - first);
++  const observerGaps = gapList(rafCallbackSeconds);
++  const compositorGaps = gapList(frames.map(frame => frame.timestamp - first));
++  const overlap = (a, b) => Math.min(a.endSeconds, b.endSeconds) - Math.max(a.startSeconds, b.startSeconds);
++  const cuesNear = gap => events.map(event => ({
++    event: event.event,
++    dispatchSeconds: event.dispatchEpochSeconds - first,
++  })).filter(cue => cue.dispatchSeconds >= gap.startSeconds - cueWindowSeconds &&
++    cue.dispatchSeconds <= gap.endSeconds + cueWindowSeconds);
++  const observerMajorGaps = observerGaps.filter(gap => gap.durationSeconds >= majorGapSeconds);
++  return {
++    method: 'Additional page requestAnimationFrame observer beside the live game loop; callback entry sampled with performance.now().',
++    limitations: 'Observer delays suggest page scheduling or main-thread stalls, but do not isolate game CPU or GPU work. Compositor gaps with intervening observer callbacks show the recorder omitted visual updates from that interval or received no new composited pixels; they do not prove dropped display frames. CDP and page clocks are aligned by host epoch, approximately.',
++    callbackCount: raf.length,
++    scheduledSeconds: raf.map(sample => sample.scheduled - first),
++    callbackSeconds: rafCallbackSeconds,
++    maximumCallbackGapSeconds: Math.max(0, ...observerGaps.map(gap => gap.durationSeconds)),
++    majorGapSeconds,
++    cueWindowSeconds,
++    observerGaps: observerMajorGaps.map(gap => ({ ...gap, nearbyCues: cuesNear(gap) })),
++    compositorGaps: compositorGaps.filter(gap => gap.durationSeconds >= majorGapSeconds).map(gap => ({
++      ...gap,
++      callbacksInside: rafCallbackSeconds.filter(time => time > gap.startSeconds && time < gap.endSeconds).length,
++      overlappingObserverGapSeconds: Math.max(0, ...observerMajorGaps.map(observer => overlap(gap, observer))),
++      nearbyCues: cuesNear(gap),
++    })),
++  };
++}
++
+ // This hook exists only in the capture page. Tee nodes connected to the game's
+ // own speakers to a MediaStream, without replacing the original connection.
+ function pcmWorklet() {
+@@ -259,20 +297,26 @@ async function capture() {
+       const startWall = performance.now();
+       const events = [];
+       const samples = [];
++      const raf = [];
+       let nextSample = 0;
+       await new Promise(resolve => {
+         function observe(now) {
++          const arrival = (performance.timeOrigin + performance.now()) / 1000;
++          const scheduled = (performance.timeOrigin + now) / 1000;
++          raf.push({ arrival, scheduled });
+           const elapsed = game.time - startGameTime;
+           fireTouch.active = elapsed >= .2 && elapsed < 3.8;
+           keys.ArrowRight = elapsed >= .55 && elapsed < 2;
+           if (elapsed >= .65 && events.length === 0) {
++            const dispatchEpochSeconds = (performance.timeOrigin + performance.now()) / 1000;
+             damagePlayer(8);
+             explosion(game.player.x + 55, game.player.y - 25, false);
+-            events.push({ event: 'game damage feedback and small explosion', elapsed, epochSeconds: (performance.timeOrigin + now) / 1000 });
++            events.push({ event: 'game damage feedback and small explosion', elapsed, epochSeconds: scheduled, dispatchEpochSeconds });
+           }
+           if (elapsed >= 1.7 && events.length === 1) {
++            const dispatchEpochSeconds = (performance.timeOrigin + performance.now()) / 1000;
+             explosion(game.player.x + 70, game.player.y - 20, true);
+-            events.push({ event: 'game large explosion', elapsed, epochSeconds: (performance.timeOrigin + now) / 1000 });
++            events.push({ event: 'game large explosion', elapsed, epochSeconds: scheduled, dispatchEpochSeconds });
+           }
+           if (elapsed >= nextSample) {
+             samples.push({
+@@ -291,13 +335,13 @@ async function capture() {
+       const endEpochSeconds = (performance.timeOrigin + performance.now()) / 1000;
+       const recordedAudio = await window.__graphicsAvAudio.stop();
+       return {
+-        audio, endEpochSeconds, events, samples, elapsedGameSeconds: game.time - startGameTime,
++        audio, endEpochSeconds, events, samples, raf, elapsedGameSeconds: game.time - startGameTime,
+         actualPixelRatio: graphics.diagnostics.pixelRatio,
+         audioData: recordedAudio.data, pcmTiming: recordedAudio.timing, routedAudioNodes: recordedAudio.routedNodes,
+       };
+     }, durationSeconds);
+     await cdp.send('Page.stopScreencast');
+-    const { audioData, ...timeline } = result;
++    const { audioData, raf, ...timeline } = result;
+     report.timeline = timeline;
+     if (timeline.events.length !== 2 || !timeline.routedAudioNodes) throw Error('Live RAF fixture did not reach both impact events and real audio');
+     const inRange = frames.filter(frame => frame.timestamp >= result.audio.epochSeconds && frame.timestamp <= result.endEpochSeconds);
+@@ -314,6 +358,7 @@ async function capture() {
+       captureTimeSeconds: ordered.map(frame => frame.timestamp - first),
+       maximumFrameGapSeconds: Math.max(...ordered.slice(1).map((frame, index) => frame.timestamp - ordered[index].timestamp)),
+     };
++    report.rafTiming = frameTiming(raf, ordered, timeline.events, first);
+     const list = ['ffconcat version 1.0'];
+     ordered.forEach((frame, index) => {
+       const filename = `frame-${String(index).padStart(4, '0')}.jpg`;
+-- 
+2.51.1
+

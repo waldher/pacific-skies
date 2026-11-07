@@ -1,0 +1,119 @@
+{
+  "scope": "36 ordered sampled PNGs for coast and fleet in phone and fallback tiers.",
+  "verdict": "Positive against the prior ring-marked and heavier tree-shadow samples. Open brackets preserve player tracking, label clearance holds at both edge cases, and trees are more grounded without a new visual distraction.",
+  "remaining": [
+    "The runway still shows a separate faint circle during the return sequence.",
+    "The white hit silhouette still wipes airframe detail at 006 and 012.",
+    "The gray-blue plane still competes with the carrier deck and dark or blue offset shapes over water remain ambiguous."
+  ],
+  "frames": {
+    "coast-fallback-000.png": {
+      "evidence": "Tree bases read more distinctly along the approach and access road. The open brackets locate the player over the tarmac."
+    },
+    "coast-fallback-006.png": {
+      "evidence": "The solid-white hit feedback still erases airframe detail briefly, while the separate faint runway circle is visible below."
+    },
+    "coast-fallback-012.png": {
+      "evidence": "Bright hit silhouette stays separate from the Hawk label and orange sparks. Foliage has more compact shadow footprints."
+    },
+    "coast-fallback-024.png": {
+      "evidence": "Normal aircraft colors return. Brackets avoid occluding the runway threshold and trees retain compact shadows."
+    },
+    "coast-fallback-036.png": {
+      "evidence": "Thin player profile is easier to track with brackets as it passes the runway end. Foliage contact still reads."
+    },
+    "coast-fallback-060.png": {
+      "evidence": "Compact foliage shadows and layered shoreline stay readable behind the fireball. Brackets keep player ownership clear."
+    },
+    "coast-fallback-090.png": {
+      "evidence": "Blast fades to specks and the bracketed player tracks over water. The tree near Hawk stays visually grounded."
+    },
+    "coast-fallback-120.png": {
+      "evidence": "Paired tracers remain clear against dark water and the separate runway circle is still visible."
+    },
+    "coast-fallback-180.png": {
+      "evidence": "Hawk label clears the Return to Base banner in both tiers. Smaller shadows reduce the pooled darkness below trees."
+    },
+    "coast-phone-000.png": {
+      "evidence": "Tree bases read more distinctly along the approach and access road. The open brackets locate the player over the tarmac."
+    },
+    "coast-phone-006.png": {
+      "evidence": "The solid-white hit feedback still erases airframe detail briefly, while the separate faint runway circle is visible below."
+    },
+    "coast-phone-012.png": {
+      "evidence": "Bright hit silhouette stays separate from the Hawk label and orange sparks. Foliage has more compact shadow footprints."
+    },
+    "coast-phone-024.png": {
+      "evidence": "Normal aircraft colors return. Brackets avoid occluding the runway threshold and trees retain compact shadows."
+    },
+    "coast-phone-036.png": {
+      "evidence": "Thin player profile is easier to track with brackets as it passes the runway end. Foliage contact still reads."
+    },
+    "coast-phone-060.png": {
+      "evidence": "Compact foliage shadows and layered shoreline stay readable behind the fireball. Brackets keep player ownership clear."
+    },
+    "coast-phone-090.png": {
+      "evidence": "Blast fades to specks and the bracketed player tracks over water. The tree near Hawk stays visually grounded."
+    },
+    "coast-phone-120.png": {
+      "evidence": "Paired tracers remain clear against dark water and the separate runway circle is still visible."
+    },
+    "coast-phone-180.png": {
+      "evidence": "Hawk label clears the Return to Base banner in both tiers. Smaller shadows reduce the pooled darkness below trees."
+    },
+    "fleet-fallback-000.png": {
+      "evidence": "Brackets distinguish the airframe without a filled highlight. A dark offset shape remains visible below the plane."
+    },
+    "fleet-fallback-006.png": {
+      "evidence": "White silhouette follows the hull drop, distinct from the wake and the neighboring orange impact cue."
+    },
+    "fleet-fallback-012.png": {
+      "evidence": "The hit flash still erases airframe detail, but brackets keep the plane readable beside carrier markings."
+    },
+    "fleet-fallback-024.png": {
+      "evidence": "As the player crosses the bow, brackets preserve tracking while gray-blue aircraft and deck markings partially overlap."
+    },
+    "fleet-fallback-036.png": {
+      "evidence": "Brackets stay clear while the plane merges with tan deck detail and a second aircraft passes near the side."
+    },
+    "fleet-fallback-060.png": {
+      "evidence": "The orange fireball and paired tracers stand out. Dark or blue shapes over the sea remain ambiguous."
+    },
+    "fleet-fallback-090.png": {
+      "evidence": "The banked profile becomes narrow, with brackets and curved smoke maintaining tracking. A dark offset shape remains."
+    },
+    "fleet-fallback-120.png": {
+      "evidence": "Hawk label clears the minimap edge in both tiers. Tracers, brackets and wake remain visible."
+    },
+    "fleet-fallback-180.png": {
+      "evidence": "Hawk label returns away from the minimap. Smoke, brackets and wake remain distinguishable."
+    },
+    "fleet-phone-000.png": {
+      "evidence": "Brackets distinguish the airframe without a filled highlight. A dark offset shape remains visible below the plane."
+    },
+    "fleet-phone-006.png": {
+      "evidence": "White silhouette follows the hull drop, distinct from the wake and the neighboring orange impact cue."
+    },
+    "fleet-phone-012.png": {
+      "evidence": "The hit flash still erases airframe detail, but brackets keep the plane readable beside carrier markings."
+    },
+    "fleet-phone-024.png": {
+      "evidence": "As the player crosses the bow, brackets preserve tracking while gray-blue aircraft and deck markings partially overlap."
+    },
+    "fleet-phone-036.png": {
+      "evidence": "Brackets stay clear while the plane merges with tan deck detail and a second aircraft passes near the side."
+    },
+    "fleet-phone-060.png": {
+      "evidence": "The orange fireball and paired tracers stand out. Dark or blue shapes over the sea remain ambiguous."
+    },
+    "fleet-phone-090.png": {
+      "evidence": "The banked profile becomes narrow, with brackets and curved smoke maintaining tracking. A dark offset shape remains."
+    },
+    "fleet-phone-120.png": {
+      "evidence": "Hawk label clears the minimap edge in both tiers. Tracers, brackets and wake remain visible."
+    },
+    "fleet-phone-180.png": {
+      "evidence": "Hawk label returns away from the minimap. Smoke, brackets and wake remain distinguishable."
+    }
+  }
+}

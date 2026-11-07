@@ -1,0 +1,12 @@
+{
+  "judge": "B",
+  "framesInspected": 36,
+  "acceptSampledProgression": true,
+  "findings": [
+    "The paired brackets remain centered across sampled banks, the damage flash and the transition from grass to sea. Over the carrier bow at fleet 024\u2013036, the cue still crosses deck lines, but the two tips read as one aircraft marker and leave the wing silhouette visible.",
+    "Hawk clears the objective banner at coast 180 and the minimap area at fleet 120, and remains visible in other samples including coast 090 and fleet 180. The bright runway chevrons and the pale unlabeled runway ring still compete in coast 006\u2013036.",
+    "The tree shadows stay aligned with their crowns across the coast route. White flashes at 006\u2013012 and orange impacts at 060 read separately from the blue-gray aircraft paint. I saw no opaque blue duplicate silhouette in the sampled frames.",
+    "Stern wakes, smoke and tracers remain readable in both profiles. Crowding around the carrier and soft fallback edges still limit aircraft recognition when they overlap."
+  ],
+  "limitations": "Reviewed 36 discrete thumbnails. This does not establish continuous playback, flicker, frame pacing or physical-device performance."
+}
