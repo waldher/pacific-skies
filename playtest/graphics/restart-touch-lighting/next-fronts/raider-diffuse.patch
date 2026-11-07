@@ -1,0 +1,157 @@
+From ce4dc7455ccd3401b6f7e7286f4dc3ff05a4c784 Mon Sep 17 00:00:00 2001
+From: Codex <codex@openai.com>
+Date: Sat, 7 Nov 2026 13:36:46 +0100
+Subject: [PATCH] Try diffuse-only raider paint on touch devices
+
+---
+ playtest/raider-material.cjs | 64 ++++++++++++++++++++++++++++++++++++
+ src/aircraft.js              | 30 +++++++++++++++--
+ src/renderer.js              |  3 +-
+ 3 files changed, 94 insertions(+), 3 deletions(-)
+ create mode 100644 playtest/raider-material.cjs
+
+diff --git a/playtest/raider-material.cjs b/playtest/raider-material.cjs
+new file mode 100644
+index 0000000..ecdddfc
+--- /dev/null
++++ b/playtest/raider-material.cjs
+@@ -0,0 +1,64 @@
++// CPU-only check of material isolation and geometry reuse between aircraft.
++const assert = require('node:assert/strict');
++const fs = require('node:fs');
++const path = require('node:path');
++const vm = require('node:vm');
++
++const root = path.resolve(__dirname, '..');
++const three = path.join(root, 'vendor/three');
++const context = vm.createContext({ console });
++const modules = new Map();
++
++function load(file) {
++  if (!modules.has(file)) {
++    modules.set(file, new vm.SourceTextModule(fs.readFileSync(file, 'utf8'), {
++      context, identifier: file,
++    }));
++  }
++  return modules.get(file);
++}
++
++async function run() {
++  const aircraft = load(path.join(root, 'src/aircraft.js'));
++  await aircraft.link((specifier, importer) => {
++    if (specifier === 'three') return load(path.join(three, 'three.module.min.js'));
++    if (specifier.startsWith('three/addons/')) return load(path.join(three, specifier.slice(6)));
++    return load(path.resolve(path.dirname(importer.identifier), specifier));
++  });
++  await aircraft.evaluate();
++  const T = load(path.join(three, 'three.module.min.js')).namespace;
++  const { createAircraft, updateAircraft } = aircraft.namespace;
++  const template = new T.Group();
++  template.name = 'Mitsubishi_Zero';
++  const paint = new T.MeshStandardMaterial({
++    color: 0xa19f88, metalness: .12, side: T.DoubleSide, vertexColors: true,
++  });
++  const geometry = new T.BoxGeometry();
++  template.add(new T.Mesh(geometry, paint));
++  const propeller = new T.Mesh(geometry, paint);
++  propeller.name = 'Propeller';
++  template.add(propeller);
++  const entity = { x: 11, y: 22, a: .5, altitude: 32, hp: 10 };
++  const before = JSON.stringify(entity);
++  const first = createAircraft(template, entity, false, false, true);
++  const second = createAircraft(template, entity, false, false, true);
++  const material = first.model.children[0].material;
++  assert.ok(material.isMeshLambertMaterial);
++  assert.equal(first.model.children[0].geometry, geometry);
++  assert.equal(second.model.children[0].material, material);
++  assert.equal(template.children[0].material, paint);
++  assert.equal(createAircraft(template, entity).model.children[0].material, paint);
++  assert.equal(createAircraft(template, entity, false, true, true).model.children[0].material, paint);
++  assert.equal(material.side, paint.side);
++  assert.equal(material.color.r, paint.color.r * (1 - paint.metalness));
++
++  const textured = new T.MeshStandardMaterial({ map: new T.Texture(), vertexColors: true });
++  template.children[0].material = textured;
++  assert.equal(createAircraft(template, entity, false, false, true).model.children[0].material, textured);
++  updateAircraft(first, entity, .016, 1);
++  assert.notEqual(first.propeller.rotation.z, 0);
++  assert.equal(JSON.stringify(entity), before);
++  console.log('PASS touch raiders share diffuse paint without changing templates, models or flight state');
++}
++
++run().catch(error => { console.error(error); process.exitCode = 1; });
+diff --git a/src/aircraft.js b/src/aircraft.js
+index d4c6c01..9544145 100644
+--- a/src/aircraft.js
++++ b/src/aircraft.js
+@@ -141,6 +141,28 @@ const RECEIVER_SIZE = 140, BLOB_SIZE = 64;
+ const [sunX, sunY, sunZ] = CONFIG.render.sunOffset;
+ const shadowShift = [-sunX * CONFIG.render.flightHeight / sunY, -sunZ * CONFIG.render.flightHeight / sunY];
+ 
++// The Zero's opaque vertex paint can retain its diffuse light response without
++// the physical specular calculation. Cache one alternative per batch, shared
++// by every raider. Keep the original materials on the template for previews.
++const raiderDiffuseMaterials = new WeakMap();
++function raiderDiffuseMaterial(source) {
++  if (raiderDiffuseMaterials.has(source)) return raiderDiffuseMaterials.get(source);
++  const plainPaint = source.isMeshStandardMaterial && !source.isMeshPhysicalMaterial
++    && source.vertexColors && !source.transparent && !source.alphaTest
++    && !Object.keys(source).some(key => /(^map$|Map$)/.test(key) && source[key]);
++  if (!plainPaint) return source;
++  const material = new THREE.MeshLambertMaterial({
++    color: source.color.clone().multiplyScalar(1 - source.metalness),
++    emissive: source.emissive,
++    emissiveIntensity: source.emissiveIntensity,
++    side: source.side,
++    vertexColors: true,
++    toneMapped: source.toneMapped,
++  });
++  raiderDiffuseMaterials.set(source, material);
++  return material;
++}
++
+ export function setShadowMode(visual, shadows) {
+   visual.shadow.material = shadows ? shadowMaterial : visual.silhouette;
+   visual.shadow.receiveShadow = shadows;
+@@ -148,11 +170,15 @@ export function setShadowMode(visual, shadows) {
+   visual.shadow.scale.set(size, 1, size);
+ }
+ 
+-export function createAircraft(template, entity, shadows = true, selected = false) {
++export function createAircraft(template, entity, shadows = true, selected = false, diffuseRaiders = false) {
+   const root = new THREE.Group();
+   const model = template.clone(true);
+   const ownedMaterials = [];
+-  if (template.name !== 'Mitsubishi_Zero') {
++  if (diffuseRaiders && template.name === 'Mitsubishi_Zero' && !selected) {
++    model.traverse(node => {
++      if (node.isMesh) node.material = raiderDiffuseMaterial(node.material);
++    });
++  } else if (template.name !== 'Mitsubishi_Zero') {
+     const copies = new Map();
+     model.traverse(node => {
+       if (!node.isMesh) return;
+diff --git a/src/renderer.js b/src/renderer.js
+index 183077b..9c46c04 100644
+--- a/src/renderer.js
++++ b/src/renderer.js
+@@ -59,6 +59,7 @@ export async function createRenderer(canvas) {
+   const diagnostics = {
+     ready: true, engine: 'Three.js', revision: THREE.REVISION,
+     environmentMode: environment.mode, environmentFallback: environment.reason, environmentBytes: environment.bytes,
++    raiderLighting: touchDevice ? 'diffuse' : 'physical',
+     aircraft: 0, drawCalls: 0, triangles: 0, chunks: 0,
+     quality: 0, pixelRatio: 1, frameMs: 0,
+   };
+@@ -178,7 +179,7 @@ export async function createRenderer(canvas) {
+         const player = entity === game.player;
+         if (!aircraft.has(entity)) {
+           const kind = entity.aircraft || (player || entity.team === 'us' ? 'us' : 'jp');
+-          const visual = createAircraft(templates[kind] || templates.us, entity, level().shadows, player);
++          const visual = createAircraft(templates[kind] || templates.us, entity, level().shadows, player, touchDevice);
+           visual.aircraftType = kind;
+           aircraft.set(entity, visual); scene.add(visual.root, visual.shadow);
+         }
+-- 
+2.51.1
+
