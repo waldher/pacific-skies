@@ -20,6 +20,7 @@
     "graphics:capture": "node playtest/graphics.cjs",
     "graphics:gate": "node playtest/graphics/gate.cjs",
     "graphics:target": "node playtest/graphics/gate.cjs --victory",
+    "graphics:av": "node playtest/graphics-av.cjs",
     "graphics:motion": "node playtest/graphics-motion.cjs",
     "graphics:transit": "node playtest/graphics-transit.cjs",
     "test:graphics:unit": "node --test playtest/graphics/gate.test.cjs && node --experimental-vm-modules --no-warnings playtest/world-cache.cjs && node --experimental-vm-modules --no-warnings playtest/projection.cjs && node --experimental-vm-modules --no-warnings playtest/projectile-visual.cjs && node --experimental-vm-modules --no-warnings playtest/particle-visual.cjs && node --experimental-vm-modules --no-warnings playtest/shore-winding.cjs",

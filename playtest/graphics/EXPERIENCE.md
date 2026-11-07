@@ -52,9 +52,9 @@ or code audit may support a finding. They cannot substitute for listening.
 
 ## Acceptance evidence
 
-Add `experience` to the current entry in `reviews.json`. Its `sourceHash` must
+Add a top-level `experience` object to `reviews.json`. Its `sourceHash` must
 match the reviewed runtime. `clips` contains one continuous recording each for
-`phone` and `fallback`, with `profile`, repository-relative `file` from this
+`phone` and `fallback`, with `profile`, an `evidence/`-relative `file` path from this
 directory, and `sha256`. Each clip must contain actual gameplay picture and mix.
 Store capture settings and event timings alongside it.
 
@@ -64,3 +64,32 @@ values are `task-review`, `continuous-playback` and `listened`. Include which
 builds and playback conditions the reviewer used in findings. When the evaluator
 cannot watch or hear the source media, leave that lane pending. A reviewer may
 be human. CI checks the evidence and verdicts without impersonating a reviewer.
+
+## Continuous gameplay clip
+
+Run `npm run graphics:av` with Playwright Chromium, `ffmpeg` and `ffprobe`
+available. Set `GRAPHICS_AV_PROFILE=fallback` for quality 4. The default
+is the native phone profile at quality 2. `GRAPHICS_AV_OUT` chooses the
+output directory. `PLAYWRIGHT_EXECUTABLE_PATH` selects an optional Chromium
+executable, which must support CDP screencast and WebAudio.
+
+The helper starts a fresh seeded campaign, positions a player and three raiders
+near the first carrier, then drives a short live encounter using the normal RAF
+loop. Gunfire, hit feedback and explosions use game code and its actual WebAudio
+outputs. CDP captures the composited tab, including the HTML HUD. The helper
+records the game's sound mix through a capture-only WebAudio tap and muxes it with
+compositor timestamps. `gameplay.mp4` contains H.264 video and AAC audio. The
+one-pixel bottom pad satisfies the encoder without cropping gameplay. A mono
+PCM WAV exposes the recorded mix for separate review. The JSON records both
+artifact hashes, runtime and helper hashes, input events, frame timestamps,
+maximum capture gap and non-silent decoded audio peak.
+
+Live frame deltas, AI outcomes, compositor cadence and procedural audio noise
+can differ across machines and runs. The shared host clock aligns streams
+approximately. The encoded 60 FPS presentation holds the previous capture
+through dropped compositor frames. Frame counts and gaps describe this recorder,
+so use them only to judge evidence quality. Capture and audio instrumentation
+add overhead. This clip supplements the unchanged fixed still/motion gates
+and physical-device validation. Play the MP4 with sound for complete review.
+
+The current combat fixture does not cover every listening scenario above. Record additional scenarios before approving the sound review.
