@@ -1,0 +1,102 @@
+{
+  "view-01.png": {
+    "kind": "candidate-9",
+    "name": "phone-coast"
+  },
+  "view-02.png": {
+    "kind": "candidate-11",
+    "name": "phone-coast"
+  },
+  "view-03.png": {
+    "kind": "candidate-11",
+    "name": "fallback-fleet"
+  },
+  "view-04.png": {
+    "kind": "candidate-9",
+    "name": "fallback-fleet"
+  },
+  "view-05.png": {
+    "kind": "candidate-9",
+    "name": "phone-dogfight"
+  },
+  "view-06.png": {
+    "kind": "candidate-11",
+    "name": "fallback-stress"
+  },
+  "view-07.png": {
+    "kind": "reference",
+    "name": "coh3-0-phone"
+  },
+  "view-08.png": {
+    "kind": "candidate-11",
+    "name": "phone-airfield"
+  },
+  "view-09.png": {
+    "kind": "candidate-11",
+    "name": "phone-fleet"
+  },
+  "view-10.png": {
+    "kind": "candidate-11",
+    "name": "fallback-coast"
+  },
+  "view-11.png": {
+    "kind": "candidate-11",
+    "name": "fallback-dogfight"
+  },
+  "view-12.png": {
+    "kind": "candidate-11",
+    "name": "phone-dogfight"
+  },
+  "view-13.png": {
+    "kind": "reference",
+    "name": "coh3-1-phone"
+  },
+  "view-14.png": {
+    "kind": "candidate-9",
+    "name": "fallback-dogfight"
+  },
+  "view-15.png": {
+    "kind": "reference",
+    "name": "dk2-0-phone"
+  },
+  "view-16.png": {
+    "kind": "reference",
+    "name": "dk2-1-phone"
+  },
+  "view-17.png": {
+    "kind": "candidate-9",
+    "name": "fallback-stress"
+  },
+  "view-18.png": {
+    "kind": "candidate-11",
+    "name": "phone-stress"
+  },
+  "view-19.png": {
+    "kind": "candidate-9",
+    "name": "fallback-coast"
+  },
+  "view-20.png": {
+    "kind": "candidate-9",
+    "name": "phone-airfield"
+  },
+  "view-21.png": {
+    "kind": "candidate-9",
+    "name": "phone-stress"
+  },
+  "view-22.png": {
+    "kind": "candidate-11",
+    "name": "fallback-airfield"
+  },
+  "view-23.png": {
+    "kind": "candidate-9",
+    "name": "fallback-airfield"
+  },
+  "view-24.png": {
+    "kind": "reference",
+    "name": "sc2-0-phone"
+  },
+  "view-25.png": {
+    "kind": "candidate-9",
+    "name": "phone-fleet"
+  }
+}

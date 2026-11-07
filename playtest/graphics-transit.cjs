@@ -17,7 +17,7 @@ const PROFILES=[{name:'phone',width:852,height:393,quality:2},{name:'fallback',w
   res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript'})[path.extname(file)]||'application/octet-stream');res.end(fs.readFileSync(file));
  });
  await new Promise(r=>server.listen(0,'127.0.0.1',r));
- const report={schema:1,protocol:'cold-island-transit-v1',suiteHash:hash(fs.readFileSync(__filename)),sourceHash:sourceHash(ROOT),seed:1942,commit:execFileSync('git',['rev-parse','HEAD'],{cwd:ROOT}).toString().trim(),dirty:!!execFileSync('git',['status','--porcelain'],{cwd:ROOT}).toString().trim(),timing:'Main-thread render submission/build + WebGL completion on SwiftShader; cold teleport probe, NOT phone FPS',environment:{node:process.version,platform:process.platform,arch:process.arch,cpu:os.cpus()[0]?.model,logicalCpus:os.cpus().length},results:[],errors:[]};
+ const report={schema:2,protocol:'async-island-transit-v2',suiteHash:hash(fs.readFileSync(__filename)),sourceHash:sourceHash(ROOT),seed:1942,commit:execFileSync('git',['rev-parse','HEAD'],{cwd:ROOT}).toString().trim(),dirty:!!execFileSync('git',['status','--porcelain'],{cwd:ROOT}).toString().trim(),timing:'CPU preparation wall time (worker wait is not main-thread stall), timer-delay responsiveness probe, then GPU preparation submission and WebGL completion on SwiftShader; NOT phone FPS',environment:{node:process.version,platform:process.platform,arch:process.arch,cpu:os.cpus()[0]?.model,logicalCpus:os.cpus().length},results:[],errors:[]};
  let browser;
  try{
   browser=await chromium.launch({executablePath:process.env.PLAYWRIGHT_EXECUTABLE_PATH,args:['--enable-unsafe-swiftshader','--use-angle=swiftshader']});report.browser=browser.version();
@@ -28,7 +28,7 @@ const PROFILES=[{name:'phone',width:852,height:393,quality:2},{name:'fallback',w
    await page.goto(`http://127.0.0.1:${server.address().port}/?quality=${profile.quality}&manualFrames=1`);
    await page.waitForFunction(()=>window.__game?.rendering?.ready||window.__game?.rendering?.error);
    const bootWallMs=performance.now()-bootStart;
-   const result=await page.evaluate(()=>{
+   const result=await page.evaluate(async()=>{
     const api=window.__game,{game:g,graphics,view,CONFIG}=api;
     if(!graphics||!api.manualFrames)throw Error('Manual renderer unavailable');
     const gl=graphics.renderer.getContext(),pixel=new Uint8Array(4),ext=gl.getExtension('WEBGL_debug_renderer_info');
@@ -59,30 +59,41 @@ const PROFILES=[{name:'phone',width:852,height:393,quality:2},{name:'fallback',w
      let landBufferBytes=0;for(const geom of geometries){for(const a of Object.values(geom.attributes))landBufferBytes+=a.array.byteLength;landBufferBytes+=geom.index?.array.byteLength||0;}
      return {cache:graphics.world.cacheStats??null,chunks:graphics.world.chunkCount,textures:graphics.renderer.info.memory.textures,geometries:graphics.renderer.info.memory.geometries,programs:graphics.renderer.info.programs?.length??null,landTextureCount:textures.size,landTextureSizes:sizes,landTextureEstimatedRGBA8Bytes:sizes.reduce((n,s)=>n+s.estimatedRGBA8Bytes,0),landBufferBytes,jsHeapUsedBytes:performance.memory?.usedJSHeapSize??null};
     }
-    function visit(site,label){
+    async function visit(site,label){
      drain();const previous=[...graphics.world.chunks.keys()].map(t=>t.id);
      g.cam={x:site.x,y:site.y};Object.assign(g.player,{x:site.x-75,y:site.y+65,a:-.65,flight:'flying',altitude:CONFIG.render.flightHeight});
-     const begin=performance.now();graphics.render(g,view,0,0,0);const submitted=performance.now();drain();const completed=performance.now();
+     const cpuStart=performance.now(),timerGapsMs=[];let lastTick=cpuStart;
+     const timer=setInterval(()=>{const now=performance.now();timerGapsMs.push(now-lastTick);lastTick=now;},8);
+     await graphics.world.prepare?.(g,view);
+     const cpuReady=performance.now();
+     // Let the timer observe any blocked final task; this yield is outside the
+     // preparation wall-time measurement. Timer delay is a responsiveness proxy,
+     // not a profiler attribution or a device FPS measurement.
+     await new Promise(r=>setTimeout(r,0));clearInterval(timer);
+     const cpuTimerGapsMs=[...timerGapsMs];
+     const begin=performance.now();
+     if(graphics.prepare)await graphics.prepare(g,view);else graphics.render(g,view,0,0,0);
+     const submitted=performance.now();drain();const completed=performance.now();
      const current=[...graphics.world.chunks.keys()].map(t=>t.id);
      const warm=[];
      for(let i=0;i<3;i++){const t=performance.now();graphics.render(g,view,0,0,0);drain();warm.push(performance.now()-t);}
-     visits.push({label,site,loadedChunkIds:current,addedChunkIds:current.filter(id=>!previous.includes(id)),removedChunkIds:previous.filter(id=>!current.includes(id)),submissionMs:submitted-begin,gpuDrainMs:completed-submitted,completedRenderMs:completed-begin,warmCompletedMs:warm,memory:memory()});
+     visits.push({label,site,cpuPreparationWallMs:cpuReady-cpuStart,cpuTimerGapsMs,maxCpuTimerDelayMs:Math.max(0,...cpuTimerGapsMs.map(ms=>ms-8)),terrainWorker:graphics.world.workerStats??{mode:'legacy-sync'},gpuPreparationSubmissionMs:submitted-begin,readyWallMs:(cpuReady-cpuStart)+(completed-begin),loadedChunkIds:current,addedChunkIds:current.filter(id=>!previous.includes(id)),removedChunkIds:previous.filter(id=>!current.includes(id)),submissionMs:submitted-begin,gpuDrainMs:completed-submitted,completedRenderMs:completed-begin,warmCompletedMs:warm,memory:memory()});
     }
-    visit(home,'startup-first-render');visit(empty,'empty-baseline');visit(home,'immediate-cached-revisit');visit(empty,'empty-after-immediate-revisit');
+    await visit(home,'startup-first-render');await visit(empty,'empty-baseline');await visit(home,'immediate-cached-revisit');await visit(empty,'empty-after-immediate-revisit');
     for(let cycle=1;cycle<=2;cycle++){
-     for(const site of selected)visit(site,`cycle-${cycle}-${site.id}`);
-     visit(empty,`empty-after-cycle-${cycle}`);
+     for(const site of selected)await visit(site,`cycle-${cycle}-${site.id}`);
+     await visit(empty,`empty-after-cycle-${cycle}`);
     }
-    visit(home,'home-final-revisit');visit(empty,'empty-final');
+    await visit(home,'home-final-revisit');await visit(empty,'empty-final');
     const clears=visits.filter(v=>v.site.id==='empty');
     const initial=clears[0].memory,final=clears.at(-1).memory;
     const monotonicTextureGrowth=clears.slice(1).every((v,i)=>v.memory.textures>clears[i].memory.textures);
     const lifecycle={cacheBounded:visits.every(v=>!v.memory.cache||(v.memory.cache.detachedBytes<=v.memory.cache.maxDetachedBytes&&v.memory.cache.detachedCount<=4)),allEmptyViewsDetachLand:clears.every(v=>v.memory.chunks===0&&v.memory.landTextureCount===0),initialClearMemory:initial,finalClearMemory:final,textureDeltaAfterCycles:final.textures-initial.textures,geometryDeltaAfterCycles:final.geometries-initial.geometries,monotonicTextureGrowth,interpretation:'Empty views detach land; bounded cached groups intentionally retain textures and geometry. Cache estimates include CPU and GPU copies, unlike active landTextureEstimatedRGBA8Bytes. Active working set, driver overhead and temporary builder allocations are not capped by the detached cache budget. JS heap is approximate and GC is uncontrolled.'};
-    g.terrain=[];g.territories=[];visit(empty,'campaign-reset-release');lifecycle.resetMemory=visits.at(-1).memory;lifecycle.resetReleasesAllLand=!lifecycle.resetMemory.cache||lifecycle.resetMemory.cache.estimatedResidentBytes===0;
+    g.terrain=[];g.territories=[];await visit(empty,'campaign-reset-release');lifecycle.resetMemory=visits.at(-1).memory;lifecycle.resetReleasesAllLand=!lifecycle.resetMemory.cache||lifecycle.resetMemory.cache.estimatedResidentBytes===0;
     return {backend,startGameMs,selectedSites:selected,terrainCount:terrain.length,visits,lifecycle};
    });
    report.results.push({profile,bootWallMs,...result});
-   console.log(`${profile.name}: startGame ${result.startGameMs.toFixed(1)}ms, cold first render ${result.visits[0].completedRenderMs.toFixed(1)}ms, worst visit ${Math.max(...result.visits.map(v=>v.completedRenderMs)).toFixed(1)}ms, final clear textures delta ${result.lifecycle.textureDeltaAfterCycles}`);
+   console.log(`${profile.name}: startGame ${result.startGameMs.toFixed(1)}ms, first ready ${result.visits[0].readyWallMs.toFixed(1)}ms (CPU wait ${result.visits[0].cpuPreparationWallMs.toFixed(1)}ms, max CPU timer delay ${result.visits[0].maxCpuTimerDelayMs.toFixed(1)}ms), worst visit ${Math.max(...result.visits.map(v=>v.completedRenderMs)).toFixed(1)}ms, final clear textures delta ${result.lifecycle.textureDeltaAfterCycles}`);
    await page.close();
   }
  }finally{

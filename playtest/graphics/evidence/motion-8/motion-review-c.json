@@ -1,0 +1,69 @@
+{
+  "accept": true,
+  "scope": "Acceptance of the five sampled motion criteria only, not overall art quality or continuous animation performance.",
+  "inspected_images": 18,
+  "profiles": [
+    "phone",
+    "fallback"
+  ],
+  "ticks": [
+    0,
+    6,
+    12,
+    24,
+    36,
+    60,
+    90,
+    120,
+    180
+  ],
+  "simulation_times_seconds": [
+    0,
+    0.1,
+    0.2,
+    0.4,
+    0.6,
+    1,
+    1.5,
+    2,
+    3
+  ],
+  "findings": {
+    "impact_recognition": {
+      "pass": true,
+      "evidence": "Both profiles show an unmistakable white player silhouette at 0.1 and 0.2 seconds with hull dropping 35% to 27%. Normal aircraft appearance returns by 0.4 seconds. The small adjacent orange hit differs clearly from the much larger filled yellow-orange fireball at 1 second."
+    },
+    "smoke_fading": {
+      "pass": true,
+      "evidence": "Initial hit embers shrink and thin by 0.4–0.6 seconds. Large fireball at 1 second is dispersed into faint smoke and few orange specks at 1.5 seconds; no remaining bright fireball at 2 or 3 seconds. Thin ongoing damaged-plane trail is distinct from the old burst.",
+      "limitation": "Transparent smoke remains visibly granular and repetitive, especially the evenly spaced trail puffs; this is a craft limitation even though fading reads."
+    },
+    "wake_continuity": {
+      "pass": true,
+      "evidence": "Carrier and escort wakes remain connected to sterns throughout visible portions of both sequences, tapering behind ships rather than jumping to detached locations.",
+      "limitation": "Repeated soft oval segments read as a stamped chain rather than turbulent foam. The diagonal background water bands compete with wake direction."
+    },
+    "camera_motion": {
+      "pass": true,
+      "evidence": "Aircraft moves toward central tracking position in the early samples, then remains near center while carrier and escorts pass consistently through the turn. No sampled reversal, discontinuous jump, or detached shadow is apparent.",
+      "limitation": "Only nine timestamps per profile; continuous interpolation and micro-jitter cannot be established. Strong long player shadow creates a second dark aircraft-shaped attention point."
+    },
+    "control_visibility": {
+      "pass": true,
+      "evidence": "Bomb 2/2 and Fire retain fixed placement, high-contrast labels, and clear borders throughout. The escort passes behind Bomb at 3 seconds but the label remains readable. Hull and heat indicators stay legible.",
+      "limitation": "At 2 seconds Hawk overlaps the minimap edge; scene labeling can collide with HUD although primary controls remain readable."
+    }
+  },
+  "regressions_or_remaining_concerns": [
+    "Long parallel ocean streaks suggest directional blur/rain rather than water volume; this persists throughout the turn and reduces material coherence.",
+    "Pale player fuselage partly merges with pale carrier deck around 0.4–0.6 seconds; hit flash itself remains distinct.",
+    "Fallback softens aircraft and carrier details but retains event distinction and control legibility."
+  ],
+  "priorities": [
+    "Break up ocean bands with quieter, less directional surface variation.",
+    "Replace repeated circular wake/smoke stamps with connected irregular wisps and varied fading.",
+    "Reduce aircraft shadow salience while retaining altitude separation.",
+    "Prevent ally labels from entering the minimap and check dense combat motion separately."
+  ],
+  "limitations": "Inspected all 18 actual PNGs and supplied simulation timestamps. No source/key inspected. No comparison to real phone FPS or claim of measured playback smoothness."
+}

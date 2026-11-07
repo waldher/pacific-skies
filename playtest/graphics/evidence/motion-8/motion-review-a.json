@@ -1,0 +1,90 @@
+{
+  "accept": false,
+  "all_images_viewed": 18,
+  "sample_times_seconds": [
+    0,
+    0.1,
+    0.2,
+    0.4,
+    0.6,
+    1,
+    1.5,
+    2,
+    3
+  ],
+  "profiles": [
+    "phone",
+    "fallback"
+  ],
+  "findings": [
+    {
+      "category": "Hit flash and impact distinction",
+      "accept": true,
+      "evidence": "White player silhouette at .1 and .2 seconds returns to gray by .4. Compact orange spark at .1 is visibly distinct from the roughly aircraft-width yellow-white and orange fireball at 1 second, dispersed by 1.5.",
+      "files": [
+        "phone-006.png",
+        "phone-012.png",
+        "phone-024.png",
+        "phone-060.png",
+        "phone-090.png",
+        "fallback-060.png"
+      ]
+    },
+    {
+      "category": "Smoke fading and plume",
+      "accept": false,
+      "evidence": "Smoke is substantially more transparent and less obstructive than motion-7. Older patches become very faint; explosion smoke at 1.5 seconds has dispersed. However the player damage trail at .4, .6, 2 and 3 seconds still reads as separated regularly spaced speckled stamps, particularly in fallback. Individual small dots persist without forming a convincingly expanding, overlapping plume. Fading passes, the previously applied plume-quality criterion remains unmet.",
+      "files": [
+        "phone-024.png",
+        "phone-036.png",
+        "phone-120.png",
+        "phone-180.png",
+        "fallback-120.png",
+        "fallback-180.png"
+      ],
+      "recommendation": "Increase irregular overlapping wispy coverage, vary spacing and rotation, and expand older puffs while reducing their opacity; preserve the newly improved transparency."
+    },
+    {
+      "category": "Wake continuity",
+      "accept": true,
+      "evidence": "Carrier and escort wakes remain attached to the stern through camera translation and turning in all sampled frames. Visible repeating rounded bands create a scalloped foam pattern, but there is no sampled detached rectangular segment.",
+      "files": [
+        "phone-000.png",
+        "phone-060.png",
+        "phone-120.png",
+        "fallback-120.png"
+      ]
+    },
+    {
+      "category": "Camera motion",
+      "accept": true,
+      "evidence": "Player moves from lower left toward center in the opening .6 seconds then remains near the central play area as ships and background translate during the turn. No discontinuity or teleport visible in sampled positions; opening recenter is conspicuous. Sparse stills cannot establish continuous smoothness.",
+      "files": [
+        "phone-000.png",
+        "phone-036.png",
+        "phone-090.png",
+        "phone-180.png"
+      ]
+    },
+    {
+      "category": "Control visibility",
+      "accept": true,
+      "evidence": "Fixed Hull, heat, mission, minimap, Bomb and Fire remain readable across both profiles. At 3 seconds an escort passes behind Bomb but its white label remains readable. Aircraft silhouettes are softened in fallback, and offset dark shadows can momentarily resemble duplicate aircraft, without obstructing buttons.",
+      "files": [
+        "phone-180.png",
+        "fallback-180.png",
+        "fallback-036.png"
+      ]
+    }
+  ],
+  "blockers": [
+    "Smoke still forms a chain of granular stamps rather than an expanding continuous plume under the same criterion used in motion-7."
+  ],
+  "nonblocking": [
+    "Transparent smoke improves object visibility.",
+    "Long parallel ocean streaks remain visually uniform.",
+    "Pale cyan player glow appears as short rectangular bars during turns.",
+    "Wake foam repeats scalloped bands."
+  ],
+  "limits": "Reviewed all 18 supplied stills and recorded simulation timestamps/events. No source or identity mapping inspected. This is visual continuity and effect recognition review, not measurement of actual phone FPS or continuous playback."
+}

@@ -1,0 +1,74 @@
+{
+  "accept": true,
+  "scope": "Pass for original sampled criteria: hit/impact recognition, smoke lifecycle, ship-wake continuity, camera tracking and primary controls. Shoreline material polish does not pass as natural foam.",
+  "inspected_images": 36,
+  "scenes": [
+    "fleet",
+    "coast"
+  ],
+  "profiles": [
+    "phone",
+    "fallback"
+  ],
+  "ticks": [
+    0,
+    6,
+    12,
+    24,
+    36,
+    60,
+    90,
+    120,
+    180
+  ],
+  "simulation_times_seconds": [
+    0,
+    0.1,
+    0.2,
+    0.4,
+    0.6,
+    1,
+    1.5,
+    2,
+    3
+  ],
+  "findings": {
+    "impact_recognition": {
+      "pass": true,
+      "evidence": "In all four sequences player is white at 0.1/0.2 seconds and normal by 0.4, hull 35% to 27%. Small orange hit at 0.1–0.2 is clearly smaller than filled bright fireball at 1 second. Coast runway arrow is also white but persistent cyan player circle helps distinguish flash."
+    },
+    "smoke_fading": {
+      "pass": true,
+      "evidence": "Small hit dwindles to sparks at 0.4–0.6; 1-second large fireball disperses to smoke/embers by 1.5 and has no bright fire at 2 or 3. Coast shows lingering soft gray cloud at 1.5 separated from continuing curved damaged-plane trail.",
+      "limitation": "Trail remains granular and rope-like; smoke has limited volume and partly merges into textured ocean. Coast makes the difference between large burst cloud and continuing trail easier to see."
+    },
+    "wake_continuity": {
+      "pass": true,
+      "evidence": "Fleet ship wakes stay attached to sterns throughout both profiles and fade outward; no sampled detached jump.",
+      "limitation": "Repeated oval wake stamps remain conspicuous, especially carrier. No ships in coastal sequence."
+    },
+    "camera_motion": {
+      "pass": true,
+      "evidence": "Fleet tracking recenters player then follows turn coherently. Coast keeps player near center as runway, rock groups and shore move consistently across frame. Ring stays attached to player across land/water crossing.",
+      "limitation": "Sparse nine-timestamp sampling per sequence cannot establish continuous interpolation or micro-jitter."
+    },
+    "control_visibility": {
+      "pass": true,
+      "evidence": "Bomb/Fire, hull/heat and objective remain readable and fixed throughout all four sequences. Fleet ship behind Bomb at 3 seconds does not obscure text. Player ring remains visible on runway, grass, beach and sea.",
+      "limitation": "Fleet Hawk overlaps minimap edge at 2 seconds; coast Hawk label enters objective bar at 3 seconds. These secondary-label collisions persist although primary control text is usable."
+    },
+    "shoreline_material": {
+      "pass": false,
+      "evidence": "Coastal frames now confirm foam follows the coast through scrolling, but strokes stay thin, separated and nearly parallel at fixed offset from beach. They read as dashed rails rather than surf breaking on sand.",
+      "limitation": "Broad cyan shallow band and uniform sand edge remain artificial. New coast bends and rock groups improve structure, not foam material. Samples cannot establish wave-cycle naturalness."
+    }
+  },
+  "largest_remaining_visual_gaps": [
+    "Carrier and escort pale top/rim values flatten volume; distinct directional top/side lighting is needed.",
+    "Coastal foam needs irregular connected patches, changing width and opacity, and closer relationship to beach geometry.",
+    "Grass remains uniform noise with heavy tree contact shadows; coastal clustering alone does not supply terrain relief.",
+    "Dense combat still has equal orange sparks, repeated smoke stamps and overlapping planes; locator ring finds player but does not clarify all silhouettes.",
+    "Prevent ally labels from colliding with minimap/objective bars."
+  ],
+  "limitations": "All 36 PNGs individually opened using view_image and motion.json timestamps/events reviewed. No source/key inspected. No actual phone FPS inferred. This verdict is limited to sampled functional motion criteria, not overall quality victory."
+}

@@ -11,10 +11,68 @@ import { withRelief } from './projection.js';
 import { shipObserved, installationKnown, observedAt } from './intelligence.js';
 
 const paint = withRelief(new THREE.MeshLambertMaterial({ vertexColors: true }));
-// Sea contact is y=0, whereas the land/airfield floor is y=8.5. Sharing the
-// land anchor would hide most hull depth. The deck shifts at most ~6px at
-// current heights; gameplay hull/landing tests remain entirely unchanged.
-const shipPaint = withRelief(new THREE.MeshLambertMaterial({ vertexColors: true }), 0);
+// Keep the accepted matte Lambert palette; depth comes from directional
+// self-occlusion rather than brighter rims or additional specular response.
+// Conservative local-space bounds of existing opaque superstructure, not new
+// collision geometry. Exactly three analytic occluders per vessel material.
+const CARRIER_OCCLUDERS = [
+  [[23.5,11,-35],[36.5,25,7]],
+  [[22,26,-31.5],[38,32.8,-12.5]],
+  [[27,25,-7],[35,33.4,3]],
+];
+const DESTROYER_OCCLUDERS = [
+  [[-8.5,10,-24],[8.5,22,4]],
+  [[-10,20,-23.5],[10,26.8,-8.5]],
+  [[-4,13.5,3],[4,24.8,27]],
+];
+function navalMaterial(occluders = []) {
+  const material = new THREE.MeshLambertMaterial({vertexColors:true});
+  const vec = values => `vec3(${values.map(v=>Number(v).toFixed(4)).join(',')})`;
+  const sun = vec(new THREE.Vector3(...CONFIG.render.sunOffset).normalize().toArray());
+  const calls = occluders.map(([lo,hi])=>`shipOcclusion=max(shipOcclusion,shipBoxOcclusion(vShipPosition,localSun,${vec(lo)},${vec(hi)}));`).join('\n');
+  material.onBeforeCompile = shader => {
+    if(occluders.length) {
+      const varyings='varying vec3 vShipPosition; varying vec3 vShipSun;\n';
+      shader.vertexShader=varyings+shader.vertexShader;
+      shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
+        vShipPosition=transformed;
+        // Inverse rotation/scale: fixed world sun stays correct as each vessel
+        // turns or sinks. No per-vessel uniforms, uploads or material clones.
+        vec3 shipWorldSun=${sun};
+        vShipSun=vec3(dot(modelMatrix[0].xyz,shipWorldSun)/dot(modelMatrix[0].xyz,modelMatrix[0].xyz),
+          dot(modelMatrix[1].xyz,shipWorldSun)/dot(modelMatrix[1].xyz,modelMatrix[1].xyz),
+          dot(modelMatrix[2].xyz,shipWorldSun)/dot(modelMatrix[2].xyz,modelMatrix[2].xyz));`);
+      shader.fragmentShader=varyings+`
+        float shipBoxOcclusion(vec3 p, vec3 d, vec3 lo, vec3 hi) {
+          // A receiver on/inside its own conservative box must never shadow
+          // itself. Other boxes can still shadow that receiver normally.
+          if(all(greaterThanEqual(p,lo-vec3(.06))) && all(lessThanEqual(p,hi+vec3(.06))))return 0.0;
+          vec3 safeD=(step(vec3(0.0),d)*2.0-1.0)*max(abs(d),vec3(.00001));
+          vec3 a=(lo-p)/safeD,b=(hi-p)/safeD;
+          vec3 nearT=min(a,b),farT=max(a,b);
+          float entry=max(max(nearT.x,nearT.y),nearT.z);
+          float leave=min(min(farT.x,farT.y),farT.z);
+          if(entry<=.06 || leave<=entry)return 0.0;
+          // Finite intersection depth gives a narrow, distance-growing edge
+          // transition rather than an opaque projected rectangle.
+          return smoothstep(0.0,max(.6,entry*.045),leave-entry);
+        }
+      `+shader.fragmentShader;
+      shader.fragmentShader=shader.fragmentShader.replace('#include <lights_fragment_end>', `#include <lights_fragment_end>
+        float shipOcclusion=0.0;
+        if(vShipPosition.y<34.0) {
+          vec3 localSun=normalize(vShipSun);
+          ${calls}
+        }
+        reflectedLight.directDiffuse*=1.0-.82*shipOcclusion;
+        // Retain sky fill; only slight contact attenuation of indirect light.
+        reflectedLight.indirectDiffuse*=1.0-.08*shipOcclusion;`);
+    }
+  };
+  material.customProgramCacheKey=()=> 'naval-shadow-v1-'+JSON.stringify(occluders);
+  return material;
+}
+const shipPaint=navalMaterial(), carrierPaint=navalMaterial(CARRIER_OCCLUDERS), destroyerPaint=navalMaterial(DESTROYER_OCCLUDERS);
 const solid = hex => new THREE.MeshLambertMaterial({ color: hex });
 const hangarMat = paint, rubbleMat = withRelief(solid('#343534')), dark = solid('#263743'), cabin = withRelief(solid('#839296'));
 const friend = new THREE.MeshBasicMaterial({ color: '#62ddba' });
@@ -37,17 +95,20 @@ const wakeMat = new THREE.ShaderMaterial({
       else h=mix(.45,.288,clamp((z-.43)/.07,0.0,1.0));
       float lateral=abs(x)-h;
       float hullLength=smoothstep(-.54,-.485,z)*(1.0-smoothstep(.49,.54,z));
-      float contact=(1.0-smoothstep(-.01,.09,lateral))*hullLength*.30;
+      float contact=(1.0-smoothstep(-.01,.075,lateral))*hullLength*.35;
       // Narrow broken bow/sheer foam ties the hull to water without a white
       // selection outline. The interior is depth-occluded by the real hull.
       float edgeFoam=smoothstep(-.01,.015,lateral)*(1.0-smoothstep(.015,.06,lateral));
       edgeFoam*=smoothstep(-.51,-.45,z)*(1.0-smoothstep(-.1,.35,z));
       float aft=clamp((z-.4)/.72,0.0,1.0);
-      float spread=mix(.16,.55,aft);
-      float envelope=(1.0-smoothstep(.4,1.0,abs(x)/spread));
+      float spread=mix(.25,.57,aft);
+      float envelope=(1.0-smoothstep(.25,1.0,abs(x)/spread));
       envelope*=smoothstep(.40,.52,z)*(1.0-smoothstep(.52,1.12,z));
-      float streak=.73+.27*sin(z*31.0-time*2.0+x*12.0)*sin(z*19.0-x*21.0);
-      float foam=moving*(envelope*streak*.38+edgeFoam*.28);
+      // Short transverse eddies keep the trail connected. Longitudinal
+      // sinusoids previously split the wake into two searchlight-like beams.
+      float churn=.78+.22*sin(z*69.0-time*3.0+x*x*31.0)*sin(z*41.0+x*7.0-time*2.0);
+      float stern=(1.0-smoothstep(.10,.30,abs(x)))*smoothstep(.43,.51,z)*(1.0-smoothstep(.51,.68,z));
+      float foam=moving*(envelope*churn*.34+stern*.12+edgeFoam*.24);
       float alpha=contact+foam*(1.0-contact);
       if(alpha<.006) discard;
       vec3 color=mix(vec3(.015,.06,.065),vec3(.65,.85,.81),foam/max(alpha,.001));
@@ -208,7 +269,7 @@ function shipTemplate(carrier, enemy = false) {
     }
     for(const z of [-92,89])parts.plane(7,3,[-2,11.6,z],'#bcaf83');
     for (const z of [-60,5,60]) for (const x of [-30,30]) parts.box([1.5,.8,1.5],[x,12,z],light);
-    group.add(parts.mesh(true,shipPaint));
+    group.add(parts.mesh(true,carrierPaint));
   } else {
     parts.plane(23,35,[0,11.3,-8],'#253b40');
     parts.steelBox([17, 12, 28], [0, 16, -10], '#5e7278');
@@ -220,7 +281,7 @@ function shipTemplate(carrier, enemy = false) {
     parts.box([7, 12, 9], [0, 19, 13], DARK);
     parts.box([2, 18, 2], [0, 30, -3], DARK);
     parts.box([12, .2, 8], [0, 11.3, 48], light);
-    group.add(parts.mesh(true,shipPaint));
+    group.add(parts.mesh(true,destroyerPaint));
     for (const z of [-37, 35]) {
       const turret = new Parts().box([13, 5, 11], [0, 0, 0], HULL).box([2, 2, 18], [0, 2, -10], DARK).mesh(true,shipPaint);
       turret.name = 'Turret'; turret.position.set(0, 12, z); group.add(turret);

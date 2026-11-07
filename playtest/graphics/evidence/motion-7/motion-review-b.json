@@ -1,0 +1,78 @@
+{
+  "reviewer": "B",
+  "accept": true,
+  "scope": "Accept the sampled motion feedback in this sparse scenario; this does not approve dense effect readability or certify continuous motion smoothness.",
+  "coverage": {
+    "imagesInspected": 18,
+    "profiles": [
+      "phone",
+      "fallback"
+    ],
+    "ticks": [
+      0,
+      6,
+      12,
+      24,
+      36,
+      60,
+      90,
+      120,
+      180
+    ],
+    "seconds": [
+      0,
+      0.1,
+      0.2,
+      0.4,
+      0.6,
+      1,
+      1.5,
+      2,
+      3
+    ],
+    "metadata": "Read motion.json events, timestamps, camera/player states and particle kinds. No source/keys read."
+  },
+  "findings": {
+    "hitFlash": {
+      "accept": true,
+      "evidence": "Both profiles show a conspicuous white silhouette at .1s and .2s with hull dropping35% to27%; normal surface returns by .4s. RETURN TO BASE appears immediately."
+    },
+    "impactRecognition": {
+      "accept": true,
+      "evidence": "Small event at .1s has a compact orange fire core. Large event at1s has a clearly larger irregular orange/yellow fireball, about35–40px across; its hot core and outer fragments are visibly distinct from the small event and prior ring-dominated treatment. By1.5s the bright core has given way to smoke and scattered sparks.",
+      "weakness": "The half-second gap after the large peak does not show the full expansion; denser frames would help judge temporal polish."
+    },
+    "smokeFading": {
+      "accept": true,
+      "evidence": "At .4–.6s old trail puffs progressively weaken. Large-event smoke remains at1.5s, while the fire count is zero by2s. At2–3s the damaged plane continues emitting a curved tapering trail with older puffs dimmer than recent ones.",
+      "weakness": "Puffs look like separated gray craggy beads rather than soft turbulent smoke. This is visually coarse and, as dense static scenes show, does not scale well to many simultaneous events.",
+      "recommendation": "Blend overlapping puffs into fewer directional masses and reduce their high-frequency texture; retain opacity fade and distinct hot core."
+    },
+    "wakeContinuity": {
+      "accept": true,
+      "evidence": "Carrier and escort wakes remain attached and aligned across the samples. The escort entering lower-center at1s retains its wake at1.5s and2s. No sampled wake detachment or popping is visible.",
+      "weakness": "Parallel blurred streaks remain simplistic; hull contact foam is weak."
+    },
+    "cameraMotion": {
+      "accept": true,
+      "evidence": "Player recenters from low-left during0–.4s, turns through.6–1.5s, and remains near the same screen region thereafter while ships pass consistently. Metadata heading/camera progression agrees with the pictures.",
+      "weakness": "Initial recentering remains noticeable; sparse samples cannot establish continuous smoothness or detect inter-frame jitter."
+    },
+    "controls": {
+      "accept": true,
+      "evidence": "Hull/heat, return objective, minimap and both buttons stay readable and fixed across all18images; fire heat rises then falls by3s.",
+      "weakness": "World objects pass beneath right-side controls and objective bar. No touch steering affordance is shown, so this keyboard-driven sequence does not test touch steering usability."
+    },
+    "altitude": {
+      "accept": true,
+      "evidence": "Offset aircraft shadows and taller carrier island/hull sides establish height. Player remains separable in this sparse scenario, including during turn.",
+      "weakness": "Heavy duplicate shadow silhouettes add clutter; intermittent pale wing/outline appearance can resemble extra effects. Plane-over-deck overlap still deserves dense-scenario testing."
+    }
+  },
+  "remainingRisks": [
+    "Dense static packet7 scenes show much worse smoke occlusion than this sparse motion scenario; this acceptance must not override that finding.",
+    "Smoke texture resembles debris beads and should be softened even though fade progression is visible.",
+    "Nine samples per profile are insufficient to certify all-frame smoothness."
+  ],
+  "performanceStatement": "No real-phone FPS or hardware frame-pacing claims were made."
+}

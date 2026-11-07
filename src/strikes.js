@@ -1,3 +1,4 @@
+import { aircraftRound, surfaceRound } from './projectile-visual.js';
 // Organized strikes originate at surviving enemy facilities. All aircraft can be intercepted.
 import { enemyObserved } from './intelligence.js';
 import { CONFIG } from './config.js';
@@ -82,7 +83,7 @@ export function updateStrikes(game, dt) {
     if (enemy) {
       asset.defenseCd = S.defenseCooldown / level;
       const a = Math.atan2(enemy.y - asset.y, enemy.x - asset.x);
-      game.bullets.push({ x: asset.x, y: asset.y, vx: Math.cos(a) * CONFIG.ship.bulletSpeed,
+      game.bullets.push({ ...surfaceRound(asset, enemy, CONFIG.ship.bulletSpeed, base.kind === 'carrier' ? 13 : 10), x: asset.x, y: asset.y, vx: Math.cos(a) * CONFIG.ship.bulletSpeed,
         vy: Math.sin(a) * CONFIG.ship.bulletSpeed, life: S.defenseRange / CONFIG.ship.bulletSpeed, fromShip: true });
     }
   }
@@ -102,7 +103,7 @@ export function updateStrikes(game, dt) {
       e.fireCd -= dt;
       if (engage && Math.abs(diff) < CONFIG.enemy.aimCone && e.fireCd <= 0) {
         e.fireCd = S.escortFireCooldown;
-        game.ebullets.push({x:e.x,y:e.y,vx:Math.cos(e.a)*CONFIG.enemy.bulletSpeed,vy:Math.sin(e.a)*CONFIG.enemy.bulletSpeed,life:CONFIG.enemy.bulletLife});
+        game.ebullets.push({ ...aircraftRound(e),x:e.x,y:e.y,vx:Math.cos(e.a)*CONFIG.enemy.bulletSpeed,vy:Math.sin(e.a)*CONFIG.enemy.bulletSpeed,life:CONFIG.enemy.bulletLife});
       }
       if (Math.hypot(asset.x - e.x, asset.y - e.y) <= S.attackRange) {
         if (!escorts && health(asset, base) > 0) {
@@ -113,7 +114,7 @@ export function updateStrikes(game, dt) {
           if (territory) { territory.attackHits = (territory.attackHits || 0) + 1; territory.lastAttackedAt = game.time; }
           game.raidImpacts = (game.raidImpacts || 0) + 1;
           game.raidDamage = (game.raidDamage || 0) + damage;
-          explosion(asset.x, asset.y, true);
+          explosion(asset.x, asset.y, true, base.kind === 'carrier' ? 11.5 : 8.5);
         }
         e.phase = 'retreat';
       }

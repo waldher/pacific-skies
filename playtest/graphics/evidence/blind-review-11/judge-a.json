@@ -1,0 +1,355 @@
+{
+  "view-01.png": {
+    "scores": [
+      8.5,
+      7.5,
+      6,
+      7,
+      4.5
+    ],
+    "evidence": "Raised building sides, tree shadows and clear player provide depth; clean shore transition improved, yet no irregular surf and ocean looks crumpled.",
+    "weighted_score": 6.975,
+    "regressions": "Unchanged visible anchor; same score."
+  },
+  "view-02.png": {
+    "scores": [
+      8.5,
+      7.5,
+      6,
+      7,
+      5
+    ],
+    "evidence": "Cyan ring locates player; shore glow softens boundary but is a uniform luminous band without foam. Terrain and water remain simplified.",
+    "weighted_score": 7.05,
+    "regressions": "No new major regression; ring adds graphic overlay and shoreline glow is visibly uniform rather than physical surf."
+  },
+  "view-03.png": {
+    "scores": [
+      8.5,
+      7,
+      6,
+      6,
+      4.5
+    ],
+    "evidence": "Ring isolates player location on soft tan deck, but aircraft still blends with deck and the ring adds no material depth.",
+    "weighted_score": 6.725,
+    "regressions": "No new major regression; ring adds graphic overlay and shoreline glow is visibly uniform rather than physical surf."
+  },
+  "view-04.png": {
+    "scores": [
+      8.5,
+      7,
+      6,
+      6,
+      4.5
+    ],
+    "evidence": "Quiet soft carrier has clear raised bridge and hull; dark textured water adds relief but wake repeats rounded bands.",
+    "weighted_score": 6.725,
+    "regressions": "Unchanged visible anchor; same score."
+  },
+  "view-05.png": {
+    "scores": [
+      7.5,
+      7.5,
+      6.5,
+      6.5,
+      6
+    ],
+    "evidence": "Crisp raised carrier, orange sparks and pale aircraft stand against dark rippled sea; overlapping aircraft obscure player at bow.",
+    "weighted_score": 6.925,
+    "regressions": "Unchanged visible anchor; same score."
+  },
+  "view-06.png": {
+    "scores": [
+      7,
+      6.5,
+      6,
+      6,
+      5.5
+    ],
+    "evidence": "Ring makes player location easier to recover in soft dense swarm; wings still overlap its silhouette and smoke remains granular.",
+    "weighted_score": 6.325,
+    "regressions": "No new major regression; ring adds graphic overlay and shoreline glow is visibly uniform rather than physical surf."
+  },
+  "view-07.png": {
+    "scores": [
+      6,
+      8.5,
+      9,
+      9,
+      8.5
+    ],
+    "evidence": "Wet reflections, rain, smoke and orange tracer integrate; small troops blend into rubble.",
+    "weighted_score": 7.925,
+    "regressions": "Unchanged visible anchor; same score."
+  },
+  "view-08.png": {
+    "scores": [
+      8.5,
+      7.5,
+      6,
+      7,
+      5
+    ],
+    "evidence": "Ring separates player location from hangar roof; broad apron and raised buildings remain coherent. Shore glow adds transition but resembles a smooth halo.",
+    "weighted_score": 7.05,
+    "regressions": "No new major regression; ring adds graphic overlay and shoreline glow is visibly uniform rather than physical surf."
+  },
+  "view-09.png": {
+    "scores": [
+      8.5,
+      7.5,
+      6.5,
+      6.5,
+      5.5
+    ],
+    "evidence": "Raised bridge and rim restore carrier volume; cyan ring gives a clear location cue, while quiet scene already reads well. Scalloped wake persists.",
+    "weighted_score": 7.15,
+    "regressions": "No new major regression; ring adds graphic overlay and shoreline glow is visibly uniform rather than physical surf."
+  },
+  "view-10.png": {
+    "scores": [
+      8.5,
+      7,
+      5.5,
+      6.5,
+      4.5
+    ],
+    "evidence": "Player ring is clear despite soft rendering. Pale shore glow softens abrupt edge but remains uniform, with no broken surf.",
+    "weighted_score": 6.7,
+    "regressions": "No new major regression; ring adds graphic overlay and shoreline glow is visibly uniform rather than physical surf."
+  },
+  "view-11.png": {
+    "scores": [
+      8,
+      7,
+      6,
+      6,
+      5.5
+    ],
+    "evidence": "Ring helps locate player beneath overlapping wings at bow; ship and sea materials otherwise unchanged and soft.",
+    "weighted_score": 6.725,
+    "regressions": "No new major regression; ring adds graphic overlay and shoreline glow is visibly uniform rather than physical surf."
+  },
+  "view-12.png": {
+    "scores": [
+      8,
+      7.5,
+      6.5,
+      6.5,
+      6
+    ],
+    "evidence": "Crisp ring gives player location despite bow overlap; orange sparks and raised bridge remain distinct, with grainy smoke.",
+    "weighted_score": 7.075,
+    "regressions": "No new major regression; ring adds graphic overlay and shoreline glow is visibly uniform rather than physical surf."
+  },
+  "view-13.png": {
+    "scores": [
+      6.5,
+      9,
+      9,
+      9.5,
+      8.5
+    ],
+    "evidence": "Fog, varied vegetation, muddy ruts and weathered shed build rich depth; tanks blend with terrain.",
+    "weighted_score": 8.25,
+    "regressions": "Unchanged visible anchor; same score."
+  },
+  "view-14.png": {
+    "scores": [
+      7.5,
+      7,
+      6,
+      6,
+      5.5
+    ],
+    "evidence": "Soft carrier and aircraft contrast with dark water, with readable orange sparks; overlapping player and enemies at bow still ambiguous.",
+    "weighted_score": 6.575,
+    "regressions": "Unchanged visible anchor; same score."
+  },
+  "view-15.png": {
+    "scores": [
+      7.5,
+      9,
+      9,
+      9,
+      8
+    ],
+    "evidence": "Market produce, stone, wood and fabric distinct under consistent shadows; thin paths remain visible.",
+    "weighted_score": 8.4,
+    "regressions": "Unchanged visible anchor; same score."
+  },
+  "view-16.png": {
+    "scores": [
+      8.5,
+      9,
+      9,
+      9,
+      8
+    ],
+    "evidence": "Detailed rooms, wall height, warm/cool light, wood and tile create convincing depth.",
+    "weighted_score": 8.7,
+    "regressions": "Unchanged visible anchor; same score."
+  },
+  "view-17.png": {
+    "scores": [
+      6,
+      6.5,
+      6,
+      6,
+      5.5
+    ],
+    "evidence": "Soft crowded wings and granular smoke clutter the deck; bright sparks read clearly, but the player's identity remains hard to track.",
+    "weighted_score": 6.025,
+    "regressions": "Unchanged visible anchor; same score."
+  },
+  "view-18.png": {
+    "scores": [
+      7,
+      7,
+      6.5,
+      6.5,
+      6
+    ],
+    "evidence": "Player ring stands out within dense sharp swarm, improving recovery; wings still obscure aircraft shape and granular smoke dots crowd deck.",
+    "weighted_score": 6.675,
+    "regressions": "No new major regression; ring adds graphic overlay and shoreline glow is visibly uniform rather than physical surf."
+  },
+  "view-19.png": {
+    "scores": [
+      8.5,
+      7,
+      5.5,
+      6.5,
+      4
+    ],
+    "evidence": "Outlined player readable on grass; coastline cleaner than black-strip version, but coast remains a uniform abrupt boundary and terrain soft.",
+    "weighted_score": 6.625,
+    "regressions": "Unchanged visible anchor; same score."
+  },
+  "view-20.png": {
+    "scores": [
+      8,
+      7.5,
+      6,
+      7,
+      4.5
+    ],
+    "evidence": "Raised hangars and broad apron establish base structure; player merges with roof. Dark rippled sea has depth but a clothlike repeating texture.",
+    "weighted_score": 6.825,
+    "regressions": "Unchanged visible anchor; same score."
+  },
+  "view-21.png": {
+    "scores": [
+      6,
+      7,
+      6.5,
+      6.5,
+      6
+    ],
+    "evidence": "Orange fire and pale wings are distinct from dark ocean; many separated gray smoke clusters and overlapping aircraft keep central action crowded.",
+    "weighted_score": 6.375,
+    "regressions": "Unchanged visible anchor; same score."
+  },
+  "view-22.png": {
+    "scores": [
+      8.5,
+      7,
+      5.5,
+      6.5,
+      4.5
+    ],
+    "evidence": "Ring marks player over matching roof; soft buildings and terrain still lack material variation. Broad shoreline glow is cleaner but artificial.",
+    "weighted_score": 6.7,
+    "regressions": "No new major regression; ring adds graphic overlay and shoreline glow is visibly uniform rather than physical surf."
+  },
+  "view-23.png": {
+    "scores": [
+      8,
+      7,
+      5.5,
+      6.5,
+      4
+    ],
+    "evidence": "Apron connects buildings and road; player merges into soft roof edges, while dark ripples contrast abruptly against pale smooth shore.",
+    "weighted_score": 6.475,
+    "regressions": "Unchanged visible anchor; same score."
+  },
+  "view-24.png": {
+    "scores": [
+      6.5,
+      8.5,
+      9,
+      9,
+      9
+    ],
+    "evidence": "Luminous layered explosion, sparks and atmospheric cliffs give depth; nearby units partly disappear.",
+    "weighted_score": 8.15,
+    "regressions": "Unchanged visible anchor; same score."
+  },
+  "view-25.png": {
+    "scores": [
+      8.5,
+      7.5,
+      6.5,
+      6.5,
+      5.5
+    ],
+    "evidence": "Crisp raised bridge, striped tan deck and dark hull give strong ship volume; rippled dark sea gains relief but repeated scalloped wake remains schematic.",
+    "weighted_score": 7.15,
+    "regressions": "Unchanged visible anchor; same score."
+  },
+  "_summary": {
+    "weights": [
+      0.3,
+      0.2,
+      0.2,
+      0.15,
+      0.15
+    ],
+    "mean_score": 7.051,
+    "strongest": [
+      {
+        "filename": "view-16.png",
+        "weighted_score": 8.7
+      },
+      {
+        "filename": "view-15.png",
+        "weighted_score": 8.4
+      },
+      {
+        "filename": "view-13.png",
+        "weighted_score": 8.25
+      }
+    ],
+    "weakest": [
+      {
+        "filename": "view-21.png",
+        "weighted_score": 6.375
+      },
+      {
+        "filename": "view-06.png",
+        "weighted_score": 6.325
+      },
+      {
+        "filename": "view-17.png",
+        "weighted_score": 6.025
+      }
+    ],
+    "all_images_viewed": true,
+    "improvements": [
+      "Cyan ring improves player location in dense swarms and over matching roofs.",
+      "Carrier has coherent dark rim/hull again versus packet10 rounded-board regression.",
+      "Shore glow softens abrupt land/water boundary."
+    ],
+    "visible_regressions": [
+      "No major new regression visible; shoreline light is still a uniform glow band, not convincing surf."
+    ],
+    "top3_gaps": [
+      "Player silhouette remains obscured inside ring during overlaps.",
+      "Materials need varied surface response and shore contact detail; smooth glow does not provide physical richness.",
+      "Smoke is grainy and wakes repeat scalloped bands."
+    ],
+    "blinding_limitations": "All25 images inspected individually. Only own prior records consulted to retain exact unchanged anchors. No keys/source/other judges. Recognizable scene families limit complete identity blinding."
+  }
+}

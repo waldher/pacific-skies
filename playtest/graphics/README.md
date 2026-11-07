@@ -11,8 +11,11 @@ Current experiment status and unresolved gates: [STATUS.md](STATUS.md).
   Never substitute the desktop tier for the phone result.
 - Scene capture uses manual frames. The ordinary RAF loop does not run; simulation
   is held fixed. Traffic and propellers receive a fixed number of render steps.
-  Visual captures use 30 samples; all matched performance runs use the same
-  sample count, at least 60. Current final measurement uses 180.
+  Protocol v3 awaits terrain preparation and one zero-delta GPU warmup render,
+  then captures after 42 fixed visual steps, before separate timing samples.
+  Visual captures use 60 timing samples; matched performance runs use 180.
+  Raw samples, GL backend, source and suite hashes are retained. The sample count
+  does not change the judged image. Earlier v1/v2 reports remain archival only.
 - Scores 1–10: readability 30%, coherence 20%, lighting/depth 20%, environment
   15%, effects 15%. Three separate judges inspect every image, not just a montage.
   Every reviewer also scores the same reference images. Distinct agent sessions
@@ -36,10 +39,15 @@ Current experiment status and unresolved gates: [STATUS.md](STATUS.md).
 ```sh
 npm install
 npx playwright install --with-deps chromium
-GRAPHICS_OUT=playtest/shots/candidate GRAPHICS_SAMPLES=30 npm run graphics:capture
+GRAPHICS_OUT=playtest/shots/candidate GRAPHICS_SAMPLES=60 npm run graphics:capture
 GRAPHICS_OUT=playtest/shots/perf-candidate-1 GRAPHICS_SAMPLES=180 npm run graphics:capture
 npm run graphics:gate
 npm run graphics:target
+npm run graphics:motion
+npm run graphics:transit
+npm run test:graphics:unit
+npm run test:land-worker
+npm run test:scenery-reset
 npm test
 ```
 
@@ -47,10 +55,11 @@ npm test
 select Chromium. Keep the same browser for matched runs. The benchmark uses
 SwiftShader and readPixels completion; its milliseconds are render-cost proxies,
 **not FPS on a phone**. It excludes simulation/HUD time and has no physical-device
-thermal model. The first sample can include queued warmup work; the p95 uses
-180 samples in final measurements. A future harness revision should drain warmup,
-retain raw timing samples and record the actual GL backend; recapture all rounds
-when changing the suite, rather than mixing protocol versions.
+thermal model. A readback drains queued warmup work before timing. Recapture all
+comparison rounds when changing the suite; do not mix protocol versions for
+acceptance. The transit probe separately reports asynchronous preparation wall
+ time, main-thread timer delays, GPU submission/completion, cached revisits and
+bounded resource disposal. A loading screen is not a claim that GPU upload is free.
 
 ## Each iteration
 
@@ -68,8 +77,11 @@ when changing the suite, rather than mixing protocol versions.
    Keep the identity key outside their context until verdicts. Initial reviews
    here were **unblinded**, disclosed in `reviews.json`; they must not be presented
    as a blind experiment. Record evidence and score arrays, not rounded totals.
-5. Append a round in `reviews.json.rounds`; add `evidence/<round>/report.json`
-   and all PNGs. Bind report hashes, final runtime sourceHash and reference-manifest
+5. Archive every attempt, including rejected ones, with report, PNGs, packet key
+   and raw judge records. `reviews.json.rounds` is the explicit acceptance chain
+   (original baseline, retained incumbent, proposed challenger), not a way to
+   silently erase rejected attempts; the complete history remains in evidence
+   and STATUS. Add `evidence/<round>/report.json` and all PNGs. Bind report hashes, final runtime sourceHash and reference-manifest
    hash. Each reviewer supplies arrays for every round/scene and reference.
    The gate calculates weighted scores itself because hand-computed totals can err.
 6. Retain three matched performance reports as `evidence/perf-base-{1,2,3}.json`

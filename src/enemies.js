@@ -1,3 +1,4 @@
+import { aircraftRound, flightAltitude } from './projectile-visual.js';
 // Territory defense and enemy fighter AI.
 //
 // Three flying styles keep fights from collapsing into one circle:
@@ -136,7 +137,7 @@ export function updateEnemies(dt) {
     e.fireCd -= dt;
     if (chase && e.fireCd <= 0 && dist < E.engageDist && aim < E.aimCone) {
       e.fireCd = e.ace ? E.ace.fireCooldown : E.fireCooldown;
-      game.ebullets.push({
+      game.ebullets.push({ ...aircraftRound(e),
         x: e.x + Math.cos(e.a) * 20, y: e.y + Math.sin(e.a) * 20,
         vx: Math.cos(e.a) * E.bulletSpeed, vy: Math.sin(e.a) * E.bulletSpeed,
         life: E.bulletLife,
@@ -154,9 +155,9 @@ export function updateEnemies(dt) {
       e.shoveX = dx / len * push; e.shoveY = dy / len * push;
       player.shoveX = -dx / len * push * .5; player.shoveY = -dy / len * push * .5;
       game.collisions = (game.collisions || 0) + 1;
-      for (let i = 0; i < 6; i++) game.particles.push({ x: player.x + dx / 2, y: player.y + dy / 2, vx: rand(-90, 90), vy: rand(-90, 90), life: .3, max: .3, size: 3, kind: 'fire' });
+      for (let i = 0; i < 6; i++) game.particles.push({ altitude: flightAltitude(e), x: player.x + dx / 2, y: player.y + dy / 2, vx: rand(-90, 90), vy: rand(-90, 90), life: .3, max: .3, size: 3, kind: 'fire' });
       damagePlayer(C.damage);
-      if (e.hp <= 0) explosion(e.x, e.y, false);
+      if (e.hp <= 0) explosion(e.x, e.y, false, flightAltitude(e));
     }
   }
 }

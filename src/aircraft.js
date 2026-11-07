@@ -133,7 +133,7 @@ const blobMaterial = new THREE.ShaderMaterial({
   fragmentShader: `varying vec2 vUv;
     void main() {
       float d = length((vUv - .5) * vec2(2.3, 3.4));
-      gl_FragColor = vec4(0.0, 0.0, 0.0, .22 * (1.0 - smoothstep(.35, 1.0, d)));
+      gl_FragColor = vec4(0.0, 0.0, 0.0, .12 * (1.0 - smoothstep(.35, 1.0, d)));
     }`,
 });
 const RECEIVER_SIZE = 140, BLOB_SIZE = 64;
@@ -170,7 +170,12 @@ export function createAircraft(template, entity, shadows = true, selected = fals
       transparent: true, depthWrite: false,
       uniforms: {mask:{value:template.silhouetteMaterial.map}},
       vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
-      fragmentShader:`varying vec2 vUv;uniform sampler2D mask;void main(){gl_FragColor=vec4(.66,.91,1.0,texture2D(mask,vUv).a*.72);}`,
+      fragmentShader:`varying vec2 vUv;uniform sampler2D mask;void main(){
+        float r=length(vUv-.5)*2.0;
+        float ring=smoothstep(.78,.80,r)*(1.0-smoothstep(.83,.85,r));
+        float alpha=max(texture2D(mask,vUv).a*.55,ring*.7);
+        gl_FragColor=vec4(.54,.88,.96,alpha);
+      }`,
     });
     const edge = new THREE.Mesh(receiverGeometry, edgeMaterial);
     edge.scale.set(70,1,70); edge.position.y=-clearance+.1;

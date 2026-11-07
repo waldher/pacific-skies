@@ -1,5 +1,6 @@
 // Canvas setup, resize handling, and world→screen transform.
 import { game } from './state.js';
+import { projectWorld } from './projection.js';
 
 export const cvs = document.getElementById('c');
 export const ctx = cvs.getContext('2d');
@@ -16,6 +17,6 @@ function resize() {
 window.addEventListener('resize', resize);
 resize();
 
-export function w2s(x, y) {
-  return [x - game.cam.x + view.W / 2, y - game.cam.y + view.H / 2];
+export function w2s(x, y, height = 0) {
+  return projectWorld(x, y, height, game.cam, view);
 }

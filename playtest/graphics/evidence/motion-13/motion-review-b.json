@@ -1,0 +1,85 @@
+{
+  "reviewer": "B",
+  "accept": true,
+  "scope": "Accept sampled motion feedback in fleet and coastal scenarios. Not a certification of continuous smoothness, touch response, natural-looking foam or actual phone FPS.",
+  "coverage": {
+    "imagesInspected": 36,
+    "scenarios": [
+      "fleet",
+      "coast"
+    ],
+    "profiles": [
+      "phone",
+      "fallback"
+    ],
+    "ticks": [
+      0,
+      6,
+      12,
+      24,
+      36,
+      60,
+      90,
+      120,
+      180
+    ],
+    "timeSeconds": [
+      0,
+      0.1,
+      0.2,
+      0.4,
+      0.6,
+      1,
+      1.5,
+      2,
+      3
+    ],
+    "metadataRead": "motion.json"
+  },
+  "findings": {
+    "hitFlash": {
+      "accept": true,
+      "evidence": "Across both scenarios and profiles player turns white at0.1/0.2, normal by0.4; hull35→27 and return prompt appear. Flash remains clear over runway as well as ocean."
+    },
+    "impactRecognition": {
+      "accept": true,
+      "evidence": "Small orange impact at0.1/0.2 clearly differs from broad irregular yellow-orange fireball at1. At1.5 residual sparks/smoke replace core; no fire at2/3."
+    },
+    "smokeFading": {
+      "accept": true,
+      "evidence": "Trails follow turns; older parts thin and fade. Coast1.5 smoke cloud disperses by2 while trail extends behind plane.",
+      "weakness": "Granular gray smoke still competes with water; continuous fade behavior between samples unverified."
+    },
+    "wakeContinuity": {
+      "accept": true,
+      "evidence": "Fleet wakes remain attached to carrier/escort sterns as world translates.",
+      "weakness": "Repeated soft puffs remain synthetic."
+    },
+    "cameraMotion": {
+      "accept": true,
+      "evidence": "Fleet initial catch-up and subsequent turn keep player central. Coast terrain scrolls consistently through turn with runway, rock rows and shoreline maintaining relative positions.",
+      "weakness": "Sparse samples cannot establish jitter-free continuous motion."
+    },
+    "controlVisibility": {
+      "accept": true,
+      "evidence": "Fixed HUD, heat, buttons and cyan ring remain readable in both scenarios; player stays trackable over runway, grass, shore and ocean.",
+      "weakness": "Ring remains coarse in fallback and prominent in empty space; does not isolate full silhouette during overlap. Fleet ship passes under Bomb at3 seconds. Coast wingman label reaches upper mission area at3 seconds. Touch not tested."
+    },
+    "shorelineContinuity": {
+      "accept": true,
+      "evidence": "Pale offshore strokes follow coast through scroll without a sampled detachment or large pop; shallow color band stays registered to land.",
+      "weakness": "Strokes look like dashed markings and remain similarly offset from shore; natural wave breaking/fading is not established from these samples."
+    }
+  },
+  "regressionsAndLimits": [
+    "No new sampled feedback failure observed.",
+    "Brighter ship surfaces do not hide player flash but reduce tonal distinction among small deck details.",
+    "Coastal foam is spatially stable in samples yet aesthetically artificial.",
+    "No timing-to-phone-FPS conversion or inference made."
+  ],
+  "priorities": [
+    "Naturalize foam shapes and local beach-water interactions.",
+    "Replace repeated wake puffs; preserve smoke visibility over patterned water.",
+    "Test continuous motion and touch response separately."
+  ]
+}

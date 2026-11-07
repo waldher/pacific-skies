@@ -6,7 +6,7 @@
 // Cost model: one draw and one bounded baked texture for the ground, one
 // draw for the beach, one vertex-coloured scenery batch and one draw each for
 // surf and shallows. Static tree/house contact shade is baked, never shadow-mapped.
-import * as THREE from 'three';
+import * as THREE from '../vendor/three/three.module.min.js';
 import { withRelief } from './projection.js';
 import { CONFIG } from './config.js';
 import { islandOutline, insidePolygon } from './surface.js';
@@ -19,9 +19,19 @@ const FOREST_SCALE = .02;
 // Optional diffuse material: a failed/slow download selects the deterministic
 // procedural fallback for the whole session, never a late style change midflight.
 let terrainImage = null, terrainMaterialLoad = null;
+export function hasTerrainMaterial() { return !!terrainImage; }
 export function preloadTerrainMaterial() {
   if (terrainMaterialLoad) return terrainMaterialLoad;
   terrainMaterialLoad = new Promise(resolve => {
+    if (typeof createImageBitmap === 'function') {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(),2500);
+      fetch(new URL('../assets/terrain/grass-soil-v1.webp', import.meta.url),{signal:controller.signal})
+        .then(r => { if (!r.ok) throw Error('Terrain material fetch failed'); return r.blob(); })
+        .then(blob => createImageBitmap(blob)).then(image => { terrainImage = image; resolve(true); })
+        .catch(() => resolve(false)).finally(() => clearTimeout(timeout));
+      return;
+    }
     if (typeof Image === 'undefined') { resolve(false); return; }
     const image = new Image();
     let settled = false;
@@ -244,7 +254,7 @@ class TerrainBake {
     this.height = Math.max(...shore.map(p => p[1])) - this.minY;
     const longest = Math.max(this.width, this.height);
     const resolution = Math.max(256, Math.min(1024, 2 ** Math.ceil(Math.log2(longest))));
-    this.canvas = document.createElement('canvas');
+    this.canvas = typeof OffscreenCanvas !== 'undefined' ? new OffscreenCanvas(1, 1) : document.createElement('canvas');
     this.canvas.width = Math.max(128, Math.round(resolution * this.width / longest));
     this.canvas.height = Math.max(128, Math.round(resolution * this.height / longest));
     const ctx = this.ctx = this.canvas.getContext('2d');
@@ -264,7 +274,7 @@ class TerrainBake {
         const tileSize = 240; // ~40 metres at the aircraft/world scale
         pattern.setTransform(new DOMMatrix().scale(tileSize / terrainImage.width));
         ctx.save();
-        ctx.fillStyle = pattern; ctx.globalAlpha = biome.palmOnly ? .38 : .90;
+        ctx.fillStyle = pattern; ctx.globalAlpha = biome.palmOnly ? .32 : .42;
         ctx.fillRect(this.minX, this.minY, this.width, this.height);
         // Preserve biome hue while retaining natural surface luminance variation.
         ctx.globalCompositeOperation = 'color'; ctx.globalAlpha = .35;
@@ -274,9 +284,9 @@ class TerrainBake {
     }
     // Broad continuous terrain masses, using a few soft washes rather than a
     // repeated noise lattice. Crop and forest detail carry the small-scale texture.
-    for (let i = 0; i < 28; i++) {
+    for (let i = 0; i < 18; i++) {
       const x = this.minX + random() * this.width, y = this.minY + random() * this.height;
-      const radius = 35 + random() * 150;
+      const radius = 90 + random() * 190;
       const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
       g.addColorStop(0, i % 3 ? 'rgba(31,45,28,0.13)' : 'rgba(182,166,117,0.12)');
       g.addColorStop(1, 'rgba(0,0,0,0)');
@@ -351,6 +361,37 @@ const flat = (geometry, material, height) => {
   return mesh;
 };
 
+// Concentric rings with a `fade` per ring, stitched into strips. Every ring
+// must share the shoreline's vertex count.
+export function bandGeometry(rings, fades) {
+  const n = rings[0]?.length ?? 0, position = [], fade = [], index = [];
+  if(rings.length<2||n<3||rings.some(ring=>ring.length!==n||ring.some(p=>!Number.isFinite(p[0])||!Number.isFinite(p[1]))))
+    throw new Error('Shore bands require equal finite rings with at least three vertices');
+  rings.forEach((ring, r) => ring.forEach(([x, y]) => { position.push(x, 0, y); fade.push(typeof fades[r] === 'function' ? fades[r](x,y) : fades[r]); }));
+  // Positions map 2D (x,y) to world (x,0,z), reversing the usual XY
+  // winding convention. Check each face, since concave offsets can also fold
+  // locally even when the complete outline has a consistent signed area.
+  const emit=(a,b,c)=>{
+    const ax=position[a*3],az=position[a*3+2];
+    const abx=position[b*3]-ax,abz=position[b*3+2]-az;
+    const acx=position[c*3]-ax,acz=position[c*3+2]-az;
+    const normalY=abz*acx-abx*acz;
+    const tolerance=1e-10*Math.max(1,Math.abs(abz*acx),Math.abs(abx*acz));
+    if(Math.abs(normalY)<=tolerance)return; // coincident ring/edge, no area
+    index.push(...(normalY>0?[a,b,c]:[a,c,b]));
+  };
+  for (let r = 0; r + 1 < rings.length; r++) for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n, a = r * n + i, b = r * n + j, c = (r + 1) * n + i, d = (r + 1) * n + j;
+    emit(a,c,b);emit(b,c,d);
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(position), 3));
+  geometry.setAttribute('fade', new THREE.BufferAttribute(new Float32Array(fade), 1));
+  geometry.setIndex(index);
+  return geometry;
+}
+
+
 export function createLand(scene, shared) {
   const L = CONFIG.render.land;
   const groundTemplate = groundShader(shared);
@@ -370,28 +411,13 @@ export function createLand(scene, shared) {
       ${NOISE_GLSL}
       void main() {
         float reef = .7 + .3 * vnoise2(worldXZ * .03);
-        float a = vFade * vFade * strength * reef;
+        float a = vFade * strength * reef;
         gl_FragColor = vec4(color, a);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
       }`,
   });
 
-  // Concentric rings with a `fade` per ring, stitched into strips. Every ring
-  // must share the shoreline's vertex count.
-  function bandGeometry(rings, fades) {
-    const n = rings[0].length, position = [], fade = [], index = [];
-    rings.forEach((ring, r) => ring.forEach(([x, y]) => { position.push(x, 0, y); fade.push(fades[r]); }));
-    for (let r = 0; r + 1 < rings.length; r++) for (let i = 0; i < n; i++) {
-      const j = (i + 1) % n, a = r * n + i, b = r * n + j, c = (r + 1) * n + i, d = (r + 1) * n + j;
-      index.push(a, c, b, b, c, d);
-    }
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(position), 3));
-    geometry.setAttribute('fade', new THREE.BufferAttribute(new Float32Array(fade), 1));
-    geometry.setIndex(index);
-    return geometry;
-  }
 
   function build(t, context) {
     const { sectors, holdings, geographySeed } = context;
@@ -401,6 +427,10 @@ export function createLand(scene, shared) {
     const group = new THREE.Group();
     group.position.set(t.x, 0, t.y);
     const shore = islandOutline(t);
+    // Long geological reaches, shared by beach material, shelves and shallows.
+    // This describes the existing coast; it never moves its physical boundary.
+    const rockReach=(x,y)=>B.palmOnly||B.dunes?0:smoothstep(-.25,.55,
+      Math.sin((x*.65+y*.76)*.008+(t.seed??t.id??0)*.31));
     // Physical shoreline stays exactly the same. Densify only the inland
     // vegetation edge to give beaches naturally varying width.
     const denseShore=[];
@@ -411,7 +441,7 @@ export function createLand(scene, shared) {
     const inset=insetShore(denseShore,Math.min(26,radius*.12));
     const interior=inset.map((p,i)=>{
       const shorePoint=denseShore[i];
-      const f=.42+.58*noise((p[0]+t.x)*.016,(p[1]+t.y)*.016,1);
+      const f=(.60+.40*noise((p[0]+t.x)*.016,(p[1]+t.y)*.016,1))*(1-.50*rockReach(p[0],p[1]));
       return [shorePoint[0]+(p[0]-shorePoint[0])*f,shorePoint[1]+(p[1]-shorePoint[1])*f];
     });
     const usable = insetShore(interior, 26);
@@ -446,9 +476,14 @@ export function createLand(scene, shared) {
 
     // The waterline is a gradient, not an edge: water laps a few units onto
     // the beach, then the shallows fade out to sea, with foam on the line.
-    const shallows = new THREE.Mesh(bandGeometry([insetShore(shore, 9), shore, outer], [0, 1, 0]), shallowsMaterial);
+    const shelfWater = shore.map((p,i)=>{
+      const f=.24+.36*(1-rockReach(p[0],p[1]));
+      return [p[0]+(outer[i][0]-p[0])*f,p[1]+(outer[i][1]-p[1])*f];
+    });
+    const shallows = new THREE.Mesh(bandGeometry([insetShore(shore, 9), shore, shelfWater, outer],
+      [0,(x,y)=>.85+.15*(1-rockReach(x,y)),.48,0]), shallowsMaterial);
     shallows.position.y = 3.6; group.add(shallows);
-    const surf = new THREE.Mesh(bandGeometry([insetShore(shore, 3), shore, offsetShore(shore, -14)], [0, 1, 0]), shared.surfMaterial);
+    const surf = new THREE.Mesh(bandGeometry([insetShore(shore, 3), shore, offsetShore(shore, -18)], [1, .84, 0]), shared.surfMaterial);
     surf.position.y = 3.7; group.add(surf);
     const ground = groundTemplate.clone();
     ground.uniforms.noiseTex.value = noiseTexture();
@@ -484,7 +519,7 @@ export function createLand(scene, shared) {
     const sandCss=`${Math.round(sand.r*255)},${Math.round(sand.g*255)},${Math.round(sand.b*255)}`;
     for(let i=0;i<denseShore.length;i++) {
       const p=denseShore[i],q=denseShore[(i+1)%denseShore.length];
-      const width=20+22*noise((p[0]+t.x)*.009,(p[1]+t.y)*.009,1);
+      const width=(26+24*noise((p[0]+t.x)*.009,(p[1]+t.y)*.009,1))*(1-.65*rockReach(p[0],p[1]));
       // Layered low-alpha strokes make a wide soft grass/sand transition. No
       // full-screen blend pass or repeated transparent draw is needed at runtime.
       bake.road([p,q],width+18,`rgba(${sandCss},.14)`);
@@ -493,7 +528,7 @@ export function createLand(scene, shared) {
       bake.road([p,q],7,'rgba(66,92,84,.28)');
       // Long coherent slate/seaweed reaches break up the uniform pale strip;
       // every stroke follows the real collider edge, never a fabricated coast.
-      const rocky = noise((p[0]+t.x)*.004+19,(p[1]+t.y)*.004,1);
+      const rocky = rockReach(p[0],p[1]);
       if(!B.palmOnly && !B.dunes && rocky>.46) {
         bake.road([p,q],width*.8,'rgba(76,78,60,.68)');
         bake.road([p,q],8,'rgba(40,60,56,.65)');
@@ -551,6 +586,18 @@ export function createLand(scene, shared) {
       const at=(u,v)=>[c.x+u*co-v*si,c.y+u*si+v*co];
       const yard=[at(-132,166),at(108,166),at(118,231),at(-125,239)];
       if(!yard.every(([x,y])=>inside(x,y)))continue;
+      // One connected compacted service ground links hangars, apron and yard.
+      // A clipped bake keeps the material on land even at coastal airfields.
+      const compound=[at(-147,43),at(142,43),at(142,149),at(118,231),at(-125,239),at(-147,149)];
+      bake.ctx.save();bake.path(interior);bake.ctx.clip();
+      bake.patch(compound,'rgba(126,121,96,.74)');
+      bake.road([...compound,compound[0]],7,'rgba(82,85,62,.42)');
+      bake.road([at(-137,153),at(125,153)],22,'rgba(99,98,80,.65)');
+      for(const u of [-102,-11,80]) {
+        bake.road([at(u,121),at(u,181)],13,'rgba(102,103,88,.72)');
+        bake.road([at(u-4,123),at(u-4,181)],1.4,'rgba(56,60,49,.30)');
+      }
+      bake.ctx.restore();
       bake.patch(yard,'rgba(121,111,84,.82)');
       bake.road([...yard,yard[0]],5,'rgba(82,82,60,.65)');
       // Two worn wheel lanes curve into the existing apron access corridor.
@@ -761,7 +808,7 @@ export function createLand(scene, shared) {
     const isBlocked = (x, y, margin = 0) => blocked.some(b => Math.hypot(b.x - x, b.y - y) < b.r + margin);
     let trees = 0;
     for (let x = -radius - spacing; x <= radius + spacing; x += spacing) for (let y = -radius - spacing; y <= radius + spacing; y += spacing) {
-      const jx = x + (hash2(x + gx, y) - .5) * spacing * .9, jy = y + (hash2(y + gy, x) - .5) * spacing * .9;
+      let jx = x + (hash2(x + gx, y) - .5) * spacing * .9, jy = y + (hash2(y + gy, x) - .5) * spacing * .9;
       if (!inside(jx, jy) || !detailClear(jx, jy,12) || isBlocked(jx, jy) || nearRoad(jx, jy, 10)) continue;
       const h = hill(jx, jy), coast = polygonDistance(jx, jy, shore);
       if (coast < 24) continue;   // the beach is sand, not forest
@@ -769,23 +816,52 @@ export function createLand(scene, shared) {
       const r = hash2(jx * 3 + gy, jy * 3 + gx);
       if (B.scrub && r < .18 && h < .7) { batch.cone(jx, jy, GROUND, 3 + r * 12, 3, 5, rgb(B.trees[1]), rgb(B.trees[0]), r * TAU); continue; }
       if (f < threshold || (farmland(jx, jy) && r > .06)) continue;
+      // Redistribute the same eligible trees into irregular close-knit groves.
+      // No additional crowns/triangles: rejected moves retain original positions.
+      if(!B.palmOnly&&!B.scrub) {
+        const cell=112,cx=Math.floor(jx/cell),cy=Math.floor(jy/cell);
+        const ax=(cx+.30+hash2(cx+gx,cy)*.4)*cell,ay=(cy+.30+hash2(cy+gy,cx)*.4)*cell;
+        const xx=ax+(jx-ax)*.52,yy=ay+(jy-ay)*.52;
+        if(inside(xx,yy)&&detailClear(xx,yy,15)&&!isBlocked(xx,yy)&&!nearRoad(xx,yy,14)&&!farmland(xx,yy)&&polygonDistance(xx,yy,shore)>28) {
+          jx=xx;jy=yy;
+        }
+      }
       trees++;
       const color = treeColors[Math.floor(r * treeColors.length)];
       // Irregular leaf litter anchors each crown and joins close trees into
       // woodland masses. Seven cheap polygon vertices, no extra gradient.
       const litter=[];
-      for(let k=0;k<7;k++) { const a=k*TAU/7,rr=(15+r*9)*( .8+hash2(k,jx)*.35);litter.push([jx+Math.cos(a)*rr,jy+Math.sin(a)*rr]); }
-      bake.patch(litter,'rgba(57,66,36,.30)');
+      for(let k=0;k<7;k++) { const a=k*TAU/7,rr=(20+r*10)*( .8+hash2(k,jx)*.35);litter.push([jx+Math.cos(a)*rr,jy+Math.sin(a)*rr]); }
+      bake.patch(litter,'rgba(48,60,33,.40)');
       bake.shadow(jx,jy,11+r*5,18,.57);
       if (B.palmOnly || (B.palms && (coast < 90 || r < .12))) batch.palm(jx, jy, GROUND, 8 + r * 5, color, r * TAU);
       else if (B.acacia) { batch.cone(jx, jy, GROUND + 6, 9 + r * 5, 3, 6, color, shade(color, .85), r * TAU); batch.box(jx, jy, GROUND, 1.6, 1.6, 6, 0, rgb('#5a4630')); }
       else batch.broadleaf(jx,jy,GROUND,10+r*6,color,r*TAU);
     }
+    // Connected low rock shelves replace isolated stones on geological reaches.
+    // All face vertices remain inside the unchanged physical shore polygon.
+    for(let i=0;i<denseShore.length;i++) {
+      const j=(i+1)%denseShore.length,p=denseShore[i],q=denseShore[j];
+      const reach=rockReach((p[0]+q[0])*.5,(p[1]+q[1])*.5);
+      if(reach<.55)continue;
+      const a=interior[i],b=interior[j];
+      if(![p,q,a,b].every(([x,y])=>detailClear(x,y,10))||nearRoad(a[0],a[1],12))continue;
+      const outerA=[p[0]+(a[0]-p[0])*.16,p[1]+(a[1]-p[1])*.16];
+      const outerB=[q[0]+(b[0]-q[0])*.16,q[1]+(b[1]-q[1])*.16];
+      if(![outerA,outerB,a,b].every(([x,y])=>insidePolygon(x,y,shore)))continue;
+      const h=GROUND+.6+reach*.4,ref=[(a[0]+b[0])*.5,2,(a[1]+b[1])*.5];
+      const v=(p,h)=>[p[0],h,p[1]],col=rgb(B.rock);
+      // A broad gently sloped top has upward lighting. The old steep face
+      // and dark interior wall collapsed into a black railing at phone scale.
+      batch.face([v(outerA,GROUND-1),v(outerB,GROUND-1),v(b,h),v(a,h)],shade(col,.94),ref);
+      bake.road([a,b],6,'rgba(69,74,53,.14)');
+    }
+
     // Low coastal outcrops, drift and scrub form irregular groups instead of
     // single gems spaced at polygon vertices. All centers remain on real land.
     for(let i=0;i<denseShore.length;i+=2) {
       const p=denseShore[i],q=interior[i],h=hash2(p[0]+gx,p[1]+gy);
-      if(h>.55)continue;
+      if(h>.55||rockReach(p[0],p[1])>.55)continue;
       const dx=q[0]-p[0],dy=q[1]-p[1],distance=Math.hypot(dx,dy)||1;
       const nx=dx/distance,ny=dy/distance,x=p[0]+nx*(16+h*32),y=p[1]+ny*(16+h*32);
       if(!insidePolygon(x,y,shore)||!detailClear(x,y,15)||nearRoad(x,y,12))continue;
@@ -817,14 +893,51 @@ export function createLand(scene, shared) {
     return group;
   }
 
+  // Wire format contains transferable buffers and plain metadata only. Main
+  // materials retain their live uniforms and shader hooks after reconstruction.
+  async function serialize(group) {
+    const ground = group.children.find(n => n.material?.uniforms?.albedoMap)?.material;
+    const canvas = ground.uniforms.albedoMap.value.image;
+    // WebGL ignores Texture.flipY for ImageBitmap: perform its equivalent here.
+    const bitmap = await createImageBitmap(canvas, { imageOrientation: 'flipY', premultiplyAlpha: 'none', colorSpaceConversion: 'none' });
+    const meshes = group.children.map(n => ({
+      role: n.material === shared.surfMaterial ? 'surf' : n.material === shallowsMaterial ? 'shallows' : n.material === sceneryMaterial ? 'scenery' : 'ground',
+      position: n.position.toArray(), quaternion: n.quaternion.toArray(), scale: n.scale.toArray(),
+      attributes: Object.fromEntries(Object.entries(n.geometry.attributes).map(([key,a]) => [key, { array:a.array, itemSize:a.itemSize, normalized:a.normalized }])),
+      index: n.geometry.index?.array || null,
+    }));
+    const payload = { position:group.position.toArray(), userData:group.userData, meshes, bitmap,
+      terrainMin:ground.uniforms.terrainMin.value.toArray(), terrainSize:ground.uniforms.terrainSize.value.toArray() };
+    return payload;
+  }
+  function hydrate(payload) {
+    const group = new THREE.Group(); group.position.fromArray(payload.position); group.userData = payload.userData;
+    const texture = new THREE.Texture(payload.bitmap);
+    texture.colorSpace = THREE.SRGBColorSpace; texture.flipY = false;
+    texture.minFilter = THREE.LinearMipmapLinearFilter; texture.magFilter = THREE.LinearFilter;
+    texture.generateMipmaps = true; texture.needsUpdate = true;
+    const ground = groundTemplate.clone(); ground.uniforms.noiseTex.value = noiseTexture();
+    for (const key of ['time', 'wind', 'cloudSpeed', 'cloudStrength']) ground.uniforms[key] = shared[key];
+    ground.uniforms.albedoMap.value = texture;
+    ground.uniforms.terrainMin.value.fromArray(payload.terrainMin); ground.uniforms.terrainSize.value.fromArray(payload.terrainSize);
+    const materials = { ground, surf:shared.surfMaterial, shallows:shallowsMaterial, scenery:sceneryMaterial };
+    for (const data of payload.meshes) {
+      const geometry = new THREE.BufferGeometry();
+      for (const [key,a] of Object.entries(data.attributes)) geometry.setAttribute(key,new THREE.BufferAttribute(a.array,a.itemSize,a.normalized));
+      if (data.index) geometry.setIndex(new THREE.BufferAttribute(data.index,1));
+      const mesh = new THREE.Mesh(geometry,materials[data.role]);
+      mesh.position.fromArray(data.position); mesh.quaternion.fromArray(data.quaternion); mesh.scale.fromArray(data.scale); group.add(mesh);
+    }
+    return group;
+  }
   return {
-    build,
+    build, serialize, hydrate,
     dispose(group) {
       const disposed=new Set();
       group.traverse(node => {
         if (!node.isMesh) return;
         node.geometry.dispose();
-        if (node.material.uniforms?.albedoMap && !disposed.has(node.material)) { disposed.add(node.material); node.material.uniforms.albedoMap.value?.dispose(); node.material.dispose(); }
+        if (node.material.uniforms?.albedoMap && !disposed.has(node.material)) { disposed.add(node.material); node.material.uniforms.albedoMap.value?.image?.close?.(); node.material.uniforms.albedoMap.value?.dispose(); node.material.dispose(); }
       });
     },
   };

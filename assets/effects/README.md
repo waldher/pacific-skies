@@ -1,0 +1,19 @@
+# Runtime effects atlas
+
+Generated via built-in image_gen, 2026-11-06. Actual sprites, not screenshot art.
+Source: exec-dae449e6-72d9-4cf4-b043-1e68d5916bdb.png, 1254 square RGBA.
+The generated source remains outside the repository; runtime integrates the
+512-square WebP in this directory. The source PNG is not shipped.
+SHA256: f6e1ad226235b1685e755f272b3135372cc93c6384fb134c3d8e5cea037f5d5e
+First generation: exec-a9443f87-e855-4390-ba8f-e023d37a5dff.png. Rejected because background residual alpha produced square haze.
+
+Atlas layout top-left fireball, top-right shockwave, bottom-left smoke, bottom-right water splash. These match existing kind 0,1,2,3 if the loader uses flipY=false with existing gl_PointCoord. Verify in runtime before capture.
+
+Production variants: ImageMagick resize 512 or 256 square, WebP quality90. Runtime uses 512 (64KB, 1MiB decoded, 256px cells) for crisp largest smoke; 256 (23KB, 256KiB decoded) if phone sampling shows no difference. No mipmaps; LinearFilter; padding avoids tile bleed. Preserve transparent alpha. Source corners, cell center crossing, and shockwave center verified exactly alpha0. Composite alpha-inspection.png is review only, never a runtime asset.
+
+Shader integration: one sample, unchanged point draw. Texture RGB now contains physical color, not gray lighting. Decode sRGB once before linear tone mapping, use sprite.rgb as base, preserve vertex tint alpha; use near-white tints for smoke/splash rather than multiplying existing dark smoke tint twice. Fire may use modest emissive multiplier; avoid replacing all red channel with bright yellow. Keep procedural fallback until async load succeeds. Existing timing/particle count remains unchanged. Add per-particle UV rotation from deterministic seed if visual repetition remains; same atlas and sample, no extra particles.
+
+Prompt specification: Production transparent RGBA 2x2 gameVFX atlas with centered effects and transparent gutters, fireball orange/amber white-hot core and russet turbulent edges, broken warm-white pressure ring overhead with transparent center, charcoal billowing smoke lit upper-left with dark cavities and wispy edges, white/cool-blue water splash overhead with radial foamy jets and transparent gaps. Crisp painterly physically convincing stylized realism, readable at128px, not cartoon/icons/uniform circles. No scene, ground, text, borders, grid, checkerboard or baked shadow.
+
+Final corrective prompt (exact):
+Edit this exact production 2 by 2 VFX atlas. Preserve all four effects, their order, natural physical detail, and square equal cell arrangement. Fix alpha only and slightly reduce effect sizes if necessary: remove ALL gray/white background haze outside the four sprites so empty pixels have exactly zero alpha. There must be a fully transparent empty gutter occupying 10 percent of each cell width around every cell edge, with absolutely zero visible color or alpha. Shockwave center must be fully transparent, with only the thin ring visible. Water splash gaps must be fully transparent. Keep soft semitransparent wisps only very close to each effect silhouette. Do not add any new glow or haze. No background, no checkerboard, no text or grid. This is a real game texture atlas sampled as four sprites, so any faint residual background would create ugly square rectangles. Genuine transparent RGBA output.

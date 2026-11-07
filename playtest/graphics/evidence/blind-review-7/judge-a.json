@@ -1,0 +1,328 @@
+{
+  "view-01.png": {
+    "scores": [
+      6.5,
+      7.5,
+      5.5,
+      6,
+      5.5
+    ],
+    "evidence": "Broad striped deck and long wake read beneath many overlapping pale planes; player remains obscured by wings and dots.",
+    "weighted_score": 6.275
+  },
+  "view-02.png": {
+    "scores": [
+      8.5,
+      7,
+      5.5,
+      5.5,
+      4.5
+    ],
+    "evidence": "Raised bridge, visible dark hull side and larger plane establish more height; soft deck and water still limit material detail.",
+    "weighted_score": 6.55
+  },
+  "view-03.png": {
+    "scores": [
+      7.5,
+      9,
+      9,
+      9,
+      8
+    ],
+    "evidence": "Produce, wood, stone and fabric are distinct under coherent cast shadows; thin paths remain legible in crowded market.",
+    "weighted_score": 8.4
+  },
+  "view-04.png": {
+    "scores": [
+      5.5,
+      6.5,
+      5.5,
+      5.5,
+      5
+    ],
+    "evidence": "Numerous hard gray smoke clumps and orange pinpoints obscure the deck and aircraft; deep offset shadows imply altitude but add visual clutter.",
+    "weighted_score": 5.625
+  },
+  "view-05.png": {
+    "scores": [
+      8,
+      7.5,
+      6,
+      7,
+      5
+    ],
+    "evidence": "Hangars show strong dark walls and light roofs, with a dirt service compound; coarse grass is busy and larger player overlaps similarly blue-gray roof.",
+    "weighted_score": 6.9
+  },
+  "view-06.png": {
+    "scores": [
+      8.5,
+      7,
+      5,
+      5.5,
+      4.5
+    ],
+    "evidence": "Broad pale quiet deck separates well from teal water; raised bridge and wake help, while surfaces remain softly shaded.",
+    "weighted_score": 6.45
+  },
+  "view-07.png": {
+    "scores": [
+      8.5,
+      8,
+      5.5,
+      7,
+      5
+    ],
+    "evidence": "Service compound, sheds, tracks and runway form clear geography; shaded trees ground the scene but material lighting remains modest.",
+    "weighted_score": 7.05
+  },
+  "view-08.png": {
+    "scores": [
+      8.5,
+      7.5,
+      6,
+      6.5,
+      5
+    ],
+    "evidence": "Larger blue-edged player is visible above shoreline and buildings have dark side faces; coarse grass grain competes with fine tree detail.",
+    "weighted_score": 6.975
+  },
+  "view-09.png": {
+    "scores": [
+      6.5,
+      9,
+      9,
+      9.5,
+      8.5
+    ],
+    "evidence": "Layered fog, trees, ruts and weathered shed make rich terrain; low-contrast gray tanks are difficult to isolate.",
+    "weighted_score": 8.25
+  },
+  "view-10.png": {
+    "scores": [
+      8.5,
+      7.5,
+      5.5,
+      6,
+      5.5
+    ],
+    "evidence": "Broad striped deck has clear water contrast and long wake; bridge shadow adds depth with simple surface response.",
+    "weighted_score": 6.875
+  },
+  "view-11.png": {
+    "scores": [
+      6.5,
+      7,
+      5,
+      5.5,
+      5
+    ],
+    "evidence": "Full-width deck is discernible in the aircraft swarm, but wings share its pale color and soft particles crowd player.",
+    "weighted_score": 5.925
+  },
+  "view-12.png": {
+    "scores": [
+      8.5,
+      7.5,
+      6,
+      6,
+      5.5
+    ],
+    "evidence": "Sharp raised bridge and deep hull side provide height, with readable strips and long wake; deck itself remains uniformly lit.",
+    "weighted_score": 6.975
+  },
+  "view-13.png": {
+    "scores": [
+      6,
+      8.5,
+      9,
+      9,
+      8.5
+    ],
+    "evidence": "Wet reflections, rain, smoke and tracer light are integrated; small dark infantry blend into debris.",
+    "weighted_score": 7.925
+  },
+  "view-14.png": {
+    "scores": [
+      8.5,
+      8,
+      5.5,
+      6.5,
+      5
+    ],
+    "evidence": "Player edging and tree tones support hierarchy; partial compound adds purpose, while fields remain plain rectangles.",
+    "weighted_score": 6.975
+  },
+  "view-15.png": {
+    "scores": [
+      8.5,
+      7.5,
+      5,
+      6.5,
+      4
+    ],
+    "evidence": "Edged player separates from mottled grass; tree variety and compound enrich coastline but scene remains soft.",
+    "weighted_score": 6.625
+  },
+  "view-16.png": {
+    "scores": [
+      7.5,
+      7.5,
+      5.5,
+      6,
+      5.5
+    ],
+    "evidence": "Sharp full-width deck and wake clarify ship; pale aircraft lose contrast when crossing deck.",
+    "weighted_score": 6.575
+  },
+  "view-17.png": {
+    "scores": [
+      7,
+      6.5,
+      5.5,
+      5.5,
+      5
+    ],
+    "evidence": "Larger planes and deep shadows provide height; smoke clumps and small flames obscure bridge and deck, with weak connection to a specific impact.",
+    "weighted_score": 6.075
+  },
+  "view-18.png": {
+    "scores": [
+      8.5,
+      7,
+      5.5,
+      6,
+      4
+    ],
+    "evidence": "Larger outlined plane reads above coast and dark building sides establish height; blurry high-contrast grass adds noise without clear material form.",
+    "weighted_score": 6.55
+  },
+  "view-19.png": {
+    "scores": [
+      8,
+      7,
+      5.5,
+      6.5,
+      4
+    ],
+    "evidence": "Raised hangars and dirt compound supply structure, but soft coarse grass and player/roof overlap reduce clarity.",
+    "weighted_score": 6.475
+  },
+  "view-20.png": {
+    "scores": [
+      8.5,
+      9,
+      9,
+      9,
+      8
+    ],
+    "evidence": "Rooms have convincing wall depth, warm/cool light, wooden and tiled floors and detailed furniture.",
+    "weighted_score": 8.7
+  },
+  "view-21.png": {
+    "scores": [
+      8.5,
+      7.5,
+      5,
+      6.5,
+      4
+    ],
+    "evidence": "Service structures and tracks make purposeful terrain; edged player is visible, but ground is broadly mottled and roofs simple.",
+    "weighted_score": 6.625
+  },
+  "view-22.png": {
+    "scores": [
+      7,
+      7,
+      6,
+      6,
+      5.5
+    ],
+    "evidence": "Sharp raised bridge and aircraft shadows give height; gray clumpy smoke and orange flecks add action but interrupt deck readability.",
+    "weighted_score": 6.425
+  },
+  "view-23.png": {
+    "scores": [
+      7.5,
+      7,
+      5,
+      5.5,
+      4.5
+    ],
+    "evidence": "Broad tan ship separates from water with a long wake; similarly pale aircraft overlap deck and remain hard to isolate.",
+    "weighted_score": 6.15
+  },
+  "view-24.png": {
+    "scores": [
+      6.5,
+      8.5,
+      9,
+      9,
+      9
+    ],
+    "evidence": "Detailed machinery and atmospheric cliffs surround a layered luminous explosion; intensity obscures nearby units.",
+    "weighted_score": 8.15
+  },
+  "view-25.png": {
+    "scores": [
+      5.5,
+      6.5,
+      6,
+      6,
+      5.5
+    ],
+    "evidence": "Sharper smoke clumps and flame fragments give much more activity, but dense gray clusters cover deck and merge with planes; shadows add yet more shapes.",
+    "weighted_score": 5.875
+  },
+  "_summary": {
+    "weights": [
+      0.3,
+      0.2,
+      0.2,
+      0.15,
+      0.15
+    ],
+    "mean_score": 6.855,
+    "strongest": [
+      {
+        "filename": "view-20.png",
+        "weighted_score": 8.7
+      },
+      {
+        "filename": "view-03.png",
+        "weighted_score": 8.4
+      },
+      {
+        "filename": "view-09.png",
+        "weighted_score": 8.25
+      }
+    ],
+    "weakest": [
+      {
+        "filename": "view-11.png",
+        "weighted_score": 5.925
+      },
+      {
+        "filename": "view-25.png",
+        "weighted_score": 5.875
+      },
+      {
+        "filename": "view-04.png",
+        "weighted_score": 5.625
+      }
+    ],
+    "all_images_viewed": true,
+    "visible_regressions": [
+      "Views04/25: dense opaque-looking gray smoke clusters obscure planes and deck much more than soft dots in views11/01; readability drops to5.5.",
+      "Views17/22: isolated gray clumps and orange flecks interrupt structure without a clear impact focal point.",
+      "Views05/19: enlarged player overlaps a similarly colored hangar roof; greater object height does not guarantee player separation.",
+      "Views08/18: coarse grass grain adds visual noise relative to restrained mottling in views14/15."
+    ],
+    "top3_gaps": [
+      "Reduce smoke density and opacity around the player and spread effects into recognizable stages rather than uniform clumps.",
+      "Use material-specific illumination and contact detail; louder ground texture does not substitute for surface depth.",
+      "Maintain a player cue that survives roof, deck, smoke and aircraft overlap."
+    ],
+    "blinding_limitations": "All25PNGs individually inspected; no keys/source/outside files read. Recognizable unchanged controls keep exact prior vectors."
+  }
+}

@@ -1,0 +1,649 @@
+{
+  "view-01.png": {
+    "scores": [
+      8,
+      7.5,
+      6.5,
+      6.5,
+      6
+    ],
+    "evidence": "Crisp ring gives player location despite bow overlap; orange sparks and raised bridge remain distinct, with grainy smoke.",
+    "weighted_score": 7.075,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-02.png": {
+    "scores": [
+      8.5,
+      8,
+      5.5,
+      6.5,
+      5
+    ],
+    "evidence": "Edged player, varied tree tones and partial compound support hierarchy; fields remain simple patches.",
+    "weighted_score": 6.975,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-03.png": {
+    "scores": [
+      6.5,
+      5,
+      3.5,
+      3.5,
+      3.5
+    ],
+    "evidence": "Sharper fields and water flecks increase detail, but saturated patchwork grass and plain buildings compete with aircraft.",
+    "weighted_score": 4.7,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-04.png": {
+    "scores": [
+      8.5,
+      7.0,
+      6,
+      7.5,
+      5
+    ],
+    "evidence": "More irregular coastline and clustered rocks/trees give terrain a less uniform outline and richer arrangement. Abrupt polygonal bends, linear pale foam dashes and simple grass/field surfaces still limit naturalness. Player ring remains clear.",
+    "weighted_score": 7.025,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-05.png": {
+    "scores": [
+      8.5,
+      7.5,
+      6.5,
+      6.5,
+      5.5
+    ],
+    "evidence": "Raised bridge and rim restore carrier volume; cyan ring gives a clear location cue, while quiet scene already reads well. Scalloped wake persists.",
+    "weighted_score": 7.15,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-06.png": {
+    "scores": [
+      8.5,
+      7.5,
+      6,
+      7.5,
+      5.5
+    ],
+    "evidence": "Longer pale tapered shoreline wisps vary in length and spacing, losing the regular dashed-road appearance. They still resemble isolated brush strokes rather than overlapping broken foam. Rock/tree clusters and cyan player ring remain clear; terrain is coarse and shore angular.",
+    "weighted_score": 7.2,
+    "regressions": "No new major regression; sparse thin foam wisps still lack convincing surf breakup and shore contact."
+  },
+  "view-07.png": {
+    "scores": [
+      8.5,
+      7,
+      6,
+      6,
+      4.5
+    ],
+    "evidence": "Ring isolates player location on soft tan deck, but aircraft still blends with deck and the ring adds no material depth.",
+    "weighted_score": 6.725,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-08.png": {
+    "scores": [
+      8.5,
+      9,
+      9,
+      9,
+      8
+    ],
+    "evidence": "Detailed rooms, wall height, warm/cool light, wood and tile create convincing depth.",
+    "weighted_score": 8.7,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-09.png": {
+    "scores": [
+      8.5,
+      7.0,
+      5.5,
+      7.0,
+      5.0
+    ],
+    "evidence": "Longer pale tapered shoreline wisps vary in length and spacing, losing the regular dashed-road appearance. They still resemble isolated brush strokes rather than overlapping broken foam. Rock/tree clusters and cyan player ring remain clear; terrain is coarse and shore angular.",
+    "weighted_score": 6.85,
+    "regressions": "No new major regression; sparse thin foam wisps still lack convincing surf breakup and shore contact."
+  },
+  "view-10.png": {
+    "scores": [
+      7.5,
+      5.5,
+      3.5,
+      3.5,
+      3
+    ],
+    "evidence": "Quiet ship easily scanned, yet flat tan deck and hard-edged blue wake have weak material and effects craft.",
+    "weighted_score": 5.025,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-11.png": {
+    "scores": [
+      6.5,
+      5,
+      3,
+      3.5,
+      3
+    ],
+    "evidence": "Runway recognizable but bright tiled fields, blotchy terrain and flat square buildings lack depth; objective covers plane.",
+    "weighted_score": 4.525,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-12.png": {
+    "scores": [
+      6.5,
+      5.5,
+      3,
+      3,
+      2.5
+    ],
+    "evidence": "Aircraft silhouettes clear outside carrier; translucent discs cover deck and hard rectangular wake lacks natural fade.",
+    "weighted_score": 4.475,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-13.png": {
+    "scores": [
+      8,
+      7,
+      6,
+      6,
+      5.5
+    ],
+    "evidence": "Ring helps locate player beneath overlapping wings at bow; ship and sea materials otherwise unchanged and soft.",
+    "weighted_score": 6.725,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-14.png": {
+    "scores": [
+      8.5,
+      7.5,
+      5,
+      6.5,
+      4
+    ],
+    "evidence": "Player separates from grass; varied trees and partial compound enrich coast, with soft materials.",
+    "weighted_score": 6.625,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-15.png": {
+    "scores": [
+      6.5,
+      7.5,
+      5.5,
+      6,
+      5.5
+    ],
+    "evidence": "Sharp deck and broad wake stay coherent beneath dense aircraft; similar pale wings still mask player.",
+    "weighted_score": 6.275,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-16.png": {
+    "scores": [
+      6.5,
+      8.5,
+      9,
+      9,
+      9
+    ],
+    "evidence": "Luminous layered explosion, sparks and atmospheric cliffs give depth; nearby units partly disappear.",
+    "weighted_score": 8.15,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-17.png": {
+    "scores": [
+      8.5,
+      8,
+      5.5,
+      7,
+      5
+    ],
+    "evidence": "Sharp service compound, sheds, tracks and runway provide coherent geography; grass material remains simplified.",
+    "weighted_score": 7.05,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-18.png": {
+    "scores": [
+      8.5,
+      7.5,
+      5.5,
+      6,
+      5.5
+    ],
+    "evidence": "Quiet broad deck contrasts with water; bridge shadow, deck lines and soft wake add simple volume.",
+    "weighted_score": 6.875,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-19.png": {
+    "scores": [
+      7.5,
+      7.5,
+      5.5,
+      6,
+      5.5
+    ],
+    "evidence": "Sharp tan deck and wake clarify ship; pale aircraft merge at deck overlap.",
+    "weighted_score": 6.575,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-20.png": {
+    "scores": [
+      7,
+      6.5,
+      5.5,
+      6,
+      5.5
+    ],
+    "evidence": "Pale carrier edge and fine light deck lines are visible, but reduced dark contrast around the deck structure flattens its raised features. Player ring remains readable; tan surface and repeated wake bands retain schematic material treatment.",
+    "weighted_score": 6.225,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-21.png": {
+    "scores": [
+      7.5,
+      7,
+      5,
+      5.5,
+      4.5
+    ],
+    "evidence": "Broad tan ship contrasts with teal water and trailing wake; pale aircraft overlap deck.",
+    "weighted_score": 6.15,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-22.png": {
+    "scores": [
+      8,
+      7,
+      5.5,
+      6,
+      5.5
+    ],
+    "evidence": "Pale carrier edge and fine light deck lines are visible, but reduced dark contrast around the deck structure flattens its raised features. Player ring remains readable; tan surface and repeated wake bands retain schematic material treatment.",
+    "weighted_score": 6.625,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-23.png": {
+    "scores": [
+      8.5,
+      7,
+      5.5,
+      6,
+      4.5
+    ],
+    "evidence": "Pale carrier edge and fine light deck lines are visible, but reduced dark contrast around the deck structure flattens its raised features. Player ring remains readable; tan surface and repeated wake bands retain schematic material treatment.",
+    "weighted_score": 6.625,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-24.png": {
+    "scores": [
+      8.5,
+      7.0,
+      6,
+      7.5,
+      5
+    ],
+    "evidence": "More irregular coastline and clustered rocks/trees give terrain a less uniform outline and richer arrangement. Abrupt polygonal bends, linear pale foam dashes and simple grass/field surfaces still limit naturalness. Player ring remains clear.",
+    "weighted_score": 7.025,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-25.png": {
+    "scores": [
+      8.5,
+      7.5,
+      5,
+      6.5,
+      4
+    ],
+    "evidence": "Service compound and runway organize the coast; soft player overlaps a blue-gray roof.",
+    "weighted_score": 6.625,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-26.png": {
+    "scores": [
+      5,
+      4.5,
+      3,
+      3,
+      2.5
+    ],
+    "evidence": "Large flat translucent circles cover planes and deck; rectangular wake and objective text crowd action.",
+    "weighted_score": 3.825,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-27.png": {
+    "scores": [
+      7.5,
+      9,
+      9,
+      9,
+      8
+    ],
+    "evidence": "Market produce, stone, wood and fabric distinct under consistent shadows; thin paths remain visible.",
+    "weighted_score": 8.4,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-28.png": {
+    "scores": [
+      8.5,
+      7,
+      5,
+      5.5,
+      4.5
+    ],
+    "evidence": "Broad deck and bridge remain clear; simple surface shading and long soft wake.",
+    "weighted_score": 6.45,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-29.png": {
+    "scores": [
+      6.5,
+      9,
+      9,
+      9.5,
+      8.5
+    ],
+    "evidence": "Fog, varied vegetation, muddy ruts and weathered shed build rich depth; tanks blend with terrain.",
+    "weighted_score": 8.25,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-30.png": {
+    "scores": [
+      8.5,
+      6.5,
+      5.5,
+      7.0,
+      4.5
+    ],
+    "evidence": "More irregular coastline and clustered rocks/trees give terrain a less uniform outline and richer arrangement. Abrupt polygonal bends, linear pale foam dashes and simple grass/field surfaces still limit naturalness. Player ring remains clear.",
+    "weighted_score": 6.675,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-31.png": {
+    "scores": [
+      6.5,
+      5.5,
+      3.5,
+      3.5,
+      3
+    ],
+    "evidence": "Crisp aircraft and sea flecks help detail; flat circles and rectangular wake remain unconvincing effects over a plain deck.",
+    "weighted_score": 4.725,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-32.png": {
+    "scores": [
+      8.5,
+      6.5,
+      5.5,
+      7.0,
+      4.5
+    ],
+    "evidence": "More irregular coastline and clustered rocks/trees give terrain a less uniform outline and richer arrangement. Abrupt polygonal bends, linear pale foam dashes and simple grass/field surfaces still limit naturalness. Player ring remains clear.",
+    "weighted_score": 6.675,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-33.png": {
+    "scores": [
+      8.5,
+      7.5,
+      6,
+      7.5,
+      5.5
+    ],
+    "evidence": "Longer pale tapered shoreline wisps vary in length and spacing, losing the regular dashed-road appearance. They still resemble isolated brush strokes rather than overlapping broken foam. Rock/tree clusters and cyan player ring remain clear; terrain is coarse and shore angular.",
+    "weighted_score": 7.2,
+    "regressions": "No new major regression; sparse thin foam wisps still lack convincing surf breakup and shore contact."
+  },
+  "view-34.png": {
+    "scores": [
+      5,
+      4.5,
+      3.5,
+      3.5,
+      3
+    ],
+    "evidence": "Crisper wings and white sea flecks add detail but giant flat particle circles obscure the carrier; rectangular wake looks graphic.",
+    "weighted_score": 4.075,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-35.png": {
+    "scores": [
+      8.5,
+      7.0,
+      5.5,
+      7.0,
+      5.0
+    ],
+    "evidence": "Longer pale tapered shoreline wisps vary in length and spacing, losing the regular dashed-road appearance. They still resemble isolated brush strokes rather than overlapping broken foam. Rock/tree clusters and cyan player ring remain clear; terrain is coarse and shore angular.",
+    "weighted_score": 6.85,
+    "regressions": "No new major regression; sparse thin foam wisps still lack convincing surf breakup and shore contact."
+  },
+  "view-36.png": {
+    "scores": [
+      6.5,
+      7,
+      5,
+      5.5,
+      5
+    ],
+    "evidence": "Broad pale deck shows through swarm, but overlapping wings and soft pale dots obscure central player.",
+    "weighted_score": 5.925,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-37.png": {
+    "scores": [
+      7,
+      7,
+      6.0,
+      6.5,
+      6
+    ],
+    "evidence": "Pale carrier edge and fine light deck lines are visible, but reduced dark contrast around the deck structure flattens its raised features. Player ring remains readable; tan surface and repeated wake bands retain schematic material treatment.",
+    "weighted_score": 6.575,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-38.png": {
+    "scores": [
+      6.5,
+      5,
+      3.5,
+      3.5,
+      3.5
+    ],
+    "evidence": "Sharper fields and water flecks increase detail, but saturated patchwork grass and plain buildings compete with aircraft.",
+    "weighted_score": 4.7,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-39.png": {
+    "scores": [
+      7,
+      7,
+      6.5,
+      6.5,
+      6
+    ],
+    "evidence": "Player ring stands out within dense sharp swarm, improving recovery; wings still obscure aircraft shape and granular smoke dots crowd deck.",
+    "weighted_score": 6.675,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-40.png": {
+    "scores": [
+      6.5,
+      5,
+      3,
+      3.5,
+      3
+    ],
+    "evidence": "Field patchwork is vivid but dominates small player; flat buildings and blotchy grass lack consistent material treatment.",
+    "weighted_score": 4.525,
+    "regressions": "No visual change. Corrected wrong-anchor clerical association; exact round8/view24 historical scores restored.",
+    "anchor_provenance": {
+      "reason": "Clerical wrong-anchor association in round14; no visual re-rating.",
+      "sha256": "dd11f26eba69efced0745374a5fa48ce13d2a07e115c76cfbe13a2f068127d93",
+      "identical_images": [
+        "judge-packet-8/view-24.png",
+        "judge-packet-14/view-40.png",
+        "judge-packet-15/view-36.png"
+      ],
+      "historical_source": "judge-a-8.json/view-24.png",
+      "preserved_scores": [
+        6.5,
+        5,
+        3,
+        3.5,
+        3
+      ],
+      "corrected_report": "judge-a-14.json/view-40.png",
+      "previous_incorrect_scores": [
+        6.5,
+        5,
+        3.5,
+        3.5,
+        3.5
+      ],
+      "wrong_source": "judge-a-8.json/view-08.png (different image hash 4d8664403042fdb44a9b3fd664397dc60cf7bc82dd483d9ec183d337785fd1a0)",
+      "round15_disposition": "Scores retained; they already match the byte-identical round8 historical anchor."
+    }
+  },
+  "view-41.png": {
+    "scores": [
+      6,
+      8.5,
+      9,
+      9,
+      8.5
+    ],
+    "evidence": "Wet reflections, rain, smoke and orange tracer integrate; small troops blend into rubble.",
+    "weighted_score": 7.925,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-42.png": {
+    "scores": [
+      7,
+      6.5,
+      6,
+      6,
+      5.5
+    ],
+    "evidence": "Ring makes player location easier to recover in soft dense swarm; wings still overlap its silhouette and smoke remains granular.",
+    "weighted_score": 6.325,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-43.png": {
+    "scores": [
+      8,
+      7.5,
+      6.0,
+      6.5,
+      6
+    ],
+    "evidence": "Pale carrier edge and fine light deck lines are visible, but reduced dark contrast around the deck structure flattens its raised features. Player ring remains readable; tan surface and repeated wake bands retain schematic material treatment.",
+    "weighted_score": 6.975,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-44.png": {
+    "scores": [
+      8.5,
+      7.5,
+      6.0,
+      6.5,
+      5.5
+    ],
+    "evidence": "Pale carrier edge and fine light deck lines are visible, but reduced dark contrast around the deck structure flattens its raised features. Player ring remains readable; tan surface and repeated wake bands retain schematic material treatment.",
+    "weighted_score": 7.05,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "view-45.png": {
+    "scores": [
+      7.5,
+      5.5,
+      3,
+      3,
+      2.5
+    ],
+    "evidence": "Quiet deck readable but nearly featureless; wake is a hard rectangular blue strip and world objective overlaps deck.",
+    "weighted_score": 4.775,
+    "regressions": "Matched visible prior anchor; exact scores retained."
+  },
+  "_summary": {
+    "weights": [
+      0.3,
+      0.2,
+      0.2,
+      0.15,
+      0.15
+    ],
+    "mean_score": 6.412,
+    "strongest": [
+      [
+        "view-08.png",
+        8.7
+      ],
+      [
+        "view-27.png",
+        8.4
+      ],
+      [
+        "view-29.png",
+        8.25
+      ]
+    ],
+    "weakest": [
+      [
+        "view-12.png",
+        4.475
+      ],
+      [
+        "view-34.png",
+        4.075
+      ],
+      [
+        "view-26.png",
+        3.825
+      ]
+    ],
+    "all_images_viewed": true,
+    "improvements": [
+      "Longer tapered irregularly spaced shore streaks reduce the dashed-road effect.",
+      "Dark carrier structures in some images recover earlier depth; identical retained visuals receive prior scores."
+    ],
+    "visible_regressions": [
+      "No new major regression in softened foam; it remains sparse brushlike strokes.",
+      "Pale-outline carrier controls show flatter structural depth than dark-edge versions."
+    ],
+    "top3_gaps": [
+      "Foam needs irregular overlapping breakup and wash at shore, not isolated thin strokes.",
+      "Surface response remains simplified: coarse grass, smooth sand, clothlike repeated ocean texture and schematic decks.",
+      "Player ring gives location but cannot restore hidden aircraft silhouette; smoke grain and scalloped wake repetition remain."
+    ],
+    "blinding_limitations": "All45 images viewed individually. Only own prior reports consulted. No key/source/other judges inspected. Known repeated scene families limit identity blinding. Packet mean includes many older low-scoring controls and is not an iteration comparison.",
+    "anchor_audit": {
+      "reason": "Clerical wrong-anchor association in round14; no visual re-rating.",
+      "sha256": "dd11f26eba69efced0745374a5fa48ce13d2a07e115c76cfbe13a2f068127d93",
+      "identical_images": [
+        "judge-packet-8/view-24.png",
+        "judge-packet-14/view-40.png",
+        "judge-packet-15/view-36.png"
+      ],
+      "historical_source": "judge-a-8.json/view-24.png",
+      "preserved_scores": [
+        6.5,
+        5,
+        3,
+        3.5,
+        3
+      ],
+      "corrected_report": "judge-a-14.json/view-40.png",
+      "previous_incorrect_scores": [
+        6.5,
+        5,
+        3.5,
+        3.5,
+        3.5
+      ],
+      "wrong_source": "judge-a-8.json/view-08.png (different image hash 4d8664403042fdb44a9b3fd664397dc60cf7bc82dd483d9ec183d337785fd1a0)",
+      "round15_disposition": "Scores retained; they already match the byte-identical round8 historical anchor."
+    }
+  }
+}

@@ -38,6 +38,43 @@ function check(name, ok, detail) {
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? ' — ' + detail : ''}`);
 }
 
+// Campaign starts, transfers and viewport expansion may await worker scenery.
+// Input/layout assertions must observe the interactive frame, not the loading
+// overlay or the previous campaign's GPU instances. Keep assertions unchanged.
+async function waitForScenery(page) {
+  await page.waitForFunction(() => {
+    const a = window.__game;
+    return a?.game.mode === 'play' && a.graphics.world.isReady(a.game, a.view)
+      && document.getElementById('loading').hidden && a.graphics.aircraft.has(a.game.player);
+  });
+  // prepare() uploads/renders scenery before the live frame paints HUD cards.
+  await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+}
+
+
+// Native touch synthesizes click after pointerup. Observe that event rather
+// than racing it with a state read; keep using a real tap and original checks.
+async function tapSettledCard(page, selector) {
+  const card = page.locator(selector);
+  await card.scrollIntoViewIfNeeded();
+  await card.evaluate(element => new Promise(resolve => {
+    let last = '', stable = 0;
+    function frame() {
+      const r = element.getBoundingClientRect(), panel = element.closest('#sortie-panel');
+      const sample = [r.x,r.y,r.width,r.height,panel.scrollTop,panel.scrollLeft].join(',');
+      stable = sample === last ? stable + 1 : 0; last = sample;
+      if (stable >= 2) resolve(); else requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }));
+  await card.evaluate(element => {
+    window.__sortieTapObserved = false;
+    element.addEventListener('click', () => { window.__sortieTapObserved = true; }, { once:true });
+  });
+  await card.tap();
+  await page.waitForFunction(() => window.__sortieTapObserved === true);
+}
+
 (async () => {
   // tiny static server; ephemeral port avoids collisions
   const server = http.createServer((req, res) => {
@@ -83,7 +120,7 @@ function check(name, ok, detail) {
 
   await page.evaluate(seed => window.__game.setSeed(seed), SEED);
   await page.keyboard.press('Space');
-  await page.waitForTimeout(200);
+  await waitForScenery(page);
   s = await snap();
   check('Space starts the game', s.mode === 'play');
   check('single-choice sortie is a visual summary without false controls', await page.locator('#sortie-panel button, #sortie-panel select').count() === 0);
@@ -195,6 +232,7 @@ function check(name, ok, detail) {
   await page.screenshot({ path: path.join(SHOT_DIR, '02-bank.png') });
   // Reset after the renderer probe so the gameplay bot retains its seeded setup.
   await page.evaluate(seed => { window.__game.setSeed(seed); window.__game.startGame(); }, SEED);
+  await waitForScenery(page);
 
   const campaign = await page.evaluate(async () => {
     const { campaignChecks } = await import(new URL('playtest/campaign-checks.js', location.href).href);
@@ -337,7 +375,7 @@ function check(name, ok, detail) {
   if (died) {
     await page.screenshot({ path: path.join(SHOT_DIR, '04-gameover.png') });
     await page.keyboard.press('Space');
-    await page.waitForTimeout(200);
+    await waitForScenery(page);
     s = await snap();
     check('restart after death works', s.mode === 'play' && s.hp === 100);
   }
@@ -351,7 +389,7 @@ function check(name, ok, detail) {
   }));
   // Real simultaneous touch contacts: the torpedo thumb is non-primary.
   await page.evaluate(() => { window.__game.startGame(); const p = window.__game.game.player; p.flight = 'flying'; p.aircraft = 'corsair'; p.loadout = 'torpedoes'; });
-  await page.waitForTimeout(100);
+  await waitForScenery(page);
   const touch = await page.context().newCDPSession(page);
   const steering = { x: 75, y: 700, id: 1 };
   await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [steering] });
@@ -405,7 +443,7 @@ function check(name, ok, detail) {
   await page.getByRole('button', { name: /TAKE OFF/ }).click();
   check('on-screen takeoff control launches the selected aircraft', await page.evaluate(() => window.__game.game.player.flight === 'takeoff'));
   await page.evaluate(() => window.__game.startGame());
-  await page.waitForTimeout(200);
+  await waitForScenery(page);
   check('restart removes old aircraft instances', await page.evaluate(() => window.__game.graphics.aircraft.size === 1 + window.__game.game.allies.length));
   check('no JS errors during play', results.errors.length === 0, results.errors[0]);
 
@@ -417,11 +455,12 @@ function check(name, ok, detail) {
   check('phone title shows touch instructions without keyboard shortcuts', await mobile.locator('#menu').innerText().then(t => t.includes('Begin expedition') && !/Space|WASD|Arrows|T to|L to/.test(t)));
   await mobile.screenshot({ path: path.join(SHOT_DIR, '06-phone-title.png') });
   await mobile.touchscreen.tap(190, 600);
+  await waitForScenery(mobile);
   await mobile.screenshot({ path: path.join(SHOT_DIR, '06-phone-sortie.png') });
   check('phone sortie selector fits its panel', await mobile.evaluate(() => { const p = document.getElementById('sortie-panel'); return p.scrollWidth <= p.clientWidth; }));
   await mobile.evaluate(() => { const g = window.__game.game; g.score = window.__game.CONFIG.progression.aircraftUnlocks.p51; g.combatSorties = window.__game.CONFIG.progression.aircraftSorties.p51; g.rank = 2; g.rescue.status = 'complete'; g.ships[0].active = true; g.bases.find(b => b.kind === 'carrier').available = true; });
   for (const [width,height,name] of [[320,568,'small-phone'],[844,390,'landscape']]) {
-    await mobile.setViewportSize({ width,height }); await mobile.waitForTimeout(100);
+    await mobile.setViewportSize({ width,height }); await waitForScenery(mobile);
     check(`${name} sortie panel fits without overlapping the HUD`, await mobile.evaluate(() => {
       const p = document.getElementById('sortie-panel'), r = p.getBoundingClientRect();
       const ids = ['stats','campaign-status','flight-controls'];
@@ -429,11 +468,12 @@ function check(name, ok, detail) {
         && ids.every(id => { const e = document.getElementById(id); if (!e || e.hidden) return true; const b = e.getBoundingClientRect(); return r.right <= b.x || r.x >= b.right || r.bottom <= b.y || r.y >= b.bottom; });
     }));
     check(`${name} expanded aircraft cards have no clipped labels`, await mobile.locator('#sortie-aircraft button').evaluateAll(cards => cards.length === 5 && cards.every(card => card.scrollWidth <= card.clientWidth)));
-    await mobile.locator('#sortie-aircraft button[data-value="p51"]').tap();
+    await tapSettledCard(mobile, '#sortie-aircraft button[data-value="p51"]');
     check(`${name} last aircraft remains reachable by scrolling`, await mobile.evaluate(() => window.__game.game.player.aircraft === 'p51'));
-    await mobile.locator('#sortie-base button[data-value="fleet-carrier"]').tap();
+    await tapSettledCard(mobile, '#sortie-base button[data-value="fleet-carrier"]');
     check(`${name} base transfer remains reachable below aircraft choices`, await mobile.evaluate(() => window.__game.game.player.baseId === 'fleet-carrier'));
-    await mobile.locator('#sortie-base button[data-value="home-airfield"]').tap();
+    await tapSettledCard(mobile, '#sortie-base button[data-value="home-airfield"]');
+    await waitForScenery(mobile);
     await mobile.screenshot({ path: path.join(SHOT_DIR, `06-${name}-sortie.png`) });
   }
   await mobile.getByRole('button', { name: /TAKE OFF/ }).tap();

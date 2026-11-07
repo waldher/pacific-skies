@@ -1,0 +1,64 @@
+{
+  "accept": true,
+  "scope": "Five sampled motion criteria only; not full art approval or measured continuous animation smoothness.",
+  "inspected_images": 18,
+  "profiles": [
+    "phone",
+    "fallback"
+  ],
+  "ticks": [
+    0,
+    6,
+    12,
+    24,
+    36,
+    60,
+    90,
+    120,
+    180
+  ],
+  "simulation_times_seconds": [
+    0,
+    0.1,
+    0.2,
+    0.4,
+    0.6,
+    1,
+    1.5,
+    2,
+    3
+  ],
+  "findings": {
+    "impact_recognition": {
+      "pass": true,
+      "evidence": "Both profiles show white player flash at 0.1 and 0.2 seconds and hull falls from 35 to 27%. Normal material returns at 0.4. Small orange hit is distinct in size and shape from the filled yellow/orange fireball at 1 second."
+    },
+    "smoke_fading": {
+      "pass": true,
+      "evidence": "Initial hit dwindles to a few sparks by 0.4–0.6 seconds. Large fireball is gone by 1.5, leaving faint smoke and scattered embers; bright fire absent at 2–3. Continuing thin damaged-aircraft trail follows its turn.",
+      "limitation": "Trail is now connected but looks like a granular rope or chain rather than volumetric smoke. Dark fine smoke partly disappears against busy dark water, so fading is less visually legible than against quiet water."
+    },
+    "wake_continuity": {
+      "pass": true,
+      "evidence": "Carrier and escort wakes remain visibly attached to sterns and fade outward throughout the sampled turn.",
+      "limitation": "Repeated oval segments remain apparent, particularly carrier wake. Foam material looks soft and stamped beside highly detailed water."
+    },
+    "camera_motion": {
+      "pass": true,
+      "evidence": "Player moves toward center in early samples then stays tracked through turn; ships and terrain-free ocean translate coherently. No sampled positional jump or orientation reversal.",
+      "limitation": "Nine timestamps cannot establish micro-jitter or continuous interpolation. Darker water hides shadows better but adds busy texture that may shimmer; shimmer not proven by still samples."
+    },
+    "control_visibility": {
+      "pass": true,
+      "evidence": "Bomb and Fire labels and borders retain contrast and fixed placement. Escort behind Bomb at 3 seconds does not obscure label. Hull, heat and objective text remain legible.",
+      "limitation": "Hawk label intersects minimap edge around 2 seconds. Player merges partially with deck around 0.4–0.6 seconds."
+    }
+  },
+  "remaining_priorities": [
+    "Reduce water microtexture contrast to help faint smoke and aircraft shading read.",
+    "Give damage smoke irregular wispy volume instead of a connected granular chain.",
+    "Improve player separation over the light carrier deck.",
+    "Keep ally labels out of minimap; review dense combat motion separately."
+  ],
+  "limitations": "All 18 PNGs actually inspected with view_image and motion.json timestamps reviewed. No source or keys opened. No comparison of simulation timing to actual phone FPS. Acceptance uses the same sampled-event criteria as prior review."
+}

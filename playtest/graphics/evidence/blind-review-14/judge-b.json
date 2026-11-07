@@ -1,0 +1,581 @@
+{
+  "reviewer": "B",
+  "packet": 14,
+  "coverage": {
+    "imagesInspected": 45,
+    "method": "Every PNG opened with view_image. Consulted only own prior review scores for historical anchors; no key, source or other reviewer file read."
+  },
+  "criteria": [
+    "readability",
+    "coherence",
+    "lightingDepth",
+    "environment",
+    "effects"
+  ],
+  "weights": [
+    0.3,
+    0.2,
+    0.2,
+    0.15,
+    0.15
+  ],
+  "recognition": "StarCraft-like, Company of Heroes-like and tactical planning reference imagery recognized; identity does not determine scores.",
+  "images": {
+    "view-01.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        7
+      ],
+      "weightedScore": 7.5,
+      "evidence": "Sharp sparse dark-rim carrier: raised island, bright hits and ring clearly locate player. Deck/enemy overlap remains.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-02.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        6
+      ],
+      "weightedScore": 7,
+      "evidence": "Earlier sharp coast: tree shadows, shoreline rocks and roof details give depth. Broad grass and straight beach remain simple; whitecaps compete slightly.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-03.png": {
+      "scores": [
+        5,
+        5,
+        4,
+        5,
+        4
+      ],
+      "weightedScore": 4.65,
+      "evidence": "Sharp original coast: large colored field rectangles and bright blotches compete with plane and floating labels. Flat pads and abrupt beach lack material depth.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-04.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        8,
+        6
+      ],
+      "weightedScore": 7.5,
+      "evidence": "Sharp revised-contour coast with dashed foam: varied trees and rock clusters give environmental structure. Foam remains a parallel dotted border.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-05.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        6
+      ],
+      "weightedScore": 7.35,
+      "evidence": "Sharp quiet dark-rim carrier: clear hull volume and raised island. Ring locates plane but cannot isolate it from deck; repeated wake puffs.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-06.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        8,
+        6
+      ],
+      "weightedScore": 7.5,
+      "evidence": "Sharp coast with tapered foam: fewer wider and longer translucent strokes are less like dotted markings. Detached strips still float parallel to beach; no full category-point gain.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-07.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        5
+      ],
+      "weightedScore": 6.85,
+      "evidence": "Soft quiet dark-rim carrier: island and hull outline coherent; ring locates player. Soft aircraft/deck edges and puffy wake remain.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-08.png": {
+      "scores": [
+        8,
+        9,
+        9,
+        9,
+        8
+      ],
+      "weightedScore": 8.55,
+      "evidence": "Apartment reference: wall thickness, varied floors, furniture and warm/cool lighting integrate strongly. Tiny hall actors and overlays constrain readability.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-09.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        8,
+        5
+      ],
+      "weightedScore": 7.15,
+      "evidence": "Soft airfield with tapered foam: service yard, rock row and shaded trees give structure. Foam strokes are less repetitive but still detached; soft roof/player overlap remains.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-10.png": {
+      "scores": [
+        7,
+        5,
+        5,
+        4,
+        3
+      ],
+      "weightedScore": 5.15,
+      "evidence": "Sharp original quiet carrier: sparse layout readable, but rectangular wake, flat beige deck and floating text are schematic.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-11.png": {
+      "scores": [
+        5,
+        5,
+        4,
+        5,
+        3
+      ],
+      "weightedScore": 4.5,
+      "evidence": "Soft original airfield: large farmland blocks, blotchy grass and floating text crowd player. Flat building pads and weak lighting limit depth.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-12.png": {
+      "scores": [
+        5,
+        5,
+        4,
+        4,
+        2
+      ],
+      "weightedScore": 4.2,
+      "evidence": "Soft original sparse combat: flat circles obscure carrier, rectangular wake is pasted-on, and labels cross action.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-13.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        6
+      ],
+      "weightedScore": 7,
+      "evidence": "Soft sparse dark-rim combat: cyan ring and orange hits readable. Deck/player overlap, soft small effects and repetitive wake persist.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-14.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        6,
+        5
+      ],
+      "weightedScore": 6.65,
+      "evidence": "Earlier soft coast: plane visible on olive grass, roof fragment and shaded stones add context. Soft edges, repeated terrain and uniform beach.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-15.png": {
+      "scores": [
+        6,
+        7,
+        6,
+        7,
+        6
+      ],
+      "weightedScore": 6.35,
+      "evidence": "Earlier sharp swarm: deck fittings and crisp planes add richness. Player buried at stern; diffuse dot particles and pale wave fragments lack action hierarchy.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-16.png": {
+      "scores": [
+        7,
+        9,
+        9,
+        9,
+        9
+      ],
+      "weightedScore": 8.4,
+      "evidence": "Science-fiction reference: layered hot blast, sparks, metal ships and rocky terrain. Bloom and dense dark units obscure targets.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-17.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        8,
+        6
+      ],
+      "weightedScore": 7.3,
+      "evidence": "Earlier sharp airfield: fenced yard, tracks, roof facets and equipment establish functional structure. Repeated shoreline stones and plane/roof overlap remain.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-18.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        7,
+        6
+      ],
+      "weightedScore": 6.95,
+      "evidence": "Earlier sharp quiet carrier: planks, island and long twin wake are clear. Broad pale deck has modest depth; player merges with stern.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-19.png": {
+      "scores": [
+        7,
+        7,
+        6,
+        7,
+        6
+      ],
+      "weightedScore": 6.65,
+      "evidence": "Earlier sharp sparse carrier: deck detail and planes crisp against teal water. Player/stern overlap and small pale effects remain.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-20.png": {
+      "scores": [
+        7,
+        7,
+        7,
+        6,
+        6
+      ],
+      "weightedScore": 6.7,
+      "evidence": "Soft bright-rim swarm: ring provides location amid pale aircraft and orange hits. Brighter deck perimeter does not untangle overlap.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-21.png": {
+      "scores": [
+        7,
+        7,
+        6,
+        6,
+        5
+      ],
+      "weightedScore": 6.35,
+      "evidence": "Earlier soft sparse carrier: coherent tan deck and long wake, with fixed objectives. Soft planes lose contrast over deck; player overlaps stern.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-22.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        6
+      ],
+      "weightedScore": 7,
+      "evidence": "Soft bright-rim sparse carrier: perimeter visible and orange hits distinct. Pale deck fittings flatten together; overlap persists.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-23.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        5
+      ],
+      "weightedScore": 6.85,
+      "evidence": "Soft bright-rim quiet carrier: outline visible against ocean, raised island retained. Thin pale deck lines and player blend; wake puffs repetitive.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-24.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        8,
+        6
+      ],
+      "weightedScore": 7.5,
+      "evidence": "Sharp revised airfield with dashed foam: coastal rock row and varied trees complement service yard. Formulaic foam and dark blob-like tree shadows remain.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-25.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        8,
+        5
+      ],
+      "weightedScore": 6.95,
+      "evidence": "Earlier soft airfield: yard/fence, tracks and equipment add useful structure. Soft props, repetitive shoreline stones and player/roof overlap.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-26.png": {
+      "scores": [
+        4,
+        4,
+        4,
+        4,
+        2
+      ],
+      "weightedScore": 3.7,
+      "evidence": "Soft original swarm: flat translucent circles cover aircraft/deck; hard rectangular wake and floating text destroy effect coherence.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-27.png": {
+      "scores": [
+        7,
+        9,
+        9,
+        9,
+        8
+      ],
+      "weightedScore": 8.25,
+      "evidence": "Market reference: produce, wood, paving and consistent shadows yield rich material setting. Dense people and route overlays compete.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-28.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        6,
+        5
+      ],
+      "weightedScore": 6.65,
+      "evidence": "Earlier soft quiet carrier: clean fixed HUD and recognizable deck/wake. Thin soft fittings and uniformly tan surface limit depth.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-29.png": {
+      "scores": [
+        6,
+        9,
+        9,
+        10,
+        9
+      ],
+      "weightedScore": 8.25,
+      "evidence": "Fog battlefield reference: vegetation, ruined structures, terrain and haze have rich coherent layering. Small camouflaged units merge.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-30.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        8,
+        5
+      ],
+      "weightedScore": 7.15,
+      "evidence": "Soft revised airfield with dashed foam: rock row, trees and base apron give structure. Foam looks graphic; roof/player overlap and shadow blobs remain.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-31.png": {
+      "scores": [
+        5,
+        5,
+        5,
+        5,
+        3
+      ],
+      "weightedScore": 4.7,
+      "evidence": "Sharp original sparse combat: crisp planes and whitecaps offer detail, but flat circles and rectangular wake obscure action and labels cross deck.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-32.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        8,
+        5
+      ],
+      "weightedScore": 7.15,
+      "evidence": "Soft revised coast with dashed foam: curved shore, rocks and varied trees improve structure. Soft edges and thin parallel foam marks remain artificial.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-33.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        8,
+        6
+      ],
+      "weightedScore": 7.5,
+      "evidence": "Sharp revised airfield with tapered foam: visible wider soft crests vary the shoreline annotation; yard and trees remain clear. Still lacks beach/foam interaction and convincing wet materials.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-34.png": {
+      "scores": [
+        4,
+        4,
+        5,
+        5,
+        3
+      ],
+      "weightedScore": 4.2,
+      "evidence": "Sharp original swarm: whitecaps and crisp planes add detail, but large translucent circles hide carrier and objectives clutter center; hard rectangular wake.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-35.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        8,
+        5
+      ],
+      "weightedScore": 7.15,
+      "evidence": "Soft revised coast with tapered foam: fewer longer strokes reduce dotted look. Strokes remain detached pale strips; vegetation shadows are dark blobs.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-36.png": {
+      "scores": [
+        6,
+        7,
+        6,
+        6,
+        5
+      ],
+      "weightedScore": 6.05,
+      "evidence": "Earlier soft swarm: carrier and wake recognizable; pale planes and diffuse dots crowd stern, with weak player separation.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-37.png": {
+      "scores": [
+        7,
+        7,
+        8,
+        7,
+        7
+      ],
+      "weightedScore": 7.2,
+      "evidence": "Sharp bright-rim swarm: crisp effects and plane edges with player ring. Bright perimeter/detail adds visual density around overlapping action.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-38.png": {
+      "scores": [
+        5,
+        5,
+        4,
+        5,
+        4
+      ],
+      "weightedScore": 4.65,
+      "evidence": "Sharp original airfield: fields/runway distinguish land use, but large blocks and bright mottling compete with player; flat pads and labels remain schematic.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-39.png": {
+      "scores": [
+        7,
+        7,
+        8,
+        7,
+        7
+      ],
+      "weightedScore": 7.2,
+      "evidence": "Sharp dark-rim swarm: raised island and hot effects readable; ring locates player. Silhouette still buried among enemy/deck overlap.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-40.png": {
+      "scores": [
+        5,
+        5,
+        4,
+        5,
+        3
+      ],
+      "weightedScore": 4.5,
+      "evidence": "Soft original coast: large fields and mottled grass overwhelm aircraft and floating objective text. Flat lighting and broad plain ocean.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-41.png": {
+      "scores": [
+        6,
+        9,
+        9,
+        10,
+        9
+      ],
+      "weightedScore": 8.25,
+      "evidence": "Rain battlefield reference: wet reflections, rubble, smoke and tracer lighting feel integrated. Small dark units hard to identify.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-42.png": {
+      "scores": [
+        7,
+        7,
+        7,
+        6,
+        6
+      ],
+      "weightedScore": 6.7,
+      "evidence": "Soft dark-rim swarm: ring, orange fire and smoke preserve location cues. Soft crowded planes and deck overlap remain.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-43.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        7
+      ],
+      "weightedScore": 7.5,
+      "evidence": "Sharp bright-rim sparse carrier: clear perimeter contour and orange impacts. Thin pale lines add limited material variation; overlap persists.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-44.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        6
+      ],
+      "weightedScore": 7.35,
+      "evidence": "Sharp bright-rim quiet carrier: pale outline and raised island establish contour. Plain tan deck and repetitive puffs limit finish; ring needed for player.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    },
+    "view-45.png": {
+      "scores": [
+        7,
+        5,
+        4,
+        4,
+        2
+      ],
+      "weightedScore": 4.8,
+      "evidence": "Soft original quiet carrier: controls and deck easy to find. Flat surface, hard translucent rectangular wake and text over runway lack physical coherence.",
+      "regressions": "Weaknesses stated in evidence; unchanged anchors retain exact prior scores."
+    }
+  },
+  "general_findings": [
+    "Historical controls make large improvements clear: fixed objective placement, raised models, contextual terrain and textured fire replace floating labels, flat pads, hard rectangular wakes and circle effects.",
+    "Recent foam changes reduce regular short dashes using wider tapered strokes, but offshore strips remain disconnected from beach and material interaction; same score band retained.",
+    "Dark deck edge better separates some fittings than pale outline, but neither resolves aircraft/deck overlap.",
+    "Terrain variety is useful, yet soft dark tree shadows, flat apron/grass and dense water still have uneven material complexity."
+  ],
+  "largest_remaining_gaps": [
+    "Player ring locates center but crowded scenes obscure actual plane silhouette.",
+    "Foam does not break, spread or interact convincingly with shallows; ship wakes remain repeated puffs.",
+    "Surface shading and material transitions remain simple compared with reference lighting and environmental layering."
+  ],
+  "recommendations": [
+    "Integrate irregular foam patches into wet beach/shallow color with uneven width and opacity.",
+    "Preserve player shape over deck and overlapping enemies.",
+    "Improve local material variation and contact shading before adding more detail."
+  ]
+}

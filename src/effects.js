@@ -6,6 +6,25 @@ import { CONFIG } from './config.js';
 // and directional smoke shading cost one texture tap per particle pixel, with
 // no per-pixel noise or extra particle passes on mobile GPUs.
 let particleAtlas;
+let coloredAtlas = false;
+let atlasReady;
+export function preloadEffectAtlas() {
+  if (atlasReady) return atlasReady;
+  atlasReady = new Promise(resolve => {
+    let done = false;
+    const timer = setTimeout(() => { done = true; resolve(false); }, 2500);
+    new THREE.TextureLoader().load(new URL('../assets/effects/effects-atlas-512.webp', import.meta.url).href, texture => {
+      if (done) { texture.dispose(); return; }
+      done = true; clearTimeout(timer);
+      texture.flipY = false;
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.minFilter = THREE.LinearFilter; texture.magFilter = THREE.LinearFilter;
+      texture.generateMipmaps = false;
+      particleAtlas = texture; coloredAtlas = true; resolve(true);
+    }, undefined, () => { if (!done) { done = true; clearTimeout(timer); resolve(false); } });
+  });
+  return atlasReady;
+}
 function effectAtlas() {
   if (particleAtlas) return particleAtlas;
   const tile = 64, width = tile * 2, data = new Uint8Array(width * width * 4);
@@ -62,27 +81,40 @@ export function createEffects(scene, renderer) {
   const sizes = new Float32Array(400);
   const colors = new Float32Array(400 * 4);
   const rings = new Float32Array(400);
-  for (const [name, array, size] of [['position', positions, 3], ['size', sizes, 1], ['color', colors, 4], ['ring', rings, 1]]) {
+  const trails = new Float32Array(400 * 2);
+  for (const [name, array, size] of [['position', positions, 3], ['size', sizes, 1], ['color', colors, 4], ['ring', rings, 1], ['trail', trails, 2]]) {
     geometry.setAttribute(name, new THREE.BufferAttribute(array, size).setUsage(THREE.DynamicDrawUsage));
   }
   const material = new THREE.ShaderMaterial({
     transparent: true, depthWrite: false,
-    uniforms: { dpr: { value: 1 }, atlas: { value: effectAtlas() } },
-    vertexShader: `attribute float size; attribute vec4 color; attribute float ring;
+    uniforms: { dpr: { value: 1 }, atlas: { value: effectAtlas() }, colored: { value: coloredAtlas ? 1 : 0 } },
+    vertexShader: `attribute float size; attribute vec4 color; attribute float ring; attribute vec2 trail;
+      varying vec2 trailShape;
       varying vec4 tint; varying float spriteKind; uniform float dpr;
       void main() {
-        tint = color; spriteKind = ring;
+        tint = color; spriteKind = ring; trailShape = trail;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         gl_PointSize = size * dpr;
       }`,
-    fragmentShader: `varying vec4 tint; varying float spriteKind; uniform sampler2D atlas;
+    fragmentShader: `varying vec2 trailShape; varying vec4 tint; varying float spriteKind; uniform sampler2D atlas; uniform float colored;
       void main() {
         vec2 tile=vec2(mod(spriteKind,2.0),floor(spriteKind*.5));
-        vec4 sprite=texture2D(atlas,(tile+gl_PointCoord)*.5);
+        vec2 coord=gl_PointCoord;
+        if(trailShape.y>1.01) {
+          float c=cos(trailShape.x),s=sin(trailShape.x);
+          vec2 q=mat2(c,-s,s,c)*(coord-.5);
+          q.y*=trailShape.y;
+          coord=q+.5;
+          if(any(lessThan(coord,vec2(0.0)))||any(greaterThan(coord,vec2(1.0)))) discard;
+        }
+        vec4 sprite=texture2D(atlas,(tile+coord)*.5);
         float alpha=tint.a*sprite.a;
         if(alpha<.01) discard;
         vec3 color=tint.rgb;
-        if(spriteKind<.5) color=mix(tint.rgb,vec3(2.6,1.8,.9),sprite.r);
+        if(colored>.5) {
+          color=sprite.rgb*tint.rgb;
+          if(spriteKind<.5) color*=1.4;
+        } else if(spriteKind<.5) color=mix(tint.rgb,vec3(2.6,1.8,.9),sprite.r);
         else if(spriteKind>1.5 && spriteKind<2.5) color*=sprite.rgb;
         gl_FragColor=vec4(color,alpha);
         #include <tonemapping_fragment>
@@ -93,6 +125,7 @@ export function createEffects(scene, renderer) {
   particles.frustumCulled = false;
   scene.add(particles);
   return {
+    get atlasMode() { return coloredAtlas ? 'rgba-sprites' : 'procedural-fallback'; },
     update(game) {
       const count = game.bullets.length + game.ebullets.length + game.torpedoes.length;
       if (count > capacity) {
@@ -107,7 +140,7 @@ export function createEffects(scene, renderer) {
         let i = 0;
         for (const [bullets, color] of [[game.bullets, ally], [game.ebullets, enemy], [game.torpedoes, ally]]) {
           for (const b of bullets) {
-            dummy.position.set(b.x - b.vx * .008, b.distance !== undefined ? 2 : CONFIG.render.flightHeight - 1, b.y - b.vy * .008);
+            dummy.position.set(b.x - b.vx * .008, b.distance !== undefined ? 2 : (b.renderAltitude ?? b.altitude ?? CONFIG.render.flightHeight - 1), b.y - b.vy * .008);
             dummy.rotation.set(0, -Math.atan2(b.vy, b.vx), 0);
             dummy.scale.set(b.distance !== undefined ? 24 : Math.hypot(b.vx, b.vy) * .016, 1, b.distance !== undefined ? 4 : 2.5);
             dummy.updateMatrix();
@@ -122,13 +155,16 @@ export function createEffects(scene, renderer) {
       for (let i = 0; i < n; i++) {
         const p = game.particles[i], t = p.life / p.max;
         const splash = p.kind === 'splash';
-        positions.set([p.x, splash ? 1.5 : CONFIG.render.flightHeight + 8, p.y], i * 3);
+        const trail = p.kind === 'smoke' && Number.isFinite(p.trailAngle);
+        trails.set([p.trailAngle || 0, trail ? 1.8 : 1], i * 2);
+        positions.set([p.x, p.altitude ?? (splash ? 1.5 : CONFIG.render.flightHeight), p.y], i * 3);
         rings[i] = splash ? 3 : p.kind === 'ring' ? 1 : p.kind === 'smoke' ? 2 : 0;
-        sizes[i] = 2 * p.size * (splash ? 1.8 - t : p.kind === 'ring' ? 1.6 - t : p.kind === 'smoke' ? 2 - t : t + .4);
-        if (p.kind === 'smoke') colors.set([.31, .33, .35, t * .65], i * 4);
+        sizes[i] = 2 * p.size * (splash ? 1.8 - t : p.kind === 'ring' ? 1.6 - t : p.kind === 'smoke' ? (2 - t) * 1.45 : t + .4);
+        if (trail) sizes[i] *= 1.8;
+        if (p.kind === 'smoke') colors.set(coloredAtlas ? [.8, .84, .88, t * .3] : [.31, .33, .35, t * .65], i * 4);
         else if (splash) colors.set([.85, .95, 1, t * .8], i * 4);
-        else if (p.kind === 'ring') colors.set([1, .48, .18, t * t * .45], i * 4);
-        else colors.set([1, .3 + t * .45, .08, t], i * 4);
+        else if (p.kind === 'ring') colors.set([1, .7, .35, t * t * .32], i * 4);
+        else colors.set(coloredAtlas ? [1, 1, 1, Math.min(1,t*1.8)] : [1, .3 + t * .45, .08, t], i * 4);
       }
       geometry.setDrawRange(0, n);
       for (const attribute of Object.values(geometry.attributes)) attribute.needsUpdate = true;

@@ -6,16 +6,111 @@ five publisher references. Later randomized reviews are detailed below. All judg
 were agent sessions from the same model family; scores are subjective screenshot
 judgments, not whole-game quality measurements.
 
-## Publication packaging
+## Published runtime checkpoint: candidate 14
 
-The tested candidate-6 runtime is unchanged from local commit `93ae2bf`. The unused
-4 MB source PNG is stored losslessly in eight binary parts under
-`tools/reference/generated-terrain`, with a SHA-256 manifest and `reconstruct.py`,
-because the publication connector stalled on the single payload. Runtime still
-loads the identical 149,756-byte WebP. Historical reports and their hashes are
-unchanged; their source hash includes the reconstructed original PNG. The packaged
-checkout therefore has a different source hash until reconstruction. This is not
-an evidence-gate bypass or an acceptance claim; all pending gates still apply.
+This draft checkpoint contains the exact runtime from tested source commit
+`e4d6b0525bdc9f8895e1542679632bc10c908e52`, with complete archived screenshots and
+motion evidence through candidate 13, candidate 14's raw ratings/identity key,
+and its full passing functional-test log. **Candidate 14 screenshot and motion PNG
+publication is pending a subsequent commit.** They have been reviewed locally,
+but are not yet attached in this checkpoint. The formal archival summary therefore
+stops at candidate 13; do not treat this as a complete candidate-14 gate record.
+No candidate 15 or later runtime or asset changes are included.
+
+Candidate 14 scores 6.8775 / 7.1900 / 7.4850, against reference means
+8.285 / 8.340 / 8.215. Its +0.060 median improvement over candidate 13 is below
+the unchanged +0.15 threshold. All three reviewers accept its sampled motion
+sequence, but screenshot, performance and physical-device acceptance remain unmet.
+The full candidate-14 functional suite passed; that does not approve visual quality
+or certify potato-phone FPS. Keep this PR draft and unmerged.
+
+Judge A's round-14 original-baseline clerical anchor error has been corrected using
+byte-identical round-8 evidence. The prior raw review is preserved as `judge-a.pre-correction.json`; `blind-review-14/anchor-correction.json` records exact old/new review hashes
+and the judge's explanation. Candidate scores and acceptance decisions are unchanged.
+
+## Experiments 7–14: retained rejection history
+
+The previous published candidate-6 checkpoint is commit
+`a1c43640a487612d4379508cfaec4fecfb9ec47e`. This checkpoint advances the runtime to
+functionally tested candidate 14, while retaining the rejection history below.
+No rejected experiment is silently promoted to an accepted incumbent.
+
+| Candidate | Compared with | Judge A | Judge B | Judge C | Median gain | Screenshot finding |
+|---|---|---:|---:|---:|---:|---|
+| 7 | 6 | 6.4425 | 6.7000 | 7.2300 | -0.110 | Rejected; majority readability losses |
+| 8 | 6 | 6.4625 | 6.6300 | 7.2200 | -0.090 | Rejected; airfield/stress readability losses |
+| 9 | 6 | 6.6675 | 6.9800 | 7.3200 | +0.115 | Below +0.15; airfield/stress readability losses |
+| 10 | 9 | 6.3825 | 6.7400 | 6.9500 | -0.285 | Rejected overall visual regression |
+| 11 | 9 | 6.8175 | 7.1600 | 7.4300 | +0.150 | Meets this pair's screenshot criteria only |
+| 12 | 11 | 6.7775 | 7.1600 | 7.4300 | +0.000 | No qualifying screenshot gain |
+| 13 | 12 | 6.7475 | 7.1900 | 7.4250 | -0.005 | Below +0.15; mixed judgments, no qualifying gain |
+| 14 | 13 | 6.8775 | 7.1900 | 7.4850 | +0.060 | Below +0.15; no qualifying gain |
+
+Reference anchors remain A **8.285**, B **8.340**, C **8.215**. Packet 8 also includes
+the original baseline (4.535 / 4.505 / 5.080 under these judges). Every archived
+Pacific Skies packet image was checked against its capture SHA-256, including the
+baseline repeats. Identity keys, raw ratings and numeric readability regressions
+are preserved in `evidence/blind-review-*` and `blind-review-summary.json`.
+
+Packet 14 also repeats candidate 6 and the original baseline. Against candidate 6,
+candidate 14 has median gain +0.325, but judge C scores it 0.025 lower overall.
+Against its immediate predecessor 13, the median gain is only +0.060; neither
+comparison is a full acceptance or reference victory. No numeric readability
+regression appears in these comparisons. All raw repeat scores are retained,
+including the corrected original-baseline anchor described above.
+
+Candidate 7 introduced a unified oblique projection, physical effect sprites and
+asynchronous terrain generation. These improved some material/depth cues but
+reduced clarity in dense action and on airfields. Candidate 8 recovered superseded
+loads and revised terrain/smoke. Candidate 9 improved water and continuous smoke.
+Candidate 10's carrier redesign scored worse and was not retained as the preferred
+visual direction. Candidate 11 restored the earlier carrier and improved shorelines
+and player identification. Candidate 12 adjusted water texture scale and moving
+shore foam; candidate 13 made coastline geometry consistent and restrained lighting.
+
+Candidates 7–14 use `graphics-v3-prepared-fixed-42-step-capture`, which awaits
+asynchronous scene preparation. Candidates 13/14 have a distinct suite hash from 7–12;
+all original reports retain their recorded source/suite hashes. Historical v1/v2
+reports have not been rewritten. These pair reviews do not constitute a complete
+matched cross-protocol performance gate or held-out reference victory.
+
+Motion archives preserve the original report/artifact hashes and provide derived
+players referencing PNG files instead of embedding duplicate base64 bytes. Samples
+are sparse evidence of state progression, not continuous 60 FPS video. Motion 7
+and 8 were rejected by A while B/C accepted. Motion 9, 11 and 12 received all three
+acceptances within that sampled scope. Motion 13 adds a coastal sequence, totaling
+36 images, and all three judges accepted within that sampled scope. This does not
+override its failed screenshot-gain threshold or certify continuous animation.
+Candidate 14 also receives all three motion acceptances for its 36-image sampled
+sequence. No motion verdict is silently carried to another source hash.
+
+Functional failures are retained in `evidence/functional`. Candidate 7 timed out
+after teleport because superseded worker loading was mishandled; the runtime fix
+was made in candidate 8. Candidate 8 then exposed checks running before async
+readiness (touch, restart and menu checks); readiness-aware tests were corrected
+for candidate 9. Candidate 9 still failed the landscape aircraft-list scrolling
+check due to a native-click/scroll race. The correction was included by candidate
+12. Full `npm test` for candidate 12 passed: browser checks, expedition/recovery,
+combat balance and fun audit (25 ok, 5 warnings, 2 pre-existing fun-killers; no
+regressions). Candidate 13's full suite failed a strict coastline-geometry equality
+assertion after all browser checks passed; the unchanged failure log is preserved.
+The old assertion required the exact coarse atlas array, while candidate 13
+intentionally refines those edges. Candidate 14 replaces that equality with
+independent geometry invariants: original atlas anchors retained in order and at
+the same positions, displacement bounded to 18 units, at most 256 vertices, and
+matching transformed territory coastlines. Determinism and fleet-route checks
+remain; a 500-seed coast test is added. Candidate 14 full `npm test` passed,
+including that coast test and the fun audit (25 ok, 5 warnings, 2 pre-existing
+fun-killers; no regressions). The complete log is archived.
+Candidate 13 must not be described as a fully validated runtime checkpoint.
+
+The async transit report separates worker wall time from main-thread timer delay
+and completed GPU work. Candidate 13's worst worker/preparation wall times were
+1914.8 / 2026.9 ms (phone/fallback), while maximum timer delays were 11.1 / 50.4 ms.
+Worst completed GPU preparation/render cost remained **474.1 / 496.3 ms** and total
+ready time **2241.2 / 2146.3 ms**. Worker offloading therefore does not eliminate
+all cold-start stalls. Both profiles retain bounded detached caches and release all
+land resources on reset. These are SwiftShader diagnostics, not phone measurements.
 
 ## Later experiments: candidates 3–6
 

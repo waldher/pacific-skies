@@ -1,7 +1,7 @@
 // Real world streaming lifecycle with fake Three objects; no WebGL required.
 // node --experimental-vm-modules playtest/world-cache.cjs
 const vm=require('node:vm'),fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
-const root=path.resolve(__dirname,'..'),ctx=vm.createContext({console}),mods=new Map();
+const root=path.resolve(__dirname,'..'),ctx=vm.createContext({console,setTimeout,clearTimeout,performance}),mods=new Map();
 let builds=0;const disposed=new Set(),attached=new Set();
 class Vector {set(){} normalize(){return this;}}
 class Mesh {constructor(){this.position=new Vector();this.scale=new Vector();this.rotation={};}}
@@ -9,7 +9,7 @@ const three={Vector2:Vector,Vector3:Vector,Color:Vector,ShaderMaterial:class {co
 const fake={three, './config.js':{CONFIG:{render:{ocean:{wind:[0,0]},sunOffset:[1,1,1]}}},
  './noise.js':{noiseTexture:()=>null,NOISE_GLSL:''},
  './traffic.js':{createTraffic:()=>({update(){}})},
- './land.js':{createLand:()=>({build(){builds++;return {serial:builds,traverse(fn){fn({geometry:{attributes:{position:{array:{byteLength:2*1024*1024}}}}})}}},dispose(g){assert.ok(!disposed.has(g),'each group disposed once');assert.ok(!attached.has(g),'visible group never disposed');disposed.add(g)}})}};
+ './land.js':{hasTerrainMaterial:()=>false,createLand:()=>({build(){builds++;return {serial:builds,traverse(fn){fn({geometry:{attributes:{position:{array:{byteLength:2*1024*1024}}}}})}}},dispose(g){assert.ok(!disposed.has(g),'each group disposed once');assert.ok(!attached.has(g),'visible group never disposed');disposed.add(g)}})}};
 async function load(file){if(mods.has(file))return mods.get(file);const m=new vm.SourceTextModule(fs.readFileSync(file,'utf8'),{context:ctx,identifier:file});mods.set(file,m);return m;}
 (async()=>{
  const m=await load(path.join(root,'src/world.js'));

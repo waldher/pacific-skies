@@ -17,6 +17,8 @@ jobs:
           node-version: 22
       - run: npm install
       - run: npx playwright install --with-deps chromium
+      - run: npm run test:land-worker
+      - run: npm run test:scenery-reset
       - run: npm run graphics:capture
       - uses: actions/upload-artifact@v4
         if: always()
@@ -31,5 +33,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node --test playtest/graphics/gate.test.cjs
+      - run: npm run test:graphics:unit
       - run: npm run graphics:gate

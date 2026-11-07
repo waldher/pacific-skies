@@ -11,7 +11,7 @@
 // rather than screen-space derivatives: a bilinear texture's derivative is
 // constant across each texel, which shows as facets, while the interpolated
 // gradient stays continuous.
-import * as THREE from 'three';
+import * as THREE from '../vendor/three/three.module.min.js';
 
 export const CELLS = 64;
 const TEXELS = 8, SIZE = CELLS * TEXELS, CHANNELS = 2, GRADIENT_RANGE = 1.5;

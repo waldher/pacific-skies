@@ -1,0 +1,290 @@
+{
+  "reviewer": "B",
+  "packet": "judge-packet-9",
+  "coverage": "All25images inspected individually using view_image; no keys/source/other reviewers read.",
+  "criteria": [
+    "readability",
+    "coherence",
+    "lighting/depth",
+    "environment/material richness",
+    "effects polish"
+  ],
+  "weights": [
+    0.3,
+    0.2,
+    0.2,
+    0.15,
+    0.15
+  ],
+  "recognition": "Tentative StarCraft II03; Company of Heroes02/19; tactical planning scenes20/22 recognizable without exact title. Unchanged image scores retain prior anchors.",
+  "images": {
+    "view-01.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        8,
+        5
+      ],
+      "evidence": "Service yard, tracks, fence and equipment give functional structure. Soft props blur, plane overlaps hangar and regular shore rocks repeat."
+    },
+    "view-02.png": {
+      "scores": [
+        6,
+        9,
+        9,
+        10,
+        9
+      ],
+      "evidence": "Wet roads, rain, rubble and luminous projectiles create cohesive depth; small dark units merge with ground."
+    },
+    "view-03.png": {
+      "scores": [
+        7,
+        9,
+        9,
+        9,
+        9
+      ],
+      "evidence": "Hot impact, beams and sparks focus richly detailed ships and terrain; dark units merge and blast obscures targets."
+    },
+    "view-04.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        6,
+        5
+      ],
+      "evidence": "Pale player edge separates aircraft from olive terrain; soft detail and broad repeated grass limit richness."
+    },
+    "view-05.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        7,
+        6
+      ],
+      "evidence": "Sharp planked deck and long wake read clearly; broad light surface has limited material separation and player overlaps stern."
+    },
+    "view-06.png": {
+      "scores": [
+        7,
+        7,
+        8,
+        8,
+        6
+      ],
+      "evidence": "Apron, tall hangars, yard and grouped vegetation create a functional airfield. Dark varied ocean supplies depth, but detailed water contrasts with simpler ground; player merges with central roof and cyan roof shape remains ambiguous."
+    },
+    "view-07.png": {
+      "scores": [
+        7,
+        7,
+        8,
+        7,
+        7
+      ],
+      "evidence": "Dark textured sea separates pale planes, with raised island/hull, bright impacts and restrained smoke. Dense water detail partly masks aircraft shadows; pale planes on deck still overlap and repetitive puff wake is synthetic."
+    },
+    "view-08.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        8,
+        6
+      ],
+      "evidence": "Crisp hangars and fenced service yard with equipment provide functional structure. Player overlaps roof, stones and beach repeat."
+    },
+    "view-09.png": {
+      "scores": [
+        6,
+        7,
+        6,
+        6,
+        5
+      ],
+      "evidence": "Wake and tan carrier identify scene; soft aircraft, particles and stern overlap obscure player and action hierarchy."
+    },
+    "view-10.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        6,
+        5
+      ],
+      "evidence": "Sparse carrier and fixed objectives are clear; soft fittings, uniform lighting and player-stern overlap limit depth."
+    },
+    "view-11.png": {
+      "scores": [
+        6,
+        7,
+        8,
+        7,
+        7
+      ],
+      "evidence": "Sharp orange impacts and translucent smoke preserve aircraft visibility against dark detailed sea. Swarm remains crowded, water texture competes with small smoke and shadow detail, and central player still overlaps aircraft."
+    },
+    "view-12.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        7,
+        5
+      ],
+      "evidence": "Outlined plane, shaded trees and base apron are legible; dark ocean provides stronger land contrast. Soft structures and regular shore edge remain; plane touches rocks and ocean detail feels denser than land materials."
+    },
+    "view-13.png": {
+      "scores": [
+        7,
+        7,
+        7,
+        6,
+        6
+      ],
+      "evidence": "Orange fire, restrained smoke and raised carrier are visible against dark varied ocean. Soft wings and pale deck overlap persist; water texture swallows subtle shadows and wake remains repeated puffs."
+    },
+    "view-14.png": {
+      "scores": [
+        6,
+        7,
+        6,
+        7,
+        6
+      ],
+      "evidence": "Crisp planes, planks and wake add definition; pale deck and swarm obscure player and soft dots lack hierarchy."
+    },
+    "view-15.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        6
+      ],
+      "evidence": "Tall hangars, apron and grouped shadowed trees support depth; outlined player is visible on olive land. Rich dark ocean contrasts with simpler land; uniform narrow shore strip and plane-rock overlap persist."
+    },
+    "view-16.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        5
+      ],
+      "evidence": "Dark textured sea contrasts with isolated raised carrier and visible wake. Soft deck geometry limits precision, sea texture is repetitive, and player merges with deck."
+    },
+    "view-17.png": {
+      "scores": [
+        7,
+        7,
+        7,
+        8,
+        5
+      ],
+      "evidence": "Apron, service yard and grouped vegetation make airfield spatially meaningful. Soft rendering blurs props, aircraft overlaps roof, cyan roof marker is ambiguous and ocean/land material detail levels differ."
+    },
+    "view-18.png": {
+      "scores": [
+        7,
+        7,
+        6,
+        6,
+        5
+      ],
+      "evidence": "Tan deck and wake are coherent; soft aircraft lose contrast over pale runway and stern overlap persists."
+    },
+    "view-19.png": {
+      "scores": [
+        6,
+        9,
+        9,
+        10,
+        9
+      ],
+      "evidence": "Fog, trees, ruins and smoke create layered depth; tiny camouflaged units blend into terrain."
+    },
+    "view-20.png": {
+      "scores": [
+        8,
+        9,
+        9,
+        9,
+        8
+      ],
+      "evidence": "Thick walls, furnishings, materials and warm/cool room light articulate space; tiny figures and paths require scrutiny."
+    },
+    "view-21.png": {
+      "scores": [
+        7,
+        7,
+        6,
+        7,
+        6
+      ],
+      "evidence": "Sharp planks, island and wake; pale aircraft lose contrast on light deck and player merges with stern."
+    },
+    "view-22.png": {
+      "scores": [
+        7,
+        9,
+        9,
+        9,
+        8
+      ],
+      "evidence": "Warm light, produce stalls and carts create coherent market; small people and planning icons are crowded."
+    },
+    "view-23.png": {
+      "scores": [
+        6,
+        7,
+        7,
+        6,
+        6
+      ],
+      "evidence": "Orange impacts and low-opacity smoke keep more deck visible; dark ocean contrasts with aircraft. Soft swarm edges, repeated fires and competing sea texture limit clarity; player remains hard to isolate."
+    },
+    "view-24.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        6
+      ],
+      "evidence": "Player edging and grounded trees improve coast readability. Only yard fragment visible; repeated grass and shore remain."
+    },
+    "view-25.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        6
+      ],
+      "evidence": "Sharp raised island and hull sides, planked deck and dark textured ocean create stronger volume and contrast. Sea repetition remains visible, wake is a regular puff sequence, and player overlaps deck."
+    }
+  },
+  "general_findings": [
+    "Dark irregular ocean texture restores more natural material variation than long parallel bands and provides strong aircraft contrast.",
+    "Raised structures, functional apron and grouped vegetation retain depth and context.",
+    "Aircraft shadows and subtle smoke are harder to see against dense dark water; added background detail is not an unqualified gain.",
+    "Ocean surface has much more fine texture than the simple land and models, leaving a stylistic mismatch.",
+    "Sparse/dense impact cores remain recognizable with restrained smoke; the player still merges with aircraft and deck in swarm scenes."
+  ],
+  "regressions": [
+    "Detailed dark ocean masks subtle aircraft shadows and competes with smoke.",
+    "Ocean and land material detail are uneven; uniform shoreline lacks a convincing shallow-water transition.",
+    "Puffed wakes remain visibly repetitive."
+  ],
+  "recommendations": [
+    "Reduce ocean contrast locally or at small scale while keeping irregular wave structure.",
+    "Improve hull-water and shoreline transitions instead of adding more background detail.",
+    "Preserve restrained smoke and hot cores; prioritize player separation through deck/swarm overlap.",
+    "Resolve cyan roof shape and give ground/roof materials coherent localized highlights and occlusion."
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "view-01.png": {
+    "kind": "candidate-11",
+    "name": "fallback-coast"
+  },
+  "view-02.png": {
+    "kind": "candidate-12",
+    "name": "fallback-stress"
+  },
+  "view-03.png": {
+    "kind": "candidate-11",
+    "name": "phone-dogfight"
+  },
+  "view-04.png": {
+    "kind": "candidate-11",
+    "name": "fallback-dogfight"
+  },
+  "view-05.png": {
+    "kind": "reference",
+    "name": "coh3-1-phone"
+  },
+  "view-06.png": {
+    "kind": "reference",
+    "name": "dk2-0-phone"
+  },
+  "view-07.png": {
+    "kind": "candidate-12",
+    "name": "phone-fleet"
+  },
+  "view-08.png": {
+    "kind": "reference",
+    "name": "sc2-0-phone"
+  },
+  "view-09.png": {
+    "kind": "candidate-12",
+    "name": "fallback-airfield"
+  },
+  "view-10.png": {
+    "kind": "reference",
+    "name": "coh3-0-phone"
+  },
+  "view-11.png": {
+    "kind": "candidate-11",
+    "name": "phone-fleet"
+  },
+  "view-12.png": {
+    "kind": "candidate-12",
+    "name": "phone-stress"
+  },
+  "view-13.png": {
+    "kind": "candidate-12",
+    "name": "phone-airfield"
+  },
+  "view-14.png": {
+    "kind": "candidate-11",
+    "name": "fallback-stress"
+  },
+  "view-15.png": {
+    "kind": "candidate-12",
+    "name": "fallback-coast"
+  },
+  "view-16.png": {
+    "kind": "candidate-12",
+    "name": "phone-dogfight"
+  },
+  "view-17.png": {
+    "kind": "candidate-12",
+    "name": "fallback-dogfight"
+  },
+  "view-18.png": {
+    "kind": "candidate-11",
+    "name": "fallback-fleet"
+  },
+  "view-19.png": {
+    "kind": "candidate-12",
+    "name": "fallback-fleet"
+  },
+  "view-20.png": {
+    "kind": "candidate-11",
+    "name": "phone-coast"
+  },
+  "view-21.png": {
+    "kind": "candidate-11",
+    "name": "phone-stress"
+  },
+  "view-22.png": {
+    "kind": "reference",
+    "name": "dk2-1-phone"
+  },
+  "view-23.png": {
+    "kind": "candidate-11",
+    "name": "fallback-airfield"
+  },
+  "view-24.png": {
+    "kind": "candidate-11",
+    "name": "phone-airfield"
+  },
+  "view-25.png": {
+    "kind": "candidate-12",
+    "name": "phone-coast"
+  }
+}

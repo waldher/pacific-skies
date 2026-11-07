@@ -3,6 +3,7 @@ import { CONFIG } from './config.js';
 import { rand, TAU } from './util.js';
 import { generate } from './expedition-geography.js';
 import { insidePolygon } from './surface.js';
+import { refineCoast } from './coast-refinement.js';
 
 function pointSegmentDistance(point, a, b) {
   const dx=b[0]-a[0],dy=b[1]-a[1],length2=dx*dx+dy*dy;
@@ -124,6 +125,18 @@ export function generateTheater() {
       stronghold:!!geography.regions[h.region].stronghold,owner:h.id?'enemy':'us',activated:!h.id,
       progress:0,fighters:h.id===1?2:h.region===0?3:4};
   });
+  // Placement uses the original macro outline so home/ports keep their exact
+  // transforms. From this point onward every physical/render consumer receives
+  // the same refined authoritative shore. Existing saved worlds are untouched.
+  for(const physical of terrain) {
+    const holdings=territories.filter(h=>h.terrainId===physical.id);
+    physical.shoreline=refineCoast(physical.shoreline,physical.seed,holdings.map(h=>({...h,x:h.x-physical.x,y:h.y-physical.y})));
+    physical.extent=Math.max(...physical.shoreline.map(p=>Math.hypot(...p)));
+    for(const h of holdings) {
+      h.shoreline=physical.shoreline.map(([x,y])=>[x+physical.x-h.x,y+physical.y-h.y]);
+      h.extent=physical.extent+Math.hypot(physical.x-h.x,physical.y-h.y);
+    }
+  }
   const sectors=geography.regions.map(r=>({...r,neighbors:geography.links.filter(link=>link.includes(r.id)).map(link=>link.find(id=>id!==r.id))}));
   const fleetRoutes={us:offshoreRoute(sectors[0],terrain),jp:offshoreRoute(sectors.find(r=>r.stronghold),terrain)};
   const theaterBounds={...geography.bounds}, margin=fleetRouteClearance();

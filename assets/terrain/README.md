@@ -1,11 +1,11 @@
 # Terrain diffuse material
 
-`grass-soil-v1.png` is a generated, runtime diffuse/albedo material, **not a game
+The generated `grass-soil-v1` diffuse/albedo material is **not a game
 screenshot, background scene, or substitute for rendered benchmark evidence**.
 
 - Generated with the built-in `image_gen` tool on 2026-11-06.
 - Source output: `exec-4047ec27-f600-443c-bb3a-4c753372b1b6.png`.
-- Original copied unchanged: 1254 × 1254, RGB PNG (~3.9 MB).
+- Original: 1254 × 1254, RGB PNG (~3.9 MB), archived losslessly in `tools/reference/generated-terrain/`.
 - Intended source scale: 40 × 40 metres; candidate6 tiles at 240 world units
   to preserve visible material structure at the phone capture scale.
 - Inspected: muted grass/straw/soil, flat top-down diffuse view; no buildings,
@@ -19,7 +19,8 @@ the existing bounded terrain bake; fields, coast detail and baked shadows are
 painted afterwards. No additional per-frame sampler taps or materials result.
 Runtime uses `grass-soil-v1.webp`: 768 × 768, quality 84, 149,756 bytes
 (about 96% smaller than the PNG), roughly 2.25 MiB decoded CPU memory.
-The original PNG is retained for provenance, but is not requested by the game.
+The original PNG is retained as lossless archival chunks, not requested by the game.
+For historical source audits, run `python tools/reference/generated-terrain/reconstruct.py --output assets/terrain/grass-soil-v1.png`; normal runtime needs only the WebP.
 Source SHA-256: `94f983033befc90b59854d377adbc1803e395eb35af6465d5456b12850592c15`.
 Production conversion: ImageMagick resize to 768 × 768, WebP quality 84.
 

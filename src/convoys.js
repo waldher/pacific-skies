@@ -68,7 +68,7 @@ export function damageTransport(game, s, amount = 1) {
   if (s.hp === 0) {
     s.sinking = 0;
     game.score += CONFIG.convoy.score;
-    explosion(s.x, s.y, false); splash(s.x, s.y);
+    explosion(s.x, s.y, false, 6); splash(s.x, s.y);
     notify(game, 'Supply transport sunk');
   }
 }

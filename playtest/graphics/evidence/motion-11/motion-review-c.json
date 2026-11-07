@@ -1,0 +1,65 @@
+{
+  "accept": true,
+  "scope": "Acceptance of the five sampled motion criteria only; not full art approval or a continuous-performance assessment.",
+  "inspected_images": 18,
+  "profiles": [
+    "phone",
+    "fallback"
+  ],
+  "ticks": [
+    0,
+    6,
+    12,
+    24,
+    36,
+    60,
+    90,
+    120,
+    180
+  ],
+  "simulation_times_seconds": [
+    0,
+    0.1,
+    0.2,
+    0.4,
+    0.6,
+    1,
+    1.5,
+    2,
+    3
+  ],
+  "findings": {
+    "impact_recognition": {
+      "pass": true,
+      "evidence": "White player silhouette at 0.1 and 0.2 seconds remains unambiguous within the cyan ring; normal material returns by 0.4. Hull drops 35 to 27%. Small orange hit is clearly distinct from the larger filled yellow/orange fireball at 1 second.",
+      "limitation": "Persistent ring is a location cue rather than hit feedback; its constant appearance does not prevent recognition of the white flash."
+    },
+    "smoke_fading": {
+      "pass": true,
+      "evidence": "Initial hit dwindles to sparse sparks by 0.4–0.6. Large burst at 1 second disperses to faint smoke and small embers by 1.5, with no bright fire at 2–3. Damaged aircraft continues emitting a thin curved trail.",
+      "limitation": "Connected trail resembles a granular chain, lacks soft volumetric breakup, and partly merges with fine dark water. Disappearance against texture can resemble fading."
+    },
+    "wake_continuity": {
+      "pass": true,
+      "evidence": "Carrier and escort wakes stay attached to sterns and taper outward across all visible sampled positions.",
+      "limitation": "Repeated oval segments remain evident; connected placement passes but foam material lacks convincing turbulence."
+    },
+    "camera_motion": {
+      "pass": true,
+      "evidence": "Player approaches tracking center then remains tracked throughout the turn. Cyan circle remains centered on player at every timestamp; no sampled jumps or detached cue.",
+      "limitation": "Sparse timestamps cannot establish interpolation smoothness or micro-jitter."
+    },
+    "control_visibility": {
+      "pass": true,
+      "evidence": "Bomb and Fire stay fixed and legible. Escort behind Bomb at 3 seconds does not obscure label. Hull, heat and objectives remain readable. Ring improves player location while crossing deck at 0.4–0.6.",
+      "limitation": "Hawk label still intersects minimap edge at 2 seconds. Aircraft material partly merges with deck despite clearer location."
+    }
+  },
+  "remaining_priorities": [
+    "Improve smoke and wake materials beyond repeated granular/oval stamps.",
+    "Reduce fine water contrast to support faint effects.",
+    "Improve aircraft-to-deck contrast inside the useful player ring.",
+    "Prevent ally labels entering minimap and test dense combat motion separately."
+  ],
+  "limitations": "Actually inspected all 18 PNGs and motion.json event timestamps. No source/key read. No actual phone FPS inference from simulation timing. Shoreline material change not covered by this water-only motion sequence."
+}

@@ -1,0 +1,102 @@
+{
+  "view-01.png": {
+    "kind": "reference",
+    "name": "sc2-0-phone"
+  },
+  "view-02.png": {
+    "kind": "candidate-10",
+    "name": "fallback-airfield"
+  },
+  "view-03.png": {
+    "kind": "candidate-10",
+    "name": "phone-airfield"
+  },
+  "view-04.png": {
+    "kind": "reference",
+    "name": "dk2-1-phone"
+  },
+  "view-05.png": {
+    "kind": "candidate-9",
+    "name": "fallback-coast"
+  },
+  "view-06.png": {
+    "kind": "candidate-9",
+    "name": "fallback-stress"
+  },
+  "view-07.png": {
+    "kind": "candidate-9",
+    "name": "phone-airfield"
+  },
+  "view-08.png": {
+    "kind": "candidate-9",
+    "name": "phone-fleet"
+  },
+  "view-09.png": {
+    "kind": "candidate-10",
+    "name": "phone-coast"
+  },
+  "view-10.png": {
+    "kind": "candidate-9",
+    "name": "phone-dogfight"
+  },
+  "view-11.png": {
+    "kind": "reference",
+    "name": "coh3-0-phone"
+  },
+  "view-12.png": {
+    "kind": "candidate-9",
+    "name": "fallback-airfield"
+  },
+  "view-13.png": {
+    "kind": "candidate-9",
+    "name": "phone-coast"
+  },
+  "view-14.png": {
+    "kind": "candidate-10",
+    "name": "phone-fleet"
+  },
+  "view-15.png": {
+    "kind": "reference",
+    "name": "dk2-0-phone"
+  },
+  "view-16.png": {
+    "kind": "candidate-10",
+    "name": "fallback-fleet"
+  },
+  "view-17.png": {
+    "kind": "reference",
+    "name": "coh3-1-phone"
+  },
+  "view-18.png": {
+    "kind": "candidate-9",
+    "name": "fallback-dogfight"
+  },
+  "view-19.png": {
+    "kind": "candidate-10",
+    "name": "fallback-coast"
+  },
+  "view-20.png": {
+    "kind": "candidate-10",
+    "name": "fallback-dogfight"
+  },
+  "view-21.png": {
+    "kind": "candidate-9",
+    "name": "fallback-fleet"
+  },
+  "view-22.png": {
+    "kind": "candidate-9",
+    "name": "phone-stress"
+  },
+  "view-23.png": {
+    "kind": "candidate-10",
+    "name": "phone-dogfight"
+  },
+  "view-24.png": {
+    "kind": "candidate-10",
+    "name": "phone-stress"
+  },
+  "view-25.png": {
+    "kind": "candidate-10",
+    "name": "fallback-stress"
+  }
+}

@@ -27,16 +27,17 @@ const hash = b => crypto.createHash('sha256').update(b).digest('hex');
   });
   let browser;
   await new Promise(r => server.listen(0, '127.0.0.1', r));
-  const report = { schema: 2, protocol: 'graphics-v2-fixed-42-step-capture', visualRenderSteps: 42, environment: { node: process.version, platform: process.platform, arch: process.arch, cpu: os.cpus()[0]?.model, logicalCpus: os.cpus().length, totalMemoryBytes: os.totalmem(), concurrentWorkloads: 'Operator must run matched pairs sequentially without competing browser/test workloads' }, sourceHash: require('./graphics/source-hash.cjs')(ROOT), suiteHash: hash(fs.readFileSync(__filename)), commit: execFileSync('git', ['rev-parse', 'HEAD'], {cwd: ROOT}).toString().trim(), dirty: !!execFileSync('git', ['status', '--porcelain'], {cwd: ROOT}).toString().trim(), seed: 1942, samples, timing: 'SwiftShader completed GPU render cost; NOT phone FPS', results: [], errors: [] };
+  const report = { schema: 3, protocol: 'graphics-v3-prepared-fixed-42-step-capture', visualRenderSteps: 42, environment: { node: process.version, platform: process.platform, arch: process.arch, cpu: os.cpus()[0]?.model, logicalCpus: os.cpus().length, totalMemoryBytes: os.totalmem(), concurrentWorkloads: 'Operator must run matched pairs sequentially without competing browser/test workloads' }, sourceHash: require('./graphics/source-hash.cjs')(ROOT), suiteHash: hash(fs.readFileSync(__filename)), commit: execFileSync('git', ['rev-parse', 'HEAD'], {cwd: ROOT}).toString().trim(), dirty: !!execFileSync('git', ['status', '--porcelain'], {cwd: ROOT}).toString().trim(), seed: 1942, samples, timing: 'SwiftShader completed GPU render cost; NOT phone FPS', results: [], errors: [] };
   try {
     browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH, args: ['--enable-unsafe-swiftshader', '--use-angle=swiftshader'] });
     report.browser = browser.version();
     for (const profile of profiles) for (const scene of scenes) {
       const page = await browser.newPage({viewport: {width:profile.width,height:profile.height}, deviceScaleFactor:1, hasTouch:true, isMobile:true});
       page.on('pageerror', e => report.errors.push(String(e)));
+      page.on('console', m => { if (m.type()==='error' && /THREE.WebGLProgram|GL_INVALID|VALIDATE_STATUS|Shader Error|WebGL.*(?:error|Error)/.test(m.text())) report.errors.push(m.text()); });
       await page.goto(`http://127.0.0.1:${server.address().port}/?quality=${profile.quality}&manualFrames=1`);
       await page.waitForFunction(() => window.__game?.rendering?.ready || window.__game?.rendering?.error);
-      const result = await page.evaluate(({scene, samples}) => {
+      const result = await page.evaluate(async ({scene, samples}) => {
         const api = window.__game, {game:g, graphics, view, CONFIG} = api;
         if (!graphics || !api.manualFrames) throw new Error('Manual renderer unavailable');
         api.setSeed(1942); api.startGame();
@@ -60,6 +61,8 @@ const hash = b => crypto.createHash('sha256').update(b).digest('hex');
             g.particles.push({x:x+Math.cos(a)*r,y:y+Math.sin(a)*r,vx:0,vy:0,life:.5,max:1,size:3+i%9,kind:i%3?'smoke':'fire'});
           }
         }
+        // Await real worker construction and first GPU upload; never score missing terrain.
+        await graphics.prepare(g, view);
         // Fixed visual fixture matches the original 30-sample capture exactly.
         // Timing sample count must never alter traffic positions in judged images.
         for(let i=0;i<12;i++) graphics.render(g,view,1/60,0,0);
@@ -97,6 +100,9 @@ const hash = b => crypto.createHash('sha256').update(b).digest('hex');
   } finally {
     if(browser) await browser.close();
     server.close();
+    report.sourceHashAfter = require('./graphics/source-hash.cjs')(ROOT);
+    report.sourceChangedDuringRun = report.sourceHashAfter !== report.sourceHash;
+    if (report.sourceChangedDuringRun) report.errors.push('Runtime changed during capture');
     fs.writeFileSync(path.join(out,'report.json'), JSON.stringify(report,null,2)+'\n');
   }
   if(report.errors.length || report.results.length!==scenes.length*profiles.length) throw new Error('Capture failed: '+report.errors.join('; '));
