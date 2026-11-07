@@ -1,0 +1,2853 @@
+{
+  "schema": 1,
+  "protocol": "cold-island-transit-v1",
+  "suiteHash": "f89a5a0165e712a17aed86fa4599f6bd36874cb90e754c361114f29bac6b05d0",
+  "sourceHash": "61c5ca830e59baece895abdcc1d35c1fb082468616ac99e2cd9c16e6c1fd4514",
+  "seed": 1942,
+  "commit": "b076878d333aedf2ed36cf4893632081cf1722ce",
+  "dirty": true,
+  "timing": "Main-thread render submission/build + WebGL completion on SwiftShader; cold teleport probe, NOT phone FPS",
+  "environment": {
+    "node": "v24.22.1",
+    "platform": "linux",
+    "arch": "x64",
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "logicalCpus": 9
+  },
+  "results": [
+    {
+      "profile": {
+        "name": "phone",
+        "width": 852,
+        "height": 393,
+        "quality": 2
+      },
+      "bootWallMs": 900.0394919999999,
+      "backend": {
+        "vendor": "WebKit",
+        "renderer": "WebKit WebGL",
+        "unmaskedVendor": "Google Inc. (Google)",
+        "unmaskedRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "startGameMs": 33.799999999813735,
+      "selectedSites": [
+        {
+          "id": "home",
+          "name": "home airfield",
+          "x": 1635.1159343712861,
+          "y": 1112.3515476414532
+        },
+        {
+          "id": 62,
+          "name": "62",
+          "x": 22178.567752332758,
+          "y": -18548.53030576642,
+          "radius": 573.6202721716836,
+          "extent": 656.2921978488629
+        },
+        {
+          "id": 66,
+          "name": "66",
+          "x": -3514.617186467258,
+          "y": -18428.2653516973,
+          "radius": 481.59223803086206,
+          "extent": 504.8200875204188
+        },
+        {
+          "id": 82,
+          "name": "82",
+          "x": 10772.94349724473,
+          "y": -9905.96266143724,
+          "radius": 389.05542340362445,
+          "extent": 472.54409758723347
+        },
+        {
+          "id": 28,
+          "name": "28",
+          "x": 9901.029095438029,
+          "y": -19564.656359641776,
+          "radius": 412.8163983183913,
+          "extent": 460.29949600474157
+        },
+        {
+          "id": 43,
+          "name": "43",
+          "x": 11734.50477735316,
+          "y": -335.01775293241917,
+          "radius": 393.33340388489887,
+          "extent": 466.4810560505817
+        },
+        {
+          "id": 20,
+          "name": "20",
+          "x": 2159.670181956282,
+          "y": -9074.970531170366,
+          "radius": 429.17417847784236,
+          "extent": 495.93651813293707
+        }
+      ],
+      "terrainCount": 88,
+      "visits": [
+        {
+          "label": "startup-first-render",
+          "site": {
+            "id": "home",
+            "name": "home airfield",
+            "x": 1635.1159343712861,
+            "y": 1112.3515476414532
+          },
+          "loadedChunkIds": [
+            0
+          ],
+          "addedChunkIds": [
+            0
+          ],
+          "removedChunkIds": [],
+          "submissionMs": 450.90000000037253,
+          "gpuDrainMs": 275.19999999925494,
+          "completedRenderMs": 726.0999999996275,
+          "warmCompletedMs": [
+            33.09999999962747,
+            36.5,
+            21.5
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 22818235,
+              "estimatedResidentBytes": 22818235,
+              "hits": 0,
+              "evictions": 0,
+              "coldBuilds": 1
+            },
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 827,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4516522.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 4516522.666666666,
+            "landBufferBytes": 7457160,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "empty-baseline",
+          "site": {
+            "id": "empty",
+            "name": "outside all terrain",
+            "x": 10000000,
+            "y": 10000000
+          },
+          "loadedChunkIds": [],
+          "addedChunkIds": [],
+          "removedChunkIds": [
+            0
+          ],
+          "submissionMs": 1.2999999998137355,
+          "gpuDrainMs": 38.59999999962747,
+          "completedRenderMs": 39.89999999944121,
+          "warmCompletedMs": [
+            11.699999999254942,
+            11.5,
+            11.299999999813735
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 22818235,
+              "detachedCount": 1,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 0,
+              "estimatedResidentBytes": 22818235,
+              "hits": 0,
+              "evictions": 0,
+              "coldBuilds": 1
+            },
+            "chunks": 0,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 0,
+            "landTextureSizes": [],
+            "landTextureEstimatedRGBA8Bytes": 0,
+            "landBufferBytes": 0,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "immediate-cached-revisit",
+          "site": {
+            "id": "home",
+            "name": "home airfield",
+            "x": 1635.1159343712861,
+            "y": 1112.3515476414532
+          },
+          "loadedChunkIds": [
+            0
+          ],
+          "addedChunkIds": [
+            0
+          ],
+          "removedChunkIds": [],
+          "submissionMs": 0.8999999994412065,
+          "gpuDrainMs": 21.90000000037253,
+          "completedRenderMs": 22.799999999813735,
+          "warmCompletedMs": [
+            23.899999999441206,
+            24.600000000558794,
+            27.600000000558794
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 22818235,
+              "estimatedResidentBytes": 22818235,
+              "hits": 1,
+              "evictions": 0,
+              "coldBuilds": 1
+            },
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 827,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4516522.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 4516522.666666666,
+            "landBufferBytes": 7457160,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "empty-after-immediate-revisit",
+          "site": {
+            "id": "empty",
+            "name": "outside all terrain",
+            "x": 10000000,
+            "y": 10000000
+          },
+          "loadedChunkIds": [],
+          "addedChunkIds": [],
+          "removedChunkIds": [
+            0
+          ],
+          "submissionMs": 0.6999999992549419,
+          "gpuDrainMs": 10.900000000372529,
+          "completedRenderMs": 11.599999999627471,
+          "warmCompletedMs": [
+            11.300000000745058,
+            11.099999999627471,
+            11.5
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 22818235,
+              "detachedCount": 1,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 0,
+              "estimatedResidentBytes": 22818235,
+              "hits": 1,
+              "evictions": 0,
+              "coldBuilds": 1
+            },
+            "chunks": 0,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 0,
+            "landTextureSizes": [],
+            "landTextureEstimatedRGBA8Bytes": 0,
+            "landBufferBytes": 0,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-1-home",
+          "site": {
+            "id": "home",
+            "name": "home airfield",
+            "x": 1635.1159343712861,
+            "y": 1112.3515476414532
+          },
+          "loadedChunkIds": [
+            0
+          ],
+          "addedChunkIds": [
+            0
+          ],
+          "removedChunkIds": [],
+          "submissionMs": 0.8000000007450581,
+          "gpuDrainMs": 23,
+          "completedRenderMs": 23.800000000745058,
+          "warmCompletedMs": [
+            26.399999999441206,
+            27.100000000558794,
+            24.199999999254942
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 22818235,
+              "estimatedResidentBytes": 22818235,
+              "hits": 2,
+              "evictions": 0,
+              "coldBuilds": 1
+            },
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 827,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4516522.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 4516522.666666666,
+            "landBufferBytes": 7457160,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-1-62",
+          "site": {
+            "id": 62,
+            "name": "62",
+            "x": 22178.567752332758,
+            "y": -18548.53030576642,
+            "radius": 573.6202721716836,
+            "extent": 656.2921978488629
+          },
+          "loadedChunkIds": [
+            54,
+            62
+          ],
+          "addedChunkIds": [
+            54,
+            62
+          ],
+          "removedChunkIds": [
+            0
+          ],
+          "submissionMs": 259.30000000074506,
+          "gpuDrainMs": 77.69999999925494,
+          "completedRenderMs": 337,
+          "warmCompletedMs": [
+            24.799999999813735,
+            25,
+            25.600000000558794
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 31109110,
+              "estimatedResidentBytes": 31109110,
+              "hits": 2,
+              "evictions": 1,
+              "coldBuilds": 3
+            },
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 418,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 2282837.333333333
+              },
+              {
+                "width": 744,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4063232
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 6346069.333333333,
+            "landBufferBytes": 10001744,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-1-66",
+          "site": {
+            "id": 66,
+            "name": "66",
+            "x": -3514.617186467258,
+            "y": -18428.2653516973,
+            "radius": 481.59223803086206,
+            "extent": 504.8200875204188
+          },
+          "loadedChunkIds": [
+            66,
+            73
+          ],
+          "addedChunkIds": [
+            66,
+            73
+          ],
+          "removedChunkIds": [
+            54,
+            62
+          ],
+          "submissionMs": 59.59999999962747,
+          "gpuDrainMs": 77.90000000037253,
+          "completedRenderMs": 137.5,
+          "warmCompletedMs": [
+            18.5,
+            19.399999999441206,
+            19.100000000558794
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 19620632,
+              "estimatedResidentBytes": 19620632,
+              "hits": 2,
+              "evictions": 3,
+              "coldBuilds": 5
+            },
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 811,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4429141.333333333
+              },
+              {
+                "width": 1009,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 5510485.333333333
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 9939626.666666666,
+            "landBufferBytes": 1113142,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-1-82",
+          "site": {
+            "id": 82,
+            "name": "82",
+            "x": 10772.94349724473,
+            "y": -9905.96266143724,
+            "radius": 389.05542340362445,
+            "extent": 472.54409758723347
+          },
+          "loadedChunkIds": [
+            82
+          ],
+          "addedChunkIds": [
+            82
+          ],
+          "removedChunkIds": [
+            66,
+            73
+          ],
+          "submissionMs": 37.09999999962747,
+          "gpuDrainMs": 72.20000000018626,
+          "completedRenderMs": 109.29999999981374,
+          "warmCompletedMs": [
+            19.200000000186265,
+            18.200000000186265,
+            17.700000000186265
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 7050150,
+              "estimatedResidentBytes": 7050150,
+              "hits": 2,
+              "evictions": 5,
+              "coldBuilds": 6
+            },
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 670,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 3659093.333333333
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 3659093.333333333,
+            "landBufferBytes": 323368,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-1-28",
+          "site": {
+            "id": 28,
+            "name": "28",
+            "x": 9901.029095438029,
+            "y": -19564.656359641776,
+            "radius": 412.8163983183913,
+            "extent": 460.29949600474157
+          },
+          "loadedChunkIds": [
+            28
+          ],
+          "addedChunkIds": [
+            28
+          ],
+          "removedChunkIds": [
+            82
+          ],
+          "submissionMs": 44.60000000055879,
+          "gpuDrainMs": 59,
+          "completedRenderMs": 103.6000000005588,
+          "warmCompletedMs": [
+            18,
+            18.799999999813735,
+            18
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 7050150,
+              "detachedCount": 1,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 10473387,
+              "estimatedResidentBytes": 17523537,
+              "hits": 2,
+              "evictions": 5,
+              "coldBuilds": 7
+            },
+            "chunks": 1,
+            "textures": 6,
+            "geometries": 32,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1013,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 5532330.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 5532330.666666666,
+            "landBufferBytes": 395904,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-1-43",
+          "site": {
+            "id": 43,
+            "name": "43",
+            "x": 11734.50477735316,
+            "y": -335.01775293241917,
+            "radius": 393.33340388489887,
+            "extent": 466.4810560505817
+          },
+          "loadedChunkIds": [
+            43,
+            49
+          ],
+          "addedChunkIds": [
+            43,
+            49
+          ],
+          "removedChunkIds": [
+            28
+          ],
+          "submissionMs": 58,
+          "gpuDrainMs": 99.29999999981374,
+          "completedRenderMs": 157.29999999981374,
+          "warmCompletedMs": [
+            27.90000000037253,
+            18.09999999962747,
+            23.299999999813735
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 17197659,
+              "estimatedResidentBytes": 17197659,
+              "hits": 2,
+              "evictions": 7,
+              "coldBuilds": 9
+            },
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 28,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 911,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4975274.666666666
+              },
+              {
+                "width": 762,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4161536
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 9136810.666666666,
+            "landBufferBytes": 604120,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-1-20",
+          "site": {
+            "id": 20,
+            "name": "20",
+            "x": 2159.670181956282,
+            "y": -9074.970531170366,
+            "radius": 429.17417847784236,
+            "extent": 495.93651813293707
+          },
+          "loadedChunkIds": [
+            20
+          ],
+          "addedChunkIds": [
+            20
+          ],
+          "removedChunkIds": [
+            43,
+            49
+          ],
+          "submissionMs": 40.700000000186265,
+          "gpuDrainMs": 51.799999999813735,
+          "completedRenderMs": 92.5,
+          "warmCompletedMs": [
+            28.59999999962747,
+            20.200000000186265,
+            18.700000000186265
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 7836712,
+              "detachedCount": 1,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 5310275,
+              "estimatedResidentBytes": 13146987,
+              "hits": 2,
+              "evictions": 8,
+              "coldBuilds": 10
+            },
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 28,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 491,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 2681514.6666666665
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 2681514.6666666665,
+            "landBufferBytes": 308812,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "empty-after-cycle-1",
+          "site": {
+            "id": "empty",
+            "name": "outside all terrain",
+            "x": 10000000,
+            "y": 10000000
+          },
+          "loadedChunkIds": [],
+          "addedChunkIds": [],
+          "removedChunkIds": [
+            20
+          ],
+          "submissionMs": 0.6000000005587935,
+          "gpuDrainMs": 9.699999999254942,
+          "completedRenderMs": 10.299999999813735,
+          "warmCompletedMs": [
+            10.300000000745058,
+            10.299999999813735,
+            10.299999999813735
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 13146987,
+              "detachedCount": 2,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 0,
+              "estimatedResidentBytes": 13146987,
+              "hits": 2,
+              "evictions": 8,
+              "coldBuilds": 10
+            },
+            "chunks": 0,
+            "textures": 5,
+            "geometries": 28,
+            "programs": 13,
+            "landTextureCount": 0,
+            "landTextureSizes": [],
+            "landTextureEstimatedRGBA8Bytes": 0,
+            "landBufferBytes": 0,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-2-home",
+          "site": {
+            "id": "home",
+            "name": "home airfield",
+            "x": 1635.1159343712861,
+            "y": 1112.3515476414532
+          },
+          "loadedChunkIds": [
+            0
+          ],
+          "addedChunkIds": [
+            0
+          ],
+          "removedChunkIds": [],
+          "submissionMs": 270.40000000037253,
+          "gpuDrainMs": 60.39999999944121,
+          "completedRenderMs": 330.79999999981374,
+          "warmCompletedMs": [
+            23.399999999441206,
+            23.300000000745058,
+            22.899999999441206
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 5310275,
+              "detachedCount": 1,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 22818235,
+              "estimatedResidentBytes": 28128510,
+              "hits": 2,
+              "evictions": 9,
+              "coldBuilds": 11
+            },
+            "chunks": 1,
+            "textures": 6,
+            "geometries": 32,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 827,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4516522.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 4516522.666666666,
+            "landBufferBytes": 7457160,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-2-62",
+          "site": {
+            "id": 62,
+            "name": "62",
+            "x": 22178.567752332758,
+            "y": -18548.53030576642,
+            "radius": 573.6202721716836,
+            "extent": 656.2921978488629
+          },
+          "loadedChunkIds": [
+            54,
+            62
+          ],
+          "addedChunkIds": [
+            54,
+            62
+          ],
+          "removedChunkIds": [
+            0
+          ],
+          "submissionMs": 229.8999999994412,
+          "gpuDrainMs": 82,
+          "completedRenderMs": 311.8999999994412,
+          "warmCompletedMs": [
+            21.59999999962747,
+            23.299999999813735,
+            23.800000000745058
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 31109110,
+              "estimatedResidentBytes": 31109110,
+              "hits": 2,
+              "evictions": 11,
+              "coldBuilds": 13
+            },
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 418,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 2282837.333333333
+              },
+              {
+                "width": 744,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4063232
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 6346069.333333333,
+            "landBufferBytes": 10001744,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-2-66",
+          "site": {
+            "id": 66,
+            "name": "66",
+            "x": -3514.617186467258,
+            "y": -18428.2653516973,
+            "radius": 481.59223803086206,
+            "extent": 504.8200875204188
+          },
+          "loadedChunkIds": [
+            66,
+            73
+          ],
+          "addedChunkIds": [
+            66,
+            73
+          ],
+          "removedChunkIds": [
+            54,
+            62
+          ],
+          "submissionMs": 65,
+          "gpuDrainMs": 76.90000000037253,
+          "completedRenderMs": 141.90000000037253,
+          "warmCompletedMs": [
+            18.899999999441206,
+            17.700000000186265,
+            18.90000000037253
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 19620632,
+              "estimatedResidentBytes": 19620632,
+              "hits": 2,
+              "evictions": 13,
+              "coldBuilds": 15
+            },
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 811,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4429141.333333333
+              },
+              {
+                "width": 1009,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 5510485.333333333
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 9939626.666666666,
+            "landBufferBytes": 1113142,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-2-82",
+          "site": {
+            "id": 82,
+            "name": "82",
+            "x": 10772.94349724473,
+            "y": -9905.96266143724,
+            "radius": 389.05542340362445,
+            "extent": 472.54409758723347
+          },
+          "loadedChunkIds": [
+            82
+          ],
+          "addedChunkIds": [
+            82
+          ],
+          "removedChunkIds": [
+            66,
+            73
+          ],
+          "submissionMs": 43.89999999944121,
+          "gpuDrainMs": 63.30000000074506,
+          "completedRenderMs": 107.20000000018626,
+          "warmCompletedMs": [
+            22.09999999962747,
+            28.700000000186265,
+            17.59999999962747
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 7050150,
+              "estimatedResidentBytes": 7050150,
+              "hits": 2,
+              "evictions": 15,
+              "coldBuilds": 16
+            },
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 670,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 3659093.333333333
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 3659093.333333333,
+            "landBufferBytes": 323368,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-2-28",
+          "site": {
+            "id": 28,
+            "name": "28",
+            "x": 9901.029095438029,
+            "y": -19564.656359641776,
+            "radius": 412.8163983183913,
+            "extent": 460.29949600474157
+          },
+          "loadedChunkIds": [
+            28
+          ],
+          "addedChunkIds": [
+            28
+          ],
+          "removedChunkIds": [
+            82
+          ],
+          "submissionMs": 43.5,
+          "gpuDrainMs": 60,
+          "completedRenderMs": 103.5,
+          "warmCompletedMs": [
+            18,
+            17.700000000186265,
+            17.700000000186265
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 7050150,
+              "detachedCount": 1,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 10473387,
+              "estimatedResidentBytes": 17523537,
+              "hits": 2,
+              "evictions": 15,
+              "coldBuilds": 17
+            },
+            "chunks": 1,
+            "textures": 6,
+            "geometries": 32,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1013,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 5532330.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 5532330.666666666,
+            "landBufferBytes": 395904,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-2-43",
+          "site": {
+            "id": 43,
+            "name": "43",
+            "x": 11734.50477735316,
+            "y": -335.01775293241917,
+            "radius": 393.33340388489887,
+            "extent": 466.4810560505817
+          },
+          "loadedChunkIds": [
+            43,
+            49
+          ],
+          "addedChunkIds": [
+            43,
+            49
+          ],
+          "removedChunkIds": [
+            28
+          ],
+          "submissionMs": 54.80000000074506,
+          "gpuDrainMs": 93,
+          "completedRenderMs": 147.80000000074506,
+          "warmCompletedMs": [
+            20.799999999813735,
+            18.40000000037253,
+            18.299999999813735
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 17197659,
+              "estimatedResidentBytes": 17197659,
+              "hits": 2,
+              "evictions": 17,
+              "coldBuilds": 19
+            },
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 28,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 911,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4975274.666666666
+              },
+              {
+                "width": 762,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4161536
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 9136810.666666666,
+            "landBufferBytes": 604120,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-2-20",
+          "site": {
+            "id": 20,
+            "name": "20",
+            "x": 2159.670181956282,
+            "y": -9074.970531170366,
+            "radius": 429.17417847784236,
+            "extent": 495.93651813293707
+          },
+          "loadedChunkIds": [
+            20
+          ],
+          "addedChunkIds": [
+            20
+          ],
+          "removedChunkIds": [
+            43,
+            49
+          ],
+          "submissionMs": 41.299999999813735,
+          "gpuDrainMs": 54.40000000037253,
+          "completedRenderMs": 95.70000000018626,
+          "warmCompletedMs": [
+            28.5,
+            23.09999999962747,
+            19.299999999813735
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 7836712,
+              "detachedCount": 1,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 5310275,
+              "estimatedResidentBytes": 13146987,
+              "hits": 2,
+              "evictions": 18,
+              "coldBuilds": 20
+            },
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 28,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 491,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 2681514.6666666665
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 2681514.6666666665,
+            "landBufferBytes": 308812,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "empty-after-cycle-2",
+          "site": {
+            "id": "empty",
+            "name": "outside all terrain",
+            "x": 10000000,
+            "y": 10000000
+          },
+          "loadedChunkIds": [],
+          "addedChunkIds": [],
+          "removedChunkIds": [
+            20
+          ],
+          "submissionMs": 1.7000000001862645,
+          "gpuDrainMs": 10.5,
+          "completedRenderMs": 12.200000000186265,
+          "warmCompletedMs": [
+            11.900000000372529,
+            11.399999999441206,
+            10.100000000558794
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 13146987,
+              "detachedCount": 2,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 0,
+              "estimatedResidentBytes": 13146987,
+              "hits": 2,
+              "evictions": 18,
+              "coldBuilds": 20
+            },
+            "chunks": 0,
+            "textures": 5,
+            "geometries": 28,
+            "programs": 13,
+            "landTextureCount": 0,
+            "landTextureSizes": [],
+            "landTextureEstimatedRGBA8Bytes": 0,
+            "landBufferBytes": 0,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "home-final-revisit",
+          "site": {
+            "id": "home",
+            "name": "home airfield",
+            "x": 1635.1159343712861,
+            "y": 1112.3515476414532
+          },
+          "loadedChunkIds": [
+            0
+          ],
+          "addedChunkIds": [
+            0
+          ],
+          "removedChunkIds": [],
+          "submissionMs": 248.90000000037253,
+          "gpuDrainMs": 63.700000000186265,
+          "completedRenderMs": 312.6000000005588,
+          "warmCompletedMs": [
+            25.200000000186265,
+            25.299999999813735,
+            23.600000000558794
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 5310275,
+              "detachedCount": 1,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 22818235,
+              "estimatedResidentBytes": 28128510,
+              "hits": 2,
+              "evictions": 19,
+              "coldBuilds": 21
+            },
+            "chunks": 1,
+            "textures": 6,
+            "geometries": 32,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 827,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4516522.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 4516522.666666666,
+            "landBufferBytes": 7457160,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "empty-final",
+          "site": {
+            "id": "empty",
+            "name": "outside all terrain",
+            "x": 10000000,
+            "y": 10000000
+          },
+          "loadedChunkIds": [],
+          "addedChunkIds": [],
+          "removedChunkIds": [
+            0
+          ],
+          "submissionMs": 0.7000000001862645,
+          "gpuDrainMs": 11.200000000186265,
+          "completedRenderMs": 11.900000000372529,
+          "warmCompletedMs": [
+            11.099999999627471,
+            10.599999999627471,
+            11
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 22818235,
+              "detachedCount": 1,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 0,
+              "estimatedResidentBytes": 22818235,
+              "hits": 2,
+              "evictions": 20,
+              "coldBuilds": 21
+            },
+            "chunks": 0,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 0,
+            "landTextureSizes": [],
+            "landTextureEstimatedRGBA8Bytes": 0,
+            "landBufferBytes": 0,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "campaign-reset-release",
+          "site": {
+            "id": "empty",
+            "name": "outside all terrain",
+            "x": 10000000,
+            "y": 10000000
+          },
+          "loadedChunkIds": [],
+          "addedChunkIds": [],
+          "removedChunkIds": [],
+          "submissionMs": 0.6000000005587935,
+          "gpuDrainMs": 11.199999999254942,
+          "completedRenderMs": 11.799999999813735,
+          "warmCompletedMs": [
+            12.5,
+            10.700000000186265,
+            11
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 0,
+              "estimatedResidentBytes": 0,
+              "hits": 2,
+              "evictions": 20,
+              "coldBuilds": 21
+            },
+            "chunks": 0,
+            "textures": 4,
+            "geometries": 22,
+            "programs": 12,
+            "landTextureCount": 0,
+            "landTextureSizes": [],
+            "landTextureEstimatedRGBA8Bytes": 0,
+            "landBufferBytes": 0,
+            "jsHeapUsedBytes": 42100000
+          }
+        }
+      ],
+      "lifecycle": {
+        "cacheBounded": true,
+        "allEmptyViewsDetachLand": true,
+        "initialClearMemory": {
+          "cache": {
+            "detachedBytes": 22818235,
+            "detachedCount": 1,
+            "maxDetachedBytes": 25165824,
+            "buildReserveBytes": 16777216,
+            "activeBytes": 0,
+            "estimatedResidentBytes": 22818235,
+            "hits": 0,
+            "evictions": 0,
+            "coldBuilds": 1
+          },
+          "chunks": 0,
+          "textures": 5,
+          "geometries": 27,
+          "programs": 13,
+          "landTextureCount": 0,
+          "landTextureSizes": [],
+          "landTextureEstimatedRGBA8Bytes": 0,
+          "landBufferBytes": 0,
+          "jsHeapUsedBytes": 42100000
+        },
+        "finalClearMemory": {
+          "cache": {
+            "detachedBytes": 22818235,
+            "detachedCount": 1,
+            "maxDetachedBytes": 25165824,
+            "buildReserveBytes": 16777216,
+            "activeBytes": 0,
+            "estimatedResidentBytes": 22818235,
+            "hits": 2,
+            "evictions": 20,
+            "coldBuilds": 21
+          },
+          "chunks": 0,
+          "textures": 5,
+          "geometries": 27,
+          "programs": 13,
+          "landTextureCount": 0,
+          "landTextureSizes": [],
+          "landTextureEstimatedRGBA8Bytes": 0,
+          "landBufferBytes": 0,
+          "jsHeapUsedBytes": 42100000
+        },
+        "textureDeltaAfterCycles": 0,
+        "geometryDeltaAfterCycles": 0,
+        "monotonicTextureGrowth": false,
+        "interpretation": "Empty views detach land; bounded cached groups intentionally retain textures and geometry. Cache estimates include CPU and GPU copies, unlike active landTextureEstimatedRGBA8Bytes. Active working set, driver overhead and temporary builder allocations are not capped by the detached cache budget. JS heap is approximate and GC is uncontrolled.",
+        "resetMemory": {
+          "cache": {
+            "detachedBytes": 0,
+            "detachedCount": 0,
+            "maxDetachedBytes": 25165824,
+            "buildReserveBytes": 16777216,
+            "activeBytes": 0,
+            "estimatedResidentBytes": 0,
+            "hits": 2,
+            "evictions": 20,
+            "coldBuilds": 21
+          },
+          "chunks": 0,
+          "textures": 4,
+          "geometries": 22,
+          "programs": 12,
+          "landTextureCount": 0,
+          "landTextureSizes": [],
+          "landTextureEstimatedRGBA8Bytes": 0,
+          "landBufferBytes": 0,
+          "jsHeapUsedBytes": 42100000
+        },
+        "resetReleasesAllLand": true
+      }
+    },
+    {
+      "profile": {
+        "name": "fallback",
+        "width": 852,
+        "height": 393,
+        "quality": 4
+      },
+      "bootWallMs": 982.0591569999997,
+      "backend": {
+        "vendor": "WebKit",
+        "renderer": "WebKit WebGL",
+        "unmaskedVendor": "Google Inc. (Google)",
+        "unmaskedRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "startGameMs": 29.299999999813735,
+      "selectedSites": [
+        {
+          "id": "home",
+          "name": "home airfield",
+          "x": 1635.1159343712861,
+          "y": 1112.3515476414532
+        },
+        {
+          "id": 62,
+          "name": "62",
+          "x": 22178.567752332758,
+          "y": -18548.53030576642,
+          "radius": 573.6202721716836,
+          "extent": 656.2921978488629
+        },
+        {
+          "id": 66,
+          "name": "66",
+          "x": -3514.617186467258,
+          "y": -18428.2653516973,
+          "radius": 481.59223803086206,
+          "extent": 504.8200875204188
+        },
+        {
+          "id": 82,
+          "name": "82",
+          "x": 10772.94349724473,
+          "y": -9905.96266143724,
+          "radius": 389.05542340362445,
+          "extent": 472.54409758723347
+        },
+        {
+          "id": 28,
+          "name": "28",
+          "x": 9901.029095438029,
+          "y": -19564.656359641776,
+          "radius": 412.8163983183913,
+          "extent": 460.29949600474157
+        },
+        {
+          "id": 43,
+          "name": "43",
+          "x": 11734.50477735316,
+          "y": -335.01775293241917,
+          "radius": 393.33340388489887,
+          "extent": 466.4810560505817
+        },
+        {
+          "id": 20,
+          "name": "20",
+          "x": 2159.670181956282,
+          "y": -9074.970531170366,
+          "radius": 429.17417847784236,
+          "extent": 495.93651813293707
+        }
+      ],
+      "terrainCount": 88,
+      "visits": [
+        {
+          "label": "startup-first-render",
+          "site": {
+            "id": "home",
+            "name": "home airfield",
+            "x": 1635.1159343712861,
+            "y": 1112.3515476414532
+          },
+          "loadedChunkIds": [
+            0
+          ],
+          "addedChunkIds": [
+            0
+          ],
+          "removedChunkIds": [],
+          "submissionMs": 377,
+          "gpuDrainMs": 261.20000000018626,
+          "completedRenderMs": 638.2000000001863,
+          "warmCompletedMs": [
+            14.300000000745058,
+            14,
+            14.299999999813735
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 22818235,
+              "estimatedResidentBytes": 22818235,
+              "hits": 0,
+              "evictions": 0,
+              "coldBuilds": 1
+            },
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 827,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4516522.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 4516522.666666666,
+            "landBufferBytes": 7457160,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "empty-baseline",
+          "site": {
+            "id": "empty",
+            "name": "outside all terrain",
+            "x": 10000000,
+            "y": 10000000
+          },
+          "loadedChunkIds": [],
+          "addedChunkIds": [],
+          "removedChunkIds": [
+            0
+          ],
+          "submissionMs": 0.900000000372529,
+          "gpuDrainMs": 33.700000000186265,
+          "completedRenderMs": 34.60000000055879,
+          "warmCompletedMs": [
+            6.2999999998137355,
+            4.900000000372529,
+            4.199999999254942
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 22818235,
+              "detachedCount": 1,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 0,
+              "estimatedResidentBytes": 22818235,
+              "hits": 0,
+              "evictions": 0,
+              "coldBuilds": 1
+            },
+            "chunks": 0,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 0,
+            "landTextureSizes": [],
+            "landTextureEstimatedRGBA8Bytes": 0,
+            "landBufferBytes": 0,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "immediate-cached-revisit",
+          "site": {
+            "id": "home",
+            "name": "home airfield",
+            "x": 1635.1159343712861,
+            "y": 1112.3515476414532
+          },
+          "loadedChunkIds": [
+            0
+          ],
+          "addedChunkIds": [
+            0
+          ],
+          "removedChunkIds": [],
+          "submissionMs": 0.7999999998137355,
+          "gpuDrainMs": 11.099999999627471,
+          "completedRenderMs": 11.899999999441206,
+          "warmCompletedMs": [
+            11.400000000372529,
+            11.899999999441206,
+            11.900000000372529
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 22818235,
+              "estimatedResidentBytes": 22818235,
+              "hits": 1,
+              "evictions": 0,
+              "coldBuilds": 1
+            },
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 827,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4516522.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 4516522.666666666,
+            "landBufferBytes": 7457160,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "empty-after-immediate-revisit",
+          "site": {
+            "id": "empty",
+            "name": "outside all terrain",
+            "x": 10000000,
+            "y": 10000000
+          },
+          "loadedChunkIds": [],
+          "addedChunkIds": [],
+          "removedChunkIds": [
+            0
+          ],
+          "submissionMs": 0.5,
+          "gpuDrainMs": 3.7999999998137355,
+          "completedRenderMs": 4.2999999998137355,
+          "warmCompletedMs": [
+            4,
+            4.3999999994412065,
+            4.2000000001862645
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 22818235,
+              "detachedCount": 1,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 0,
+              "estimatedResidentBytes": 22818235,
+              "hits": 1,
+              "evictions": 0,
+              "coldBuilds": 1
+            },
+            "chunks": 0,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 0,
+            "landTextureSizes": [],
+            "landTextureEstimatedRGBA8Bytes": 0,
+            "landBufferBytes": 0,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-1-home",
+          "site": {
+            "id": "home",
+            "name": "home airfield",
+            "x": 1635.1159343712861,
+            "y": 1112.3515476414532
+          },
+          "loadedChunkIds": [
+            0
+          ],
+          "addedChunkIds": [
+            0
+          ],
+          "removedChunkIds": [],
+          "submissionMs": 0.7000000001862645,
+          "gpuDrainMs": 11,
+          "completedRenderMs": 11.700000000186265,
+          "warmCompletedMs": [
+            12.399999999441206,
+            11.700000000186265,
+            12.599999999627471
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 22818235,
+              "estimatedResidentBytes": 22818235,
+              "hits": 2,
+              "evictions": 0,
+              "coldBuilds": 1
+            },
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 827,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4516522.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 4516522.666666666,
+            "landBufferBytes": 7457160,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-1-62",
+          "site": {
+            "id": 62,
+            "name": "62",
+            "x": 22178.567752332758,
+            "y": -18548.53030576642,
+            "radius": 573.6202721716836,
+            "extent": 656.2921978488629
+          },
+          "loadedChunkIds": [
+            54,
+            62
+          ],
+          "addedChunkIds": [
+            54,
+            62
+          ],
+          "removedChunkIds": [
+            0
+          ],
+          "submissionMs": 233.40000000037253,
+          "gpuDrainMs": 62.799999999813735,
+          "completedRenderMs": 296.20000000018626,
+          "warmCompletedMs": [
+            11.600000000558794,
+            10.199999999254942,
+            11.400000000372529
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 31109110,
+              "estimatedResidentBytes": 31109110,
+              "hits": 2,
+              "evictions": 1,
+              "coldBuilds": 3
+            },
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 418,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 2282837.333333333
+              },
+              {
+                "width": 744,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4063232
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 6346069.333333333,
+            "landBufferBytes": 10001744,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-1-66",
+          "site": {
+            "id": 66,
+            "name": "66",
+            "x": -3514.617186467258,
+            "y": -18428.2653516973,
+            "radius": 481.59223803086206,
+            "extent": 504.8200875204188
+          },
+          "loadedChunkIds": [
+            66,
+            73
+          ],
+          "addedChunkIds": [
+            66,
+            73
+          ],
+          "removedChunkIds": [
+            54,
+            62
+          ],
+          "submissionMs": 79.90000000037253,
+          "gpuDrainMs": 70.59999999962747,
+          "completedRenderMs": 150.5,
+          "warmCompletedMs": [
+            10.200000000186265,
+            9,
+            9.5
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 19620632,
+              "estimatedResidentBytes": 19620632,
+              "hits": 2,
+              "evictions": 3,
+              "coldBuilds": 5
+            },
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 811,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4429141.333333333
+              },
+              {
+                "width": 1009,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 5510485.333333333
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 9939626.666666666,
+            "landBufferBytes": 1113142,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-1-82",
+          "site": {
+            "id": 82,
+            "name": "82",
+            "x": 10772.94349724473,
+            "y": -9905.96266143724,
+            "radius": 389.05542340362445,
+            "extent": 472.54409758723347
+          },
+          "loadedChunkIds": [
+            82
+          ],
+          "addedChunkIds": [
+            82
+          ],
+          "removedChunkIds": [
+            66,
+            73
+          ],
+          "submissionMs": 41.09999999962747,
+          "gpuDrainMs": 60.799999999813735,
+          "completedRenderMs": 101.8999999994412,
+          "warmCompletedMs": [
+            8.900000000372529,
+            8.799999999813735,
+            8.100000000558794
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 7050150,
+              "estimatedResidentBytes": 7050150,
+              "hits": 2,
+              "evictions": 5,
+              "coldBuilds": 6
+            },
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 670,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 3659093.333333333
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 3659093.333333333,
+            "landBufferBytes": 323368,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-1-28",
+          "site": {
+            "id": 28,
+            "name": "28",
+            "x": 9901.029095438029,
+            "y": -19564.656359641776,
+            "radius": 412.8163983183913,
+            "extent": 460.29949600474157
+          },
+          "loadedChunkIds": [
+            28
+          ],
+          "addedChunkIds": [
+            28
+          ],
+          "removedChunkIds": [
+            82
+          ],
+          "submissionMs": 54.299999999813735,
+          "gpuDrainMs": 61.299999999813735,
+          "completedRenderMs": 115.59999999962747,
+          "warmCompletedMs": [
+            9.799999999813735,
+            10.799999999813735,
+            7.5
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 7050150,
+              "detachedCount": 1,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 10473387,
+              "estimatedResidentBytes": 17523537,
+              "hits": 2,
+              "evictions": 5,
+              "coldBuilds": 7
+            },
+            "chunks": 1,
+            "textures": 6,
+            "geometries": 32,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1013,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 5532330.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 5532330.666666666,
+            "landBufferBytes": 395904,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-1-43",
+          "site": {
+            "id": 43,
+            "name": "43",
+            "x": 11734.50477735316,
+            "y": -335.01775293241917,
+            "radius": 393.33340388489887,
+            "extent": 466.4810560505817
+          },
+          "loadedChunkIds": [
+            43,
+            49
+          ],
+          "addedChunkIds": [
+            43,
+            49
+          ],
+          "removedChunkIds": [
+            28
+          ],
+          "submissionMs": 58,
+          "gpuDrainMs": 94.5,
+          "completedRenderMs": 152.5,
+          "warmCompletedMs": [
+            20,
+            8.099999999627471,
+            8.299999999813735
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 17197659,
+              "estimatedResidentBytes": 17197659,
+              "hits": 2,
+              "evictions": 7,
+              "coldBuilds": 9
+            },
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 28,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 911,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4975274.666666666
+              },
+              {
+                "width": 762,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4161536
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 9136810.666666666,
+            "landBufferBytes": 604120,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-1-20",
+          "site": {
+            "id": 20,
+            "name": "20",
+            "x": 2159.670181956282,
+            "y": -9074.970531170366,
+            "radius": 429.17417847784236,
+            "extent": 495.93651813293707
+          },
+          "loadedChunkIds": [
+            20
+          ],
+          "addedChunkIds": [
+            20
+          ],
+          "removedChunkIds": [
+            43,
+            49
+          ],
+          "submissionMs": 36.80000000074506,
+          "gpuDrainMs": 54.19999999925494,
+          "completedRenderMs": 91,
+          "warmCompletedMs": [
+            19.200000000186265,
+            10.399999999441206,
+            8.200000000186265
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 7836712,
+              "detachedCount": 1,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 5310275,
+              "estimatedResidentBytes": 13146987,
+              "hits": 2,
+              "evictions": 8,
+              "coldBuilds": 10
+            },
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 28,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 491,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 2681514.6666666665
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 2681514.6666666665,
+            "landBufferBytes": 308812,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "empty-after-cycle-1",
+          "site": {
+            "id": "empty",
+            "name": "outside all terrain",
+            "x": 10000000,
+            "y": 10000000
+          },
+          "loadedChunkIds": [],
+          "addedChunkIds": [],
+          "removedChunkIds": [
+            20
+          ],
+          "submissionMs": 0.39999999944120646,
+          "gpuDrainMs": 3.7999999998137355,
+          "completedRenderMs": 4.199999999254942,
+          "warmCompletedMs": [
+            3.900000000372529,
+            3.900000000372529,
+            3.8999999994412065
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 13146987,
+              "detachedCount": 2,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 0,
+              "estimatedResidentBytes": 13146987,
+              "hits": 2,
+              "evictions": 8,
+              "coldBuilds": 10
+            },
+            "chunks": 0,
+            "textures": 5,
+            "geometries": 28,
+            "programs": 13,
+            "landTextureCount": 0,
+            "landTextureSizes": [],
+            "landTextureEstimatedRGBA8Bytes": 0,
+            "landBufferBytes": 0,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-2-home",
+          "site": {
+            "id": "home",
+            "name": "home airfield",
+            "x": 1635.1159343712861,
+            "y": 1112.3515476414532
+          },
+          "loadedChunkIds": [
+            0
+          ],
+          "addedChunkIds": [
+            0
+          ],
+          "removedChunkIds": [],
+          "submissionMs": 304.29999999981374,
+          "gpuDrainMs": 49.09999999962747,
+          "completedRenderMs": 353.3999999994412,
+          "warmCompletedMs": [
+            12.700000000186265,
+            13.599999999627471,
+            11.799999999813735
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 5310275,
+              "detachedCount": 1,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 22818235,
+              "estimatedResidentBytes": 28128510,
+              "hits": 2,
+              "evictions": 9,
+              "coldBuilds": 11
+            },
+            "chunks": 1,
+            "textures": 6,
+            "geometries": 32,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 827,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4516522.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 4516522.666666666,
+            "landBufferBytes": 7457160,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-2-62",
+          "site": {
+            "id": 62,
+            "name": "62",
+            "x": 22178.567752332758,
+            "y": -18548.53030576642,
+            "radius": 573.6202721716836,
+            "extent": 656.2921978488629
+          },
+          "loadedChunkIds": [
+            54,
+            62
+          ],
+          "addedChunkIds": [
+            54,
+            62
+          ],
+          "removedChunkIds": [
+            0
+          ],
+          "submissionMs": 258.5,
+          "gpuDrainMs": 71.40000000037253,
+          "completedRenderMs": 329.90000000037253,
+          "warmCompletedMs": [
+            10.799999999813735,
+            11.099999999627471,
+            10.200000000186265
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 31109110,
+              "estimatedResidentBytes": 31109110,
+              "hits": 2,
+              "evictions": 11,
+              "coldBuilds": 13
+            },
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 418,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 2282837.333333333
+              },
+              {
+                "width": 744,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4063232
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 6346069.333333333,
+            "landBufferBytes": 10001744,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-2-66",
+          "site": {
+            "id": 66,
+            "name": "66",
+            "x": -3514.617186467258,
+            "y": -18428.2653516973,
+            "radius": 481.59223803086206,
+            "extent": 504.8200875204188
+          },
+          "loadedChunkIds": [
+            66,
+            73
+          ],
+          "addedChunkIds": [
+            66,
+            73
+          ],
+          "removedChunkIds": [
+            54,
+            62
+          ],
+          "submissionMs": 61.59999999962747,
+          "gpuDrainMs": 67.79999999981374,
+          "completedRenderMs": 129.3999999994412,
+          "warmCompletedMs": [
+            8.200000000186265,
+            7.400000000372529,
+            7.8999999994412065
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 19620632,
+              "estimatedResidentBytes": 19620632,
+              "hits": 2,
+              "evictions": 13,
+              "coldBuilds": 15
+            },
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 811,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4429141.333333333
+              },
+              {
+                "width": 1009,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 5510485.333333333
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 9939626.666666666,
+            "landBufferBytes": 1113142,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-2-82",
+          "site": {
+            "id": 82,
+            "name": "82",
+            "x": 10772.94349724473,
+            "y": -9905.96266143724,
+            "radius": 389.05542340362445,
+            "extent": 472.54409758723347
+          },
+          "loadedChunkIds": [
+            82
+          ],
+          "addedChunkIds": [
+            82
+          ],
+          "removedChunkIds": [
+            66,
+            73
+          ],
+          "submissionMs": 37.799999999813735,
+          "gpuDrainMs": 60.299999999813735,
+          "completedRenderMs": 98.09999999962747,
+          "warmCompletedMs": [
+            9.299999999813735,
+            7.6000000005587935,
+            8.900000000372529
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 7050150,
+              "estimatedResidentBytes": 7050150,
+              "hits": 2,
+              "evictions": 15,
+              "coldBuilds": 16
+            },
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 670,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 3659093.333333333
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 3659093.333333333,
+            "landBufferBytes": 323368,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-2-28",
+          "site": {
+            "id": 28,
+            "name": "28",
+            "x": 9901.029095438029,
+            "y": -19564.656359641776,
+            "radius": 412.8163983183913,
+            "extent": 460.29949600474157
+          },
+          "loadedChunkIds": [
+            28
+          ],
+          "addedChunkIds": [
+            28
+          ],
+          "removedChunkIds": [
+            82
+          ],
+          "submissionMs": 42.299999999813735,
+          "gpuDrainMs": 53.700000000186265,
+          "completedRenderMs": 96,
+          "warmCompletedMs": [
+            8.100000000558794,
+            8.599999999627471,
+            8.099999999627471
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 7050150,
+              "detachedCount": 1,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 10473387,
+              "estimatedResidentBytes": 17523537,
+              "hits": 2,
+              "evictions": 15,
+              "coldBuilds": 17
+            },
+            "chunks": 1,
+            "textures": 6,
+            "geometries": 32,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1013,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 5532330.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 5532330.666666666,
+            "landBufferBytes": 395904,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-2-43",
+          "site": {
+            "id": 43,
+            "name": "43",
+            "x": 11734.50477735316,
+            "y": -335.01775293241917,
+            "radius": 393.33340388489887,
+            "extent": 466.4810560505817
+          },
+          "loadedChunkIds": [
+            43,
+            49
+          ],
+          "addedChunkIds": [
+            43,
+            49
+          ],
+          "removedChunkIds": [
+            28
+          ],
+          "submissionMs": 54.700000000186265,
+          "gpuDrainMs": 70.40000000037253,
+          "completedRenderMs": 125.1000000005588,
+          "warmCompletedMs": [
+            16.399999999441206,
+            8.100000000558794,
+            7
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 17197659,
+              "estimatedResidentBytes": 17197659,
+              "hits": 2,
+              "evictions": 17,
+              "coldBuilds": 19
+            },
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 28,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 911,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4975274.666666666
+              },
+              {
+                "width": 762,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4161536
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 9136810.666666666,
+            "landBufferBytes": 604120,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "cycle-2-20",
+          "site": {
+            "id": 20,
+            "name": "20",
+            "x": 2159.670181956282,
+            "y": -9074.970531170366,
+            "radius": 429.17417847784236,
+            "extent": 495.93651813293707
+          },
+          "loadedChunkIds": [
+            20
+          ],
+          "addedChunkIds": [
+            20
+          ],
+          "removedChunkIds": [
+            43,
+            49
+          ],
+          "submissionMs": 30.90000000037253,
+          "gpuDrainMs": 49.299999999813735,
+          "completedRenderMs": 80.20000000018626,
+          "warmCompletedMs": [
+            16.5,
+            7.5,
+            7.7999999998137355
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 7836712,
+              "detachedCount": 1,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 5310275,
+              "estimatedResidentBytes": 13146987,
+              "hits": 2,
+              "evictions": 18,
+              "coldBuilds": 20
+            },
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 28,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 491,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 2681514.6666666665
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 2681514.6666666665,
+            "landBufferBytes": 308812,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "empty-after-cycle-2",
+          "site": {
+            "id": "empty",
+            "name": "outside all terrain",
+            "x": 10000000,
+            "y": 10000000
+          },
+          "loadedChunkIds": [],
+          "addedChunkIds": [],
+          "removedChunkIds": [
+            20
+          ],
+          "submissionMs": 0.39999999944120646,
+          "gpuDrainMs": 3.7000000001862645,
+          "completedRenderMs": 4.099999999627471,
+          "warmCompletedMs": [
+            3.7000000001862645,
+            4,
+            3.7999999998137355
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 13146987,
+              "detachedCount": 2,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 0,
+              "estimatedResidentBytes": 13146987,
+              "hits": 2,
+              "evictions": 18,
+              "coldBuilds": 20
+            },
+            "chunks": 0,
+            "textures": 5,
+            "geometries": 28,
+            "programs": 13,
+            "landTextureCount": 0,
+            "landTextureSizes": [],
+            "landTextureEstimatedRGBA8Bytes": 0,
+            "landBufferBytes": 0,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "home-final-revisit",
+          "site": {
+            "id": "home",
+            "name": "home airfield",
+            "x": 1635.1159343712861,
+            "y": 1112.3515476414532
+          },
+          "loadedChunkIds": [
+            0
+          ],
+          "addedChunkIds": [
+            0
+          ],
+          "removedChunkIds": [],
+          "submissionMs": 262.09999999962747,
+          "gpuDrainMs": 51.90000000037253,
+          "completedRenderMs": 314,
+          "warmCompletedMs": [
+            13.799999999813735,
+            11.900000000372529,
+            11.599999999627471
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 5310275,
+              "detachedCount": 1,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 22818235,
+              "estimatedResidentBytes": 28128510,
+              "hits": 2,
+              "evictions": 19,
+              "coldBuilds": 21
+            },
+            "chunks": 1,
+            "textures": 6,
+            "geometries": 32,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 827,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4516522.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 4516522.666666666,
+            "landBufferBytes": 7457160,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "empty-final",
+          "site": {
+            "id": "empty",
+            "name": "outside all terrain",
+            "x": 10000000,
+            "y": 10000000
+          },
+          "loadedChunkIds": [],
+          "addedChunkIds": [],
+          "removedChunkIds": [
+            0
+          ],
+          "submissionMs": 0.599999999627471,
+          "gpuDrainMs": 4,
+          "completedRenderMs": 4.599999999627471,
+          "warmCompletedMs": [
+            3.900000000372529,
+            4.199999999254942,
+            5.1000000005587935
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 22818235,
+              "detachedCount": 1,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 0,
+              "estimatedResidentBytes": 22818235,
+              "hits": 2,
+              "evictions": 20,
+              "coldBuilds": 21
+            },
+            "chunks": 0,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 0,
+            "landTextureSizes": [],
+            "landTextureEstimatedRGBA8Bytes": 0,
+            "landBufferBytes": 0,
+            "jsHeapUsedBytes": 42100000
+          }
+        },
+        {
+          "label": "campaign-reset-release",
+          "site": {
+            "id": "empty",
+            "name": "outside all terrain",
+            "x": 10000000,
+            "y": 10000000
+          },
+          "loadedChunkIds": [],
+          "addedChunkIds": [],
+          "removedChunkIds": [],
+          "submissionMs": 0.6000000005587935,
+          "gpuDrainMs": 4.5,
+          "completedRenderMs": 5.1000000005587935,
+          "warmCompletedMs": [
+            4.2000000001862645,
+            3.699999999254942,
+            4
+          ],
+          "memory": {
+            "cache": {
+              "detachedBytes": 0,
+              "detachedCount": 0,
+              "maxDetachedBytes": 25165824,
+              "buildReserveBytes": 16777216,
+              "activeBytes": 0,
+              "estimatedResidentBytes": 0,
+              "hits": 2,
+              "evictions": 20,
+              "coldBuilds": 21
+            },
+            "chunks": 0,
+            "textures": 4,
+            "geometries": 22,
+            "programs": 12,
+            "landTextureCount": 0,
+            "landTextureSizes": [],
+            "landTextureEstimatedRGBA8Bytes": 0,
+            "landBufferBytes": 0,
+            "jsHeapUsedBytes": 42100000
+          }
+        }
+      ],
+      "lifecycle": {
+        "cacheBounded": true,
+        "allEmptyViewsDetachLand": true,
+        "initialClearMemory": {
+          "cache": {
+            "detachedBytes": 22818235,
+            "detachedCount": 1,
+            "maxDetachedBytes": 25165824,
+            "buildReserveBytes": 16777216,
+            "activeBytes": 0,
+            "estimatedResidentBytes": 22818235,
+            "hits": 0,
+            "evictions": 0,
+            "coldBuilds": 1
+          },
+          "chunks": 0,
+          "textures": 5,
+          "geometries": 27,
+          "programs": 13,
+          "landTextureCount": 0,
+          "landTextureSizes": [],
+          "landTextureEstimatedRGBA8Bytes": 0,
+          "landBufferBytes": 0,
+          "jsHeapUsedBytes": 42100000
+        },
+        "finalClearMemory": {
+          "cache": {
+            "detachedBytes": 22818235,
+            "detachedCount": 1,
+            "maxDetachedBytes": 25165824,
+            "buildReserveBytes": 16777216,
+            "activeBytes": 0,
+            "estimatedResidentBytes": 22818235,
+            "hits": 2,
+            "evictions": 20,
+            "coldBuilds": 21
+          },
+          "chunks": 0,
+          "textures": 5,
+          "geometries": 27,
+          "programs": 13,
+          "landTextureCount": 0,
+          "landTextureSizes": [],
+          "landTextureEstimatedRGBA8Bytes": 0,
+          "landBufferBytes": 0,
+          "jsHeapUsedBytes": 42100000
+        },
+        "textureDeltaAfterCycles": 0,
+        "geometryDeltaAfterCycles": 0,
+        "monotonicTextureGrowth": false,
+        "interpretation": "Empty views detach land; bounded cached groups intentionally retain textures and geometry. Cache estimates include CPU and GPU copies, unlike active landTextureEstimatedRGBA8Bytes. Active working set, driver overhead and temporary builder allocations are not capped by the detached cache budget. JS heap is approximate and GC is uncontrolled.",
+        "resetMemory": {
+          "cache": {
+            "detachedBytes": 0,
+            "detachedCount": 0,
+            "maxDetachedBytes": 25165824,
+            "buildReserveBytes": 16777216,
+            "activeBytes": 0,
+            "estimatedResidentBytes": 0,
+            "hits": 2,
+            "evictions": 20,
+            "coldBuilds": 21
+          },
+          "chunks": 0,
+          "textures": 4,
+          "geometries": 22,
+          "programs": 12,
+          "landTextureCount": 0,
+          "landTextureSizes": [],
+          "landTextureEstimatedRGBA8Bytes": 0,
+          "landBufferBytes": 0,
+          "jsHeapUsedBytes": 42100000
+        },
+        "resetReleasesAllLand": true
+      }
+    }
+  ],
+  "errors": [],
+  "browser": "141.0.7390.37",
+  "sourceHashAfter": "61c5ca830e59baece895abdcc1d35c1fb082468616ac99e2cd9c16e6c1fd4514",
+  "sourceChangedDuringRun": false
+}

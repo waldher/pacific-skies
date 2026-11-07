@@ -1,0 +1,340 @@
+{
+  "view-01.png": {
+    "scores": [
+      7.5,
+      9,
+      9,
+      9,
+      8
+    ],
+    "weighted_score": 8.4,
+    "evidence": "Produce stalls, stonework and wood have distinct textures and coherent shadows; thin colored routes remain visible in a densely populated market."
+  },
+  "view-02.png": {
+    "scores": [
+      7.5,
+      7,
+      4.5,
+      4.5,
+      4
+    ],
+    "weighted_score": 5.825,
+    "evidence": "Clear top objective bars and aircraft silhouettes; deck structures supply form but soft ocean streaks and flat carrier surfaces limit depth."
+  },
+  "view-03.png": {
+    "scores": [
+      8,
+      7,
+      4.5,
+      4.5,
+      4
+    ],
+    "weighted_score": 5.975,
+    "evidence": "Uncluttered coastal flight with readable HUD; hangar forms and tree shadows help, while field squares and broad grass remain blurred and flat."
+  },
+  "view-04.png": {
+    "scores": [
+      8,
+      7.5,
+      5.5,
+      5,
+      4.5
+    ],
+    "weighted_score": 6.425,
+    "evidence": "Crisp carrier rails and raised bridge with stronger shadow create more depth; foam is visible but the long coherent ship wake visible in view-06 is absent."
+  },
+  "view-05.png": {
+    "scores": [
+      6.5,
+      8.5,
+      9,
+      9,
+      9
+    ],
+    "weighted_score": 8.15,
+    "evidence": "Layered radial sparks, bloom and explosion colors integrate with detailed machinery and atmospheric cliffs; crowding obscures silhouettes beside the blast."
+  },
+  "view-06.png": {
+    "scores": [
+      8,
+      7.5,
+      5,
+      5,
+      5
+    ],
+    "weighted_score": 6.4,
+    "evidence": "Quiet carrier scene has sharp stripes, railings and superstructure, readable objective bars, sea flecks and a distinct trailing wake; material lighting remains simple."
+  },
+  "view-07.png": {
+    "scores": [
+      6.5,
+      7,
+      5,
+      5,
+      5
+    ],
+    "weighted_score": 5.85,
+    "evidence": "Sharp aircraft and detailed carrier survive the busy scene, but overlapping cream wings, foam and soft spark dots obscure central action."
+  },
+  "view-08.png": {
+    "scores": [
+      8.5,
+      9,
+      9,
+      9,
+      8
+    ],
+    "weighted_score": 8.7,
+    "evidence": "Cutaway rooms show coherent warm/cool light, wall height, furniture, wood and tile materials; tactical marks remain distinguishable within the detailed plan."
+  },
+  "view-09.png": {
+    "scores": [
+      7.5,
+      7,
+      5.5,
+      5,
+      4.5
+    ],
+    "weighted_score": 6.175,
+    "evidence": "Directional aircraft shadows and raised carrier bridge establish height; shadows are heavy dark doubles and the ship lacks the long visible wake of view-24."
+  },
+  "view-10.png": {
+    "scores": [
+      8,
+      7.5,
+      5.5,
+      5.5,
+      5
+    ],
+    "weighted_score": 6.575,
+    "evidence": "Trees and hangars have stronger cast shadows; shoreline rocks and a softer sand transition add variety, while grass and fields remain smooth and schematic."
+  },
+  "view-11.png": {
+    "scores": [
+      6,
+      8.5,
+      9,
+      9,
+      8.5
+    ],
+    "weighted_score": 7.925,
+    "evidence": "Wet reflections, rain, volumetric smoke and orange projectile lighting create rich atmosphere; dark small infantry are hard to distinguish from rubble."
+  },
+  "view-12.png": {
+    "scores": [
+      8,
+      7,
+      4.5,
+      4.5,
+      4
+    ],
+    "weighted_score": 5.975,
+    "evidence": "Runway, roofs and roads read cleanly; modest tree shadows imply height but large roof and ground surfaces show little material response."
+  },
+  "view-13.png": {
+    "scores": [
+      7.5,
+      7,
+      5,
+      4.5,
+      3.5
+    ],
+    "weighted_score": 5.85,
+    "evidence": "Aircraft shadows and bridge height strengthen volume; the scene stays soft and its ship wake is less developed than view-02."
+  },
+  "view-14.png": {
+    "scores": [
+      8,
+      7,
+      5,
+      5.5,
+      4
+    ],
+    "weighted_score": 6.225,
+    "evidence": "Shoreline boulders, blurred sand edge and stronger building/tree shadows add depth and variety; grass remains repetitive and shadow edges are soft."
+  },
+  "view-15.png": {
+    "scores": [
+      8,
+      7.5,
+      5,
+      5,
+      5
+    ],
+    "weighted_score": 6.4,
+    "evidence": "Sharp hangar outlines and runway markings organize the base; sparse sea flecks and tree shading add restrained depth with limited material complexity."
+  },
+  "view-16.png": {
+    "scores": [
+      8,
+      7.5,
+      5,
+      5,
+      5
+    ],
+    "weighted_score": 6.4,
+    "evidence": "Clear plane, HUD and shoreline with sharpened base structures and scattered ocean highlights; broad fields and grass still lack tactile detail."
+  },
+  "view-17.png": {
+    "scores": [
+      6,
+      7,
+      5.5,
+      5,
+      5
+    ],
+    "weighted_score": 5.8,
+    "evidence": "Strong directional airplane shadows supply height but add many dark duplicate silhouettes to already crowded aircraft, sparks and sea flecks."
+  },
+  "view-18.png": {
+    "scores": [
+      6.5,
+      9,
+      9,
+      9.5,
+      8.5
+    ],
+    "weighted_score": 8.25,
+    "evidence": "Layered fog, autumn foliage, muddy ruts and weathered shed create rich depth; smoke and flashes integrate well while gray tanks blend with terrain."
+  },
+  "view-19.png": {
+    "scores": [
+      6.5,
+      7,
+      4.5,
+      4.5,
+      4.5
+    ],
+    "weighted_score": 5.6,
+    "evidence": "Top objectives stay legible despite a dense aircraft ring; soft sprites and translucent particle dots obscure the carrier center and weakly describe materials."
+  },
+  "view-20.png": {
+    "scores": [
+      8,
+      7,
+      5,
+      4.5,
+      3.5
+    ],
+    "weighted_score": 6,
+    "evidence": "Uncluttered composition and raised bridge remain readable; stronger object shadows help volume but water is soft and there is little coherent wake."
+  },
+  "view-21.png": {
+    "scores": [
+      8,
+      7,
+      5,
+      5.5,
+      4
+    ],
+    "weighted_score": 6.225,
+    "evidence": "Added shoreline stones and deeper tree/building shadows enrich the sparse terrain; soft sand edge is plausible but large fields remain blank patches."
+  },
+  "view-22.png": {
+    "scores": [
+      8,
+      7.5,
+      5.5,
+      6,
+      5
+    ],
+    "weighted_score": 6.65,
+    "evidence": "Sharp hangars with dark side faces, shoreline boulders, tracks and grounded trees give the base more physical structure; flat grass still limits richness."
+  },
+  "view-23.png": {
+    "scores": [
+      6,
+      7,
+      5,
+      4.5,
+      4.5
+    ],
+    "weighted_score": 5.55,
+    "evidence": "Directional shadows give aircraft height but multiply silhouettes in the dense central swarm; soft particles and blurry wings reduce phone-size separation."
+  },
+  "view-24.png": {
+    "scores": [
+      7.5,
+      7,
+      5,
+      5,
+      5
+    ],
+    "weighted_score": 6.15,
+    "evidence": "Cream/red aircraft are sharp against teal water, carrier rails are defined and trailing wake is visible; scattered white fragments look partly detached from waves."
+  },
+  "view-25.png": {
+    "scores": [
+      8,
+      7,
+      4.5,
+      4.5,
+      4
+    ],
+    "weighted_score": 5.975,
+    "evidence": "Simple carrier composition and top objective bars are clear; tower, rails and long pale wake add form, but surfaces and water remain softly shaded."
+  },
+  "_summary": {
+    "weights": [
+      0.3,
+      0.2,
+      0.2,
+      0.15,
+      0.15
+    ],
+    "mean_score": 6.538,
+    "strongest": [
+      {
+        "filename": "view-08.png",
+        "weighted_score": 8.7
+      },
+      {
+        "filename": "view-01.png",
+        "weighted_score": 8.4
+      },
+      {
+        "filename": "view-18.png",
+        "weighted_score": 8.25
+      }
+    ],
+    "weakest": [
+      {
+        "filename": "view-17.png",
+        "weighted_score": 5.8
+      },
+      {
+        "filename": "view-19.png",
+        "weighted_score": 5.6
+      },
+      {
+        "filename": "view-23.png",
+        "weighted_score": 5.55
+      }
+    ],
+    "top3_gaps": [
+      "Material response remains shallow: grass, deck, roofs and water lack the texture and illumination variation visible in detailed reference scenes.",
+      "Aircraft swarms still obscure the player; stronger cast shadows increase dark silhouette clutter in views 17 and 23.",
+      "Ocean fragments and soft spark dots remain disconnected effects; some raised-bridge carrier views lose the coherent trailing wake."
+    ],
+    "visible_regressions": [
+      {
+        "images": [
+          "view-04.png",
+          "view-09.png",
+          "view-13.png",
+          "view-20.png"
+        ],
+        "comparison": "Against corresponding quiet/sparse carrier compositions view-06, view-24, view-02 and view-25, the coherent long ship wake is absent or much weaker; extra bridge/shadow volume does not compensate in effects polish."
+      },
+      {
+        "images": [
+          "view-17.png",
+          "view-23.png"
+        ],
+        "comparison": "Against busy views 07 and 19, stronger offset aircraft shadows create duplicate dark shapes and reduce central silhouette separation; readability drops from 6.5 to 6."
+      }
+    ],
+    "blinding_limitations": "All 25 displayed images inspected. No files outside the image packet were opened, and no source mapping was consulted. Identical references and familiar aircraft/coast layouts are recognizable from the prior review; anchors were preserved. Relative visual pairings above are appearance-based, without attributing chronology or implementation.",
+    "all_images_viewed": true
+  }
+}

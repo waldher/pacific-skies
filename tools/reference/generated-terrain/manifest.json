@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "originalPath": "assets/terrain/grass-soil-v1.png",
+  "originalBytes": 4049881,
+  "originalSha256": "94f983033befc90b59854d377adbc1803e395eb35af6465d5456b12850592c15",
+  "sourceCommit": "93ae2bfa77137bb31e44648afde9db33061658e7",
+  "encoding": "Raw binary concatenation in listed order; no compression or transformation",
+  "parts": [
+    {
+      "file": "grass-soil-v1.png.part01",
+      "bytes": 506236,
+      "sha256": "173e3387bb2886f895f8cff733e5a4385cecb162d54c97458bce43f51b98818e"
+    },
+    {
+      "file": "grass-soil-v1.png.part02",
+      "bytes": 506236,
+      "sha256": "95d07767799abc4ab55388caba9f304c9d8f03de0e05959dc2d0928bd5f2aabf"
+    },
+    {
+      "file": "grass-soil-v1.png.part03",
+      "bytes": 506236,
+      "sha256": "a10a8ebe6948a638c8d6adb1873872d7febcbdbabaf73ba7d57685b565605bcc"
+    },
+    {
+      "file": "grass-soil-v1.png.part04",
+      "bytes": 506236,
+      "sha256": "703302b5b3dfacce38c77adc57dec6e566fe45b73cf31a9b9570896bc887f8df"
+    },
+    {
+      "file": "grass-soil-v1.png.part05",
+      "bytes": 506236,
+      "sha256": "a268df72463a13e9d36de1804c2364bcb7bb36956f9b0a4ce173c680f33f708f"
+    },
+    {
+      "file": "grass-soil-v1.png.part06",
+      "bytes": 506236,
+      "sha256": "d0bcb772260d5a6109b6fbe823755bb6bf961321af0b6bdc9acb75b0e36d512e"
+    },
+    {
+      "file": "grass-soil-v1.png.part07",
+      "bytes": 506236,
+      "sha256": "448e5069edfaaa31f4b5b51f62185c76b31c4367087487f8f791d7d69eda7eff"
+    },
+    {
+      "file": "grass-soil-v1.png.part08",
+      "bytes": 506229,
+      "sha256": "10ef9928ef2dd727cf7be4c1e0f8fc1f2e32d25aa0ee05f0395c1faa569021f2"
+    }
+  ]
+}

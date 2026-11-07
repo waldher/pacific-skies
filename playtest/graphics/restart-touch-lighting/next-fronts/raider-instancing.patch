@@ -1,0 +1,242 @@
+From 358debc7c9608a474d9d5bcf7721b7eac13b9e81 Mon Sep 17 00:00:00 2001
+From: Codex <codex@openai.com>
+Date: Sat, 7 Nov 2026 13:48:16 +0100
+Subject: [PATCH] Try instanced opaque Zero draws on shadowless touch tiers
+
+---
+ playtest/raider-batch.cjs | 97 +++++++++++++++++++++++++++++++++++++++
+ src/raider-batch.js       | 89 +++++++++++++++++++++++++++++++++++
+ src/renderer.js           |  3 ++
+ 3 files changed, 189 insertions(+)
+ create mode 100644 playtest/raider-batch.cjs
+ create mode 100644 src/raider-batch.js
+
+diff --git a/playtest/raider-batch.cjs b/playtest/raider-batch.cjs
+new file mode 100644
+index 0000000..2e114d3
+--- /dev/null
++++ b/playtest/raider-batch.cjs
+@@ -0,0 +1,97 @@
++// CPU-only check of mesh, propeller, culling and tier transitions in the real batch.
++const assert = require('node:assert/strict');
++const fs = require('node:fs');
++const path = require('node:path');
++const vm = require('node:vm');
++
++const root = path.resolve(__dirname, '..');
++const three = path.join(root, 'vendor/three/three.module.min.js');
++const context = vm.createContext({ console });
++const modules = new Map();
++
++function load(file) {
++  if (!modules.has(file)) {
++    modules.set(file, new vm.SourceTextModule(fs.readFileSync(file, 'utf8'), {
++      context, identifier: file,
++    }));
++  }
++  return modules.get(file);
++}
++
++async function run() {
++  const entry = load(path.join(root, 'src/raider-batch.js'));
++  await entry.link((specifier, importer) =>
++    load(specifier === 'three' ? three : path.resolve(path.dirname(importer.identifier), specifier)));
++  await entry.evaluate();
++  const { createRaiderBatch } = entry.namespace;
++  const T = load(three).namespace;
++  const scene = new T.Scene();
++  const camera = new T.OrthographicCamera(-20, 20, 20, -20, 1, 200);
++  camera.position.z = 50;
++  camera.lookAt(0, 0, 0);
++  const geometry = new T.BoxGeometry();
++  const paint = new T.MeshStandardMaterial({ vertexColors: true });
++  const template = new T.Group();
++  template.scale.setScalar(4);
++  template.add(new T.Mesh(geometry, paint), new T.Mesh(geometry, paint));
++  template.children[1].position.z = 2;
++  const batch = createRaiderBatch(scene, template);
++  const aircraft = new Map();
++
++  function add(x, team = 'jp') {
++    const entity = { team };
++    const root = new T.Group();
++    const model = template.clone(true);
++    const shadow = new T.Mesh(geometry, paint);
++    root.add(model);
++    root.position.x = x;
++    root.rotation.y = .5;
++    model.rotation.z = -.3;
++    model.children[1].rotation.z = 1.3;
++    scene.add(root, shadow);
++    const visual = { root, model, shadow, aircraftType: 'jp' };
++    aircraft.set(entity, visual);
++    return { entity, visual };
++  }
++
++  const first = add(0);
++  const offscreen = add(1000);
++  const player = add(0);
++  const ally = add(0, 'us');
++  assert.equal(batch.update(aircraft, camera, true, player.entity), 2);
++  let draws = scene.children.filter(node => node.isInstancedMesh);
++  for (const [i, draw] of draws.entries()) {
++    assert.equal(draw.count, 1);
++    assert.equal(draw.geometry, geometry);
++    assert.equal(draw.material, paint);
++    const matrix = new T.Matrix4();
++    draw.getMatrixAt(0, matrix);
++    const expected = first.visual.model.children[i].matrixWorld.clone();
++    expected.elements[12] -= camera.position.x;
++    expected.elements[14] -= camera.position.z;
++    assert.deepEqual(matrix.elements, expected.elements.map(Math.fround));
++  }
++  assert.equal(first.visual.root.visible, false);
++  assert.equal(first.visual.shadow.visible, true);
++  assert.equal(offscreen.visual.root.visible, false);
++  assert.equal(player.visual.root.visible, true);
++  assert.equal(ally.visual.root.visible, true);
++
++  assert.equal(batch.update(aircraft, camera, false, player.entity), 0);
++  assert.ok(draws.every(draw => !draw.visible && draw.count === 0));
++  assert.equal(first.visual.root.visible, true);
++  assert.equal(offscreen.visual.root.visible, true);
++
++  for (let i = 0; i < 8; i++) add(0);
++  assert.equal(batch.update(aircraft, camera, true, player.entity), 2);
++  assert.ok(draws.every(draw => !scene.children.includes(draw)));
++  draws = scene.children.filter(node => node.isInstancedMesh);
++  assert.equal(draws.length, 2);
++  assert.ok(draws.every(draw => draw.count === 9));
++  aircraft.clear();
++  assert.equal(batch.update(aircraft, camera, true, null), 0);
++  assert.ok(draws.every(draw => !draw.visible && draw.count === 0));
++  console.log('PASS opaque raider batches preserve animated mesh transforms and shadows, compact visibility and clear on reset');
++}
++
++run().catch(error => { console.error(error); process.exitCode = 1; });
+diff --git a/src/raider-batch.js b/src/raider-batch.js
+new file mode 100644
+index 0000000..8153e0d
+--- /dev/null
++++ b/src/raider-batch.js
+@@ -0,0 +1,89 @@
++import * as THREE from 'three';
++
++// Reuse the stock visual's animated transforms. Only opaque shadowless Zero
++// draws share submission; the individual visual and shadow remain available.
++export function createRaiderBatch(scene, template) {
++  const parts = [];
++  template.traverse(node => {
++    if (node.isMesh) parts.push({ source: node, batch: null });
++  });
++  const supported = parts.length > 0 && parts.every(({ source }) =>
++    !Array.isArray(source.material) && !source.material.transparent && !source.material.alphaHash);
++  const meshLists = new WeakMap();
++  const active = [];
++  const frustum = new THREE.Frustum();
++  const projectionView = new THREE.Matrix4();
++  const instance = new THREE.Matrix4();
++  let capacity = 0;
++
++  function reserve(count) {
++    if (count <= capacity) return;
++    capacity = Math.max(8, capacity * 2, count);
++    for (const part of parts) {
++      if (part.batch) {
++        scene.remove(part.batch);
++        part.batch.dispose();
++      }
++      const batch = new THREE.InstancedMesh(part.source.geometry, part.source.material, capacity);
++      batch.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
++      // The original geometry sphere is checked for each instance below.
++      batch.frustumCulled = false;
++      batch.count = 0;
++      batch.visible = false;
++      scene.add(batch);
++      part.batch = batch;
++    }
++  }
++
++  return {
++    update(aircraft, camera, enabled, player) {
++      active.length = 0;
++      for (const [entity, visual] of aircraft) {
++        if (entity === player || entity.team !== 'jp' || visual.aircraftType !== 'jp') continue;
++        const useBatch = enabled && supported;
++        visual.root.visible = !useBatch;
++        if (!useBatch) continue;
++        let meshes = meshLists.get(visual);
++        if (!meshes) {
++          meshes = [];
++          visual.model.traverse(node => {
++            if (node.isMesh) meshes.push(node);
++          });
++          meshLists.set(visual, meshes);
++        }
++        visual.root.updateMatrixWorld(true);
++        active.push(meshes);
++      }
++      if (active.length) {
++        camera.updateMatrixWorld();
++        projectionView.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
++        frustum.setFromProjectionMatrix(projectionView);
++        reserve(active.length);
++      }
++      let draws = 0;
++      for (const [index, { batch }] of parts.entries()) {
++        if (!batch) continue;
++        let count = 0;
++        batch.position.set(camera.position.x, 0, camera.position.z);
++        for (const meshes of active) {
++          const mesh = meshes[index];
++          if (mesh.visible && (!mesh.frustumCulled || frustum.intersectsObject(mesh))) {
++            // Subtract the camera's ground position before uploading float32
++            // matrices to keep subpixel detail far from the world origin.
++            instance.copy(mesh.matrixWorld);
++            instance.elements[12] -= batch.position.x;
++            instance.elements[14] -= batch.position.z;
++            batch.setMatrixAt(count++, instance);
++          }
++        }
++        batch.count = count;
++        batch.visible = count > 0;
++        if (count) {
++          batch.instanceMatrix.needsUpdate = true;
++          draws++;
++        }
++      }
++      return draws;
++    },
++  };
++}
+diff --git a/src/renderer.js b/src/renderer.js
+index 183077b..73618e2 100644
+--- a/src/renderer.js
++++ b/src/renderer.js
+@@ -12,6 +12,7 @@ import { OBLIQUE, applyObliqueProjection, recordVisualHeight } from './projectio
+ import { enemyObserved } from './intelligence.js';
+ import { CONFIG } from './config.js';
+ import { loadAircraft, createAircraft, updateAircraft, setShadowMode } from './aircraft.js';
++import { createRaiderBatch } from './raider-batch.js';
+ import { createWorld, preloadOceanMaterial } from './world.js';
+ import { preloadTerrainMaterial } from './land.js';
+ import { preloadCanopyMaterial } from './canopy.js';
+@@ -54,6 +55,7 @@ export async function createRenderer(canvas) {
+   const naval = createNavalScene(scene);
+   const templates = await loadAircraft();
+   renderAircraftPreviews(renderer, templates);
++  const raiderBatch = touchDevice ? createRaiderBatch(scene, templates.jp) : null;
+   const aircraft = new Map();
+   let lastW = 0, lastH = 0, lastRatio = 0;
+   const diagnostics = {
+@@ -187,6 +189,7 @@ export async function createRenderer(canvas) {
+           (player || entity.team === 'us') && entity.hitFlash > .12);
+         recordVisualHeight(entity, aircraft.get(entity).root.position.y);
+       }
++      diagnostics.raiderBatchDraws = raiderBatch?.update(aircraft, camera, !level().shadows, game.player) ?? 0;
+       naval.update(game);
+       effects.update(game);
+       renderer.render(scene, camera);
+-- 
+2.51.1
+

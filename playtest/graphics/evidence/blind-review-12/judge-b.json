@@ -1,0 +1,312 @@
+{
+  "reviewer": "B",
+  "packet": 12,
+  "coverage": {
+    "imagesInspected": 25,
+    "method": "Every image opened using view_image; no keys/source/other reviewer results read."
+  },
+  "criteria": [
+    "readability",
+    "coherence",
+    "lighting/depth",
+    "environment/material richness",
+    "effects polish"
+  ],
+  "weights": [
+    0.3,
+    0.2,
+    0.2,
+    0.15,
+    0.15
+  ],
+  "recognition": "StarCraft-like RTS, Company of Heroes-like battlefield and Door Kickers-like tactical imagery recognized; no identity-based score bonus.",
+  "images": {
+    "view-01.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        7,
+        5
+      ],
+      "evidence": "Soft coast, cyan ring clearly locates player; shaded trees and faceted rocks. Broad uniform cyan beach halo is artificial.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-02.png": {
+      "scores": [
+        7,
+        7,
+        7,
+        6,
+        6
+      ],
+      "evidence": "Soft dense combat, cyan ring anchors player amid bright aircraft and orange hits. Overlapping planes inside ring still obscure silhouette.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-03.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        7
+      ],
+      "evidence": "Sharp sparse fight, raised island and dark hull rim; crisp impacts and ring preserve localization. Small repetitive hits and deck overlap remain.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-04.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        6
+      ],
+      "evidence": "Soft sparse fight, ring and orange impacts visible. Blurred aircraft and overlapping tan deck limit separation.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-05.png": {
+      "scores": [
+        6,
+        9,
+        9,
+        10,
+        9
+      ],
+      "evidence": "Fog battlefield: varied autumn vegetation, ruins, vehicles and graded haze give rich depth. Muted actors are hard to distinguish.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-06.png": {
+      "scores": [
+        7,
+        9,
+        9,
+        9,
+        8
+      ],
+      "evidence": "Marketplace: varied produce, stall materials, paving and directional light are coherent. Dense people/routes compete.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-07.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        6
+      ],
+      "evidence": "Sharp quiet carrier: hull rim, island and fine deck markings establish depth. Ring locates player but plane still blends into deck; wake is repeated puffs.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-08.png": {
+      "scores": [
+        7,
+        9,
+        9,
+        9,
+        9
+      ],
+      "evidence": "Science-fiction RTS: strong blast layers, metallic units, rocky ground and luminous sparks. Bloom obscures part of action.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-09.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        8,
+        5
+      ],
+      "evidence": "Soft airfield with broken shoreline marks: player ring readable over hangar; apron/trees/service objects add variety. Offshore dashes look like road markings; shoreline strip still changes abruptly.",
+      "regressions": "Broken foam marks reduce the continuous halo impression, but introduce a dashed-line appearance; improvement insufficient for a category-point increase."
+    },
+    "view-10.png": {
+      "scores": [
+        6,
+        9,
+        9,
+        10,
+        9
+      ],
+      "evidence": "Rain battlefield: wet ground reflections, rubble, smoke and luminous tracer integrate convincingly. Dark units lose contrast.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-11.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        6
+      ],
+      "evidence": "Sharp quiet carrier: pale plane identified by ring; raised island and pointed rim coherent. Little visible improvement over comparable quiet view; wake still coarse.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-12.png": {
+      "scores": [
+        7,
+        7,
+        8,
+        7,
+        7
+      ],
+      "evidence": "Sharp dense fight: crisp pale enemies, small orange hits and smoke arcs; cyan ring anchors location. Central overlapping silhouettes unresolved.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-13.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        8,
+        6
+      ],
+      "evidence": "Sharp airfield with broken foam line: defined roof faces, service yard and tree shadows. Straight detached white strokes follow coast too uniformly to feel natural.",
+      "regressions": "Broken foam marks reduce the continuous halo impression, but introduce a dashed-line appearance; improvement insufficient for a category-point increase."
+    },
+    "view-14.png": {
+      "scores": [
+        7,
+        7,
+        7,
+        6,
+        6
+      ],
+      "evidence": "Soft dense fight: cyan ring and small gold center locate player; many enemies/fire flecks remain distinct. Similar overlap and softness as other soft swarm.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-15.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        7,
+        5
+      ],
+      "evidence": "Soft coast with dashed foam: tonal shallow band and white strokes vary edge more than continuous glow. Foam resembles thin dotted border; no convincing turbulent breakup.",
+      "regressions": "Broken foam marks reduce the continuous halo impression, but introduce a dashed-line appearance; improvement insufficient for a category-point increase."
+    },
+    "view-16.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        7
+      ],
+      "evidence": "Sharp sparse combat: coherent carrier rim/island, bright orange hits and ring. Same material limits as comparable sparse shot.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-17.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        6
+      ],
+      "evidence": "Soft sparse combat: ring retains player location amid deck overlap; orange sparks visible. Soft small effects and beaded wake remain.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-18.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        5
+      ],
+      "evidence": "Soft quiet carrier: dark perimeter and island retain volume; ring marks plane. Soft model edges and repetitive wake limit polish.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-19.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        5
+      ],
+      "evidence": "Soft quiet carrier: plane and ring visible over tan deck; clean fixed HUD. Equivalent quality to matching quiet shot; no novelty gain.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-20.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        6
+      ],
+      "evidence": "Sharp coast with uniform halo: readable plane/rocks, crisp tree shadows and circle. Blue shoreline glow remains smooth and schematic.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-21.png": {
+      "scores": [
+        7,
+        7,
+        8,
+        7,
+        7
+      ],
+      "evidence": "Sharp dense combat: strong ring localization and crisp impacts. Enemy/deck overlap and repetitive smoke/fire remain the limiting factors.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-22.png": {
+      "scores": [
+        8,
+        9,
+        9,
+        9,
+        8
+      ],
+      "evidence": "Apartment tactical: differentiated tile/wood, wall volume, furniture and light pools. Tiny actors and hall overlays constrain clarity.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-23.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        8,
+        5
+      ],
+      "evidence": "Soft airfield with continuous glow: cyan ring locates player on roof, props and shadows provide variety. Shore band changes abruptly and luminous border lacks natural material interaction.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-24.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        8,
+        6
+      ],
+      "evidence": "Sharp airfield with continuous glow: defined runway/hangars/service yard; player ring clear. Repeated grass and cyan shoreline band remain schematic.",
+      "regressions": "No new visible regression established; stated weaknesses remain."
+    },
+    "view-25.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        6
+      ],
+      "evidence": "Sharp coast with dashed foam: clear player circle, faceted rocks, directional tree shadows. Thin straight offshore fragments still read as drawn border, not volumetric breaking foam.",
+      "regressions": "Broken foam marks reduce the continuous halo impression, but introduce a dashed-line appearance; improvement insufficient for a category-point increase."
+    }
+  },
+  "general_findings": [
+    "Player circle keeps localization improved but is no solution to actual silhouette overlap.",
+    "Broken shoreline strokes are visible changes, yet remain too straight, thin, evenly offset and graphic to establish natural foam. No automatic score increase for extra detail.",
+    "Raised island and strong pointed hull rim retain carrier depth. Water remains much denser in texture than land and model surfaces.",
+    "Unchanged image scores retained exactly; changed coastal views remain within same score band."
+  ],
+  "recommendations": [
+    "Shape foam as irregular patches and short curved crests with varied width/opacity, touching shallows instead of a separate dashed line.",
+    "Remove abrupt transitions in beach/shallow band; vary width and color with coastline structure.",
+    "Use controlled player silhouette separation in dense overlap; retain localization cue.",
+    "Improve tapered ship wake and smoke/water contrast."
+  ]
+}

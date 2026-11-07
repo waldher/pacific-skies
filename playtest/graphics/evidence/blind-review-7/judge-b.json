@@ -1,0 +1,289 @@
+{
+  "reviewer": "B",
+  "packet": "judge-packet-7",
+  "coverage": "All 25 images inspected individually with view_image, no source/keys or other reviews read.",
+  "criteria": [
+    "readability",
+    "coherence",
+    "lighting/depth",
+    "environment/material richness",
+    "effects polish"
+  ],
+  "weights": [
+    0.3,
+    0.2,
+    0.2,
+    0.15,
+    0.15
+  ],
+  "recognition": "Tentative StarCraft II in24, Company of Heroes in09/13; tactical planning references03/20 recognized without exact title. Unchanged images retain exact prior anchors.",
+  "images": {
+    "view-01.png": {
+      "scores": [
+        6,
+        7,
+        6,
+        7,
+        6
+      ],
+      "evidence": "Crisp planes, planked carrier and wake; pale deck and overlapping swarm obscure player and diffuse dots lack hierarchy."
+    },
+    "view-02.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        5
+      ],
+      "evidence": "Tall island and visible dark hull sides give carrier depth; wake persists. Player overlaps runway and soft detail blurs markings."
+    },
+    "view-03.png": {
+      "scores": [
+        7,
+        9,
+        9,
+        9,
+        8
+      ],
+      "evidence": "Rich market materials and warm grounded shadows; small people and planning icons crowd the view."
+    },
+    "view-04.png": {
+      "scores": [
+        4,
+        6,
+        7,
+        6,
+        5
+      ],
+      "evidence": "Aircraft shadows and raised hull add depth; bright fires are identifiable. Repeated lumpy smoke fragments blanket the deck and swarm, obscure silhouettes and read like floating debris rather than a coherent plume."
+    },
+    "view-05.png": {
+      "scores": [
+        7,
+        7,
+        8,
+        8,
+        6
+      ],
+      "evidence": "Tall hangar walls, service yard, tracks and shadows make a structured airfield. Player merges with roof, pale cyan roof shape is ambiguous, and coarse high-contrast grass competes with small objects."
+    },
+    "view-06.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        6,
+        5
+      ],
+      "evidence": "Sparse carrier, fixed objectives and wake read clearly; soft fittings and uniform tan lighting limit depth, with player-stern overlap."
+    },
+    "view-07.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        8,
+        6
+      ],
+      "evidence": "Crisp hangars, fenced service yard and parked equipment give functional structure. Player still overlaps roof and shoreline rocks repeat."
+    },
+    "view-08.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        6,
+        6
+      ],
+      "evidence": "Pronounced hangar walls and tree shadows add height; outlined player stays visible at shoreline. Grass is coarsely mottled and plane partially overlaps rocks; beach remains uniform."
+    },
+    "view-09.png": {
+      "scores": [
+        6,
+        9,
+        9,
+        10,
+        9
+      ],
+      "evidence": "Fog, ruins, varied terrain and smoke create layered depth; tiny camouflaged units blend into terrain."
+    },
+    "view-10.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        7,
+        6
+      ],
+      "evidence": "Sharp planked deck and long wake keep carrier legible; broad light surface has modest material separation and player overlaps stern."
+    },
+    "view-11.png": {
+      "scores": [
+        6,
+        7,
+        6,
+        6,
+        5
+      ],
+      "evidence": "Wake and tan deck identify carrier; soft pale aircraft and dots obscure stern and reduce action hierarchy."
+    },
+    "view-12.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        6
+      ],
+      "evidence": "Raised island, dark hull sides and long wake make carrier volume clearer. Player remains over deck; narrow repeated fittings and weak water contact limit material realism."
+    },
+    "view-13.png": {
+      "scores": [
+        6,
+        9,
+        9,
+        10,
+        9
+      ],
+      "evidence": "Wet roads, rain, rubble and smoke share cohesive lighting; dark tanks and small infantry merge with ground."
+    },
+    "view-14.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        6
+      ],
+      "evidence": "Player edging and grounded trees improve land readability; yard fragment adds little structure in crop and shore repeats."
+    },
+    "view-15.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        6,
+        5
+      ],
+      "evidence": "Player outline separates it from terrain; subdued trees cohere with coast, but soft rendering and open repeated grass limit detail."
+    },
+    "view-16.png": {
+      "scores": [
+        7,
+        7,
+        6,
+        7,
+        6
+      ],
+      "evidence": "Sharp planks, raised island and wake give structure; pale aircraft lose separation on pale deck and player merges with stern."
+    },
+    "view-17.png": {
+      "scores": [
+        6,
+        7,
+        7,
+        6,
+        6
+      ],
+      "evidence": "Dark hull sides, aircraft shadows and small orange fires add volume and action cues. Smoke lumps obscure deck fittings and player overlaps pale runway; soft sprites constrain finish."
+    },
+    "view-18.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        5
+      ],
+      "evidence": "Aircraft edging and taller trees/structures support depth. Soft rendering, coarse mottled grass and plane-rock overlap remain; beach lacks surf."
+    },
+    "view-19.png": {
+      "scores": [
+        7,
+        7,
+        7,
+        8,
+        5
+      ],
+      "evidence": "Tall hangars and service yard establish useful functional structure. Soft rendering and dense grass texture reduce precision; player merges into central roof and cyan roof marker is ambiguous."
+    },
+    "view-20.png": {
+      "scores": [
+        8,
+        9,
+        9,
+        9,
+        8
+      ],
+      "evidence": "Thick walls, varied materials and room-specific light clarify apartment depth; figures and fine paths remain tiny."
+    },
+    "view-21.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        8,
+        5
+      ],
+      "evidence": "Service yard, tracks, fence and equipment create a distinct functional zone. Soft rendering blurs props; plane overlaps hangar and stones repeat."
+    },
+    "view-22.png": {
+      "scores": [
+        6,
+        7,
+        8,
+        7,
+        7
+      ],
+      "evidence": "Crisp raised hull/island, offset shadows, fiery cores and clustered smoke give stronger depth and identifiable effects. Deck occlusion and overlapping player persist; smoke fragments appear coarse and separate rather than flowing."
+    },
+    "view-23.png": {
+      "scores": [
+        7,
+        7,
+        6,
+        6,
+        5
+      ],
+      "evidence": "Tan planked carrier and wake are coherent; soft wings lose contrast over pale deck and stern overlap remains."
+    },
+    "view-24.png": {
+      "scores": [
+        7,
+        9,
+        9,
+        9,
+        9
+      ],
+      "evidence": "Hot impact, sparks and beams strongly focus the detailed scene; dark units merge and blast hides targets."
+    },
+    "view-25.png": {
+      "scores": [
+        4,
+        6,
+        8,
+        7,
+        6
+      ],
+      "evidence": "Sharp fires and shaded smoke add material detail and aircraft shadows establish height. Large repeated smoke clusters blanket deck and aircraft, severely reducing player identification and turning the effect into confetti-like noise."
+    }
+  },
+  "general_findings": [
+    "Raised structures, hull sides and aircraft shadows materially improve depth.",
+    "Sparse effects scenes show more recognizable orange fire and smoke than prior soft dots, but dense scenes04/25 suffer a substantial readability regression: repeated lumpy smoke covers the carrier and aircraft.",
+    "Coarse high-contrast grass adds distracting texture; taller hangars do not resolve player-roof overlap.",
+    "Wakes persist but remain simple parallel streaks. No overall victory conclusion is warranted."
+  ],
+  "regressions": [
+    "Dense smoke obscures subjects and reads like rock/debris confetti in04/25.",
+    "Player overlaps roof/deck and aircraft shadows can add duplicate visual clutter.",
+    "Grass texture competes with small equipment and pale cyan shape atop hangar is ambiguous."
+  ],
+  "recommendations": [
+    "Reduce smoke counts/opacity near player and combine puffs into a few directional fading masses.",
+    "Preserve stronger volume and orange impact cores while restoring clear silhouette hierarchy.",
+    "Reduce grass contrast and clarify cyan roof shape; keep functional yard geometry.",
+    "Ensure player outline remains visible above effects and roof geometry."
+  ]
+}

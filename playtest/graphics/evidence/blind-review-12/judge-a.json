@@ -1,0 +1,350 @@
+{
+  "view-01.png": {
+    "scores": [
+      8.5,
+      7,
+      5.5,
+      6.5,
+      4.5
+    ],
+    "evidence": "Player ring is clear despite soft rendering. Pale shore glow softens abrupt edge but remains uniform, with no broken surf.",
+    "weighted_score": 6.7,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-02.png": {
+    "scores": [
+      7,
+      6.5,
+      6,
+      6,
+      5.5
+    ],
+    "evidence": "Ring makes player location easier to recover in soft dense swarm; wings still overlap its silhouette and smoke remains granular.",
+    "weighted_score": 6.325,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-03.png": {
+    "scores": [
+      8,
+      7.5,
+      6.5,
+      6.5,
+      6
+    ],
+    "evidence": "Crisp ring gives player location despite bow overlap; orange sparks and raised bridge remain distinct, with grainy smoke.",
+    "weighted_score": 7.075,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-04.png": {
+    "scores": [
+      8,
+      7,
+      6,
+      6,
+      5.5
+    ],
+    "evidence": "Ring helps locate player beneath overlapping wings at bow; ship and sea materials otherwise unchanged and soft.",
+    "weighted_score": 6.725,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-05.png": {
+    "scores": [
+      6.5,
+      9,
+      9,
+      9.5,
+      8.5
+    ],
+    "evidence": "Fog, varied vegetation, muddy ruts and weathered shed build rich depth; tanks blend with terrain.",
+    "weighted_score": 8.25,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-06.png": {
+    "scores": [
+      7.5,
+      9,
+      9,
+      9,
+      8
+    ],
+    "evidence": "Market produce, stone, wood and fabric distinct under consistent shadows; thin paths remain visible.",
+    "weighted_score": 8.4,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-07.png": {
+    "scores": [
+      8.5,
+      7.5,
+      6.5,
+      6.5,
+      5.5
+    ],
+    "evidence": "Raised bridge and rim restore carrier volume; cyan ring gives a clear location cue, while quiet scene already reads well. Scalloped wake persists.",
+    "weighted_score": 7.15,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-08.png": {
+    "scores": [
+      6.5,
+      8.5,
+      9,
+      9,
+      9
+    ],
+    "evidence": "Luminous layered explosion, sparks and atmospheric cliffs give depth; nearby units partly disappear.",
+    "weighted_score": 8.15,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-09.png": {
+    "scores": [
+      8.5,
+      6.5,
+      5.5,
+      6.5,
+      4.5
+    ],
+    "evidence": "Player ring remains readable; raised buildings and apron coherent. Shore now has thin pale separated strokes following a single parallel line, resembling dashed road markings rather than irregular broken foam. Smooth shallows and repetitive ocean texture remain.",
+    "weighted_score": 6.6,
+    "regressions": "Shoreline marks add detail but reduce natural coherence by forming a conspicuous regular linear motif."
+  },
+  "view-10.png": {
+    "scores": [
+      6,
+      8.5,
+      9,
+      9,
+      8.5
+    ],
+    "evidence": "Wet reflections, rain, smoke and orange tracer integrate; small troops blend into rubble.",
+    "weighted_score": 7.925,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-11.png": {
+    "scores": [
+      8.5,
+      7.5,
+      6.5,
+      6.5,
+      5.5
+    ],
+    "evidence": "Raised bridge and rim restore carrier volume; cyan ring gives a clear location cue, while quiet scene already reads well. Scalloped wake persists.",
+    "weighted_score": 7.15,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-12.png": {
+    "scores": [
+      7,
+      7,
+      6.5,
+      6.5,
+      6
+    ],
+    "evidence": "Player ring stands out within dense sharp swarm, improving recovery; wings still obscure aircraft shape and granular smoke dots crowd deck.",
+    "weighted_score": 6.675,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-13.png": {
+    "scores": [
+      8.5,
+      7.0,
+      6,
+      7,
+      5
+    ],
+    "evidence": "Player ring remains readable; raised buildings and apron coherent. Shore now has thin pale separated strokes following a single parallel line, resembling dashed road markings rather than irregular broken foam. Smooth shallows and repetitive ocean texture remain.",
+    "weighted_score": 6.95,
+    "regressions": "Shoreline marks add detail but reduce natural coherence by forming a conspicuous regular linear motif."
+  },
+  "view-14.png": {
+    "scores": [
+      7,
+      6.5,
+      6,
+      6,
+      5.5
+    ],
+    "evidence": "Ring makes player location easier to recover in soft dense swarm; wings still overlap its silhouette and smoke remains granular.",
+    "weighted_score": 6.325,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-15.png": {
+    "scores": [
+      8.5,
+      6.5,
+      5.5,
+      6.5,
+      4.5
+    ],
+    "evidence": "Player ring remains readable; raised buildings and apron coherent. Shore now has thin pale separated strokes following a single parallel line, resembling dashed road markings rather than irregular broken foam. Smooth shallows and repetitive ocean texture remain.",
+    "weighted_score": 6.6,
+    "regressions": "Shoreline marks add detail but reduce natural coherence by forming a conspicuous regular linear motif."
+  },
+  "view-16.png": {
+    "scores": [
+      8,
+      7.5,
+      6.5,
+      6.5,
+      6
+    ],
+    "evidence": "Crisp ring gives player location despite bow overlap; orange sparks and raised bridge remain distinct, with grainy smoke.",
+    "weighted_score": 7.075,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-17.png": {
+    "scores": [
+      8,
+      7,
+      6,
+      6,
+      5.5
+    ],
+    "evidence": "Ring helps locate player beneath overlapping wings at bow; ship and sea materials otherwise unchanged and soft.",
+    "weighted_score": 6.725,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-18.png": {
+    "scores": [
+      8.5,
+      7,
+      6,
+      6,
+      4.5
+    ],
+    "evidence": "Ring isolates player location on soft tan deck, but aircraft still blends with deck and the ring adds no material depth.",
+    "weighted_score": 6.725,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-19.png": {
+    "scores": [
+      8.5,
+      7,
+      6,
+      6,
+      4.5
+    ],
+    "evidence": "Ring isolates player location on soft tan deck, but aircraft still blends with deck and the ring adds no material depth.",
+    "weighted_score": 6.725,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-20.png": {
+    "scores": [
+      8.5,
+      7.5,
+      6,
+      7,
+      5
+    ],
+    "evidence": "Cyan ring locates player; shore glow softens boundary but is a uniform luminous band without foam. Terrain and water remain simplified.",
+    "weighted_score": 7.05,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-21.png": {
+    "scores": [
+      7,
+      7,
+      6.5,
+      6.5,
+      6
+    ],
+    "evidence": "Player ring stands out within dense sharp swarm, improving recovery; wings still obscure aircraft shape and granular smoke dots crowd deck.",
+    "weighted_score": 6.675,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-22.png": {
+    "scores": [
+      8.5,
+      9,
+      9,
+      9,
+      8
+    ],
+    "evidence": "Detailed rooms, wall height, warm/cool light, wood and tile create convincing depth.",
+    "weighted_score": 8.7,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-23.png": {
+    "scores": [
+      8.5,
+      7,
+      5.5,
+      6.5,
+      4.5
+    ],
+    "evidence": "Ring marks player over matching roof; soft buildings and terrain still lack material variation. Broad shoreline glow is cleaner but artificial.",
+    "weighted_score": 6.7,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-24.png": {
+    "scores": [
+      8.5,
+      7.5,
+      6,
+      7,
+      5
+    ],
+    "evidence": "Ring separates player location from hangar roof; broad apron and raised buildings remain coherent. Shore glow adds transition but resembles a smooth halo.",
+    "weighted_score": 7.05,
+    "regressions": "No material visible change from matched anchor at displayed size; exact prior scores retained."
+  },
+  "view-25.png": {
+    "scores": [
+      8.5,
+      7.0,
+      6,
+      7,
+      5
+    ],
+    "evidence": "Player ring remains readable; raised buildings and apron coherent. Shore now has thin pale separated strokes following a single parallel line, resembling dashed road markings rather than irregular broken foam. Smooth shallows and repetitive ocean texture remain.",
+    "weighted_score": 6.95,
+    "regressions": "Shoreline marks add detail but reduce natural coherence by forming a conspicuous regular linear motif."
+  },
+  "_summary": {
+    "weights": [
+      0.3,
+      0.2,
+      0.2,
+      0.15,
+      0.15
+    ],
+    "mean_score": 7.095,
+    "strongest": [
+      {
+        "filename": "view-22.png",
+        "weighted_score": 8.7
+      },
+      {
+        "filename": "view-06.png",
+        "weighted_score": 8.4
+      },
+      {
+        "filename": "view-05.png",
+        "weighted_score": 8.25
+      }
+    ],
+    "weakest": [
+      {
+        "filename": "view-15.png",
+        "weighted_score": 6.6
+      },
+      {
+        "filename": "view-02.png",
+        "weighted_score": 6.325
+      },
+      {
+        "filename": "view-14.png",
+        "weighted_score": 6.325
+      }
+    ],
+    "all_images_viewed": true,
+    "visible_regressions": [
+      "Shore marks in views09/13/15/25 resemble a dashed road edge rather than surf; additional detail does not improve natural coherence."
+    ],
+    "top3_gaps": [
+      "Break foam into irregular overlapping patches with varying widths, offsets and soft dissipating edges rather than strokes on a single curve.",
+      "Preserve player location cue while improving aircraft silhouette separation within crowded overlaps.",
+      "Improve material response: ocean repeats clothlike ripples; smoke remains grainy and wake bands repeat."
+    ],
+    "blinding_limitations": "All25 images individually viewed. Consulted only own prior score anchors, no keys/source/other judges. Repeated recognizable scene families prevent full identity blinding; no novelty reward."
+  }
+}

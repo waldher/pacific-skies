@@ -1,0 +1,182 @@
+{
+  "view-01.png": {
+    "kind": "candidate-14",
+    "name": "phone-dogfight"
+  },
+  "view-02.png": {
+    "kind": "candidate-6",
+    "name": "phone-coast"
+  },
+  "view-03.png": {
+    "kind": "baseline",
+    "name": "phone-coast"
+  },
+  "view-04.png": {
+    "kind": "candidate-13",
+    "name": "phone-coast"
+  },
+  "view-05.png": {
+    "kind": "candidate-14",
+    "name": "phone-fleet"
+  },
+  "view-06.png": {
+    "kind": "candidate-14",
+    "name": "phone-coast"
+  },
+  "view-07.png": {
+    "kind": "candidate-14",
+    "name": "fallback-fleet"
+  },
+  "view-08.png": {
+    "kind": "reference",
+    "name": "dk2-1-phone"
+  },
+  "view-09.png": {
+    "kind": "candidate-14",
+    "name": "fallback-airfield"
+  },
+  "view-10.png": {
+    "kind": "baseline",
+    "name": "phone-fleet"
+  },
+  "view-11.png": {
+    "kind": "baseline",
+    "name": "fallback-airfield"
+  },
+  "view-12.png": {
+    "kind": "baseline",
+    "name": "fallback-dogfight"
+  },
+  "view-13.png": {
+    "kind": "candidate-14",
+    "name": "fallback-dogfight"
+  },
+  "view-14.png": {
+    "kind": "candidate-6",
+    "name": "fallback-coast"
+  },
+  "view-15.png": {
+    "kind": "candidate-6",
+    "name": "phone-stress"
+  },
+  "view-16.png": {
+    "kind": "reference",
+    "name": "sc2-0-phone"
+  },
+  "view-17.png": {
+    "kind": "candidate-6",
+    "name": "phone-airfield"
+  },
+  "view-18.png": {
+    "kind": "candidate-6",
+    "name": "phone-fleet"
+  },
+  "view-19.png": {
+    "kind": "candidate-6",
+    "name": "phone-dogfight"
+  },
+  "view-20.png": {
+    "kind": "candidate-13",
+    "name": "fallback-stress"
+  },
+  "view-21.png": {
+    "kind": "candidate-6",
+    "name": "fallback-dogfight"
+  },
+  "view-22.png": {
+    "kind": "candidate-13",
+    "name": "fallback-dogfight"
+  },
+  "view-23.png": {
+    "kind": "candidate-13",
+    "name": "fallback-fleet"
+  },
+  "view-24.png": {
+    "kind": "candidate-13",
+    "name": "phone-airfield"
+  },
+  "view-25.png": {
+    "kind": "candidate-6",
+    "name": "fallback-airfield"
+  },
+  "view-26.png": {
+    "kind": "baseline",
+    "name": "fallback-stress"
+  },
+  "view-27.png": {
+    "kind": "reference",
+    "name": "dk2-0-phone"
+  },
+  "view-28.png": {
+    "kind": "candidate-6",
+    "name": "fallback-fleet"
+  },
+  "view-29.png": {
+    "kind": "reference",
+    "name": "coh3-1-phone"
+  },
+  "view-30.png": {
+    "kind": "candidate-13",
+    "name": "fallback-airfield"
+  },
+  "view-31.png": {
+    "kind": "baseline",
+    "name": "phone-dogfight"
+  },
+  "view-32.png": {
+    "kind": "candidate-13",
+    "name": "fallback-coast"
+  },
+  "view-33.png": {
+    "kind": "candidate-14",
+    "name": "phone-airfield"
+  },
+  "view-34.png": {
+    "kind": "baseline",
+    "name": "phone-stress"
+  },
+  "view-35.png": {
+    "kind": "candidate-14",
+    "name": "fallback-coast"
+  },
+  "view-36.png": {
+    "kind": "candidate-6",
+    "name": "fallback-stress"
+  },
+  "view-37.png": {
+    "kind": "candidate-13",
+    "name": "phone-stress"
+  },
+  "view-38.png": {
+    "kind": "baseline",
+    "name": "phone-airfield"
+  },
+  "view-39.png": {
+    "kind": "candidate-14",
+    "name": "phone-stress"
+  },
+  "view-40.png": {
+    "kind": "baseline",
+    "name": "fallback-coast"
+  },
+  "view-41.png": {
+    "kind": "reference",
+    "name": "coh3-0-phone"
+  },
+  "view-42.png": {
+    "kind": "candidate-14",
+    "name": "fallback-stress"
+  },
+  "view-43.png": {
+    "kind": "candidate-13",
+    "name": "phone-dogfight"
+  },
+  "view-44.png": {
+    "kind": "candidate-13",
+    "name": "phone-fleet"
+  },
+  "view-45.png": {
+    "kind": "baseline",
+    "name": "fallback-fleet"
+  }
+}

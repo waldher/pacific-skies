@@ -1,0 +1,159 @@
+{
+  "scope": "36 sampled frames across coast and fleet on phone and fallback. Temporal ordering reviewed from sampled PNGs.",
+  "verdict": "Small positive HUD clearance in both tiers. Keep the label clearance change. Core rendering, player tracking, damage feedback and depth cues match the prior samples.",
+  "changes": [
+    "Coast 180: Hawk label no longer crosses the Return to Base banner on phone or fallback.",
+    "Fleet 120: Hawk label no longer touches the minimap edge on phone or fallback. It appears again at 180 when clear."
+  ],
+  "remaining": [
+    "The brief solid-white aircraft silhouette at frames 006 and 012 coincides with a hull loss and reads as damage feedback, but temporarily erases airframe detail. Dark or blue offset marks in fleet samples still merit checking against continuous playback.",
+    "The faint circle on the runway can read as an unexplained HUD mark. Brackets remain helpful as aircraft bank and cross a deck.",
+    "Fallback foliage and deck markings are visibly softer. Major effects remain readable."
+  ],
+  "frames": {
+    "coast-fallback-000.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Blue-gray player brackets read over the runway, though the airframe is close to the deck color. Hull shows 35%."
+    },
+    "coast-fallback-006.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Hull drops to 27% and Return to Base replaces the task. Player goes solid white, orange impact cue and Hawk label visible to the right."
+    },
+    "coast-fallback-012.png": {
+      "samePriorPngBytes": true,
+      "evidence": "White player silhouette persists in this sample. Tracers and the orange cue separate from the cyan Hawk label."
+    },
+    "coast-fallback-024.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Player colors return. The faint runway circle and bracketed player are visible at different positions."
+    },
+    "coast-fallback-036.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Player bank reduces the visible wingspan. Brackets retain identity while tree, runway and coast move through the frame."
+    },
+    "coast-fallback-060.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Orange blast has a bright center and is detached from the tracked player. Hawk label remains readable above the airstrip."
+    },
+    "coast-fallback-090.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Blast fades to specks, paired tracers stay distinct, and a dark smoke trace follows the player near the shoreline."
+    },
+    "coast-fallback-120.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Brackets identify a low-contrast player over water. The runway circle remains faint and separate from the aircraft."
+    },
+    "coast-fallback-180.png": {
+      "samePriorPngBytes": false,
+      "evidence": "Return to Base is clear after the edge-entering Hawk label is hidden. The edge-clipped aircraft remains partially visible and the bracketed player stays over the shoreline."
+    },
+    "coast-phone-000.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Blue-gray player brackets read over the runway, though the airframe is close to the deck color. Hull shows 35%."
+    },
+    "coast-phone-006.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Hull drops to 27% and Return to Base replaces the task. Player goes solid white, orange impact cue and Hawk label visible to the right."
+    },
+    "coast-phone-012.png": {
+      "samePriorPngBytes": true,
+      "evidence": "White player silhouette persists in this sample. Tracers and the orange cue separate from the cyan Hawk label."
+    },
+    "coast-phone-024.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Player colors return. The faint runway circle and bracketed player are visible at different positions."
+    },
+    "coast-phone-036.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Player bank reduces the visible wingspan. Brackets retain identity while tree, runway and coast move through the frame."
+    },
+    "coast-phone-060.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Orange blast has a bright center and is detached from the tracked player. Hawk label remains readable above the airstrip."
+    },
+    "coast-phone-090.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Blast fades to specks, paired tracers stay distinct, and a dark smoke trace follows the player near the shoreline."
+    },
+    "coast-phone-120.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Brackets identify a low-contrast player over water. The runway circle remains faint and separate from the aircraft."
+    },
+    "coast-phone-180.png": {
+      "samePriorPngBytes": false,
+      "evidence": "Return to Base is clear after the edge-entering Hawk label is hidden. The edge-clipped aircraft remains partially visible and the bracketed player stays over the shoreline."
+    },
+    "fleet-fallback-000.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Carrier deck and wake frame the view. Player brackets stay distinguishable over water, with a second dark aircraft-shaped form offset below."
+    },
+    "fleet-fallback-006.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Hull drops to 27% with Return to Base and a white silhouette. Carrier, orange impact flash, and cyan Hawk label stay distinct."
+    },
+    "fleet-fallback-012.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Solid-white player silhouette and dark damage trail coexist. White deck markings and yellow tracers get close to the player bracket."
+    },
+    "fleet-fallback-024.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Player colors return. Crossing the carrier bow compresses the separation between aircraft, deck markings, brackets and trails."
+    },
+    "fleet-fallback-036.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Brackets hold through deck overlap. Yellow tracers and gray aircraft remain visible, but blue-gray subjects have low contrast on deck."
+    },
+    "fleet-fallback-060.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Orange blast stands out clearly. The dark trail, layered wakes, and an offset dark/blue mark over the water remain visible."
+    },
+    "fleet-fallback-090.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Blast fades to a few specks. Banked player presents a narrow profile, with the brackets carrying identification."
+    },
+    "fleet-fallback-120.png": {
+      "samePriorPngBytes": false,
+      "evidence": "Hawk label is hidden where it previously grazed the minimap. Player brackets and tracers stay legible, while the offset blue/dark water mark remains."
+    },
+    "fleet-fallback-180.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Hawk label is restored clear of the minimap. Dark player trail, brackets and gray aircraft are identifiable over water."
+    },
+    "fleet-phone-000.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Carrier deck and wake frame the view. Player brackets stay distinguishable over water, with a second dark aircraft-shaped form offset below."
+    },
+    "fleet-phone-006.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Hull drops to 27% with Return to Base and a white silhouette. Carrier, orange impact flash, and cyan Hawk label stay distinct."
+    },
+    "fleet-phone-012.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Solid-white player silhouette and dark damage trail coexist. White deck markings and yellow tracers get close to the player bracket."
+    },
+    "fleet-phone-024.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Player colors return. Crossing the carrier bow compresses the separation between aircraft, deck markings, brackets and trails."
+    },
+    "fleet-phone-036.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Brackets hold through deck overlap. Yellow tracers and gray aircraft remain visible, but blue-gray subjects have low contrast on deck."
+    },
+    "fleet-phone-060.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Orange blast stands out clearly. The dark trail, layered wakes, and an offset dark/blue mark over the water remain visible."
+    },
+    "fleet-phone-090.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Blast fades to a few specks. Banked player presents a narrow profile, with the brackets carrying identification."
+    },
+    "fleet-phone-120.png": {
+      "samePriorPngBytes": false,
+      "evidence": "Hawk label is hidden where it previously grazed the minimap. Player brackets and tracers stay legible, while the offset blue/dark water mark remains."
+    },
+    "fleet-phone-180.png": {
+      "samePriorPngBytes": true,
+      "evidence": "Hawk label is restored clear of the minimap. Dark player trail, brackets and gray aircraft are identifiable over water."
+    }
+  }
+}

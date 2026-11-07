@@ -1,0 +1,45 @@
+{
+  "capturedAt": "2026-11-06",
+  "references": [
+    {
+      "id": "dk2-0",
+      "game": "Door Kickers 2",
+      "source": "https://store.steampowered.com/app/1239080/",
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1239080/ss_5cf03dc7a0ee5f05acef849354fea30309aa0d02.1920x1080.jpg?t=1788117500",
+      "sha256": "9b385910a5c9dc0f23b5237de8f8d566c7ded4f8b6b80525069ddf04cecfd343",
+      "kind": "publisher gameplay screenshot"
+    },
+    {
+      "id": "dk2-1",
+      "game": "Door Kickers 2",
+      "source": "https://store.steampowered.com/app/1239080/",
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1239080/ss_ee5c78b8ff009eee72dff4b6b20207caba6ff3aa.1920x1080.jpg?t=1788117500",
+      "sha256": "c71d6e3ffda528ae9a202cc5e28821956bbb1bbe27e71c6f804525746ce10b67",
+      "kind": "publisher gameplay screenshot"
+    },
+    {
+      "id": "coh3-0",
+      "game": "Company of Heroes 3",
+      "source": "https://store.steampowered.com/app/1677280/",
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1677280/e108f5edefc8ee8875bbcc973d65b40694d77584/ss_e108f5edefc8ee8875bbcc973d65b40694d77584.1920x1080.jpg?t=1793906688",
+      "sha256": "5d6bc07931e313e031a86b01d817e7d7b85bdfdd50ebd5b1cc7d4ac20afd4837",
+      "kind": "publisher in-engine promotional screenshot, no HUD"
+    },
+    {
+      "id": "coh3-1",
+      "game": "Company of Heroes 3",
+      "source": "https://store.steampowered.com/app/1677280/",
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1677280/648e46b9453cc7de6d7534de7fd38e1b2c59487a/ss_648e46b9453cc7de6d7534de7fd38e1b2c59487a.1920x1080.jpg?t=1793906688",
+      "sha256": "19e9b2e72e893c5eb83c9e9a0378dba5319bed6d1c042de9aca6b8571a99131b",
+      "kind": "publisher in-engine promotional screenshot, no HUD"
+    },
+    {
+      "id": "sc2-0",
+      "game": "StarCraft II",
+      "source": "https://starcraft2.blizzard.com/en-us/",
+      "url": "https://blz-contentstack-images.akamaized.net/v3/assets/blt9c12f249ac15c7ec/blt3f1bb33e9b93cfc6/696464d26da5300ed407b57e/game_mode_versus.webp",
+      "sha256": "15bec61ab06b184206d61af239572b254f0b9386c7f6d0f34c9996656ba44174",
+      "kind": "publisher in-engine promotional image, no HUD; close camera framing"
+    }
+  ]
+}

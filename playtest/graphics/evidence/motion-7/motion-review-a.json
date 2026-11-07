@@ -1,0 +1,84 @@
+{
+  "accept": false,
+  "all_images_viewed": true,
+  "profiles": [
+    "phone",
+    "fallback"
+  ],
+  "sample_times_seconds": [
+    0,
+    0.1,
+    0.2,
+    0.4,
+    0.6,
+    1,
+    1.5,
+    2,
+    3
+  ],
+  "criteria": "Same as motion5: recognizable hit and distinct large impact, visibly expanding/fading smoke, attached wakes, coherent sampled tracking and readable controls.",
+  "findings": [
+    {
+      "category": "hitflash",
+      "accept": true,
+      "evidence": "Both profiles show white player silhouette at0.1 and0.2s, gray again by0.4s; hull changes35% to27%. The cue is unmistakable."
+    },
+    {
+      "category": "impact_recognition",
+      "accept": true,
+      "evidence": "Small impact at0.1s has a compact orange fireball; large blast at1s has a visibly larger yellow-white core and orange flame envelope, roughly aircraft-width. At1.5s it has dispersed to smoke and isolated embers. This is now distinguishable from the small hit.",
+      "files": [
+        "phone-006.png",
+        "phone-060.png",
+        "phone-090.png",
+        "fallback-006.png",
+        "fallback-060.png",
+        "fallback-090.png"
+      ]
+    },
+    {
+      "category": "smoke_fading",
+      "accept": false,
+      "evidence": "Smoke clearly changes from bright fire to gray and older particles become fainter, especially around1.5s. However the continuous player trail at0.4,0.6,2 and3s remains a regular chain of isolated hard gray clumps; its crisp granular interior makes it look like debris beads rather than an expanding smoke plume. Blast residue at1.5s is more spread out but retains this clumped character.",
+      "files": [
+        "phone-024.png",
+        "phone-036.png",
+        "phone-090.png",
+        "phone-120.png",
+        "phone-180.png",
+        "fallback-024.png",
+        "fallback-036.png",
+        "fallback-090.png",
+        "fallback-120.png",
+        "fallback-180.png"
+      ],
+      "recommendation": "Soften smoke edges and interior contrast as it ages; increase puff radius while reducing opacity, vary spacing and overlap adjacent puffs slightly. Preserve distinct fresh smoke near the plane but avoid a uniform dotted chain."
+    },
+    {
+      "category": "wake_continuity",
+      "accept": true,
+      "evidence": "Carrier wake remains attached through its movement0–0.6s. Small ship entering below at1s retains aligned trailing wake at1.5 and2s in both profiles. No visible detached segment or sudden reversal."
+    },
+    {
+      "category": "camera_motion",
+      "accept": true,
+      "evidence": "Player recenters from lower left during0–0.6s, then stays around central play area through right turn1–1.5s and departure2–3s. World motion is consistent with that tracking; no sampled discontinuity. Increased aircraft/shadow separation conveys altitude.",
+      "limitation": "Sparse frames cannot establish continuous smoothness."
+    },
+    {
+      "category": "control_visibility",
+      "accept": true,
+      "evidence": "Bomb2/2, Fire, hull, heat and top objective stay readable and fixed throughout. At3s a ship passes behind Bomb but label retains adequate contrast. A companion near the minimap approaches its boundary without concealing controls."
+    }
+  ],
+  "blocking_findings": [
+    "Smoke is still a chain of granular isolated clumps, failing the same plume/fade polish criterion used in motion5."
+  ],
+  "nonblocking_findings": [
+    "Strong offset dark aircraft shadows add height but can be mistaken for secondary silhouettes at a glance.",
+    "Pale-blue glow beside player is conspicuous during turns, with a somewhat rectangular appearance in0.6–1.5s samples.",
+    "Initial camera recentering is noticeable."
+  ],
+  "improvements": "Large blast distinction now passes, with a visibly larger flame mass replacing the prior thin-ring appearance.",
+  "limits": "All18PNGs inspected, plus motion.json events and timestamps. No source or keys read. No timing compared with actual phone FPS; control visibility is not proof of touch behavior."
+}

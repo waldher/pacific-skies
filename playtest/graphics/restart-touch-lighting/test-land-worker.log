@@ -1,0 +1,74 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> pacific-skies@0.2.0 test:land-worker
+> node playtest/land-worker.cjs
+
+{
+  "results": [
+    {
+      "id": 0,
+      "controlDiff": 0,
+      "unflippedDiff": 2441810,
+      "geometryEqual": true,
+      "trafficEqual": true,
+      "changedChannels": 0,
+      "maxDifference": 0,
+      "textureHash": "03df22f05fabccb7bdfec350fb949b11566e13492ebba4f3f58352f205af2c4a",
+      "workerTextureHash": "03df22f05fabccb7bdfec350fb949b11566e13492ebba4f3f58352f205af2c4a",
+      "width": 826,
+      "height": 1024
+    },
+    {
+      "id": 3,
+      "controlDiff": 0,
+      "unflippedDiff": 2672946,
+      "geometryEqual": true,
+      "trafficEqual": true,
+      "changedChannels": 0,
+      "maxDifference": 0,
+      "textureHash": "da81b17d98c2f19e497c378df6f5a2e2903a318151c1c115ac069a0d595662ce",
+      "workerTextureHash": "da81b17d98c2f19e497c378df6f5a2e2903a318151c1c115ac069a0d595662ce",
+      "width": 893,
+      "height": 1024
+    },
+    {
+      "id": 87,
+      "controlDiff": 0,
+      "unflippedDiff": 2548516,
+      "geometryEqual": true,
+      "trafficEqual": true,
+      "changedChannels": 0,
+      "maxDifference": 0,
+      "textureHash": "c88c4d47da0f11d9d072323f27789af0e96ee16220ca6ffc2a17bdf18f641e48",
+      "workerTextureHash": "c88c4d47da0f11d9d072323f27789af0e96ee16220ca6ffc2a17bdf18f641e48",
+      "width": 847,
+      "height": 1024
+    }
+  ],
+  "scheduler": {
+    "cameraRejected": true,
+    "fallback": {
+      "mode": "sync-fallback",
+      "reason": "Error: Worker/OffscreenCanvas unavailable",
+      "builds": 0,
+      "lastBuildMs": 0,
+      "lastSerializeMs": 0
+    },
+    "ready": true,
+    "onlyCurrentTerrain": true,
+    "stats": {
+      "mode": "worker",
+      "reason": null,
+      "builds": 4,
+      "lastBuildMs": 22.100000000093132,
+      "lastSerializeMs": 19.5,
+      "generation": 2,
+      "pending": 0,
+      "inFlight": false,
+      "staleResults": 2,
+      "hydrateMs": 0.30000000004656613
+    }
+  },
+  "backend": "Chromium --disable-gpu; Canvas2D only, no WebGL context"
+}
+PASS real worker geometry, traffic, texture pixels and stale-world scheduler

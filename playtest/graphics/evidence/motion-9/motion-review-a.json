@@ -1,0 +1,89 @@
+{
+  "accept": true,
+  "all_images_viewed": 18,
+  "profiles": [
+    "phone",
+    "fallback"
+  ],
+  "sample_times_seconds": [
+    0,
+    0.1,
+    0.2,
+    0.4,
+    0.6,
+    1,
+    1.5,
+    2,
+    3
+  ],
+  "findings": [
+    {
+      "category": "Hit flash and impact distinction",
+      "accept": true,
+      "evidence": "Player flashes white at .1 and .2 seconds, returns to gray by .4. Small orange spark near player is distinctly smaller than bright yellow-orange fireball at 1 second; main fireball dissipates by 1.5.",
+      "files": [
+        "phone-006.png",
+        "phone-012.png",
+        "phone-024.png",
+        "phone-060.png",
+        "fallback-060.png"
+      ]
+    },
+    {
+      "category": "Smoke fading and plume",
+      "accept": true,
+      "evidence": "Unlike motion-8's separated small stamps, the damage trail now overlaps into an elongated connected wisp at .4/.6 and forms a continuous curved trail during the turn at 1.5 seconds in both profiles. At 2/3 seconds older trailing sections spread and become fainter while the near-player trail remains narrow. Explosion smoke is dispersed by 1.5. This clears the prior continuity/fading blocker. Texture remains visibly grainy and expansion modest, so material polish remains below reference quality.",
+      "files": [
+        "phone-024.png",
+        "phone-036.png",
+        "phone-090.png",
+        "phone-120.png",
+        "phone-180.png",
+        "fallback-090.png",
+        "fallback-180.png"
+      ],
+      "recommendation": "Reduce fine grain and give older wisps more irregular lateral diffusion without increasing opacity or hiding aircraft."
+    },
+    {
+      "category": "Wake continuity",
+      "accept": true,
+      "evidence": "Carrier and escort wakes stay attached to sterns throughout sampled translation; escorts retain tapering wakes during turn. Repeated rounded foam bands remain a cosmetic weakness.",
+      "files": [
+        "phone-000.png",
+        "phone-036.png",
+        "phone-120.png",
+        "fallback-120.png"
+      ]
+    },
+    {
+      "category": "Camera continuity",
+      "accept": true,
+      "evidence": "Opening recenters player from lower left toward center by .6 seconds, then retains player near center during turn and forward travel. No sampled teleport or discontinuity. Sparse stills do not establish continuous frame smoothness.",
+      "files": [
+        "phone-000.png",
+        "phone-036.png",
+        "phone-090.png",
+        "phone-180.png"
+      ]
+    },
+    {
+      "category": "Control visibility",
+      "accept": true,
+      "evidence": "Hull, heat, mission, minimap, Bomb and Fire remain readable in both profiles. Escort overlaps Bomb at 3 seconds but label stays readable. Dark sea reduces distracting duplicate-plane shadows compared with teal background; pale cyan player glow still looks bar-shaped at turns.",
+      "files": [
+        "phone-090.png",
+        "phone-180.png",
+        "fallback-180.png"
+      ]
+    }
+  ],
+  "blockers": [],
+  "nonblocking": [
+    "Smoke remains grainy and its diffusion modest despite improved connected form.",
+    "Ocean looks densely rippled and sometimes clothlike; fallback makes ripple scale and repetition conspicuous.",
+    "Scalloped repeating wake foam.",
+    "Opening camera recenters conspicuously.",
+    "Cyan player glow remains bar-shaped on turns."
+  ],
+  "limits": "Inspected all 18 PNGs and motion.json simulation times/events. Acceptance applies to sampled effect recognition and continuity, not photo-realistic visual parity or measured phone FPS. No game source or identity keys inspected."
+}

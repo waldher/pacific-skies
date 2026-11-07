@@ -1,0 +1,13 @@
+{
+  "judge": "C",
+  "method": "sampled-still-progression",
+  "framesViewed": 36,
+  "accept": true,
+  "findings": [
+    "At coast 180 in both profiles, the previous Hawk label met the yellow RETURN TO BASE text. The candidate drops the cyan text while leaving the aircraft fragment at the top edge and the objective banner intact. The instruction has clear separation in the inspected frame.",
+    "At fleet 120 in both profiles, the candidate drops Hawk's label in the narrow space just below the minimap. The aircraft fragment and map remain. Hawk is labeled again farther from the map in sample 180. At fleet 060 the label still sits beside the carrier's bow and above the player's left bracket, with enough separation to read.",
+    "Decoded RGB comparison against the earlier bracket samples found changes in only those four matching frame pairs. Coast 180 differs in 135 pixels per profile and fleet 120 in 138 pixels per profile. The other 32 samples are pixel-identical.",
+    "Across both profiles and runs, the brackets hold through the white damage flash at 006 and 012, close deck crossing at fleet 024 and 036, and coastal and fleet turns. No blue silhouette overlays the player in these samples. The runway ring still reads as an unexplained extra circle when the return instruction is active.",
+    "The sampled frames support the label clearance without visible collateral changes. Continuous transitions, flicker, frame pacing and handset performance were outside this review."
+  ]
+}

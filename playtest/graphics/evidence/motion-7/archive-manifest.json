@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "sourceHash": "98a52e34c31296878da731463bc21e3c7f795d8d16d4aa21b48b88714eb3ea9a",
+  "originalReportSha256": "19b56895a7aedfadb09ffff99b59abe88709b93548e88aa8af593456c45babc5",
+  "originalArtifact": {
+    "file": "motion.html",
+    "sha256": "bf9bd853a26a14c238e7501851bd9662d1c9c6abfcaf8c2158f4c7308e693d34",
+    "contains": "Embedded PNG sequence with timestamps for both profiles"
+  },
+  "originalArtifactStored": false,
+  "reason": "Avoid duplicating all 18 PNG bytes in base64; original artifact hash is preserved unchanged in motion.json.",
+  "derivedPlayer": {
+    "file": "motion-player.html",
+    "sha256": "6323e73d0a85f0da0e53fd29c6953569b6114471dc902a0ecf69857aff20e5f2",
+    "transformation": "Exact original HTML with each data:image/png;base64 URL replaced by its corresponding relative PNG filename. No frame data, scripts or timing altered."
+  },
+  "reviews": {
+    "motion-review-c.json": "aa34e1d343fb09eeb985a4e0a21c3ffb3f7536063f8ab32148605e0e60526270",
+    "motion-review-a.json": "35969c24f644fc3a29a853b8ea64e522363eeb487f26f59636d9a5f85a8f21d9",
+    "motion-review-b.json": "cd0c1057f81731ab62c80f177d0aecfeea447ea45597dc0c836bdf5e5f1db0ae"
+  }
+}

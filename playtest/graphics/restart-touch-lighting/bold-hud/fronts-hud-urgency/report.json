@@ -1,0 +1,76 @@
+{
+  "sourceHash": "3c87e6492c912bfb583fb65ffb39c193a0e74cc2203ea3eaf4fc8da8c54f894e",
+  "suiteHash": "1752796c1a7733426decf637c020c2c53b75b800b9cacb64b35244f9c2a0fe2e",
+  "seed": 1942,
+  "errors": [
+    "short-landscape chart tap failed: [[\"pointerdown\",\"map-open\",558,54],[\"pointerup\",\"map-open\",558,54],[\"click\",\"operations-close\",558,54]]"
+  ],
+  "results": [
+    {
+      "profile": {
+        "name": "phone",
+        "width": 852,
+        "height": 393,
+        "quality": 2
+      },
+      "visible": {
+        "hull": "27%",
+        "ordnance": "Bomb 2/2",
+        "mapVisible": true
+      },
+      "chartOpened": true,
+      "file": "phone.png",
+      "sha256": "6b245842e71893603b248d9f33a6c471fe05839152accaea79494a77d1c304ed"
+    },
+    {
+      "profile": {
+        "name": "fallback",
+        "width": 852,
+        "height": 393,
+        "quality": 4
+      },
+      "visible": {
+        "hull": "27%",
+        "ordnance": "Bomb 2/2",
+        "mapVisible": true
+      },
+      "chartOpened": true,
+      "file": "fallback.png",
+      "sha256": "e0556c6f294591874fb905da1587a21cba1c6c5d2ea165fb8889b362c69227a7"
+    },
+    {
+      "profile": {
+        "name": "short-landscape",
+        "width": 640,
+        "height": 360,
+        "quality": 4
+      },
+      "visible": {
+        "hull": "27%",
+        "ordnance": "Bomb 2/2",
+        "mapVisible": true
+      },
+      "chartOpened": false,
+      "file": "short-landscape.png",
+      "sha256": "7712d82a5c648331ab155ca74844d018cb80a36e207569b2931902e7550fdc5b"
+    },
+    {
+      "profile": {
+        "name": "portrait",
+        "width": 320,
+        "height": 568,
+        "quality": 4
+      },
+      "visible": {
+        "hull": "27%",
+        "ordnance": "Bomb 2/2",
+        "mapVisible": true
+      },
+      "chartOpened": true,
+      "file": "portrait.png",
+      "sha256": "5e8ebd551d3bb77a114a9167ae2d275d4ffa0809fcae713040341c6905e15fce"
+    }
+  ],
+  "browser": "141.0.7390.37",
+  "sourceHashAfter": "3c87e6492c912bfb583fb65ffb39c193a0e74cc2203ea3eaf4fc8da8c54f894e"
+}

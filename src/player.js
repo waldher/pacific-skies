@@ -1,3 +1,4 @@
+import { aircraftRound, flightAltitude } from './projectile-visual.js';
 // Player flight model, firing, damage smoke, and death.
 import { updateCarrierFlight, checkDeckLanding } from './carrier.js';
 import { CONFIG } from './config.js';
@@ -66,7 +67,7 @@ export function updatePlayer(dt) {
     if (player.steamCd <= 0) {
       player.steamCd = 0.07;
       const nx = player.x + Math.cos(player.a) * 20, ny = player.y + Math.sin(player.a) * 20;
-      game.particles.push({
+      game.particles.push({ altitude: flightAltitude(player), trailAngle: player.a,
         x: nx, y: ny, vx: rand(-12, 12), vy: rand(-12, 12),
         life: rand(0.3, 0.5), max: 0.6, size: rand(2, 4), kind: 'smoke',
       });
@@ -83,7 +84,7 @@ export function updatePlayer(dt) {
     }
     const nx = player.x + Math.cos(player.a) * 22, ny = player.y + Math.sin(player.a) * 22;
     for (const off of P.gunOffsets) {
-      game.bullets.push({
+      game.bullets.push({ ...aircraftRound(player),
         x: nx + Math.cos(player.a + Math.PI / 2) * off,
         y: ny + Math.sin(player.a + Math.PI / 2) * off,
         vx: Math.cos(player.a) * P.bulletSpeed,
@@ -98,7 +99,7 @@ export function updatePlayer(dt) {
     player.smokeCd -= dt;
     if (player.smokeCd <= 0) {
       player.smokeCd = 0.05;
-      game.particles.push({
+      game.particles.push({ altitude: flightAltitude(player), trailAngle: player.a,
         x: player.x - Math.cos(player.a) * 16, y: player.y - Math.sin(player.a) * 16,
         vx: rand(-15, 15), vy: rand(-15, 15), life: rand(0.5, 0.9), max: 1, size: rand(3, 6), kind: 'smoke',
       });
@@ -115,7 +116,7 @@ export function damagePlayer(amount) {
   game.shake = Math.min(game.shake + 4, 14);
   if (player.hp <= 0) {
     player.hp = 0;
-    explosion(player.x, player.y, true);
+    explosion(player.x, player.y, true, flightAltitude(player));
     game.best = Math.max(game.best, game.score);
     game.pilotLosses = (game.pilotLosses || 0) + 1;
     game.mode = recoveryBases().length ? 'recovery' : 'over';

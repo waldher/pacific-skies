@@ -1,0 +1,569 @@
+{
+  "meta": {
+    "judge": "C",
+    "packet": 14,
+    "categories": [
+      "readability",
+      "coherence",
+      "lighting_depth",
+      "environment_material_richness",
+      "effects_polish"
+    ],
+    "weights": [
+      0.3,
+      0.2,
+      0.2,
+      0.15,
+      0.15
+    ],
+    "inspection": "All 45 PNGs individually opened using view_image. Prior exact identical-image anchors preserved from own review/image hashes. No source, key or other judges inspected.",
+    "blinding_limitations": "Repeated controls and visual families recognizable. Sci-fi resembles StarCraft and battlefield references Company of Heroes; tactical title uncertain. No presumed iteration advantage."
+  },
+  "view-01.png": {
+    "scores": [
+      8,
+      7.5,
+      8,
+      7.5,
+      7
+    ],
+    "weighted_score": 7.675,
+    "evidence": "Darker perimeter restores carrier top/side separation versus pale-rim variant. Ring identifies player and raised island remains readable. Cyan ring adds focal location to sparse combat; crisp planes and small orange hits read against dark water.",
+    "visible_regressions_or_limitations": "Comparable to prior darker-rim carrier in material depth; no further quality increase beyond that anchor. Pale aircraft still overlap deck marks, wake repeats oval stamps, and dense equal orange sparks/smoke limit hierarchy."
+  },
+  "view-02.png": {
+    "scores": [
+      8.5,
+      8,
+      7.5,
+      7.5,
+      6
+    ],
+    "weighted_score": 7.675,
+    "evidence": "Outlined plane, muted trees, rocks and partial compound create coherent coast.",
+    "visible_regressions_or_limitations": "Flat noisy ground and simple shore; repeated dark tree contacts. Unchanged anchor."
+  },
+  "view-03.png": {
+    "scores": [
+      6,
+      5.5,
+      4.5,
+      5,
+      5
+    ],
+    "weighted_score": 5.3,
+    "evidence": "Fields and runway readable; clear buttons; sea flecks texture.",
+    "visible_regressions_or_limitations": "Oversized patchy ground and repetitive field tiles dominate; floating labels crowd plane; faceted tiny trees weakly grounded."
+  },
+  "view-04.png": {
+    "scores": [
+      8.5,
+      7.5,
+      8,
+      8.5,
+      5.5
+    ],
+    "weighted_score": 7.75,
+    "evidence": "Coast bends around rock/tree clusters, adding stronger terrain structure than simple smooth arc. Ring clearly locates player.",
+    "visible_regressions_or_limitations": "Surf remains thin broken offset lines; beach width mostly uniform. Strong tree contacts and flat noisy grass remain; clusters improve arrangement more than material lighting."
+  },
+  "view-05.png": {
+    "scores": [
+      8.5,
+      7.5,
+      8,
+      7.5,
+      6.5
+    ],
+    "weighted_score": 7.75,
+    "evidence": "Darker perimeter restores carrier top/side separation versus pale-rim variant. Ring identifies player and raised island remains readable. Crisp cyan circle identifies player on carrier bow; raised island and exposed continuous hull rim give depth.",
+    "visible_regressions_or_limitations": "Comparable to prior darker-rim carrier in material depth; no further quality increase beyond that anchor. Pale aircraft still overlap deck marks, wake repeats oval stamps, and dense equal orange sparks/smoke limit hierarchy."
+  },
+  "view-06.png": {
+    "scores": [
+      8.5,
+      7.5,
+      8,
+      8.5,
+      5.5
+    ],
+    "weighted_score": 7.75,
+    "evidence": "Player ring, irregular coast and grouped rocks/trees preserve clear land structure. Shore strokes have less regular spacing and some tapered broken forms.",
+    "visible_regressions_or_limitations": "Shore strokes still thin detached offshore marks with limited foam body, despite reduced dashed-rail regularity. Uniform shallow band and beach remain; grass noise and heavy tree contacts limit material naturalness. No score-level change from terrain anchor."
+  },
+  "view-07.png": {
+    "scores": [
+      8.5,
+      7.5,
+      7.5,
+      7,
+      6
+    ],
+    "weighted_score": 7.5,
+    "evidence": "Darker perimeter restores carrier top/side separation versus pale-rim variant. Ring identifies player and raised island remains readable. Cyan circle isolates player location on pale carrier bow; restored narrow hull rim reads continuously.",
+    "visible_regressions_or_limitations": "Comparable to prior darker-rim carrier in material depth; no further quality increase beyond that anchor. Pale aircraft still overlap deck marks, wake repeats oval stamps, and dense equal orange sparks/smoke limit hierarchy."
+  },
+  "view-08.png": {
+    "scores": [
+      8,
+      9,
+      9,
+      9,
+      8
+    ],
+    "weighted_score": 8.55,
+    "evidence": "Distinct floors, wall depth, warm/cool light and furniture contacts.",
+    "visible_regressions_or_limitations": "Tiny units/text demanding at phone size. Unchanged reference."
+  },
+  "view-09.png": {
+    "scores": [
+      8,
+      7.5,
+      7.5,
+      8,
+      5
+    ],
+    "weighted_score": 7.35,
+    "evidence": "Player ring, irregular coast and grouped rocks/trees preserve clear land structure. Shore strokes have less regular spacing and some tapered broken forms.",
+    "visible_regressions_or_limitations": "Shore strokes still thin detached offshore marks with limited foam body, despite reduced dashed-rail regularity. Uniform shallow band and beach remain; grass noise and heavy tree contacts limit material naturalness. No score-level change from terrain anchor."
+  },
+  "view-10.png": {
+    "scores": [
+      7,
+      5.5,
+      5,
+      5,
+      3.5
+    ],
+    "weighted_score": 5.475,
+    "evidence": "Crisp lone plane and carrier silhouette clear; sparse composition.",
+    "visible_regressions_or_limitations": "Rectangular blue wake with hard end is conspicuous; deck flat and floating text intersects it; sea flecks do little for depth."
+  },
+  "view-11.png": {
+    "scores": [
+      6,
+      5.5,
+      4,
+      4.5,
+      4
+    ],
+    "weighted_score": 4.975,
+    "evidence": "Runway arrow and coast recognizable; action buttons legible.",
+    "visible_regressions_or_limitations": "Patchy saturated grass and repeated farm tiles crowd base; flat buildings, floating label on plane and blunt shore weaken depth."
+  },
+  "view-12.png": {
+    "scores": [
+      6,
+      5.5,
+      4.5,
+      4.5,
+      3.5
+    ],
+    "weighted_score": 5,
+    "evidence": "Small plane group and large carrier identifiable; HUD buttons clear.",
+    "visible_regressions_or_limitations": "Hard rectangular wake, large circular particles, flat deck and crossing objective text limit craft."
+  },
+  "view-13.png": {
+    "scores": [
+      8,
+      7.5,
+      7.5,
+      7,
+      6.5
+    ],
+    "weighted_score": 7.425,
+    "evidence": "Darker perimeter restores carrier top/side separation versus pale-rim variant. Ring identifies player and raised island remains readable. Player ring helps locate bow aircraft among sparse opponents; impacts and hull remain clear.",
+    "visible_regressions_or_limitations": "Comparable to prior darker-rim carrier in material depth; no further quality increase beyond that anchor. Pale aircraft still overlap deck marks, wake repeats oval stamps, and dense equal orange sparks/smoke limit hierarchy."
+  },
+  "view-14.png": {
+    "scores": [
+      8.5,
+      8,
+      7,
+      7,
+      5.5
+    ],
+    "weighted_score": 7.425,
+    "evidence": "Outlined player separates from grass/rocks; muted trees coherent.",
+    "visible_regressions_or_limitations": "Flat central grass and heavy repeating tree shadows. Unchanged anchor."
+  },
+  "view-15.png": {
+    "scores": [
+      7,
+      8,
+      7.5,
+      7.5,
+      7
+    ],
+    "weighted_score": 7.375,
+    "evidence": "Detailed deck, island and rim with stable HUD and wake.",
+    "visible_regressions_or_limitations": "Plane occlusion and repetitive smoke dots remain. Unchanged anchor."
+  },
+  "view-16.png": {
+    "scores": [
+      6.5,
+      9,
+      9,
+      9,
+      9
+    ],
+    "weighted_score": 8.25,
+    "evidence": "Metal ships and cool rock contrast with layered bright explosion.",
+    "visible_regressions_or_limitations": "Blast obscures units; purple forms merge with foliage. Unchanged reference."
+  },
+  "view-17.png": {
+    "scores": [
+      8,
+      8,
+      8,
+      8.5,
+      6
+    ],
+    "weighted_score": 7.775,
+    "evidence": "Compound, dirt lanes, roof walls and muted trees create rich base structure.",
+    "visible_regressions_or_limitations": "Player/roof overlap, tiny service blocks and heavy shadows persist. Unchanged anchor."
+  },
+  "view-18.png": {
+    "scores": [
+      8.5,
+      8,
+      7.5,
+      7.5,
+      6.5
+    ],
+    "weighted_score": 7.75,
+    "evidence": "Clear outlined player, continuous tan panels, raised island and wake.",
+    "visible_regressions_or_limitations": "Uniform deck light and paired wake limit realism. Unchanged anchor."
+  },
+  "view-19.png": {
+    "scores": [
+      8,
+      8,
+      7.5,
+      7.5,
+      6.5
+    ],
+    "weighted_score": 7.6,
+    "evidence": "Continuous panel deck, raised island, narrow rim and clear wake; outlined player visible.",
+    "visible_regressions_or_limitations": "Pale aircraft merge with runway marks; paired wake simple. Unchanged anchor."
+  },
+  "view-20.png": {
+    "scores": [
+      7,
+      7,
+      7,
+      7,
+      6.5
+    ],
+    "weighted_score": 6.925,
+    "evidence": "Cyan ring retains focal player location; orange hits and white aircraft contrast with ocean.",
+    "visible_regressions_or_limitations": "Paler deck/rim reduces depth and competes with pale planes. Dense equal sparks, overlapping aircraft and smoky rosettes still confuse priority."
+  },
+  "view-21.png": {
+    "scores": [
+      8,
+      8,
+      7,
+      7,
+      6
+    ],
+    "weighted_score": 7.35,
+    "evidence": "Continuous tan deck, narrow rim, island shadow and wake coherent.",
+    "visible_regressions_or_limitations": "Pale aircraft on pale deck crowded; limited side lighting. Unchanged anchor."
+  },
+  "view-22.png": {
+    "scores": [
+      8,
+      7.5,
+      7,
+      7,
+      6.5
+    ],
+    "weighted_score": 7.325,
+    "evidence": "Ring locates player and light carrier edge is clear against dark sea; small orange impacts readable.",
+    "visible_regressions_or_limitations": "Pale near-uniform rim and lighter deck flatten side/top separation. Pale aircraft merge into deck markings; repeated wake and smoke remain."
+  },
+  "view-23.png": {
+    "scores": [
+      8.5,
+      7.5,
+      7,
+      7,
+      6
+    ],
+    "weighted_score": 7.4,
+    "evidence": "Ring and sparse layout keep player easy to find; carrier outer edge reads clearly.",
+    "visible_regressions_or_limitations": "Pale perimeter blends into light deck instead of describing separate sidewall; narrow dark lower hull survives. Top/rim lighting flatter than control; repetitive wake remains."
+  },
+  "view-24.png": {
+    "scores": [
+      8,
+      7.5,
+      8,
+      8.5,
+      5.5
+    ],
+    "weighted_score": 7.6,
+    "evidence": "Crisp clustered rocks follow less regular coast; varied vegetation surrounds organized apron and runway.",
+    "visible_regressions_or_limitations": "Middle aircraft still blue-on-blue roof. Uniform terrain noise, heavy tree shadows and offset dashed surf limit realism. Same material richness as prior base; arrangement coherence modestly better."
+  },
+  "view-25.png": {
+    "scores": [
+      8,
+      8,
+      7.5,
+      8,
+      5.5
+    ],
+    "weighted_score": 7.525,
+    "evidence": "Service compound, dirt lanes, muted trees and roof walls structure base.",
+    "visible_regressions_or_limitations": "Player overlaps roof and contacts heavy. Unchanged anchor."
+  },
+  "view-26.png": {
+    "scores": [
+      5,
+      5,
+      4.5,
+      4.5,
+      3
+    ],
+    "weighted_score": 4.525,
+    "evidence": "Planes retain recognizable pale silhouettes and buttons clear.",
+    "visible_regressions_or_limitations": "Large translucent circles obscure deck and aircraft; rectangular wake, flat tan deck and floating label create placeholder appearance."
+  },
+  "view-27.png": {
+    "scores": [
+      7,
+      9,
+      8.5,
+      9,
+      8
+    ],
+    "weighted_score": 8.15,
+    "evidence": "Warm shadowed market with produce/props and traceable colored routes.",
+    "visible_regressions_or_limitations": "Small brown figures merge into surroundings. Unchanged reference."
+  },
+  "view-28.png": {
+    "scores": [
+      8.5,
+      8,
+      7,
+      7,
+      6
+    ],
+    "weighted_score": 7.5,
+    "evidence": "Outlined lone plane, dark top bars, continuous deck and wake clear.",
+    "visible_regressions_or_limitations": "Soft edges and uniform light limit depth. Unchanged anchor."
+  },
+  "view-29.png": {
+    "scores": [
+      6,
+      9,
+      9,
+      9.5,
+      8.5
+    ],
+    "weighted_score": 8.1,
+    "evidence": "Layered fog, trees, tracks and damaged buildings give rich depth.",
+    "visible_regressions_or_limitations": "Units merge with ground/haze. Unchanged reference."
+  },
+  "view-30.png": {
+    "scores": [
+      8,
+      7.5,
+      7.5,
+      8,
+      5
+    ],
+    "weighted_score": 7.35,
+    "evidence": "Less straight coastline and clustered rocks/trees add plausible local structure; base roads/apron remain clear.",
+    "visible_regressions_or_limitations": "Dashed surf still resembles offset rail, ground remains uniform noise and tree shadows heavy. Player still blends with blue hangar inside ring. Arrangement improves coherence, not material richness at this soft resolution."
+  },
+  "view-31.png": {
+    "scores": [
+      6,
+      5.5,
+      5,
+      5,
+      4
+    ],
+    "weighted_score": 5.25,
+    "evidence": "Sharper planes and sea flecks add detail; recognizable carrier silhouette.",
+    "visible_regressions_or_limitations": "Hard rectangular wake and circular particles remain artificial; light planes and yellow label blend into light deck."
+  },
+  "view-32.png": {
+    "scores": [
+      8.5,
+      7.5,
+      7.5,
+      8,
+      5
+    ],
+    "weighted_score": 7.5,
+    "evidence": "Irregular shoreline and grouped vegetation/rocks provide clearer land structure; player ring visible.",
+    "visible_regressions_or_limitations": "Soft surfaces lack relief; tree contact shadows heavy and surf still dashed line. Pale farmland patches remain flat."
+  },
+  "view-33.png": {
+    "scores": [
+      8,
+      7.5,
+      8,
+      8.5,
+      5.5
+    ],
+    "weighted_score": 7.6,
+    "evidence": "Player ring, irregular coast and grouped rocks/trees preserve clear land structure. Shore strokes have less regular spacing and some tapered broken forms.",
+    "visible_regressions_or_limitations": "Shore strokes still thin detached offshore marks with limited foam body, despite reduced dashed-rail regularity. Uniform shallow band and beach remain; grass noise and heavy tree contacts limit material naturalness. No score-level change from terrain anchor."
+  },
+  "view-34.png": {
+    "scores": [
+      5,
+      5,
+      5,
+      5,
+      3.5
+    ],
+    "weighted_score": 4.775,
+    "evidence": "Sharper plane silhouettes and sea flecks add fine detail.",
+    "visible_regressions_or_limitations": "Large opaque-looking circles conceal combat, rectangular wake lacks fluidity, white flecks compete with planes; label crosses deck."
+  },
+  "view-35.png": {
+    "scores": [
+      8.5,
+      7.5,
+      7.5,
+      8,
+      5
+    ],
+    "weighted_score": 7.5,
+    "evidence": "Player ring, irregular coast and grouped rocks/trees preserve clear land structure. Shore strokes have less regular spacing and some tapered broken forms.",
+    "visible_regressions_or_limitations": "Shore strokes still thin detached offshore marks with limited foam body, despite reduced dashed-rail regularity. Uniform shallow band and beach remain; grass noise and heavy tree contacts limit material naturalness. No score-level change from terrain anchor."
+  },
+  "view-36.png": {
+    "scores": [
+      7,
+      8,
+      7,
+      7,
+      6.5
+    ],
+    "weighted_score": 7.125,
+    "evidence": "Coherent tan deck and dark rim with outline and trailing wake.",
+    "visible_regressions_or_limitations": "Pale plane/deck overlap and repeated dot particles. Unchanged anchor."
+  },
+  "view-37.png": {
+    "scores": [
+      7,
+      7,
+      7.5,
+      7.5,
+      7
+    ],
+    "weighted_score": 7.175,
+    "evidence": "Sharp aircraft silhouettes, orange hit texture and player circle remain recognizable amid fleet.",
+    "visible_regressions_or_limitations": "Paler carrier rim reduces lighting depth and adds bright lines beside overlapping aircraft. Equal orange sparks and repeated smoke still lack hierarchy."
+  },
+  "view-38.png": {
+    "scores": [
+      6,
+      5.5,
+      4.5,
+      5,
+      5
+    ],
+    "weighted_score": 5.3,
+    "evidence": "Sharp runway and varied fields give recognizable geography; white sea flecks visible.",
+    "visible_regressions_or_limitations": "Fields and bright patchwork ground dominate small plane; flat buildings and floating label weaken hierarchy/material consistency."
+  },
+  "view-39.png": {
+    "scores": [
+      7,
+      7,
+      8,
+      7.5,
+      7
+    ],
+    "weighted_score": 7.275,
+    "evidence": "Darker perimeter restores carrier top/side separation versus pale-rim variant. Ring identifies player and raised island remains readable. Player circle gives a clearer location amid dense aircraft; dark hull and detailed sea preserve depth.",
+    "visible_regressions_or_limitations": "Comparable to prior darker-rim carrier in material depth; no further quality increase beyond that anchor. Pale aircraft still overlap deck marks, wake repeats oval stamps, and dense equal orange sparks/smoke limit hierarchy."
+  },
+  "view-40.png": {
+    "scores": [
+      6,
+      5.5,
+      4,
+      4.5,
+      4
+    ],
+    "weighted_score": 4.975,
+    "evidence": "Fields and runway clearly mark inhabited coast.",
+    "visible_regressions_or_limitations": "Saturated patches and regular tiles compete with aircraft; floating yellow text crowds focus; tiny trees weakly grounded."
+  },
+  "view-41.png": {
+    "scores": [
+      5.5,
+      9,
+      9,
+      9.5,
+      9
+    ],
+    "weighted_score": 8.025,
+    "evidence": "Wet reflections, rain, tracer and smoke unify rich rubble/mud.",
+    "visible_regressions_or_limitations": "Dark units merge with terrain. Unchanged reference."
+  },
+  "view-42.png": {
+    "scores": [
+      7,
+      7,
+      7.5,
+      7,
+      6.5
+    ],
+    "weighted_score": 7.025,
+    "evidence": "Darker perimeter restores carrier top/side separation versus pale-rim variant. Ring identifies player and raised island remains readable. Cyan player circle provides a focal location amid pale overlapping aircraft; dark hull and sea remain legible.",
+    "visible_regressions_or_limitations": "Comparable to prior darker-rim carrier in material depth; no further quality increase beyond that anchor. Pale aircraft still overlap deck marks, wake repeats oval stamps, and dense equal orange sparks/smoke limit hierarchy."
+  },
+  "view-43.png": {
+    "scores": [
+      8,
+      7.5,
+      7.5,
+      7.5,
+      7
+    ],
+    "weighted_score": 7.575,
+    "evidence": "Ring clarifies player location; sparse opponents and orange hits remain readable; carrier outline crisp.",
+    "visible_regressions_or_limitations": "Light gray rim and pale deck make carrier flatter than darker-rim control. Aircraft overlap runway markings, and puff-chain wake persists."
+  },
+  "view-44.png": {
+    "scores": [
+      8.5,
+      7.5,
+      7.5,
+      7.5,
+      6.5
+    ],
+    "weighted_score": 7.65,
+    "evidence": "Crisp island, runway seams and perimeter define carrier; player ring remains clear.",
+    "visible_regressions_or_limitations": "Light perimeter and top surface too close in value, weakening hull volume. Fine deck details cannot compensate for flat illumination; wake stays stamped."
+  },
+  "view-45.png": {
+    "scores": [
+      7,
+      5.5,
+      4.5,
+      4.5,
+      3
+    ],
+    "weighted_score": 5.225,
+    "evidence": "Simple aircraft and carrier silhouettes visible; large UI clear.",
+    "visible_regressions_or_limitations": "Wake is a hard translucent rectangle; floating yellow label crosses flat deck; broad water cells lack depth."
+  },
+  "general_next_priorities": [
+    "Keep dark hull rim and establish consistent directional top/side lighting rather than a uniformly pale perimeter.",
+    "Make foam irregular connected bodies tied to beach edge, not detached offshore strokes.",
+    "Resolve pale plane/deck and blue plane/roof overlaps within the useful player ring.",
+    "Dense battle needs major/minor effect hierarchy and less repeated rosette smoke; more detail alone does not improve readability.",
+    "Ground terrain with meaningful relief and softer varied contacts instead of uniform grass noise and repeated dark tree disks."
+  ]
+}

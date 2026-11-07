@@ -1,0 +1,82 @@
+{
+  "reviewer": "B",
+  "accept": true,
+  "scope": "Accept sampled motion feedback in the supplied sparse scenario only. This does not certify continuous smoothness, touch response, dense combat readability, or overall visual parity.",
+  "coverage": {
+    "imagesInspected": 18,
+    "profiles": [
+      "phone",
+      "fallback"
+    ],
+    "ticks": [
+      0,
+      6,
+      12,
+      24,
+      36,
+      60,
+      90,
+      120,
+      180
+    ],
+    "timeSeconds": [
+      0,
+      0.1,
+      0.2,
+      0.4,
+      0.6,
+      1,
+      1.5,
+      2,
+      3
+    ],
+    "metadataRead": "motion.json"
+  },
+  "findings": {
+    "hitFlash": {
+      "accept": true,
+      "evidence": "Both profiles show the player becoming a clear white silhouette at 0.1 and 0.2 seconds, returning to normal by 0.4. Hull drops from 35% to 27% and the return prompt appears."
+    },
+    "impactRecognition": {
+      "accept": true,
+      "evidence": "The small orange hit at 0.1–0.2 seconds is visibly distinct from the larger irregular yellow-orange fireball at 1 second. By 1.5 seconds the large fireball has become smoke and scattered sparks, and no fire remains at 2 or 3 seconds.",
+      "weakness": "Sparse samples cannot establish the exact onset or disappearance transitions."
+    },
+    "smokeFading": {
+      "accept": true,
+      "evidence": "A curved trail follows the turning aircraft at 1.5 seconds; older portions become thinner and less opaque in later samples. Fire does not persist as an opaque disk.",
+      "weakness": "Dark mottled water competes with gray smoke, particularly in fallback. Some trail granularity remains."
+    },
+    "wakeContinuity": {
+      "accept": true,
+      "evidence": "Carrier and escort wakes remain attached to sterns as ships cross the frame; no sampled detached wake or abrupt gap is visible.",
+      "weakness": "Repeated soft puffs still look synthetic and lack convincing narrow-to-wide foam breakup."
+    },
+    "cameraMotion": {
+      "accept": true,
+      "evidence": "After initial catch-up, the player stays near the middle while the carrier moves toward the upper edge and the escort crosses below/right. The turn reads coherently.",
+      "weakness": "The initial catch-up is conspicuous. Sparse stills cannot certify freedom from jitter or continuous camera smoothness."
+    },
+    "controlVisibility": {
+      "accept": true,
+      "evidence": "Hull, gun heat, mission text, minimap, Bomb and Fire remain fixed and legible. Heat rises during firing and falls afterward.",
+      "weakness": "A ship passes beneath Bomb at 3 seconds, and a wingman label approaches the map. Touch steering and actual button response are not demonstrated."
+    },
+    "altitude": {
+      "accept": true,
+      "evidence": "Aircraft silhouettes and offset shadows give some separation over deck and ocean.",
+      "weakness": "Dark water masks aircraft shadows more than the deck does. Player crossing the carrier at 0.4–0.6 seconds still reduces silhouette separation."
+    }
+  },
+  "regressionsAndLimits": [
+    "Irregular dark water improves white-flash and pale-aircraft contrast, but increases competition with smoke and dark shadows.",
+    "Carrier/player overlap remains a readability weakness; this sequence contains too few actors to validate the dense swarm case.",
+    "Water detail is substantially denser than ship surface detail, creating a material-style mismatch.",
+    "No comparison to actual phone FPS was made."
+  ],
+  "priorities": [
+    "Reduce local water contrast under smoke/shadows or strengthen their controlled separation without adding broad glow.",
+    "Replace repeated wake puffs with a continuous tapered foam structure and irregular edge breakup.",
+    "Keep player silhouette distinguishable over the tan carrier deck and in crowded combat."
+  ]
+}

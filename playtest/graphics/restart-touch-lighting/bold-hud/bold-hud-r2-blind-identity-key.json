@@ -1,0 +1,227 @@
+{
+  "view-01.png": {
+    "kind": "retained-six",
+    "name": "fallback-stress",
+    "sha256": "8c5b69b6013d422cd30eb7a1d9d02fe253198e7568d214c2587ab7daf7d7ace7"
+  },
+  "view-02.png": {
+    "kind": "reference",
+    "name": "dk2-0-phone",
+    "sha256": "acadd4520526bf2bb8f52e78e4eca04b545efae9d73db9c50b20b5bb3c3ddaf4"
+  },
+  "view-03.png": {
+    "kind": "original-baseline",
+    "name": "fallback-stress",
+    "sha256": "e05df0cf9d163289897d9997e9acf8705053fcc9087c5dd1dd53c967f4f9d83d"
+  },
+  "view-04.png": {
+    "kind": "bold-hud",
+    "name": "phone-stress",
+    "sha256": "d1a17005367242776da8c4684e4a715bcc521b1dc5d9865a820662d6e791ed98"
+  },
+  "view-05.png": {
+    "kind": "bold-hud",
+    "name": "phone-dogfight",
+    "sha256": "a4c34a8a961ae63f242ffaf2f24ce16442fadf41fe2c47e9409d3fcf0bfb768d"
+  },
+  "view-06.png": {
+    "kind": "retained-six",
+    "name": "phone-dogfight",
+    "sha256": "e9b620cdf66a1e2ec4696d2ec9f84b2a064f5263498094049c66b23b0facd324"
+  },
+  "view-07.png": {
+    "kind": "bold-hud-r2",
+    "name": "phone-stress",
+    "sha256": "e1a34f673b4671a789afef407dba922efe9c230a82a10749eb9783fbeb2537fd"
+  },
+  "view-08.png": {
+    "kind": "retained-six",
+    "name": "phone-stress",
+    "sha256": "d044af82e8cd3a0491b92ef40d9a67423c3cf4b2a6ab8f373caefc387ec0f8cd"
+  },
+  "view-09.png": {
+    "kind": "original-baseline",
+    "name": "fallback-airfield",
+    "sha256": "7b8e4f375599c3fd88fbddc624986cd46bcf46373e1faf4ee65e460cad6074fb"
+  },
+  "view-10.png": {
+    "kind": "original-baseline",
+    "name": "phone-dogfight",
+    "sha256": "6ee887004a7c531a34329e6c6920bb1e7ca67640a96dbeebf3a83789d206456c"
+  },
+  "view-11.png": {
+    "kind": "original-baseline",
+    "name": "phone-airfield",
+    "sha256": "7ddbce4269ffb1637db9f1a3bffa07b525b0458df94a9d5db521750b6330e1b0"
+  },
+  "view-12.png": {
+    "kind": "original-baseline",
+    "name": "phone-coast",
+    "sha256": "4d8664403042fdb44a9b3fd664397dc60cf7bc82dd483d9ec183d337785fd1a0"
+  },
+  "view-13.png": {
+    "kind": "retained-six",
+    "name": "phone-coast",
+    "sha256": "7ea496d755d9dc53aa628e487dd41190a3a81068cf69a616d0df87a565193381"
+  },
+  "view-14.png": {
+    "kind": "bold-hud",
+    "name": "fallback-dogfight",
+    "sha256": "5954e157bdbc3e7737424005f24b4f48693dc3ffe1ece9f63321d8f9f455e7a3"
+  },
+  "view-15.png": {
+    "kind": "bold-hud-r2",
+    "name": "fallback-dogfight",
+    "sha256": "dcb18ca0dc4904f50cf9495b492f5fd22f1ca571b7a194268e43ac4bddd73d46"
+  },
+  "view-16.png": {
+    "kind": "bold-hud",
+    "name": "fallback-coast",
+    "sha256": "64eafda0dab7508e8c201b0163cde4d06265ac1eb543b72088295cfcc65a1952"
+  },
+  "view-17.png": {
+    "kind": "reference",
+    "name": "coh3-1-phone",
+    "sha256": "4dc324c3a8a500a3e0e10d095ff8e940ad2dc0fd70b1a42805da5fbf1d8775c9"
+  },
+  "view-18.png": {
+    "kind": "bold-hud",
+    "name": "phone-fleet",
+    "sha256": "644235d428531a52b363161f4f5efa7ec7182cac10f8321ec014614c489af735"
+  },
+  "view-19.png": {
+    "kind": "bold-hud-r2",
+    "name": "fallback-fleet",
+    "sha256": "fd8d1fb9708436a90bb87f80f2daeecc13f62df45c4113ef3c9d91f0204b9154"
+  },
+  "view-20.png": {
+    "kind": "retained-six",
+    "name": "phone-airfield",
+    "sha256": "1e91df617f400ca9cc24f79963d34336e62a0ee60aabd3570ff8b5a4f688a756"
+  },
+  "view-21.png": {
+    "kind": "bold-hud-r2",
+    "name": "phone-dogfight",
+    "sha256": "0b37c22d89d53ca7dabb16afc3c479c59ae7ce265a52c92d65677ce530f7a902"
+  },
+  "view-22.png": {
+    "kind": "retained-six",
+    "name": "phone-fleet",
+    "sha256": "6944fbee048637b7a66fa55d052cf721fcf850eaf9d1d157307dccb91d02a566"
+  },
+  "view-23.png": {
+    "kind": "bold-hud",
+    "name": "fallback-fleet",
+    "sha256": "897f4cf7611da7e2f93f2a4833640c4a1526c0ba55ac2a38b85853ff745694da"
+  },
+  "view-24.png": {
+    "kind": "bold-hud",
+    "name": "fallback-stress",
+    "sha256": "b5c3c705199d7303e23b05b879887cc359e4c4943e0678c8b9ee906e4711daf4"
+  },
+  "view-25.png": {
+    "kind": "reference",
+    "name": "coh3-0-phone",
+    "sha256": "bc7be0f25fab04c207b9d7b0c080c86bdedb567c32a8e681b5df771858b2e738"
+  },
+  "view-26.png": {
+    "kind": "retained-six",
+    "name": "fallback-airfield",
+    "sha256": "18bc249711498b0c679e47d8e6e6371df5864c5719db68b8f4814d2b4b91124c"
+  },
+  "view-27.png": {
+    "kind": "retained-six",
+    "name": "fallback-coast",
+    "sha256": "13f413225144912570be7ecd9d87d1c573fb8b77dd432bedb0955ecb4a3453d3"
+  },
+  "view-28.png": {
+    "kind": "bold-hud-r2",
+    "name": "fallback-coast",
+    "sha256": "8668acdbac2c3383444b6bb45df7d599a705b3bbdd9c59005af61e74827c9782"
+  },
+  "view-29.png": {
+    "kind": "bold-hud-r2",
+    "name": "fallback-stress",
+    "sha256": "6980e3227c3813e64e22488245d4528d8beff223f0499a0a90bea1ddf88372c0"
+  },
+  "view-30.png": {
+    "kind": "bold-hud-r2",
+    "name": "phone-fleet",
+    "sha256": "028295c5401848f6104bb22da4b79b898c61fbd70466d8b7b6505c04103373c0"
+  },
+  "view-31.png": {
+    "kind": "bold-hud",
+    "name": "phone-coast",
+    "sha256": "71e4d6912172ba6c7faa4eba799b963e61c7b0b11f0282c41497f61d6778ff8a"
+  },
+  "view-32.png": {
+    "kind": "original-baseline",
+    "name": "phone-fleet",
+    "sha256": "46971fbdd9c04625516388396a3b4ae45675da8fc68c88420377a694ab8fbeaa"
+  },
+  "view-33.png": {
+    "kind": "bold-hud",
+    "name": "fallback-airfield",
+    "sha256": "d7780b968b543a2b6d2996e22b3bb9d701d5eea42a2b5373b0d7d3d267a88605"
+  },
+  "view-34.png": {
+    "kind": "original-baseline",
+    "name": "fallback-coast",
+    "sha256": "dd11f26eba69efced0745374a5fa48ce13d2a07e115c76cfbe13a2f068127d93"
+  },
+  "view-35.png": {
+    "kind": "bold-hud-r2",
+    "name": "phone-coast",
+    "sha256": "feb489c3a5a17d27c8dca2627bfb61469764512aa2c696335ed2e7ad2665bfa9"
+  },
+  "view-36.png": {
+    "kind": "retained-six",
+    "name": "fallback-dogfight",
+    "sha256": "469d7880f46e893c89db49c4baa96a2064005475faab5704cbf1612fd014195c"
+  },
+  "view-37.png": {
+    "kind": "retained-six",
+    "name": "fallback-fleet",
+    "sha256": "7eb2047dc50c6afd232d55bf3ec9e36b40a1fe3b5ac7dccac2150f01002ed3f0"
+  },
+  "view-38.png": {
+    "kind": "original-baseline",
+    "name": "fallback-fleet",
+    "sha256": "e88f138536eae440fa007587ef4026790657fa5580d1376f7edfa5c710c17afe"
+  },
+  "view-39.png": {
+    "kind": "original-baseline",
+    "name": "phone-stress",
+    "sha256": "0512a8b113f19546f0f30327915f2901bc94ffa0b5463affb07796780db438fa"
+  },
+  "view-40.png": {
+    "kind": "bold-hud-r2",
+    "name": "fallback-airfield",
+    "sha256": "e6810678f02962ced9840f377538c906d66bf77eb89d5da28743c4871d5ba44d"
+  },
+  "view-41.png": {
+    "kind": "bold-hud-r2",
+    "name": "phone-airfield",
+    "sha256": "2d52797858850b7318ab6653cd7445dc3253c0c249d5c97009685495e12fd7df"
+  },
+  "view-42.png": {
+    "kind": "reference",
+    "name": "dk2-1-phone",
+    "sha256": "f6cd1f051ea0dbc101b937880feea2c93c9944773a8b34b3c0db5e3b21cedae0"
+  },
+  "view-43.png": {
+    "kind": "bold-hud",
+    "name": "phone-airfield",
+    "sha256": "efe1cc2fb9cfdd2a9d6989378d04fe2a450d1cad171bcfacacd4da3f59c68610"
+  },
+  "view-44.png": {
+    "kind": "reference",
+    "name": "sc2-0-phone",
+    "sha256": "13b4c2df99550f95943225bf343b8ca002387d8d737a00a4220fe12a3f1adf77"
+  },
+  "view-45.png": {
+    "kind": "original-baseline",
+    "name": "fallback-dogfight",
+    "sha256": "5f66d9d611b94e5080996f5a8e1250de9076d41572eb6920e0d6026570519a8a"
+  }
+}

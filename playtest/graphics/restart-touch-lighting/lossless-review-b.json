@@ -1,0 +1,497 @@
+{
+  "view-01.png": {
+    "scores": [
+      5.5,
+      4.5,
+      4,
+      4,
+      4
+    ],
+    "evidence": "A few clear aircraft silhouettes survive the central cluster.",
+    "regressions": "Overlapping labels and disk-shaped hits cover the deck; wake is abrupt."
+  },
+  "view-02.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7.5,
+      7.5,
+      6.5
+    ],
+    "evidence": "Dark water and compact ripple accents frame the carrier; blue ring marks the plane.",
+    "regressions": "Soft profiles obscure deck markings and the stern trail reads as one diffuse plume."
+  },
+  "view-03.png": {
+    "scores": [
+      7,
+      6.5,
+      6,
+      6.5,
+      5
+    ],
+    "evidence": "Runway markings, rocks and shoreline form clear landmarks.",
+    "regressions": "Low contrast around the blue plane, repeated tree blobs and a nearly bare waterline."
+  },
+  "view-04.png": {
+    "scores": [
+      6.5,
+      9,
+      9.5,
+      9,
+      9
+    ],
+    "evidence": "Wet ground, raking light and shadows create strong volume; rain, smoke and tracer share the scene lighting.",
+    "regressions": "Dark distant units and shaded infantry are difficult to identify quickly."
+  },
+  "view-05.png": {
+    "scores": [
+      6,
+      4.5,
+      4,
+      4,
+      3.5
+    ],
+    "evidence": "Isolated deck silhouette and markings are easy to locate.",
+    "regressions": "Uniform deck has little volume; wake is a hard rectangle and labels sit across play space."
+  },
+  "view-06.png": {
+    "scores": [
+      8,
+      7.5,
+      8,
+      7.5,
+      7
+    ],
+    "evidence": "Hard deck outline and pale opposing planes contrast with the navy sea; pinpoints locate combat.",
+    "regressions": "Bow ring intersects several aircraft and top HUD partly covers another."
+  },
+  "view-07.png": {
+    "scores": [
+      8,
+      7.5,
+      7.5,
+      7.5,
+      5.5
+    ],
+    "evidence": "Crisp runway arrows, roof shading and ring support clear navigation.",
+    "regressions": "Soft verge transitions and isolated shore strokes still feel schematic."
+  },
+  "view-08.png": {
+    "scores": [
+      6,
+      5,
+      4,
+      4.5,
+      3.5
+    ],
+    "evidence": "Runway arrow and field boundaries organize the airfield.",
+    "regressions": "Overlaid objective crosses the player, geometric trees and soft mottling dominate, no integrated shoreline effect."
+  },
+  "view-09.png": {
+    "scores": [
+      6,
+      5,
+      4,
+      4.5,
+      3.5
+    ],
+    "evidence": "Beach boundary and runway are immediately recognizable.",
+    "regressions": "Field grid and mottling compete with the tiny player plane; little shoreline effect."
+  },
+  "view-10.png": {
+    "scores": [
+      8,
+      8,
+      8,
+      8,
+      6.5
+    ],
+    "evidence": "Crisp deck and tower hold the focus over layered fine ocean ripples.",
+    "regressions": "The broad, soft stern trail has little internal variation and the plane overlaps deck markings."
+  },
+  "view-11.png": {
+    "scores": [
+      5.5,
+      4.5,
+      4.5,
+      4,
+      4.5
+    ],
+    "evidence": "Aircraft markings and sea contrast separate units at the perimeter.",
+    "regressions": "Overlapping translucent disks and labels obscure the flat center deck; wake is a rectangular strip."
+  },
+  "view-12.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7,
+      7.5,
+      5.5
+    ],
+    "evidence": "The ring, runway and three buildings remain distinct against the shore and textured sea.",
+    "regressions": "Small assets soften and the thin foam breaks into separate strokes."
+  },
+  "view-13.png": {
+    "scores": [
+      5.5,
+      4.5,
+      4.5,
+      4,
+      4.5
+    ],
+    "evidence": "Aircraft silhouettes remain distinct away from the deck.",
+    "regressions": "Center overlay, rounded smoke disks and hard-edged wake flatten the encounter."
+  },
+  "view-14.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7.5,
+      7.5,
+      6.5
+    ],
+    "evidence": "Airframes and small warm impacts read against the dark ripple field.",
+    "regressions": "Soft edges and bow overlap weaken precise tracking."
+  },
+  "view-15.png": {
+    "scores": [
+      8,
+      7.5,
+      8,
+      7.5,
+      6.5
+    ],
+    "evidence": "Clear deck linework, tower shadow and muted ripple accents keep focus on the carrier.",
+    "regressions": "Plane still lies over deck lines, and stern trail shows little structure."
+  },
+  "view-16.png": {
+    "scores": [
+      7.5,
+      6.5,
+      6.5,
+      6.5,
+      5.5
+    ],
+    "evidence": "Runway and sand strip define the coast; aircraft contour is fairly clear.",
+    "regressions": "Broad grass mottling and scattered offshore flecks undercut material scale."
+  },
+  "view-17.png": {
+    "scores": [
+      7,
+      7,
+      7,
+      6.5,
+      6.5
+    ],
+    "evidence": "Carrier tower and plane insignia establish targets clearly away from the bow.",
+    "regressions": "Soft outlines and wake have little structure; bow overlap compromises player identification."
+  },
+  "view-18.png": {
+    "scores": [
+      8.5,
+      9,
+      8.5,
+      8.5,
+      7.5
+    ],
+    "evidence": "Crisp walls, material changes and tactical paths give rooms a clear structure.",
+    "regressions": "Unit markers and routes can crowd the narrow hallway; effects are subdued."
+  },
+  "view-19.png": {
+    "scores": [
+      7,
+      9,
+      9,
+      9.5,
+      9
+    ],
+    "evidence": "Fog separates depth layers and vehicle flashes read against detailed autumn terrain.",
+    "regressions": "Distant silhouettes recede into fog; unit status is not visible."
+  },
+  "view-20.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7.5,
+      7.5,
+      7.5
+    ],
+    "evidence": "Crisp cream wings and warm flak remain legible over the quiet navy surface.",
+    "regressions": "Center overlaps and top HUD conceal some airframes, with similar-looking impact bursts."
+  },
+  "view-21.png": {
+    "scores": [
+      6,
+      4.5,
+      4,
+      4,
+      3.5
+    ],
+    "evidence": "Ship placement and runway markings are straightforward.",
+    "regressions": "Blurred bare deck, hard wake rectangle and text over the ship flatten the scene."
+  },
+  "view-22.png": {
+    "scores": [
+      8,
+      8,
+      7.5,
+      8,
+      5.5
+    ],
+    "evidence": "Fine ripples and smooth shallow-water color connect the beach to the open sea. The aircraft silhouette remains distinct.",
+    "regressions": "Foam is sparse and some field patches have a generic rectangular shape."
+  },
+  "view-23.png": {
+    "scores": [
+      7.5,
+      8,
+      7.5,
+      8,
+      6.5
+    ],
+    "evidence": "Fine sea texture supports a clean carrier silhouette and crisp separation between light deck and dark tower.",
+    "regressions": "The plane and bow overlap and the wake retains a single smooth plume shape."
+  },
+  "view-24.png": {
+    "scores": [
+      8,
+      9,
+      9,
+      9,
+      8
+    ],
+    "evidence": "Strong directional light and props give the market density and depth; colored routes identify activity.",
+    "regressions": "Warm shadows hide figures among crowded stalls, and route lines cross nearby props."
+  },
+  "view-25.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7.5,
+      8,
+      6.5
+    ],
+    "evidence": "Warm impact flecks and pale aircraft remain readable against the finely textured water.",
+    "regressions": "The cockpit scale is difficult to judge in the bow cluster, and the upper banner partly masks an aircraft."
+  },
+  "view-26.png": {
+    "scores": [
+      7.5,
+      6.5,
+      7,
+      6.5,
+      5.5
+    ],
+    "evidence": "Sharp runway and roof lines organize the field.",
+    "regressions": "Player blends against a blue roof, left hill looks faceted, and offshore flecks seem unrelated."
+  },
+  "view-27.png": {
+    "scores": [
+      6,
+      5,
+      4,
+      4.5,
+      4
+    ],
+    "evidence": "Runway stripes and geometric fields make navigation cues visible.",
+    "regressions": "Plane is buried in overlaid text, hills and trees are faceted, and offshore flecks lack a shore interaction."
+  },
+  "view-28.png": {
+    "scores": [
+      7,
+      7,
+      7,
+      6.5,
+      6
+    ],
+    "evidence": "Deck geometry, tower and trail establish ship direction.",
+    "regressions": "Blue plane merges into the narrow bow; broad teal swirls repeat."
+  },
+  "view-29.png": {
+    "scores": [
+      7,
+      7.5,
+      7,
+      7.5,
+      7
+    ],
+    "evidence": "Bright aircraft and orange impacts still separate from the restrained sea texture.",
+    "regressions": "Deck overlaps and upper HUD occlusion reduce clarity of individual planes."
+  },
+  "view-30.png": {
+    "scores": [
+      7.5,
+      7,
+      7.5,
+      6.5,
+      6.5
+    ],
+    "evidence": "Clear deck markings and tower define direction and ship volume.",
+    "regressions": "Aircraft is low contrast at the bow; offshore flecks resemble stray particles."
+  },
+  "view-31.png": {
+    "scores": [
+      7,
+      7.5,
+      7,
+      8,
+      7
+    ],
+    "evidence": "Orange bursts retain contrast on a richly textured dark sea around the crowded carrier.",
+    "regressions": "Soft outlines and overlap reduce recognition around the deck. Uppermost planes remain covered by the HUD."
+  },
+  "view-32.png": {
+    "scores": [
+      7.5,
+      8,
+      7.5,
+      8,
+      7.5
+    ],
+    "evidence": "Thin deck detail, clear aircraft profiles off the deck and small orange impacts keep the busy formation legible over finer water.",
+    "regressions": "Several aircraft overlap near the bow and others pass behind the HUD."
+  },
+  "view-33.png": {
+    "scores": [
+      7,
+      6.5,
+      6.5,
+      6.5,
+      5
+    ],
+    "evidence": "Hangars and runway form a clear airfield; tree shadows add anchoring.",
+    "regressions": "Plane overlaps a roof, soft foliage edges and faceted hill clash with broad ground mottling."
+  },
+  "view-34.png": {
+    "scores": [
+      8,
+      8,
+      8,
+      8,
+      7
+    ],
+    "evidence": "Carrier tower shadow, fine water crests and warm hit markers give the composition distinct layers.",
+    "regressions": "Bow ring crosses other silhouettes and the upper HUD partly conceals a plane."
+  },
+  "view-35.png": {
+    "scores": [
+      5.5,
+      4.5,
+      4,
+      4,
+      4
+    ],
+    "evidence": "Wing markings remain distinct in isolated positions.",
+    "regressions": "Soft central silhouettes, disk effects and inline labels muddy the fight."
+  },
+  "view-36.png": {
+    "scores": [
+      7.5,
+      7,
+      7,
+      6.5,
+      6.5
+    ],
+    "evidence": "Marked planes stand out on the teal sea and deck markings survive the crowd.",
+    "regressions": "Effects read as scattered flecks, and selected plane is harder to find in the cluster."
+  },
+  "view-37.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7,
+      7.5,
+      5.5
+    ],
+    "evidence": "Ring, runway arrow and beach shelf retain their forms at reduced detail.",
+    "regressions": "Softens smaller plane/building details, and short foam marks read as disconnected strokes."
+  },
+  "view-38.png": {
+    "scores": [
+      7.5,
+      7,
+      7.5,
+      6.5,
+      6.5
+    ],
+    "evidence": "Sharp wings, ship shadow and deck lines give a legible air-and-sea composition.",
+    "regressions": "Closest aircraft overlaps the bow and pale flecks add competing accents."
+  },
+  "view-39.png": {
+    "scores": [
+      6,
+      5,
+      4.5,
+      4.5,
+      4
+    ],
+    "evidence": "Hard coastline and runway edge organize the frame.",
+    "regressions": "Tiny overlaid labels and plane compete with the field grid; isolated white flecks distract at sea."
+  },
+  "view-40.png": {
+    "scores": [
+      7,
+      9,
+      9,
+      9,
+      9.5
+    ],
+    "evidence": "Dark aircraft silhouettes and layered rocky terrain converge on a high-energy tracer and fire burst.",
+    "regressions": "The bright burst occludes several nearby units; overlapping dark forms are harder to parse."
+  },
+  "view-41.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7,
+      7.5,
+      5.5
+    ],
+    "evidence": "Ring and pale shallows separate aircraft, terrain and sea; water accents stay subdued.",
+    "regressions": "The soft plane outline and offshore foam fragments limit material definition."
+  },
+  "view-42.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7,
+      7.5,
+      5.5
+    ],
+    "evidence": "Aircraft ring, shadowed trees and pale shallows remain readable over the detailed coast.",
+    "regressions": "Airframe detail is soft and foam stays intermittent."
+  },
+  "view-43.png": {
+    "scores": [
+      8,
+      8,
+      7.5,
+      8,
+      5.5
+    ],
+    "evidence": "Runway geometry, roof shading and broad shore-to-sea color shift make the base easy to place.",
+    "regressions": "Yard boundaries are diffuse and foam still sits offshore in disconnected streaks."
+  },
+  "view-44.png": {
+    "scores": [
+      8,
+      7.5,
+      7.5,
+      7.5,
+      5.5
+    ],
+    "evidence": "Clear aircraft silhouette, grounded foliage and teal shelf establish a clean coast.",
+    "regressions": "Broken foam and some visually rectangular grass plots remain."
+  },
+  "view-45.png": {
+    "scores": [
+      7,
+      7,
+      7,
+      6.5,
+      6.5
+    ],
+    "evidence": "Distinct aircraft markings, hull and quiet smoke preserve much of the formation.",
+    "regressions": "Center remains crowded; pale wave pattern and soft small details limit definition."
+  }
+}

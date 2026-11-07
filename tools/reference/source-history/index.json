@@ -1,0 +1,194 @@
+{
+  "schema": 1,
+  "scope": [
+    "src",
+    "assets",
+    "vendor",
+    "index.html"
+  ],
+  "publishedObjectAnchor": "59802ea25474edbe4943507ddd414607b0541227",
+  "sourceHashAlgorithm": "SHA256 over roots in listed order; sorted recursive file paths, then path UTF8 + NUL + exact bytes + NUL",
+  "snapshots": {
+    "baseline": {
+      "sourceHash": "6a9bbae3c7f0741952c5830c4c1c3a5a1ece142b9129884353297e3c96bdc0ad",
+      "manifest": "tools/reference/source-history/manifests/baseline.json",
+      "manifestSha256": "42924d025b6b07d83ca59fcc6f17b1176066de47acfbaff8effa74a450044206"
+    },
+    "candidate-1": {
+      "sourceHash": "ab2eafd309b4ea601d3ad4a9fbe9aab3edd3c6aafed803c25f8137ee39f7872a",
+      "manifest": "tools/reference/source-history/manifests/candidate-1.json",
+      "manifestSha256": "29888ddeafcb943c9a817ed9d3906757639cdbd0e45011d750f5e2eddcce6369"
+    },
+    "candidate-10": {
+      "sourceHash": "d4def1332f879dabd381583966dadd746ef600b550c4c3c9aea872d8eb670005",
+      "manifest": "tools/reference/source-history/manifests/candidate-10.json",
+      "manifestSha256": "8cd6b40a0101157a5a2cd5ab7187fff362c40c93e73f2e4b0719f37d52fb2c4c"
+    },
+    "candidate-11": {
+      "sourceHash": "44aa1a3e396ea1c1cb6a1ce027bedde8b55cabd34de96a7a8d0a9a79df592fdf",
+      "manifest": "tools/reference/source-history/manifests/candidate-11.json",
+      "manifestSha256": "d5ddbac4c5f5722297474521f7f1921f1914d6f4be6861ef83f147d702acaabc"
+    },
+    "candidate-12": {
+      "sourceHash": "1432696ffc34d350e2e22c2a59f389d0a948c9047d89bc50fa06d1f80c1cc9a5",
+      "manifest": "tools/reference/source-history/manifests/candidate-12.json",
+      "manifestSha256": "f90d2e8a36b7516c985c79646b7b7a8afeb69aa086c758060da49987fa047b08"
+    },
+    "candidate-13": {
+      "sourceHash": "77c4f35ccfc4a310544109b0d26979f2a15cd5b0d081e4f7454804f5fab59f24",
+      "manifest": "tools/reference/source-history/manifests/candidate-13.json",
+      "manifestSha256": "7c9568f739f9d9693b2684bab6e0e9742d56d292fded77a12c7fce3ab251cc59"
+    },
+    "candidate-14": {
+      "sourceHash": "d50257c4dabc43e7981386099c0500645e112e41cc2ec2d8254a1c2a5c4f9655",
+      "manifest": "tools/reference/source-history/manifests/candidate-14.json",
+      "manifestSha256": "676e5395d9e9a11ee0bfecdb087832b686176dee3f7f7ed855cd66211cd8ced9"
+    },
+    "candidate-15": {
+      "sourceHash": "c0d755bc7dfa45ee476f0102a9cadedd06c01f0b71c2feb7ec048be9462b9d5d",
+      "manifest": "tools/reference/source-history/manifests/candidate-15.json",
+      "manifestSha256": "06bd42bcf30d8eb032fe17b7c0433d4109c0ebf7f6720efe6be23804d9a53527"
+    },
+    "candidate-2": {
+      "sourceHash": "28a1ad49139fb42e4ffe4415b7545ea7daaa20d2ab735e7626ec67646cb2a57c",
+      "manifest": "tools/reference/source-history/manifests/candidate-2.json",
+      "manifestSha256": "38284823efac47d84fd36aae22f377e0e35d68a8ca574db5bbe01c89c261662e"
+    },
+    "candidate-4": {
+      "sourceHash": "93038ce762156f0db580d133814a039b0b27ad02c221284b8c30c1ac14e8199f",
+      "manifest": "tools/reference/source-history/manifests/candidate-4.json",
+      "manifestSha256": "6bf016d7ec53bf5a40b5461667ba4407ebc36c330d956692d062aa9e213be2a8"
+    },
+    "candidate-5": {
+      "sourceHash": "b0b1d1b7991f30d67164c7a0dcec0c58ac132fb12ffd28f49db694eac6d37609",
+      "manifest": "tools/reference/source-history/manifests/candidate-5.json",
+      "manifestSha256": "244e91b332b5f3c2ddb12d791ad26c84d74bd324c1e7ef62baea9cf8fafae9d6"
+    },
+    "candidate-6": {
+      "sourceHash": "61c5ca830e59baece895abdcc1d35c1fb082468616ac99e2cd9c16e6c1fd4514",
+      "manifest": "tools/reference/source-history/manifests/candidate-6.json",
+      "manifestSha256": "84601999c7def0cb488ac53cf637cf94df25439a13939f427117a17fc577d4d1"
+    },
+    "candidate-7": {
+      "sourceHash": "98a52e34c31296878da731463bc21e3c7f795d8d16d4aa21b48b88714eb3ea9a",
+      "manifest": "tools/reference/source-history/manifests/candidate-7.json",
+      "manifestSha256": "d55b86d0cdf4885ffec82d6c14e33074d79356ee40efd5d8a6c03bf4042029bf"
+    },
+    "candidate-8": {
+      "sourceHash": "893b70a2b2ca7bfdbfe879c2912ff299127378434daffab25e2fa427c3ce0e64",
+      "manifest": "tools/reference/source-history/manifests/candidate-8.json",
+      "manifestSha256": "3b37ad5bc7182a6108632c994fb0b4b098e88a338f7fc5d32e7db5e4d1ae2f9e"
+    },
+    "candidate-9": {
+      "sourceHash": "a0de942c0e4e55b3c5db2b1a748d6b2e85e647cefb7c601d22eb3d1b41c46d10",
+      "manifest": "tools/reference/source-history/manifests/candidate-9.json",
+      "manifestSha256": "a84d356d476383009917ebc831a1fd884b38ba40ff36ed26c096dc389fd56ec9"
+    },
+    "motion-11": {
+      "sourceHash": "44aa1a3e396ea1c1cb6a1ce027bedde8b55cabd34de96a7a8d0a9a79df592fdf",
+      "manifest": "tools/reference/source-history/manifests/motion-11.json",
+      "manifestSha256": "a6106ff07a8d849b33e03b5d174013c77a469886cafb4d6ce81b5ebbaea80be8"
+    },
+    "motion-12": {
+      "sourceHash": "1432696ffc34d350e2e22c2a59f389d0a948c9047d89bc50fa06d1f80c1cc9a5",
+      "manifest": "tools/reference/source-history/manifests/motion-12.json",
+      "manifestSha256": "50c5b6ff1d110ef39162543d0bb9c85207f7657b6d9b3f2d5e0cb2bc446ea81d"
+    },
+    "motion-13": {
+      "sourceHash": "77c4f35ccfc4a310544109b0d26979f2a15cd5b0d081e4f7454804f5fab59f24",
+      "manifest": "tools/reference/source-history/manifests/motion-13.json",
+      "manifestSha256": "cf09439e3718af3fbf11df2f0fbcd74c407a4bae105b6d5c21331be772825c50"
+    },
+    "motion-14": {
+      "sourceHash": "d50257c4dabc43e7981386099c0500645e112e41cc2ec2d8254a1c2a5c4f9655",
+      "manifest": "tools/reference/source-history/manifests/motion-14.json",
+      "manifestSha256": "a4b473e9c379c4415d8b63707303af447f54040ba7ed2f923184178473eeade1"
+    },
+    "motion-15": {
+      "sourceHash": "c0d755bc7dfa45ee476f0102a9cadedd06c01f0b71c2feb7ec048be9462b9d5d",
+      "manifest": "tools/reference/source-history/manifests/motion-15.json",
+      "manifestSha256": "e8dc2c403fa01fff6a902cce52351275ab5c6dc6ac6b2dd2fffbff4b98edc0fb"
+    },
+    "motion-5": {
+      "sourceHash": "b0b1d1b7991f30d67164c7a0dcec0c58ac132fb12ffd28f49db694eac6d37609",
+      "manifest": "tools/reference/source-history/manifests/motion-5.json",
+      "manifestSha256": "e24d78a2276c58b1c52af73328a395dbe85c7667ca7057e00284dde352794274"
+    },
+    "motion-7": {
+      "sourceHash": "98a52e34c31296878da731463bc21e3c7f795d8d16d4aa21b48b88714eb3ea9a",
+      "manifest": "tools/reference/source-history/manifests/motion-7.json",
+      "manifestSha256": "dcb16d0df9d2a3022b789ffc7035fa05ab27f462ed2e25aeca442031fcb4c134"
+    },
+    "motion-8": {
+      "sourceHash": "893b70a2b2ca7bfdbfe879c2912ff299127378434daffab25e2fa427c3ce0e64",
+      "manifest": "tools/reference/source-history/manifests/motion-8.json",
+      "manifestSha256": "f581e0866ecd087426abcb78effe5ac779cf34a812ec50cff997fcefeff4d3c8"
+    },
+    "motion-9": {
+      "sourceHash": "a0de942c0e4e55b3c5db2b1a748d6b2e85e647cefb7c601d22eb3d1b41c46d10",
+      "manifest": "tools/reference/source-history/manifests/motion-9.json",
+      "manifestSha256": "dec93ef5872565c2871ab004a81ece5ae478c91b1f1a73ef0e7573febe713c1d"
+    },
+    "evidence": {
+      "sourceHash": "6a9bbae3c7f0741952c5830c4c1c3a5a1ece142b9129884353297e3c96bdc0ad",
+      "manifest": "tools/reference/source-history/manifests/evidence.json",
+      "manifestSha256": "501153d78cdd4a4c2c3da63bf347d27c025c4756df04b43667b93aaf0ff7226e"
+    },
+    "evidence-6a9bbae3c7f0": {
+      "sourceHash": "6a9bbae3c7f0741952c5830c4c1c3a5a1ece142b9129884353297e3c96bdc0ad",
+      "manifest": "tools/reference/source-history/manifests/evidence-6a9bbae3c7f0.json",
+      "manifestSha256": "b03c844afa78247f0ac9890bd2593a57fbb71bc7977b9ef3500e9c5202eb152b"
+    },
+    "evidence-28a1ad49139f": {
+      "sourceHash": "28a1ad49139fb42e4ffe4415b7545ea7daaa20d2ab735e7626ec67646cb2a57c",
+      "manifest": "tools/reference/source-history/manifests/evidence-28a1ad49139f.json",
+      "manifestSha256": "5b3e1aed0ad64e7f483b15a9f3b0db4e577cd54fcba49d17e643a3eaf592cdb5"
+    },
+    "transit-13": {
+      "sourceHash": "77c4f35ccfc4a310544109b0d26979f2a15cd5b0d081e4f7454804f5fab59f24",
+      "manifest": "tools/reference/source-history/manifests/transit-13.json",
+      "manifestSha256": "5a2837979387c2412c849905c5657f5f377bd70a7d2175a34c52f69bbde6584a"
+    },
+    "transit-15": {
+      "sourceHash": "c0d755bc7dfa45ee476f0102a9cadedd06c01f0b71c2feb7ec048be9462b9d5d",
+      "manifest": "tools/reference/source-history/manifests/transit-15.json",
+      "manifestSha256": "0a111ee1279a81b8ddaf5e7a3e7341a703091c5f014477665c5bab14f37789e4"
+    },
+    "transit-6": {
+      "sourceHash": "61c5ca830e59baece895abdcc1d35c1fb082468616ac99e2cd9c16e6c1fd4514",
+      "manifest": "tools/reference/source-history/manifests/transit-6.json",
+      "manifestSha256": "ea46a432920562d37b6d28b99eca6d6a1c5d70e0fab1cb4be42dc3766a160611"
+    },
+    "transit-7": {
+      "sourceHash": "98a52e34c31296878da731463bc21e3c7f795d8d16d4aa21b48b88714eb3ea9a",
+      "manifest": "tools/reference/source-history/manifests/transit-7.json",
+      "manifestSha256": "8a3626753245fc583804116247b965e969a53bddb60e53aab99a7d7e760592e0"
+    },
+    "candidate-16": {
+      "sourceHash": "d37171b73b7e98b43a9c03ee5ff0739c6f697ef03b5a65340f58bc49f99b9415",
+      "manifest": "tools/reference/source-history/manifests/candidate-16.json",
+      "manifestSha256": "bc8b323d02140a26f9e49e8969439e8ad52bf673079bd17d6ee00a455aac7f01"
+    },
+    "candidate-17": {
+      "sourceHash": "4dd8f88af628a6b1c663bd436aa1af73774ba30b474a3ed1f4a60d79dfca3190",
+      "manifest": "tools/reference/source-history/manifests/candidate-17.json",
+      "manifestSha256": "e4d20e5ffe598d7dca7c995d0577193f139abd5f26115f954104a8b58c51583a"
+    }
+  },
+  "unresolved": [
+    {
+      "name": "candidate-3",
+      "report": "playtest/graphics/evidence/candidate-3/report.json",
+      "sourceHash": "1a921698199e4982cdfae131d511dd1f6b4bc93e76be9aee9894217e25c21465",
+      "reportSha256": "0048f6cc3b9d77cc51f21bb7cfb021ac7adad31e1af88730676d9977fcb416bd",
+      "reason": "No exact matching local committed/worktree source state found. Historical evidence retained; reproducible source not claimed."
+    },
+    {
+      "name": "transit-provisional",
+      "report": "playtest/graphics/evidence/transit-provisional/transit.json",
+      "sourceHash": "dd239932b0e47b9f6a22ca7b106f05eb09fc59a72f003db201a2222e68ac1f8f",
+      "reportSha256": "3ac9321961f9b2a5f104f85d8edcf2fbdb843a6534e38c327f29e3044530eed9",
+      "reason": "No exact matching local committed/worktree source state found. Historical evidence retained; reproducible source not claimed."
+    }
+  ]
+}

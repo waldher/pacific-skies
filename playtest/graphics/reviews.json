@@ -1,0 +1,879 @@
+{
+  "schema": 1,
+  "order": [
+    "readability",
+    "coherence",
+    "lightingDepth",
+    "environment",
+    "effects"
+  ],
+  "weights": [
+    0.3,
+    0.2,
+    0.2,
+    0.15,
+    0.15
+  ],
+  "reviewers": [
+    {
+      "judge": "judge_protocol",
+      "blind": false,
+      "method": "Independent agent; all 30 screenshots and five references viewed. Same underlying model as other judges; not independent human or model-family validation.",
+      "baseline": {
+        "phone-airfield": [
+          5,
+          4,
+          3,
+          3,
+          3
+        ],
+        "phone-coast": [
+          6,
+          4,
+          3,
+          3,
+          3
+        ],
+        "phone-fleet": [
+          6,
+          4,
+          3,
+          2,
+          2
+        ],
+        "phone-dogfight": [
+          4,
+          4,
+          3,
+          2,
+          2
+        ],
+        "phone-stress": [
+          2,
+          3,
+          3,
+          2,
+          1
+        ],
+        "fallback-airfield": [
+          4,
+          4,
+          2,
+          3,
+          2
+        ],
+        "fallback-coast": [
+          5,
+          4,
+          2,
+          3,
+          2
+        ],
+        "fallback-fleet": [
+          5,
+          4,
+          2,
+          2,
+          2
+        ],
+        "fallback-dogfight": [
+          4,
+          3,
+          2,
+          2,
+          2
+        ],
+        "fallback-stress": [
+          2,
+          3,
+          2,
+          2,
+          1
+        ]
+      },
+      "candidate-1": {
+        "phone-airfield": [
+          5,
+          4,
+          3,
+          3,
+          3
+        ],
+        "phone-coast": [
+          6,
+          4,
+          3,
+          3,
+          3
+        ],
+        "phone-fleet": [
+          6,
+          5,
+          3,
+          2,
+          4
+        ],
+        "phone-dogfight": [
+          5,
+          5,
+          3,
+          2,
+          4
+        ],
+        "phone-stress": [
+          4,
+          4,
+          3,
+          2,
+          4
+        ],
+        "fallback-airfield": [
+          4,
+          4,
+          2,
+          3,
+          2
+        ],
+        "fallback-coast": [
+          5,
+          4,
+          2,
+          3,
+          2
+        ],
+        "fallback-fleet": [
+          5,
+          4,
+          2,
+          2,
+          4
+        ],
+        "fallback-dogfight": [
+          5,
+          4,
+          2,
+          2,
+          3
+        ],
+        "fallback-stress": [
+          4,
+          4,
+          2,
+          2,
+          3
+        ]
+      },
+      "candidate-2": {
+        "phone-airfield": [
+          6,
+          5,
+          3,
+          3,
+          3
+        ],
+        "phone-coast": [
+          6,
+          5,
+          3,
+          4,
+          3
+        ],
+        "phone-fleet": [
+          6,
+          5,
+          3,
+          2,
+          5
+        ],
+        "phone-dogfight": [
+          5,
+          5,
+          3,
+          2,
+          4
+        ],
+        "phone-stress": [
+          4,
+          4,
+          3,
+          2,
+          4
+        ],
+        "fallback-airfield": [
+          5,
+          5,
+          2,
+          3,
+          2
+        ],
+        "fallback-coast": [
+          5,
+          5,
+          2,
+          4,
+          2
+        ],
+        "fallback-fleet": [
+          5,
+          4,
+          2,
+          2,
+          5
+        ],
+        "fallback-dogfight": [
+          5,
+          4,
+          2,
+          2,
+          3
+        ],
+        "fallback-stress": [
+          4,
+          4,
+          2,
+          2,
+          3
+        ]
+      },
+      "references": {
+        "dk2-0": [
+          7,
+          9,
+          8,
+          9,
+          7
+        ],
+        "dk2-1": [
+          8,
+          9,
+          9,
+          9,
+          7
+        ],
+        "coh3-0": [
+          5,
+          9,
+          9,
+          9,
+          9
+        ],
+        "coh3-1": [
+          6,
+          9,
+          9,
+          10,
+          8
+        ],
+        "sc2-0": [
+          6,
+          9,
+          9,
+          8,
+          9
+        ]
+      },
+      "findings": [
+        "Clearer runway margins; less clutter, softer wake. Ground remains stippled, base sparse, shoreline straight. No screenshot-visible readability regression. Effects need motion review."
+      ]
+    },
+    {
+      "judge": "reference_judge",
+      "round": 2,
+      "blind": false,
+      "method": "Independent visual inspection of all 10 candidate-2 PNGs and previously inspected baseline, candidate-1 and official reference originals/phone-fit images. Candidate identities and intended changes were known. Scores are fresh judgments under the new rubric, not conversions. Static screenshot assessment only; no performance or motion inference.",
+      "rubric": {
+        "R": {
+          "name": "readability",
+          "weight": 0.3
+        },
+        "C": {
+          "name": "coherence",
+          "weight": 0.2
+        },
+        "L": {
+          "name": "lightingDepth",
+          "weight": 0.2
+        },
+        "E": {
+          "name": "environment",
+          "weight": 0.15
+        },
+        "F": {
+          "name": "effects",
+          "weight": 0.15
+        }
+      },
+      "scoreOrder": [
+        "R",
+        "C",
+        "L",
+        "E",
+        "F"
+      ],
+      "effectsScope": "Observable visual effects including water/wake/particles and tactical overlays; quiet-scene scores do not establish combat-effects quality. Missing HUD in promotional references prevents full gameplay-readability comparison.",
+      "baseline": {
+        "phone-airfield": [
+          6,
+          5,
+          3,
+          3,
+          5
+        ],
+        "phone-coast": [
+          6,
+          5,
+          3,
+          3,
+          5
+        ],
+        "phone-fleet": [
+          7,
+          5,
+          3,
+          3,
+          3
+        ],
+        "phone-dogfight": [
+          5,
+          5,
+          3,
+          3,
+          3
+        ],
+        "phone-stress": [
+          3,
+          4,
+          3,
+          3,
+          2
+        ],
+        "fallback-airfield": [
+          5,
+          5,
+          3,
+          3,
+          4
+        ],
+        "fallback-coast": [
+          5,
+          5,
+          3,
+          3,
+          4
+        ],
+        "fallback-fleet": [
+          6,
+          5,
+          3,
+          3,
+          2
+        ],
+        "fallback-dogfight": [
+          4,
+          5,
+          3,
+          3,
+          2
+        ],
+        "fallback-stress": [
+          2,
+          4,
+          3,
+          3,
+          2
+        ]
+      },
+      "candidate-1": {
+        "phone-airfield": [
+          6,
+          5,
+          3,
+          3,
+          5
+        ],
+        "phone-coast": [
+          6,
+          5,
+          3,
+          3,
+          5
+        ],
+        "phone-fleet": [
+          7,
+          5,
+          3,
+          3,
+          4
+        ],
+        "phone-dogfight": [
+          6,
+          5,
+          3,
+          3,
+          4
+        ],
+        "phone-stress": [
+          5,
+          5,
+          3,
+          3,
+          4
+        ],
+        "fallback-airfield": [
+          5,
+          5,
+          3,
+          3,
+          4
+        ],
+        "fallback-coast": [
+          5,
+          5,
+          3,
+          3,
+          4
+        ],
+        "fallback-fleet": [
+          6,
+          5,
+          3,
+          3,
+          3
+        ],
+        "fallback-dogfight": [
+          5,
+          5,
+          3,
+          3,
+          3
+        ],
+        "fallback-stress": [
+          4,
+          5,
+          3,
+          3,
+          3
+        ]
+      },
+      "candidate-2": {
+        "phone-airfield": [
+          7,
+          6,
+          3,
+          4,
+          5
+        ],
+        "phone-coast": [
+          6,
+          6,
+          3,
+          4,
+          5
+        ],
+        "phone-fleet": [
+          7,
+          5,
+          3,
+          3,
+          5
+        ],
+        "phone-dogfight": [
+          6,
+          5,
+          3,
+          3,
+          5
+        ],
+        "phone-stress": [
+          5,
+          5,
+          3,
+          3,
+          4
+        ],
+        "fallback-airfield": [
+          6,
+          6,
+          3,
+          4,
+          4
+        ],
+        "fallback-coast": [
+          5,
+          6,
+          3,
+          4,
+          4
+        ],
+        "fallback-fleet": [
+          6,
+          5,
+          3,
+          3,
+          4
+        ],
+        "fallback-dogfight": [
+          5,
+          5,
+          3,
+          3,
+          4
+        ],
+        "fallback-stress": [
+          4,
+          5,
+          3,
+          3,
+          3
+        ]
+      },
+      "references": {
+        "dk2-0": [
+          7,
+          9,
+          8,
+          8,
+          8
+        ],
+        "dk2-1": [
+          9,
+          9,
+          8,
+          9,
+          8
+        ],
+        "coh3-0": [
+          6,
+          9,
+          9,
+          9,
+          9
+        ],
+        "coh3-1": [
+          7,
+          9,
+          9,
+          9,
+          9
+        ],
+        "sc2-0": [
+          8,
+          9,
+          9,
+          8,
+          9
+        ]
+      },
+      "referenceCaveat": "CoH3 and SC2 are official in-engine promotional images without HUD, SC2 with close camera framing. They are art targets, not equivalent playability captures. Names and exact sources are in references/manifest.json.",
+      "findings": [
+        {
+          "scope": "airfield/coast",
+          "direction": "improvement",
+          "evidence": "Muted olive land and lower-contrast farm boundaries reduce toy-like checkerboard dominance. Cleared runway surrounds separate base from farm parcels and make runway extent more legible."
+        },
+        {
+          "scope": "fleet/dogfight",
+          "direction": "improvement",
+          "evidence": "Wake now fades as longitudinal soft streaks instead of a hard rectangle or repeated diamond netting. Less geometric artifact visible in both quality tiers."
+        },
+        {
+          "scope": "stress",
+          "direction": "unchanged from candidate-1",
+          "evidence": "Soft small particles retain improved aircraft separation versus baseline. Still sparse point-like flashes without convincing volume; density of aircraft and objective text overlaps remain."
+        },
+        {
+          "scope": "terrain",
+          "direction": "remaining weakness",
+          "evidence": "New finer stippled ground texture still reads as uniform procedural camouflage, not distinct soil/grass/rock materials. Coast remains unnaturally straight with an even cream band."
+        },
+        {
+          "scope": "airfield",
+          "direction": "tradeoff",
+          "evidence": "Removing surrounding farms improves base clarity but reveals sparse flat pale buildings with minimal depth or contact grounding. Needs authored apron/ground detail, not simply more generic objects."
+        },
+        {
+          "scope": "all",
+          "direction": "remaining weakness",
+          "evidence": "Carrier deck and buildings remain flat; faceted isolated trees and minimal cast/contact shadows do not approach reference richness. Fallback retains coarse edge aliasing."
+        }
+      ],
+      "verdict": "Candidate-2 is a modest visual improvement over candidate-1 and baseline. No clear screenshot regression deserving rejection, though sparse airfield is a composition tradeoff. Accept visual direction contingent on independent performance and motion gates. It does not beat any reference overall; do not claim completion of the user's visual target."
+    },
+    {
+      "judge": "third_judge",
+      "blind": false,
+      "method": "Independent agent; all 30 screenshots and five references viewed. Same underlying model as other judges; not independent human or model-family validation.",
+      "baseline": {
+        "phone-airfield": [
+          5,
+          4,
+          3,
+          3,
+          3
+        ],
+        "phone-coast": [
+          6,
+          4,
+          3,
+          3,
+          3
+        ],
+        "phone-fleet": [
+          6,
+          4,
+          3,
+          3,
+          2
+        ],
+        "phone-dogfight": [
+          4,
+          4,
+          3,
+          3,
+          2
+        ],
+        "phone-stress": [
+          2,
+          3,
+          3,
+          3,
+          1
+        ],
+        "fallback-airfield": [
+          4,
+          4,
+          2,
+          3,
+          2
+        ],
+        "fallback-coast": [
+          5,
+          4,
+          2,
+          3,
+          2
+        ],
+        "fallback-fleet": [
+          5,
+          4,
+          2,
+          2,
+          2
+        ],
+        "fallback-dogfight": [
+          3,
+          4,
+          2,
+          2,
+          2
+        ],
+        "fallback-stress": [
+          2,
+          3,
+          2,
+          2,
+          1
+        ]
+      },
+      "candidate-1": {
+        "phone-airfield": [
+          5,
+          4,
+          3,
+          3,
+          3
+        ],
+        "phone-coast": [
+          6,
+          4,
+          3,
+          3,
+          3
+        ],
+        "phone-fleet": [
+          6,
+          5,
+          3,
+          3,
+          4
+        ],
+        "phone-dogfight": [
+          5,
+          5,
+          3,
+          3,
+          4
+        ],
+        "phone-stress": [
+          4,
+          4,
+          3,
+          3,
+          4
+        ],
+        "fallback-airfield": [
+          4,
+          4,
+          2,
+          3,
+          2
+        ],
+        "fallback-coast": [
+          5,
+          4,
+          2,
+          3,
+          2
+        ],
+        "fallback-fleet": [
+          5,
+          4,
+          2,
+          2,
+          4
+        ],
+        "fallback-dogfight": [
+          4,
+          4,
+          2,
+          2,
+          3
+        ],
+        "fallback-stress": [
+          3,
+          4,
+          2,
+          2,
+          3
+        ]
+      },
+      "candidate-2": {
+        "phone-airfield": [
+          6,
+          5,
+          3,
+          4,
+          3
+        ],
+        "phone-coast": [
+          6,
+          5,
+          3,
+          4,
+          3
+        ],
+        "phone-fleet": [
+          6,
+          5,
+          3,
+          3,
+          5
+        ],
+        "phone-dogfight": [
+          5,
+          5,
+          3,
+          3,
+          5
+        ],
+        "phone-stress": [
+          4,
+          4,
+          3,
+          3,
+          5
+        ],
+        "fallback-airfield": [
+          5,
+          5,
+          2,
+          4,
+          2
+        ],
+        "fallback-coast": [
+          5,
+          5,
+          2,
+          4,
+          2
+        ],
+        "fallback-fleet": [
+          5,
+          5,
+          2,
+          2,
+          4
+        ],
+        "fallback-dogfight": [
+          4,
+          5,
+          2,
+          2,
+          4
+        ],
+        "fallback-stress": [
+          3,
+          4,
+          2,
+          2,
+          4
+        ]
+      },
+      "references": {
+        "dk2-0": [
+          7,
+          9,
+          8,
+          9,
+          7
+        ],
+        "dk2-1": [
+          8,
+          9,
+          9,
+          9,
+          7
+        ],
+        "coh3-0": [
+          5,
+          9,
+          9,
+          9,
+          9
+        ],
+        "coh3-1": [
+          6,
+          9,
+          9,
+          9,
+          8
+        ],
+        "sc2-0": [
+          6,
+          9,
+          9,
+          8,
+          9
+        ]
+      },
+      "findings": [
+        "Candidate-2 strongest; no screenshot-visible regression. Carrier lacks depth; objective text overlaps action; effects faint. Does not beat references."
+      ]
+    }
+  ],
+  "motionReviewed": false,
+  "physicalDevice": null,
+  "sourceHash": "28a1ad49139fb42e4ffe4415b7545ea7daaa20d2ab735e7626ec67646cb2a57c",
+  "referenceManifestHash": "1037e912a7ab9fc969628ba135832177700ffde6e56126fd5bbf611c503318c7",
+  "reportHashes": {
+    "baseline": "b3f8f3baa646f5ae61c502f609ee5c43d21cacb12a8b720cebfbc53bf5488d22",
+    "candidate-1": "2193a71181626f9a498453f8823c751b86f85502ccdfd2c09977a090e66b35ac",
+    "candidate-2": "a598749470a00d038adaa5277ab18534ebfba063ef56c13e22ffe1d63be90707"
+  },
+  "rounds": [
+    "baseline",
+    "candidate-1",
+    "candidate-2"
+  ],
+  "recaptureVerification": "Rebuilt all three source states using the current suite with sourceHash metadata. All 30 PNG SHA256 values exactly match the images actually reviewed; score records carry forward unchanged."
+}

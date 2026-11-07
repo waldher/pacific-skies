@@ -18,13 +18,30 @@ async function namespace(file){const m=await load(path.join(root,file));if(m.sta
   assert.ok(world.sectors.length>=4&&world.sectors.length<=7,`region count seed ${seed}`);
   const atlas=generate(world.geographySeed);
   assert.equal(world.terrain.length,atlas.islands.length,'game retains atlas landforms');
-  for(const land of world.terrain){const original=atlas.islands[land.id];assert.equal(land.x,original.x);assert.equal(land.y,original.y);assert.equal(JSON.stringify(land.shoreline),JSON.stringify(original.coast));}
+  for(const land of world.terrain){
+   const original=atlas.islands[land.id];assert.equal(land.x,original.x);assert.equal(land.y,original.y);
+   // The atlas retains large-scale geography; canonical physical coast detail
+   // may add bounded coves between its anchors, never move those anchors.
+   const coast=land.shoreline;assert.ok(coast.length<=256,'bounded coastline complexity');
+   let cursor=-1;
+   for(const anchor of original.coast){const i=coast.findIndex((p,index)=>index>cursor&&p[0]===anchor[0]&&p[1]===anchor[1]);assert.ok(i>cursor,'atlas anchors preserved in original order');cursor=i;}
+   for(const p of coast){
+    let closest=Infinity;
+    for(let i=0;i<original.coast.length;i++){
+     const a=original.coast[i],b=original.coast[(i+1)%original.coast.length],dx=b[0]-a[0],dy=b[1]-a[1];
+     const t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dy)/(dx*dx+dy*dy)));
+     closest=Math.min(closest,Math.hypot(p[0]-a[0]-t*dx,p[1]-a[1]-t*dy));
+    }
+    assert.ok(closest<=18.000001,'fine shoreline stays within18 units of atlas coast');
+   }
+   for(const holding of world.territories.filter(t=>t.terrainId===land.id))assert.equal(JSON.stringify(holding.shoreline),JSON.stringify(coast.map(([x,y])=>[x+land.x-holding.x,y+land.y-holding.y])),'holdings and collisions share canonical coast');
+  }
   for(const [a,b] of world.sectorLinks){const x=world.sectors[a],y=world.sectors[b],gap=Math.hypot(x.x-y.x,x.y-y.y);smallestGap=Math.min(smallestGap,gap);assert.ok(gap>6500,'regional crossings have meaningful scale');}
   for(const route of Object.values(world.fleetRoutes))assert.ok(fleetRouteIsClear(route,world.terrain),'whole fleet routes clear land');
   setSeed(seed);assert.equal(JSON.stringify(generateTheater()),JSON.stringify(world),'seed reproduces the entire operational theater');
  }
  assert.ok(counts.size>1,'seed corpus varies region count');
- console.log(`PASS 100 seeded game maps preserve atlas coastlines, deterministic worlds, safe fleet routes; shortest regional link ${Math.round(smallestGap)} units`);
+ console.log(`PASS 100 seeded game maps preserve atlas anchors and bounded coast detail, deterministic worlds, safe fleet routes; shortest regional link ${Math.round(smallestGap)} units`);
  setSeed(1942);startGame();
  const {selectSortie}=await namespace('src/bases.js');
  const home={x:game.player.x,y:game.player.y};

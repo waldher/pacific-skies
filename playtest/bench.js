@@ -35,7 +35,7 @@ const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'applica
   const page = await browser.newPage({ viewport: { width: WIDTH, height: HEIGHT }, deviceScaleFactor: DPR, hasTouch: true, isMobile: true });
   const errors = [];
   page.on('pageerror', e => errors.push(String(e)));
-  await page.goto(`http://127.0.0.1:${port}/pacific-skies/?quality=1`);
+  await page.goto(`http://127.0.0.1:${port}/pacific-skies/?quality=1&manualFrames=1`);
   await page.waitForFunction(() => window.__game?.rendering?.ready || window.__game?.rendering?.error, null, { timeout: 60000 });
   await page.evaluate(() => { window.__game.setSeed(1942); window.__game.startGame(); });
   await page.waitForTimeout(300);

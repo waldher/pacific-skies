@@ -1,0 +1,31 @@
+{
+  "reason": "Clerical wrong-anchor association in round14; no visual re-rating.",
+  "sha256": "dd11f26eba69efced0745374a5fa48ce13d2a07e115c76cfbe13a2f068127d93",
+  "identical_images": [
+    "judge-packet-8/view-24.png",
+    "judge-packet-14/view-40.png",
+    "judge-packet-15/view-36.png"
+  ],
+  "historical_source": "judge-a-8.json/view-24.png",
+  "preserved_scores": [
+    6.5,
+    5,
+    3,
+    3.5,
+    3
+  ],
+  "corrected_report": "judge-a-14.json/view-40.png",
+  "previous_incorrect_scores": [
+    6.5,
+    5,
+    3.5,
+    3.5,
+    3.5
+  ],
+  "wrong_source": "judge-a-8.json/view-08.png (different image hash 4d8664403042fdb44a9b3fd664397dc60cf7bc82dd483d9ec183d337785fd1a0)",
+  "round15_disposition": "Scores retained; they already match the byte-identical round8 historical anchor.",
+  "previousArchivedReviewSha256": "3782b4e113579bd7350c4844212f676e894ef93a1b1e00f8417c164377160efd",
+  "correctedArchivedReviewSha256": "ea8733510251d20b5a7d96313a8929ba7cf327d1018f45ee6597916c8fe824c7",
+  "previousVersionCommit": "d173d46",
+  "scope": "Only one original-baseline image anchor corrected; candidate scores and acceptance results unchanged."
+}

@@ -1,0 +1,352 @@
+{
+  "view-01.png": {
+    "scores": [
+      6.5,
+      8.5,
+      9,
+      9,
+      9
+    ],
+    "evidence": "Luminous layered explosion, sparks and atmospheric cliffs give depth; nearby units partly disappear.",
+    "weighted_score": 8.15,
+    "regressions": "No material visible change at displayed size; retained exact visual anchor."
+  },
+  "view-02.png": {
+    "scores": [
+      8,
+      7,
+      5.5,
+      6.5,
+      4
+    ],
+    "evidence": "Apron connects buildings and road; player merges into soft roof edges, while dark ripples contrast abruptly against pale smooth shore.",
+    "weighted_score": 6.475,
+    "regressions": "No material visible change at displayed size; retained exact visual anchor."
+  },
+  "view-03.png": {
+    "scores": [
+      8,
+      7.5,
+      6,
+      7,
+      4.5
+    ],
+    "evidence": "Raised hangars and broad apron establish base structure; player merges with roof. Dark rippled sea has depth but a clothlike repeating texture.",
+    "weighted_score": 6.825,
+    "regressions": "No material visible change at displayed size; retained exact visual anchor."
+  },
+  "view-04.png": {
+    "scores": [
+      8.5,
+      9,
+      9,
+      9,
+      8
+    ],
+    "evidence": "Detailed rooms, wall height, warm/cool light, wood and tile create convincing depth.",
+    "weighted_score": 8.7,
+    "regressions": "No material visible change at displayed size; retained exact visual anchor."
+  },
+  "view-05.png": {
+    "scores": [
+      8.5,
+      7,
+      5.5,
+      6.5,
+      4
+    ],
+    "evidence": "Outlined player readable on grass; coastline cleaner than black-strip version, but coast remains a uniform abrupt boundary and terrain soft.",
+    "weighted_score": 6.625,
+    "regressions": "No material visible change at displayed size; retained exact visual anchor."
+  },
+  "view-06.png": {
+    "scores": [
+      6,
+      6.5,
+      6,
+      6,
+      5.5
+    ],
+    "evidence": "Soft crowded wings and granular smoke clutter the deck; bright sparks read clearly, but the player's identity remains hard to track.",
+    "weighted_score": 6.025,
+    "regressions": "No material visible change at displayed size; retained exact visual anchor."
+  },
+  "view-07.png": {
+    "scores": [
+      8,
+      7.5,
+      6,
+      7,
+      4.5
+    ],
+    "evidence": "Raised hangars and broad apron establish base structure; player merges with roof. Dark rippled sea has depth but a clothlike repeating texture.",
+    "weighted_score": 6.825,
+    "regressions": "No material visible change at displayed size; retained exact visual anchor."
+  },
+  "view-08.png": {
+    "scores": [
+      8.5,
+      7.5,
+      6.5,
+      6.5,
+      5.5
+    ],
+    "evidence": "Crisp raised bridge, striped tan deck and dark hull give strong ship volume; rippled dark sea gains relief but repeated scalloped wake remains schematic.",
+    "weighted_score": 7.15,
+    "regressions": "No material visible change at displayed size; retained exact visual anchor."
+  },
+  "view-09.png": {
+    "scores": [
+      8.5,
+      7.5,
+      6,
+      7,
+      4.5
+    ],
+    "evidence": "Raised building sides, tree shadows and clear player provide depth; clean shore transition improved, yet no irregular surf and ocean looks crumpled.",
+    "weighted_score": 6.975,
+    "regressions": "No material visible change at displayed size; retained exact visual anchor."
+  },
+  "view-10.png": {
+    "scores": [
+      7.5,
+      7.5,
+      6.5,
+      6.5,
+      6
+    ],
+    "evidence": "Crisp raised carrier, orange sparks and pale aircraft stand against dark rippled sea; overlapping aircraft obscure player at bow.",
+    "weighted_score": 6.925,
+    "regressions": "No material visible change at displayed size; retained exact visual anchor."
+  },
+  "view-11.png": {
+    "scores": [
+      6,
+      8.5,
+      9,
+      9,
+      8.5
+    ],
+    "evidence": "Wet reflections, rain, smoke and orange tracer integrate; small troops blend into rubble.",
+    "weighted_score": 7.925,
+    "regressions": "No material visible change at displayed size; retained exact visual anchor."
+  },
+  "view-12.png": {
+    "scores": [
+      8,
+      7,
+      5.5,
+      6.5,
+      4
+    ],
+    "evidence": "Apron connects buildings and road; player merges into soft roof edges, while dark ripples contrast abruptly against pale smooth shore.",
+    "weighted_score": 6.475,
+    "regressions": "No material visible change at displayed size; retained exact visual anchor."
+  },
+  "view-13.png": {
+    "scores": [
+      8.5,
+      7.5,
+      6,
+      7,
+      4.5
+    ],
+    "evidence": "Raised building sides, tree shadows and clear player provide depth; clean shore transition improved, yet no irregular surf and ocean looks crumpled.",
+    "weighted_score": 6.975,
+    "regressions": "No material visible change at displayed size; retained exact visual anchor."
+  },
+  "view-14.png": {
+    "scores": [
+      8.5,
+      6.5,
+      5.5,
+      6,
+      5.5
+    ],
+    "evidence": "Crisp deck lines and bridge remain readable, but broad rounded tan deck hides the dark hull rim and leaves a triangular projection at lower left; ship reads as a flat board.",
+    "weighted_score": 6.675,
+    "regressions": "Deck/hull silhouette and material depth regress versus raised edged carrier controls."
+  },
+  "view-15.png": {
+    "scores": [
+      7.5,
+      9,
+      9,
+      9,
+      8
+    ],
+    "evidence": "Market produce, stone, wood and fabric distinct under consistent shadows; thin paths remain visible.",
+    "weighted_score": 8.4,
+    "regressions": "No material visible change at displayed size; retained exact visual anchor."
+  },
+  "view-16.png": {
+    "scores": [
+      8.5,
+      6,
+      5,
+      5.5,
+      4.5
+    ],
+    "evidence": "Soft rounded tan deck has little visible thickness; dark triangular bow peeks below broad deck while bridge and wake remain recognizable.",
+    "weighted_score": 6.25,
+    "regressions": "Deck/hull silhouette and material depth regress versus raised edged carrier controls."
+  },
+  "view-17.png": {
+    "scores": [
+      6.5,
+      9,
+      9,
+      9.5,
+      8.5
+    ],
+    "evidence": "Fog, varied vegetation, muddy ruts and weathered shed build rich depth; tanks blend with terrain.",
+    "weighted_score": 8.25,
+    "regressions": "No material visible change at displayed size; retained exact visual anchor."
+  },
+  "view-18.png": {
+    "scores": [
+      7.5,
+      7,
+      6,
+      6,
+      5.5
+    ],
+    "evidence": "Soft carrier and aircraft contrast with dark water, with readable orange sparks; overlapping player and enemies at bow still ambiguous.",
+    "weighted_score": 6.575,
+    "regressions": "No material visible change at displayed size; retained exact visual anchor."
+  },
+  "view-19.png": {
+    "scores": [
+      8.5,
+      7,
+      5.5,
+      6.5,
+      4
+    ],
+    "evidence": "Outlined player readable on grass; coastline cleaner than black-strip version, but coast remains a uniform abrupt boundary and terrain soft.",
+    "weighted_score": 6.625,
+    "regressions": "No material visible change at displayed size; retained exact visual anchor."
+  },
+  "view-20.png": {
+    "scores": [
+      7.5,
+      6,
+      5,
+      5.5,
+      5.5
+    ],
+    "evidence": "Sparse aircraft and orange impacts readable; broad rounded flat deck covers much of hull and makes bow silhouette incoherent, with soft player overlap.",
+    "weighted_score": 6.1,
+    "regressions": "Deck/hull silhouette and material depth regress versus raised edged carrier controls."
+  },
+  "view-21.png": {
+    "scores": [
+      8.5,
+      7,
+      6,
+      6,
+      4.5
+    ],
+    "evidence": "Quiet soft carrier has clear raised bridge and hull; dark textured water adds relief but wake repeats rounded bands.",
+    "weighted_score": 6.725,
+    "regressions": "No material visible change at displayed size; retained exact visual anchor."
+  },
+  "view-22.png": {
+    "scores": [
+      6,
+      7,
+      6.5,
+      6.5,
+      6
+    ],
+    "evidence": "Orange fire and pale wings are distinct from dark ocean; many separated gray smoke clusters and overlapping aircraft keep central action crowded.",
+    "weighted_score": 6.375,
+    "regressions": "No material visible change at displayed size; retained exact visual anchor."
+  },
+  "view-23.png": {
+    "scores": [
+      7.5,
+      6.5,
+      5.5,
+      6,
+      6
+    ],
+    "evidence": "Crisp aircraft and fire retain contrast; flat rounded deck overhang removes rim depth and leaves detached-looking lower-left triangular hull tip.",
+    "weighted_score": 6.45,
+    "regressions": "Deck/hull silhouette and material depth regress versus raised edged carrier controls."
+  },
+  "view-24.png": {
+    "scores": [
+      6,
+      6,
+      5.5,
+      6,
+      6
+    ],
+    "evidence": "Crisp flames and dense pale wings crowd player; rounded tan deck loses side/rim depth beneath swarm and smoke remains granular.",
+    "weighted_score": 5.9,
+    "regressions": "Deck/hull silhouette and material depth regress versus raised edged carrier controls."
+  },
+  "view-25.png": {
+    "scores": [
+      6,
+      5.5,
+      5,
+      5.5,
+      5.5
+    ],
+    "evidence": "Soft dense swarm and fires obscure player; tan rounded deck flattens ship structure with triangular hull projection at lower left.",
+    "weighted_score": 5.55,
+    "regressions": "Deck/hull silhouette and material depth regress versus raised edged carrier controls."
+  },
+  "_summary": {
+    "weights": [
+      0.3,
+      0.2,
+      0.2,
+      0.15,
+      0.15
+    ],
+    "mean_score": 6.877,
+    "strongest": [
+      {
+        "filename": "view-04.png",
+        "weighted_score": 8.7
+      },
+      {
+        "filename": "view-15.png",
+        "weighted_score": 8.4
+      },
+      {
+        "filename": "view-17.png",
+        "weighted_score": 8.25
+      }
+    ],
+    "weakest": [
+      {
+        "filename": "view-06.png",
+        "weighted_score": 6.025
+      },
+      {
+        "filename": "view-24.png",
+        "weighted_score": 5.9
+      },
+      {
+        "filename": "view-25.png",
+        "weighted_score": 5.55
+      }
+    ],
+    "all_images_viewed": true,
+    "visible_regressions": [
+      "Rounded broad tan deck in views14/16/20/23/24/25 obscures dark rim and hull, leaving a triangular lower-left projection and reducing believable thickness.",
+      "Player still merges into hangar roofs and crowded pale aircraft."
+    ],
+    "top3_gaps": [
+      "Restore coherent deck overhang, hull sides and bow/stern geometry with readable thickness.",
+      "Improve player separation over hangar roofs and dense aircraft overlaps.",
+      "Replace granular smoke and repeating ocean texture with more natural surface/effect variation."
+    ],
+    "blinding_limitations": "All25 images individually viewed. Only own prior judge-a-9 scores used to preserve anchors; no keys, game source or other judges inspected. Several land pairs show no material visible change at displayed size and receive identical scores. Recognizable scene families limit complete identity blinding.",
+    "motion_review": "Not requested for packet10."
+  }
+}

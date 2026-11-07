@@ -1,0 +1,102 @@
+{
+  "view-01.png": {
+    "kind": "candidate-12",
+    "name": "phone-coast"
+  },
+  "view-02.png": {
+    "kind": "candidate-12",
+    "name": "fallback-airfield"
+  },
+  "view-03.png": {
+    "kind": "candidate-13",
+    "name": "fallback-dogfight"
+  },
+  "view-04.png": {
+    "kind": "candidate-13",
+    "name": "fallback-airfield"
+  },
+  "view-05.png": {
+    "kind": "candidate-12",
+    "name": "fallback-dogfight"
+  },
+  "view-06.png": {
+    "kind": "candidate-13",
+    "name": "fallback-stress"
+  },
+  "view-07.png": {
+    "kind": "candidate-12",
+    "name": "phone-stress"
+  },
+  "view-08.png": {
+    "kind": "candidate-12",
+    "name": "fallback-stress"
+  },
+  "view-09.png": {
+    "kind": "candidate-13",
+    "name": "phone-coast"
+  },
+  "view-10.png": {
+    "kind": "reference",
+    "name": "coh3-0-phone"
+  },
+  "view-11.png": {
+    "kind": "reference",
+    "name": "dk2-0-phone"
+  },
+  "view-12.png": {
+    "kind": "reference",
+    "name": "dk2-1-phone"
+  },
+  "view-13.png": {
+    "kind": "candidate-13",
+    "name": "fallback-coast"
+  },
+  "view-14.png": {
+    "kind": "candidate-12",
+    "name": "phone-airfield"
+  },
+  "view-15.png": {
+    "kind": "candidate-12",
+    "name": "phone-dogfight"
+  },
+  "view-16.png": {
+    "kind": "candidate-13",
+    "name": "phone-airfield"
+  },
+  "view-17.png": {
+    "kind": "candidate-13",
+    "name": "fallback-fleet"
+  },
+  "view-18.png": {
+    "kind": "candidate-12",
+    "name": "phone-fleet"
+  },
+  "view-19.png": {
+    "kind": "reference",
+    "name": "sc2-0-phone"
+  },
+  "view-20.png": {
+    "kind": "candidate-12",
+    "name": "fallback-fleet"
+  },
+  "view-21.png": {
+    "kind": "candidate-13",
+    "name": "phone-fleet"
+  },
+  "view-22.png": {
+    "kind": "reference",
+    "name": "coh3-1-phone"
+  },
+  "view-23.png": {
+    "kind": "candidate-13",
+    "name": "phone-stress"
+  },
+  "view-24.png": {
+    "kind": "candidate-13",
+    "name": "phone-dogfight"
+  },
+  "view-25.png": {
+    "kind": "candidate-12",
+    "name": "fallback-coast"
+  }
+}

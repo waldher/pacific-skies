@@ -1,0 +1,2043 @@
+{
+  "schema": 1,
+  "protocol": "cold-island-transit-v1",
+  "suiteHash": "873fbeb3770695483dcb5b11a31b6670ecf1c4b949784854478edcfe8f4f34c2",
+  "sourceHash": "dd239932b0e47b9f6a22ca7b106f05eb09fc59a72f003db201a2222e68ac1f8f",
+  "seed": 1942,
+  "commit": "f681af604553018875bd3130f8e9b7965add841f",
+  "dirty": true,
+  "timing": "Main-thread render submission/build + WebGL completion on SwiftShader; cold teleport probe, NOT phone FPS",
+  "environment": {
+    "node": "v24.22.1",
+    "platform": "linux",
+    "arch": "x64",
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "logicalCpus": 9
+  },
+  "results": [
+    {
+      "profile": {
+        "name": "phone",
+        "width": 852,
+        "height": 393,
+        "quality": 2
+      },
+      "bootWallMs": 1170.3080599999998,
+      "backend": {
+        "vendor": "WebKit",
+        "renderer": "WebKit WebGL",
+        "unmaskedVendor": "Google Inc. (Google)",
+        "unmaskedRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "startGameMs": 30.90000000037253,
+      "selectedSites": [
+        {
+          "id": "home",
+          "name": "home airfield",
+          "x": 1635.1159343712861,
+          "y": 1112.3515476414532
+        },
+        {
+          "id": 62,
+          "name": "62",
+          "x": 22178.567752332758,
+          "y": -18548.53030576642,
+          "radius": 573.6202721716836,
+          "extent": 656.2921978488629
+        },
+        {
+          "id": 66,
+          "name": "66",
+          "x": -3514.617186467258,
+          "y": -18428.2653516973,
+          "radius": 481.59223803086206,
+          "extent": 504.8200875204188
+        },
+        {
+          "id": 82,
+          "name": "82",
+          "x": 10772.94349724473,
+          "y": -9905.96266143724,
+          "radius": 389.05542340362445,
+          "extent": 472.54409758723347
+        },
+        {
+          "id": 28,
+          "name": "28",
+          "x": 9901.029095438029,
+          "y": -19564.656359641776,
+          "radius": 412.8163983183913,
+          "extent": 460.29949600474157
+        },
+        {
+          "id": 43,
+          "name": "43",
+          "x": 11734.50477735316,
+          "y": -335.01775293241917,
+          "radius": 393.33340388489887,
+          "extent": 466.4810560505817
+        },
+        {
+          "id": 20,
+          "name": "20",
+          "x": 2159.670181956282,
+          "y": -9074.970531170366,
+          "radius": 429.17417847784236,
+          "extent": 495.93651813293707
+        }
+      ],
+      "terrainCount": 88,
+      "visits": [
+        {
+          "label": "startup-first-render",
+          "site": {
+            "id": "home",
+            "name": "home airfield",
+            "x": 1635.1159343712861,
+            "y": 1112.3515476414532
+          },
+          "loadedChunkIds": [
+            0
+          ],
+          "addedChunkIds": [
+            0
+          ],
+          "removedChunkIds": [],
+          "submissionMs": 435.29999999981374,
+          "gpuDrainMs": 286.1000000005588,
+          "completedRenderMs": 721.4000000003725,
+          "warmCompletedMs": [
+            28.100000000558794,
+            29.899999999441206,
+            24.100000000558794
+          ],
+          "memory": {
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 827,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4516522.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 4516522.666666666,
+            "landBufferBytes": 7436964,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "empty-baseline",
+          "site": {
+            "id": "empty",
+            "name": "outside all terrain",
+            "x": 10000000,
+            "y": 10000000
+          },
+          "loadedChunkIds": [],
+          "addedChunkIds": [],
+          "removedChunkIds": [
+            0
+          ],
+          "submissionMs": 2.099999999627471,
+          "gpuDrainMs": 42.799999999813735,
+          "completedRenderMs": 44.89999999944121,
+          "warmCompletedMs": [
+            19.09999999962747,
+            15.799999999813735,
+            13.900000000372529
+          ],
+          "memory": {
+            "chunks": 0,
+            "textures": 4,
+            "geometries": 22,
+            "programs": 12,
+            "landTextureCount": 0,
+            "landTextureSizes": [],
+            "landTextureEstimatedRGBA8Bytes": 0,
+            "landBufferBytes": 0,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-1-home",
+          "site": {
+            "id": "home",
+            "name": "home airfield",
+            "x": 1635.1159343712861,
+            "y": 1112.3515476414532
+          },
+          "loadedChunkIds": [
+            0
+          ],
+          "addedChunkIds": [
+            0
+          ],
+          "removedChunkIds": [],
+          "submissionMs": 305.70000000018626,
+          "gpuDrainMs": 108.20000000018626,
+          "completedRenderMs": 413.90000000037253,
+          "warmCompletedMs": [
+            52.200000000186265,
+            27.5,
+            31.40000000037253
+          ],
+          "memory": {
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 827,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4516522.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 4516522.666666666,
+            "landBufferBytes": 7436964,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-1-62",
+          "site": {
+            "id": 62,
+            "name": "62",
+            "x": 22178.567752332758,
+            "y": -18548.53030576642,
+            "radius": 573.6202721716836,
+            "extent": 656.2921978488629
+          },
+          "loadedChunkIds": [
+            54,
+            62
+          ],
+          "addedChunkIds": [
+            54,
+            62
+          ],
+          "removedChunkIds": [
+            0
+          ],
+          "submissionMs": 305.90000000037253,
+          "gpuDrainMs": 84.20000000018626,
+          "completedRenderMs": 390.1000000005588,
+          "warmCompletedMs": [
+            29.299999999813735,
+            25,
+            25
+          ],
+          "memory": {
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 418,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 2282837.333333333
+              },
+              {
+                "width": 744,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4063232
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 6346069.333333333,
+            "landBufferBytes": 9986408,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-1-66",
+          "site": {
+            "id": 66,
+            "name": "66",
+            "x": -3514.617186467258,
+            "y": -18428.2653516973,
+            "radius": 481.59223803086206,
+            "extent": 504.8200875204188
+          },
+          "loadedChunkIds": [
+            66,
+            73
+          ],
+          "addedChunkIds": [
+            66,
+            73
+          ],
+          "removedChunkIds": [
+            54,
+            62
+          ],
+          "submissionMs": 137.69999999925494,
+          "gpuDrainMs": 79.80000000074506,
+          "completedRenderMs": 217.5,
+          "warmCompletedMs": [
+            22.09999999962747,
+            21.100000000558794,
+            19.09999999962747
+          ],
+          "memory": {
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 811,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4429141.333333333
+              },
+              {
+                "width": 1009,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 5510485.333333333
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 9939626.666666666,
+            "landBufferBytes": 1113142,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-1-82",
+          "site": {
+            "id": 82,
+            "name": "82",
+            "x": 10772.94349724473,
+            "y": -9905.96266143724,
+            "radius": 389.05542340362445,
+            "extent": 472.54409758723347
+          },
+          "loadedChunkIds": [
+            82
+          ],
+          "addedChunkIds": [
+            82
+          ],
+          "removedChunkIds": [
+            66,
+            73
+          ],
+          "submissionMs": 71.3999999994412,
+          "gpuDrainMs": 74.20000000018626,
+          "completedRenderMs": 145.59999999962747,
+          "warmCompletedMs": [
+            18.299999999813735,
+            17.90000000037253,
+            20
+          ],
+          "memory": {
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 670,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 3659093.333333333
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 3659093.333333333,
+            "landBufferBytes": 323368,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-1-28",
+          "site": {
+            "id": 28,
+            "name": "28",
+            "x": 9901.029095438029,
+            "y": -19564.656359641776,
+            "radius": 412.8163983183913,
+            "extent": 460.29949600474157
+          },
+          "loadedChunkIds": [
+            28
+          ],
+          "addedChunkIds": [
+            28
+          ],
+          "removedChunkIds": [
+            82
+          ],
+          "submissionMs": 88.40000000037253,
+          "gpuDrainMs": 81.70000000018626,
+          "completedRenderMs": 170.1000000005588,
+          "warmCompletedMs": [
+            18.399999999441206,
+            17.600000000558794,
+            17.799999999813735
+          ],
+          "memory": {
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1013,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 5532330.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 5532330.666666666,
+            "landBufferBytes": 395904,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-1-43",
+          "site": {
+            "id": 43,
+            "name": "43",
+            "x": 11734.50477735316,
+            "y": -335.01775293241917,
+            "radius": 393.33340388489887,
+            "extent": 466.4810560505817
+          },
+          "loadedChunkIds": [
+            43,
+            49
+          ],
+          "addedChunkIds": [
+            43,
+            49
+          ],
+          "removedChunkIds": [
+            28
+          ],
+          "submissionMs": 104.09999999962747,
+          "gpuDrainMs": 79.6000000005588,
+          "completedRenderMs": 183.70000000018626,
+          "warmCompletedMs": [
+            18.40000000037253,
+            18.40000000037253,
+            19.200000000186265
+          ],
+          "memory": {
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 28,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 911,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4975274.666666666
+              },
+              {
+                "width": 762,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4161536
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 9136810.666666666,
+            "landBufferBytes": 604120,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-1-20",
+          "site": {
+            "id": 20,
+            "name": "20",
+            "x": 2159.670181956282,
+            "y": -9074.970531170366,
+            "radius": 429.17417847784236,
+            "extent": 495.93651813293707
+          },
+          "loadedChunkIds": [
+            20
+          ],
+          "addedChunkIds": [
+            20
+          ],
+          "removedChunkIds": [
+            43,
+            49
+          ],
+          "submissionMs": 55.09999999962747,
+          "gpuDrainMs": 62.799999999813735,
+          "completedRenderMs": 117.8999999994412,
+          "warmCompletedMs": [
+            23.200000000186265,
+            19.5,
+            19.40000000037253
+          ],
+          "memory": {
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 491,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 2681514.6666666665
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 2681514.6666666665,
+            "landBufferBytes": 308812,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "empty-after-cycle-1",
+          "site": {
+            "id": "empty",
+            "name": "outside all terrain",
+            "x": 10000000,
+            "y": 10000000
+          },
+          "loadedChunkIds": [],
+          "addedChunkIds": [],
+          "removedChunkIds": [
+            20
+          ],
+          "submissionMs": 0.6999999992549419,
+          "gpuDrainMs": 11.200000000186265,
+          "completedRenderMs": 11.899999999441206,
+          "warmCompletedMs": [
+            11.299999999813735,
+            11.400000000372529,
+            11.299999999813735
+          ],
+          "memory": {
+            "chunks": 0,
+            "textures": 4,
+            "geometries": 22,
+            "programs": 12,
+            "landTextureCount": 0,
+            "landTextureSizes": [],
+            "landTextureEstimatedRGBA8Bytes": 0,
+            "landBufferBytes": 0,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-2-home",
+          "site": {
+            "id": "home",
+            "name": "home airfield",
+            "x": 1635.1159343712861,
+            "y": 1112.3515476414532
+          },
+          "loadedChunkIds": [
+            0
+          ],
+          "addedChunkIds": [
+            0
+          ],
+          "removedChunkIds": [],
+          "submissionMs": 289,
+          "gpuDrainMs": 99.6000000005588,
+          "completedRenderMs": 388.6000000005588,
+          "warmCompletedMs": [
+            37,
+            24.299999999813735,
+            21.600000000558794
+          ],
+          "memory": {
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 827,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4516522.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 4516522.666666666,
+            "landBufferBytes": 7436964,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-2-62",
+          "site": {
+            "id": 62,
+            "name": "62",
+            "x": 22178.567752332758,
+            "y": -18548.53030576642,
+            "radius": 573.6202721716836,
+            "extent": 656.2921978488629
+          },
+          "loadedChunkIds": [
+            54,
+            62
+          ],
+          "addedChunkIds": [
+            54,
+            62
+          ],
+          "removedChunkIds": [
+            0
+          ],
+          "submissionMs": 297.09999999962747,
+          "gpuDrainMs": 79.29999999981374,
+          "completedRenderMs": 376.3999999994412,
+          "warmCompletedMs": [
+            21.90000000037253,
+            26.700000000186265,
+            22.5
+          ],
+          "memory": {
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 418,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 2282837.333333333
+              },
+              {
+                "width": 744,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4063232
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 6346069.333333333,
+            "landBufferBytes": 9986408,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-2-66",
+          "site": {
+            "id": 66,
+            "name": "66",
+            "x": -3514.617186467258,
+            "y": -18428.2653516973,
+            "radius": 481.59223803086206,
+            "extent": 504.8200875204188
+          },
+          "loadedChunkIds": [
+            66,
+            73
+          ],
+          "addedChunkIds": [
+            66,
+            73
+          ],
+          "removedChunkIds": [
+            54,
+            62
+          ],
+          "submissionMs": 119.5,
+          "gpuDrainMs": 72.6000000005588,
+          "completedRenderMs": 192.1000000005588,
+          "warmCompletedMs": [
+            28.09999999962747,
+            22.09999999962747,
+            19
+          ],
+          "memory": {
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 811,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4429141.333333333
+              },
+              {
+                "width": 1009,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 5510485.333333333
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 9939626.666666666,
+            "landBufferBytes": 1113142,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-2-82",
+          "site": {
+            "id": 82,
+            "name": "82",
+            "x": 10772.94349724473,
+            "y": -9905.96266143724,
+            "radius": 389.05542340362445,
+            "extent": 472.54409758723347
+          },
+          "loadedChunkIds": [
+            82
+          ],
+          "addedChunkIds": [
+            82
+          ],
+          "removedChunkIds": [
+            66,
+            73
+          ],
+          "submissionMs": 70.09999999962747,
+          "gpuDrainMs": 72.90000000037253,
+          "completedRenderMs": 143,
+          "warmCompletedMs": [
+            18.799999999813735,
+            20.700000000186265,
+            18.700000000186265
+          ],
+          "memory": {
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 670,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 3659093.333333333
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 3659093.333333333,
+            "landBufferBytes": 323368,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-2-28",
+          "site": {
+            "id": 28,
+            "name": "28",
+            "x": 9901.029095438029,
+            "y": -19564.656359641776,
+            "radius": 412.8163983183913,
+            "extent": 460.29949600474157
+          },
+          "loadedChunkIds": [
+            28
+          ],
+          "addedChunkIds": [
+            28
+          ],
+          "removedChunkIds": [
+            82
+          ],
+          "submissionMs": 81.1000000005588,
+          "gpuDrainMs": 91.3999999994412,
+          "completedRenderMs": 172.5,
+          "warmCompletedMs": [
+            21.5,
+            17.5,
+            17.800000000745058
+          ],
+          "memory": {
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1013,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 5532330.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 5532330.666666666,
+            "landBufferBytes": 395904,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-2-43",
+          "site": {
+            "id": 43,
+            "name": "43",
+            "x": 11734.50477735316,
+            "y": -335.01775293241917,
+            "radius": 393.33340388489887,
+            "extent": 466.4810560505817
+          },
+          "loadedChunkIds": [
+            43,
+            49
+          ],
+          "addedChunkIds": [
+            43,
+            49
+          ],
+          "removedChunkIds": [
+            28
+          ],
+          "submissionMs": 114.70000000018626,
+          "gpuDrainMs": 69.40000000037253,
+          "completedRenderMs": 184.1000000005588,
+          "warmCompletedMs": [
+            29.09999999962747,
+            24,
+            22.799999999813735
+          ],
+          "memory": {
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 28,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 911,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4975274.666666666
+              },
+              {
+                "width": 762,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4161536
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 9136810.666666666,
+            "landBufferBytes": 604120,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-2-20",
+          "site": {
+            "id": 20,
+            "name": "20",
+            "x": 2159.670181956282,
+            "y": -9074.970531170366,
+            "radius": 429.17417847784236,
+            "extent": 495.93651813293707
+          },
+          "loadedChunkIds": [
+            20
+          ],
+          "addedChunkIds": [
+            20
+          ],
+          "removedChunkIds": [
+            43,
+            49
+          ],
+          "submissionMs": 52.59999999962747,
+          "gpuDrainMs": 67.1000000005588,
+          "completedRenderMs": 119.70000000018626,
+          "warmCompletedMs": [
+            18.5,
+            18.899999999441206,
+            20.799999999813735
+          ],
+          "memory": {
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 491,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 2681514.6666666665
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 2681514.6666666665,
+            "landBufferBytes": 308812,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "empty-after-cycle-2",
+          "site": {
+            "id": "empty",
+            "name": "outside all terrain",
+            "x": 10000000,
+            "y": 10000000
+          },
+          "loadedChunkIds": [],
+          "addedChunkIds": [],
+          "removedChunkIds": [
+            20
+          ],
+          "submissionMs": 0.599999999627471,
+          "gpuDrainMs": 10.5,
+          "completedRenderMs": 11.099999999627471,
+          "warmCompletedMs": [
+            10.900000000372529,
+            10.700000000186265,
+            11.5
+          ],
+          "memory": {
+            "chunks": 0,
+            "textures": 4,
+            "geometries": 22,
+            "programs": 12,
+            "landTextureCount": 0,
+            "landTextureSizes": [],
+            "landTextureEstimatedRGBA8Bytes": 0,
+            "landBufferBytes": 0,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "home-final-revisit",
+          "site": {
+            "id": "home",
+            "name": "home airfield",
+            "x": 1635.1159343712861,
+            "y": 1112.3515476414532
+          },
+          "loadedChunkIds": [
+            0
+          ],
+          "addedChunkIds": [
+            0
+          ],
+          "removedChunkIds": [],
+          "submissionMs": 269.20000000018626,
+          "gpuDrainMs": 87.90000000037253,
+          "completedRenderMs": 357.1000000005588,
+          "warmCompletedMs": [
+            31.5,
+            26.59999999962747,
+            23.90000000037253
+          ],
+          "memory": {
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 827,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4516522.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 4516522.666666666,
+            "landBufferBytes": 7436964,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "empty-final",
+          "site": {
+            "id": "empty",
+            "name": "outside all terrain",
+            "x": 10000000,
+            "y": 10000000
+          },
+          "loadedChunkIds": [],
+          "addedChunkIds": [],
+          "removedChunkIds": [
+            0
+          ],
+          "submissionMs": 0.599999999627471,
+          "gpuDrainMs": 12,
+          "completedRenderMs": 12.599999999627471,
+          "warmCompletedMs": [
+            12,
+            12.200000000186265,
+            11.700000000186265
+          ],
+          "memory": {
+            "chunks": 0,
+            "textures": 4,
+            "geometries": 22,
+            "programs": 12,
+            "landTextureCount": 0,
+            "landTextureSizes": [],
+            "landTextureEstimatedRGBA8Bytes": 0,
+            "landBufferBytes": 0,
+            "jsHeapUsedBytes": 53500000
+          }
+        }
+      ],
+      "lifecycle": {
+        "allEmptyViewsReleaseLand": true,
+        "initialClearMemory": {
+          "chunks": 0,
+          "textures": 4,
+          "geometries": 22,
+          "programs": 12,
+          "landTextureCount": 0,
+          "landTextureSizes": [],
+          "landTextureEstimatedRGBA8Bytes": 0,
+          "landBufferBytes": 0,
+          "jsHeapUsedBytes": 53500000
+        },
+        "finalClearMemory": {
+          "chunks": 0,
+          "textures": 4,
+          "geometries": 22,
+          "programs": 12,
+          "landTextureCount": 0,
+          "landTextureSizes": [],
+          "landTextureEstimatedRGBA8Bytes": 0,
+          "landBufferBytes": 0,
+          "jsHeapUsedBytes": 53500000
+        },
+        "textureDeltaAfterCycles": 0,
+        "geometryDeltaAfterCycles": 0,
+        "monotonicTextureGrowth": false,
+        "interpretation": "Renderer resource counts and estimated land bytes; JS heap is approximate and GC timing is not controlled. Positive deltas can be lazy global caches; monotonic retained land resources merit investigation."
+      }
+    },
+    {
+      "profile": {
+        "name": "fallback",
+        "width": 852,
+        "height": 393,
+        "quality": 4
+      },
+      "bootWallMs": 945.706975000001,
+      "backend": {
+        "vendor": "WebKit",
+        "renderer": "WebKit WebGL",
+        "unmaskedVendor": "Google Inc. (Google)",
+        "unmaskedRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "startGameMs": 28.90000000037253,
+      "selectedSites": [
+        {
+          "id": "home",
+          "name": "home airfield",
+          "x": 1635.1159343712861,
+          "y": 1112.3515476414532
+        },
+        {
+          "id": 62,
+          "name": "62",
+          "x": 22178.567752332758,
+          "y": -18548.53030576642,
+          "radius": 573.6202721716836,
+          "extent": 656.2921978488629
+        },
+        {
+          "id": 66,
+          "name": "66",
+          "x": -3514.617186467258,
+          "y": -18428.2653516973,
+          "radius": 481.59223803086206,
+          "extent": 504.8200875204188
+        },
+        {
+          "id": 82,
+          "name": "82",
+          "x": 10772.94349724473,
+          "y": -9905.96266143724,
+          "radius": 389.05542340362445,
+          "extent": 472.54409758723347
+        },
+        {
+          "id": 28,
+          "name": "28",
+          "x": 9901.029095438029,
+          "y": -19564.656359641776,
+          "radius": 412.8163983183913,
+          "extent": 460.29949600474157
+        },
+        {
+          "id": 43,
+          "name": "43",
+          "x": 11734.50477735316,
+          "y": -335.01775293241917,
+          "radius": 393.33340388489887,
+          "extent": 466.4810560505817
+        },
+        {
+          "id": 20,
+          "name": "20",
+          "x": 2159.670181956282,
+          "y": -9074.970531170366,
+          "radius": 429.17417847784236,
+          "extent": 495.93651813293707
+        }
+      ],
+      "terrainCount": 88,
+      "visits": [
+        {
+          "label": "startup-first-render",
+          "site": {
+            "id": "home",
+            "name": "home airfield",
+            "x": 1635.1159343712861,
+            "y": 1112.3515476414532
+          },
+          "loadedChunkIds": [
+            0
+          ],
+          "addedChunkIds": [
+            0
+          ],
+          "removedChunkIds": [],
+          "submissionMs": 431.19999999925494,
+          "gpuDrainMs": 249,
+          "completedRenderMs": 680.1999999992549,
+          "warmCompletedMs": [
+            12.599999999627471,
+            11.600000000558794,
+            11.799999999813735
+          ],
+          "memory": {
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 827,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4516522.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 4516522.666666666,
+            "landBufferBytes": 7436964,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "empty-baseline",
+          "site": {
+            "id": "empty",
+            "name": "outside all terrain",
+            "x": 10000000,
+            "y": 10000000
+          },
+          "loadedChunkIds": [],
+          "addedChunkIds": [],
+          "removedChunkIds": [
+            0
+          ],
+          "submissionMs": 1.7999999998137355,
+          "gpuDrainMs": 37.799999999813735,
+          "completedRenderMs": 39.59999999962747,
+          "warmCompletedMs": [
+            5.5,
+            4.5,
+            4.400000000372529
+          ],
+          "memory": {
+            "chunks": 0,
+            "textures": 4,
+            "geometries": 22,
+            "programs": 12,
+            "landTextureCount": 0,
+            "landTextureSizes": [],
+            "landTextureEstimatedRGBA8Bytes": 0,
+            "landBufferBytes": 0,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-1-home",
+          "site": {
+            "id": "home",
+            "name": "home airfield",
+            "x": 1635.1159343712861,
+            "y": 1112.3515476414532
+          },
+          "loadedChunkIds": [
+            0
+          ],
+          "addedChunkIds": [
+            0
+          ],
+          "removedChunkIds": [],
+          "submissionMs": 273.70000000018626,
+          "gpuDrainMs": 73.09999999962747,
+          "completedRenderMs": 346.79999999981374,
+          "warmCompletedMs": [
+            14.300000000745058,
+            12.799999999813735,
+            12.700000000186265
+          ],
+          "memory": {
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 827,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4516522.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 4516522.666666666,
+            "landBufferBytes": 7436964,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-1-62",
+          "site": {
+            "id": 62,
+            "name": "62",
+            "x": 22178.567752332758,
+            "y": -18548.53030576642,
+            "radius": 573.6202721716836,
+            "extent": 656.2921978488629
+          },
+          "loadedChunkIds": [
+            54,
+            62
+          ],
+          "addedChunkIds": [
+            54,
+            62
+          ],
+          "removedChunkIds": [
+            0
+          ],
+          "submissionMs": 294.8999999994412,
+          "gpuDrainMs": 73.90000000037253,
+          "completedRenderMs": 368.79999999981374,
+          "warmCompletedMs": [
+            17.799999999813735,
+            10.799999999813735,
+            16.199999999254942
+          ],
+          "memory": {
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 418,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 2282837.333333333
+              },
+              {
+                "width": 744,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4063232
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 6346069.333333333,
+            "landBufferBytes": 9986408,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-1-66",
+          "site": {
+            "id": 66,
+            "name": "66",
+            "x": -3514.617186467258,
+            "y": -18428.2653516973,
+            "radius": 481.59223803086206,
+            "extent": 504.8200875204188
+          },
+          "loadedChunkIds": [
+            66,
+            73
+          ],
+          "addedChunkIds": [
+            66,
+            73
+          ],
+          "removedChunkIds": [
+            54,
+            62
+          ],
+          "submissionMs": 127.29999999981374,
+          "gpuDrainMs": 80.40000000037253,
+          "completedRenderMs": 207.70000000018626,
+          "warmCompletedMs": [
+            10.400000000372529,
+            12.099999999627471,
+            12.400000000372529
+          ],
+          "memory": {
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 811,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4429141.333333333
+              },
+              {
+                "width": 1009,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 5510485.333333333
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 9939626.666666666,
+            "landBufferBytes": 1113142,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-1-82",
+          "site": {
+            "id": 82,
+            "name": "82",
+            "x": 10772.94349724473,
+            "y": -9905.96266143724,
+            "radius": 389.05542340362445,
+            "extent": 472.54409758723347
+          },
+          "loadedChunkIds": [
+            82
+          ],
+          "addedChunkIds": [
+            82
+          ],
+          "removedChunkIds": [
+            66,
+            73
+          ],
+          "submissionMs": 85.79999999981374,
+          "gpuDrainMs": 68,
+          "completedRenderMs": 153.79999999981374,
+          "warmCompletedMs": [
+            14.400000000372529,
+            13.700000000186265,
+            14.300000000745058
+          ],
+          "memory": {
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 670,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 3659093.333333333
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 3659093.333333333,
+            "landBufferBytes": 323368,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-1-28",
+          "site": {
+            "id": 28,
+            "name": "28",
+            "x": 9901.029095438029,
+            "y": -19564.656359641776,
+            "radius": 412.8163983183913,
+            "extent": 460.29949600474157
+          },
+          "loadedChunkIds": [
+            28
+          ],
+          "addedChunkIds": [
+            28
+          ],
+          "removedChunkIds": [
+            82
+          ],
+          "submissionMs": 91.70000000018626,
+          "gpuDrainMs": 92.20000000018626,
+          "completedRenderMs": 183.90000000037253,
+          "warmCompletedMs": [
+            13.700000000186265,
+            13.399999999441206,
+            13.399999999441206
+          ],
+          "memory": {
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1013,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 5532330.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 5532330.666666666,
+            "landBufferBytes": 395904,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-1-43",
+          "site": {
+            "id": 43,
+            "name": "43",
+            "x": 11734.50477735316,
+            "y": -335.01775293241917,
+            "radius": 393.33340388489887,
+            "extent": 466.4810560505817
+          },
+          "loadedChunkIds": [
+            43,
+            49
+          ],
+          "addedChunkIds": [
+            43,
+            49
+          ],
+          "removedChunkIds": [
+            28
+          ],
+          "submissionMs": 129.70000000018626,
+          "gpuDrainMs": 86.40000000037253,
+          "completedRenderMs": 216.1000000005588,
+          "warmCompletedMs": [
+            18.90000000037253,
+            17.90000000037253,
+            13.200000000186265
+          ],
+          "memory": {
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 28,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 911,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4975274.666666666
+              },
+              {
+                "width": 762,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4161536
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 9136810.666666666,
+            "landBufferBytes": 604120,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-1-20",
+          "site": {
+            "id": 20,
+            "name": "20",
+            "x": 2159.670181956282,
+            "y": -9074.970531170366,
+            "radius": 429.17417847784236,
+            "extent": 495.93651813293707
+          },
+          "loadedChunkIds": [
+            20
+          ],
+          "addedChunkIds": [
+            20
+          ],
+          "removedChunkIds": [
+            43,
+            49
+          ],
+          "submissionMs": 60.89999999944121,
+          "gpuDrainMs": 71.80000000074506,
+          "completedRenderMs": 132.70000000018626,
+          "warmCompletedMs": [
+            13.399999999441206,
+            11.800000000745058,
+            13.599999999627471
+          ],
+          "memory": {
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 491,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 2681514.6666666665
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 2681514.6666666665,
+            "landBufferBytes": 308812,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "empty-after-cycle-1",
+          "site": {
+            "id": "empty",
+            "name": "outside all terrain",
+            "x": 10000000,
+            "y": 10000000
+          },
+          "loadedChunkIds": [],
+          "addedChunkIds": [],
+          "removedChunkIds": [
+            20
+          ],
+          "submissionMs": 1,
+          "gpuDrainMs": 6.7000000001862645,
+          "completedRenderMs": 7.7000000001862645,
+          "warmCompletedMs": [
+            5,
+            4.7000000001862645,
+            5.099999999627471
+          ],
+          "memory": {
+            "chunks": 0,
+            "textures": 4,
+            "geometries": 22,
+            "programs": 12,
+            "landTextureCount": 0,
+            "landTextureSizes": [],
+            "landTextureEstimatedRGBA8Bytes": 0,
+            "landBufferBytes": 0,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-2-home",
+          "site": {
+            "id": "home",
+            "name": "home airfield",
+            "x": 1635.1159343712861,
+            "y": 1112.3515476414532
+          },
+          "loadedChunkIds": [
+            0
+          ],
+          "addedChunkIds": [
+            0
+          ],
+          "removedChunkIds": [],
+          "submissionMs": 295.90000000037253,
+          "gpuDrainMs": 77.8999999994412,
+          "completedRenderMs": 373.79999999981374,
+          "warmCompletedMs": [
+            14.400000000372529,
+            14.299999999813735,
+            15.599999999627471
+          ],
+          "memory": {
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 827,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4516522.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 4516522.666666666,
+            "landBufferBytes": 7436964,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-2-62",
+          "site": {
+            "id": 62,
+            "name": "62",
+            "x": 22178.567752332758,
+            "y": -18548.53030576642,
+            "radius": 573.6202721716836,
+            "extent": 656.2921978488629
+          },
+          "loadedChunkIds": [
+            54,
+            62
+          ],
+          "addedChunkIds": [
+            54,
+            62
+          ],
+          "removedChunkIds": [
+            0
+          ],
+          "submissionMs": 312.09999999962747,
+          "gpuDrainMs": 68.79999999981374,
+          "completedRenderMs": 380.8999999994412,
+          "warmCompletedMs": [
+            12.200000000186265,
+            12.400000000372529,
+            13.899999999441206
+          ],
+          "memory": {
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 418,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 2282837.333333333
+              },
+              {
+                "width": 744,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4063232
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 6346069.333333333,
+            "landBufferBytes": 9986408,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-2-66",
+          "site": {
+            "id": 66,
+            "name": "66",
+            "x": -3514.617186467258,
+            "y": -18428.2653516973,
+            "radius": 481.59223803086206,
+            "extent": 504.8200875204188
+          },
+          "loadedChunkIds": [
+            66,
+            73
+          ],
+          "addedChunkIds": [
+            66,
+            73
+          ],
+          "removedChunkIds": [
+            54,
+            62
+          ],
+          "submissionMs": 107,
+          "gpuDrainMs": 66.40000000037253,
+          "completedRenderMs": 173.40000000037253,
+          "warmCompletedMs": [
+            13.399999999441206,
+            13.400000000372529,
+            10.299999999813735
+          ],
+          "memory": {
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 811,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4429141.333333333
+              },
+              {
+                "width": 1009,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 5510485.333333333
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 9939626.666666666,
+            "landBufferBytes": 1113142,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-2-82",
+          "site": {
+            "id": 82,
+            "name": "82",
+            "x": 10772.94349724473,
+            "y": -9905.96266143724,
+            "radius": 389.05542340362445,
+            "extent": 472.54409758723347
+          },
+          "loadedChunkIds": [
+            82
+          ],
+          "addedChunkIds": [
+            82
+          ],
+          "removedChunkIds": [
+            66,
+            73
+          ],
+          "submissionMs": 70.79999999981374,
+          "gpuDrainMs": 65.6000000005588,
+          "completedRenderMs": 136.40000000037253,
+          "warmCompletedMs": [
+            10.199999999254942,
+            9.900000000372529,
+            9.700000000186265
+          ],
+          "memory": {
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 670,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 3659093.333333333
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 3659093.333333333,
+            "landBufferBytes": 323368,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-2-28",
+          "site": {
+            "id": 28,
+            "name": "28",
+            "x": 9901.029095438029,
+            "y": -19564.656359641776,
+            "radius": 412.8163983183913,
+            "extent": 460.29949600474157
+          },
+          "loadedChunkIds": [
+            28
+          ],
+          "addedChunkIds": [
+            28
+          ],
+          "removedChunkIds": [
+            82
+          ],
+          "submissionMs": 85.30000000074506,
+          "gpuDrainMs": 79,
+          "completedRenderMs": 164.30000000074506,
+          "warmCompletedMs": [
+            9.899999999441206,
+            7.8999999994412065,
+            7.7000000001862645
+          ],
+          "memory": {
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1013,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 5532330.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 5532330.666666666,
+            "landBufferBytes": 395904,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-2-43",
+          "site": {
+            "id": 43,
+            "name": "43",
+            "x": 11734.50477735316,
+            "y": -335.01775293241917,
+            "radius": 393.33340388489887,
+            "extent": 466.4810560505817
+          },
+          "loadedChunkIds": [
+            43,
+            49
+          ],
+          "addedChunkIds": [
+            43,
+            49
+          ],
+          "removedChunkIds": [
+            28
+          ],
+          "submissionMs": 107,
+          "gpuDrainMs": 87.20000000018626,
+          "completedRenderMs": 194.20000000018626,
+          "warmCompletedMs": [
+            17,
+            7.5,
+            7.7000000001862645
+          ],
+          "memory": {
+            "chunks": 2,
+            "textures": 5,
+            "geometries": 28,
+            "programs": 13,
+            "landTextureCount": 2,
+            "landTextureSizes": [
+              {
+                "width": 911,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4975274.666666666
+              },
+              {
+                "width": 762,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4161536
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 9136810.666666666,
+            "landBufferBytes": 604120,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "cycle-2-20",
+          "site": {
+            "id": 20,
+            "name": "20",
+            "x": 2159.670181956282,
+            "y": -9074.970531170366,
+            "radius": 429.17417847784236,
+            "extent": 495.93651813293707
+          },
+          "loadedChunkIds": [
+            20
+          ],
+          "addedChunkIds": [
+            20
+          ],
+          "removedChunkIds": [
+            43,
+            49
+          ],
+          "submissionMs": 51.40000000037253,
+          "gpuDrainMs": 73.90000000037253,
+          "completedRenderMs": 125.30000000074506,
+          "warmCompletedMs": [
+            16.299999999813735,
+            8.5,
+            8.599999999627471
+          ],
+          "memory": {
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 1024,
+                "height": 491,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 2681514.6666666665
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 2681514.6666666665,
+            "landBufferBytes": 308812,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "empty-after-cycle-2",
+          "site": {
+            "id": "empty",
+            "name": "outside all terrain",
+            "x": 10000000,
+            "y": 10000000
+          },
+          "loadedChunkIds": [],
+          "addedChunkIds": [],
+          "removedChunkIds": [
+            20
+          ],
+          "submissionMs": 0.599999999627471,
+          "gpuDrainMs": 4.1000000005587935,
+          "completedRenderMs": 4.7000000001862645,
+          "warmCompletedMs": [
+            4.099999999627471,
+            3.7999999998137355,
+            4.2999999998137355
+          ],
+          "memory": {
+            "chunks": 0,
+            "textures": 4,
+            "geometries": 22,
+            "programs": 12,
+            "landTextureCount": 0,
+            "landTextureSizes": [],
+            "landTextureEstimatedRGBA8Bytes": 0,
+            "landBufferBytes": 0,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "home-final-revisit",
+          "site": {
+            "id": "home",
+            "name": "home airfield",
+            "x": 1635.1159343712861,
+            "y": 1112.3515476414532
+          },
+          "loadedChunkIds": [
+            0
+          ],
+          "addedChunkIds": [
+            0
+          ],
+          "removedChunkIds": [],
+          "submissionMs": 283.70000000018626,
+          "gpuDrainMs": 65.1000000005588,
+          "completedRenderMs": 348.80000000074506,
+          "warmCompletedMs": [
+            22.199999999254942,
+            12.800000000745058,
+            12.099999999627471
+          ],
+          "memory": {
+            "chunks": 1,
+            "textures": 5,
+            "geometries": 27,
+            "programs": 13,
+            "landTextureCount": 1,
+            "landTextureSizes": [
+              {
+                "width": 827,
+                "height": 1024,
+                "mipmaps": true,
+                "estimatedRGBA8Bytes": 4516522.666666666
+              }
+            ],
+            "landTextureEstimatedRGBA8Bytes": 4516522.666666666,
+            "landBufferBytes": 7436964,
+            "jsHeapUsedBytes": 53500000
+          }
+        },
+        {
+          "label": "empty-final",
+          "site": {
+            "id": "empty",
+            "name": "outside all terrain",
+            "x": 10000000,
+            "y": 10000000
+          },
+          "loadedChunkIds": [],
+          "addedChunkIds": [],
+          "removedChunkIds": [
+            0
+          ],
+          "submissionMs": 0.6999999992549419,
+          "gpuDrainMs": 4.2000000001862645,
+          "completedRenderMs": 4.8999999994412065,
+          "warmCompletedMs": [
+            4.2999999998137355,
+            4.2000000001862645,
+            5
+          ],
+          "memory": {
+            "chunks": 0,
+            "textures": 4,
+            "geometries": 22,
+            "programs": 12,
+            "landTextureCount": 0,
+            "landTextureSizes": [],
+            "landTextureEstimatedRGBA8Bytes": 0,
+            "landBufferBytes": 0,
+            "jsHeapUsedBytes": 53500000
+          }
+        }
+      ],
+      "lifecycle": {
+        "allEmptyViewsReleaseLand": true,
+        "initialClearMemory": {
+          "chunks": 0,
+          "textures": 4,
+          "geometries": 22,
+          "programs": 12,
+          "landTextureCount": 0,
+          "landTextureSizes": [],
+          "landTextureEstimatedRGBA8Bytes": 0,
+          "landBufferBytes": 0,
+          "jsHeapUsedBytes": 53500000
+        },
+        "finalClearMemory": {
+          "chunks": 0,
+          "textures": 4,
+          "geometries": 22,
+          "programs": 12,
+          "landTextureCount": 0,
+          "landTextureSizes": [],
+          "landTextureEstimatedRGBA8Bytes": 0,
+          "landBufferBytes": 0,
+          "jsHeapUsedBytes": 53500000
+        },
+        "textureDeltaAfterCycles": 0,
+        "geometryDeltaAfterCycles": 0,
+        "monotonicTextureGrowth": false,
+        "interpretation": "Renderer resource counts and estimated land bytes; JS heap is approximate and GC timing is not controlled. Positive deltas can be lazy global caches; monotonic retained land resources merit investigation."
+      }
+    }
+  ],
+  "errors": [],
+  "browser": "141.0.7390.37",
+  "sourceHashAfter": "dd239932b0e47b9f6a22ca7b106f05eb09fc59a72f003db201a2222e68ac1f8f",
+  "sourceChangedDuringRun": false
+}

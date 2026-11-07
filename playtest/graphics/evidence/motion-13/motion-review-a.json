@@ -1,0 +1,105 @@
+{
+  "accept": true,
+  "acceptance_scope": "Same core motion criteria as prior reviews: impact recognition, smoke fading/continuity, attached wakes, sampled camera continuity, controls/player tracking. Shoreline naturalness remains an explicit visual-quality failure, not approval of material parity.",
+  "all_images_viewed": 36,
+  "scenes": [
+    "fleet",
+    "coast"
+  ],
+  "profiles": [
+    "phone",
+    "fallback"
+  ],
+  "sample_times_seconds": [
+    0,
+    0.1,
+    0.2,
+    0.4,
+    0.6,
+    1,
+    1.5,
+    2,
+    3
+  ],
+  "findings": [
+    {
+      "category": "Hit flash and impact distinction",
+      "accept": true,
+      "evidence": "Both scenes and profiles show white player at .1/.2 returning gray by .4; small compact orange impact differs from large yellow-orange fireball at1 second. Fireball dissipates by1.5. Ring does not hide flash.",
+      "files": [
+        "fleet-phone-006.png",
+        "fleet-phone-024.png",
+        "fleet-fallback-060.png",
+        "coast-phone-006.png",
+        "coast-phone-024.png",
+        "coast-fallback-060.png"
+      ]
+    },
+    {
+      "category": "Smoke fading and continuity",
+      "accept": true,
+      "evidence": "Fleet trail overlaps into curved wisp at1.5 and older portions spread/fade at2/3. Coast smoke crosses runway and shore without hiding player; large smoke cloud at1.5 disperses by2. Fine grain and segmented far tails still look schematic.",
+      "files": [
+        "fleet-phone-090.png",
+        "fleet-fallback-180.png",
+        "coast-phone-090.png",
+        "coast-phone-120.png",
+        "coast-fallback-180.png"
+      ]
+    },
+    {
+      "category": "Wake continuity",
+      "accept": true,
+      "evidence": "Fleet wakes remain attached to sterns and taper/fade during sampled translation. Repeated scalloped bands persist; no detached block or discontinuity seen.",
+      "files": [
+        "fleet-phone-000.png",
+        "fleet-phone-060.png",
+        "fleet-fallback-120.png"
+      ]
+    },
+    {
+      "category": "Camera and player tracking",
+      "accept": true,
+      "evidence": "Fleet opening recenters as before. Coast keeps aircraft near center as runway and coast translate through turn; cyan ring remains centered on player throughout both profiles. No sampled teleport or detached marker.",
+      "files": [
+        "fleet-phone-036.png",
+        "fleet-phone-180.png",
+        "coast-phone-000.png",
+        "coast-phone-090.png",
+        "coast-fallback-180.png"
+      ]
+    },
+    {
+      "category": "Controls",
+      "accept": true,
+      "evidence": "HUD, mission, minimap, Bomb and Fire remain readable in all samples. Fleet escort behind Bomb at3 seconds does not obscure label; coast scenery and gunfire do not obscure controls.",
+      "files": [
+        "fleet-fallback-180.png",
+        "coast-phone-120.png",
+        "coast-fallback-180.png"
+      ]
+    },
+    {
+      "category": "Shoreline naturalness",
+      "accept": false,
+      "blocking_core_motion": false,
+      "evidence": "All18 coast frames retain thin pale dashes along one narrow curve parallel to shore. As scenery scrolls, these continue to look like painted road markings, without visible broad irregular foam breakup or convincing wash. Polygonal coast bends and rows of similar rocks reinforce the schematic impression. No detached shoreline seam or geometry pop is evident from samples.",
+      "files": [
+        "coast-phone-000.png",
+        "coast-phone-036.png",
+        "coast-phone-090.png",
+        "coast-phone-180.png",
+        "coast-fallback-180.png"
+      ],
+      "recommendation": "Use varied widths, irregular overlapping patches, multiple offset wash fronts, soft erosion and sparse opaque crests; preserve contrast without a continuous dashed path."
+    }
+  ],
+  "blockers": [],
+  "nonblocking": [
+    "Shoreline foam fails naturalness despite sampled continuity.",
+    "Pale carrier outlines flatten structure compared with earlier dark edges.",
+    "Grainy smoke and repeated wake bands.",
+    "Ocean ripple repetition and coarse grass/field materials."
+  ],
+  "limits": "All36 PNGs viewed independently; timestamps/events read from motion.json. Sparse stills cannot establish continuous animation smoothness or phone FPS. Shoreline visual quality is not accepted; overall boolean retains the prior core motion acceptance definition. No implementation/key/other judge records inspected."
+}

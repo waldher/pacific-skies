@@ -1,0 +1,30 @@
+{
+  "suiteHash": "68068d6fc3d154ab81b5c22ecd8832a2533367231b3cd07d68b93dc04fba3076",
+  "reports": {
+    "original-baseline": {
+      "sourceHash": "6a9bbae3c7f0741952c5830c4c1c3a5a1ece142b9129884353297e3c96bdc0ad",
+      "reportSha256": "5b2a6dc55d522cdcaf68a07beeb55d64b9bc17014ab5bc5c4626a9b5d15594d4",
+      "browser": "141.0.7390.37",
+      "dirty": true
+    },
+    "retained-six": {
+      "sourceHash": "61c5ca830e59baece895abdcc1d35c1fb082468616ac99e2cd9c16e6c1fd4514",
+      "reportSha256": "6c3a7df5e4d98ff29d468e7b69cfa008fdfbcdec3b0055f9375a33b12c0419ab",
+      "browser": "141.0.7390.37",
+      "dirty": true
+    },
+    "touch-lighting": {
+      "sourceHash": "84aac84bb34faf2573d768ea1fd519378fa7bf838524a7ccdc336357b141068d",
+      "reportSha256": "1d90ae233cfb495e9464f909994ba07566faa9ebf2832f1921120a1b14f47917",
+      "browser": "141.0.7390.37",
+      "dirty": true
+    },
+    "fronts-combined": {
+      "sourceHash": "3c87e6492c912bfb583fb65ffb39c193a0e74cc2203ea3eaf4fc8da8c54f894e",
+      "reportSha256": "24f033130a7ad05dd3fdff8d94ba84963af9673f8fb4e208bf06e12e95e6ef53",
+      "browser": "141.0.7390.37",
+      "dirty": false
+    }
+  },
+  "images": 45
+}

@@ -1,0 +1,139 @@
+From 80c6b7087f05d033773881589d4007307866f14b Mon Sep 17 00:00:00 2001
+From: Codex <codex@openai.com>
+Date: Sat, 7 Nov 2026 13:36:32 +0100
+Subject: [PATCH] Keep wingman call signs clear of navigation panels
+
+---
+ playtest/hud-labels.mjs | 37 +++++++++++++++++++++++++++++++++++++
+ src/hud-labels.js       | 22 ++++++++++++++++++++++
+ src/hud.js              | 13 +++++++++----
+ 3 files changed, 68 insertions(+), 4 deletions(-)
+ create mode 100644 playtest/hud-labels.mjs
+ create mode 100644 src/hud-labels.js
+
+diff --git a/playtest/hud-labels.mjs b/playtest/hud-labels.mjs
+new file mode 100644
+index 0000000..fa2f188
+--- /dev/null
++++ b/playtest/hud-labels.mjs
+@@ -0,0 +1,37 @@
++import assert from 'node:assert/strict';
++import { test } from 'node:test';
++import { wingLabelBaseline } from '../src/hud-labels.js';
++
++const view = { W: 852, H: 393 };
++const minimap = { x: 700, y: 12, w: 140, h: 84 };
++const objective = { x: 271, y: 12, w: 310, h: 22 };
++const hawk = { width: 28, actualBoundingBoxAscent: 7, actualBoundingBoxDescent: 1 };
++
++test('normal call signs keep their familiar position under the wingman', () => {
++  assert.equal(wingLabelBaseline(425, 160, hawk, view, [minimap, objective]), 190);
++});
++
++test('Hawk cannot label an aircraft clipped above the objective or hidden by the map', () => {
++  assert.equal(wingLabelBaseline(303, -13, hawk, view, [minimap, objective]), null);
++  assert.equal(wingLabelBaseline(708, 43, hawk, view, [minimap, objective]), null);
++  // Even if the projected text would clear the map, the aircraft is under it.
++  assert.equal(wingLabelBaseline(708, 84, hawk, view, [minimap, objective]), null);
++});
++
++test('glyph overhang cannot straddle a map edge even when its anchor is clear', () => {
++  const metrics = { ...hawk, width: 19, actualBoundingBoxRight: 15 };
++  assert.equal(wingLabelBaseline(683, 43, metrics, view, [minimap, objective]), null);
++  assert.equal(wingLabelBaseline(678, 43, metrics, view, [minimap, objective]), 73);
++});
++
++test('screen-edge fallbacks stay on-screen or hide the optional label', () => {
++  assert.equal(wingLabelBaseline(425, 380, hawk, view, [minimap, null]), 350);
++  assert.equal(wingLabelBaseline(8, 160, hawk, view, [minimap, null]), null);
++});
++
++test('portrait call signs avoid the full multi-row objective panel', () => {
++  const portrait = { W: 393, H: 852 };
++  const panel = { x: 14, y: 106, w: 310, h: 72 };
++  assert.equal(wingLabelBaseline(180, 93, hawk, portrait, [panel]), 63);
++  assert.equal(wingLabelBaseline(180, 192, hawk, portrait, [panel]), 222);
++});
+diff --git a/src/hud-labels.js b/src/hud-labels.js
+new file mode 100644
+index 0000000..215de9e
+--- /dev/null
++++ b/src/hud-labels.js
+@@ -0,0 +1,22 @@
++// Keep optional call signs attached to visible wingmen. Use the original
++// below-aircraft slot first, flip vertically when it is blocked, or omit.
++export function wingLabelBaseline(x, y, metrics, view, panels) {
++  const margin = 3;
++  if (x < 0 || x >= view.W || y < 0 || y >= view.H) return null;
++  for (const panel of panels) {
++    if (panel && x >= panel.x && x < panel.x + panel.w &&
++        y >= panel.y && y < panel.y + panel.h) return null;
++  }
++  const halfWidth = Math.max(metrics.width / 2,
++    metrics.actualBoundingBoxLeft ?? 0, metrics.actualBoundingBoxRight ?? 0) + margin;
++  const left = x - halfWidth, right = x + halfWidth;
++  if (left < 0 || right > view.W) return null;
++  for (const baseline of [y + 30, y - 30]) {
++    const top = baseline - (metrics.actualBoundingBoxAscent ?? 9) - margin;
++    const bottom = baseline + (metrics.actualBoundingBoxDescent ?? 3) + margin;
++    if (top < 0 || bottom > view.H) continue;
++    if (!panels.some(panel => panel && left < panel.x + panel.w && right > panel.x &&
++        top < panel.y + panel.h && bottom > panel.y)) return baseline;
++  }
++  return null;
++}
+diff --git a/src/hud.js b/src/hud.js
+index 1d67ed2..6780c9d 100644
+--- a/src/hud.js
++++ b/src/hud.js
+@@ -15,12 +15,13 @@ import { clamp, angDiff, TAU } from './util.js';
+ import { installationKnown, shipObserved, enemyObserved, observedAt, flightSeconds } from './intelligence.js';
+ import { drawTheaterMap } from './operations.js';
+ import { pilotMarkerBounds, visualHeight } from './projection.js';
++import { wingLabelBaseline } from './hud-labels.js';
+ const aircraftHeight = entity => visualHeight(entity, CONFIG.render.flightHeight);
+ const baseHeight = base => base.kind === 'carrier' ? CONFIG.carrier.deckHeight : CONFIG.airfield.deckHeight;
+ 
+ export function drawHud() {
+   const { W, H } = view, player = game.player;
+-  drawNavigation();
++  const navigationPanels = drawNavigation();
+   drawPilotMarker(player);
+   for (const ship of [...game.ships, ...(game.convoys || [])]) {
+     if (ship.hp <= 0 || ship.active === false || !shipObserved(game, ship)) continue;
+@@ -64,9 +65,11 @@ export function drawHud() {
+   for (const f of game.allies) {
+     if ((f.role ?? 'wing') !== 'wing' || f.hp <= 0 || !f.name) continue;
+     const [sx, sy] = w2s(f.x, f.y, aircraftHeight(f));
+-    if (sx < -20 || sx > W + 20 || sy < -20 || sy > H + 20) continue;
++    if (sx < 0 || sx >= W || sy < 0 || sy >= H) continue;
+     ctx.textAlign = 'center'; ctx.font = '600 9px system-ui'; ctx.fillStyle = '#9fe6cf';
+-    ctx.fillText(f.name + (f.kills >= CONFIG.airWar.wing.veteranKills ? ' ★' : ''), sx, sy + 30);
++    const name = f.name + (f.kills >= CONFIG.airWar.wing.veteranKills ? ' ★' : '');
++    const baseline = wingLabelBaseline(sx, sy, ctx.measureText(name), view, navigationPanels);
++    if (baseline !== null) ctx.fillText(name, sx, baseline);
+   }
+   if (player.flight === 'flying') {
+     let mark = null, best = 650;
+@@ -147,7 +150,7 @@ function drawNavigation() {
+   ctx.fillStyle = 'rgba(8,27,39,.88)'; rr(mx, my, mw, mh, 10);
+   drawTheaterMap(ctx, game, {x:mx, y:my, w:mw, h:mh});
+   ctx.textAlign='right'; ctx.font='600 9px system-ui'; ctx.fillStyle='#adc6ca'; ctx.fillText('MAP ↗', mx+mw-7,my+mh-5);
+-  drawArrows();
++  return [{ x: mx, y: my, w: mw, h: mh }, drawArrows()];
+ }
+ 
+ // Guidance arrows, as on a modern flight HUD: gold for the current objective,
+@@ -223,7 +226,9 @@ function drawArrows() {
+       ctx.fillText(arrow.label+detail,left+24,y+14,width-34);
+     });
+     ctx.restore();
++    return { x: left, y: top, w: width, h: (labels.length - 1) * 25 + 22 };
+   }
++  return null;
+ }
+ 
+ const el = id => document.getElementById(id);
+-- 
+2.51.1
+

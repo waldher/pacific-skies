@@ -1,0 +1,128 @@
+From a0cf56fd910c7cc55e672d67d7aa5f9c7470f6c0 Mon Sep 17 00:00:00 2001
+From: Codex <codex@openai.com>
+Date: Sat, 7 Nov 2026 07:32:32 +0100
+Subject: [PATCH] Try restrained fine ripples on the open ocean
+
+---
+ assets/ocean/README.md           |   9 +++++++++
+ assets/ocean/ocean-fine-256.webp | Bin 0 -> 3078 bytes
+ src/world.js                     |   8 ++++----
+ 3 files changed, 13 insertions(+), 4 deletions(-)
+ create mode 100644 assets/ocean/ocean-fine-256.webp
+
+diff --git a/assets/ocean/README.md b/assets/ocean/README.md
+index c7e42a5..10f1411 100644
+--- a/assets/ocean/README.md
++++ b/assets/ocean/README.md
+@@ -14,3 +14,12 @@ Exact prompt:
+ Use case: photorealistic-natural. Asset type: actual seamless tileable deep ocean surface diffuse texture for a mobile naval game, not a screenshot or landscape picture. Create one square material texture, a perfectly perpendicular orthographic overhead view of a patch of deep Pacific seawater. Uniform deep muted dark blue with subtle teal undertones. Naturally irregular fine wind-driven ripples with coherent prevailing wind direction, short overlapping curving wavelets and subtle gently varied surface normals; physically plausible liquid, fine organic interference, evenly detailed edge to edge. Very restrained medium-low contrast diffuse lighting, no dramatic directional light, no large swells. Surface should read as deep ocean, not brushed metal, plastic, cloth, wood grain, smooth gradient, or long parallel streaks. No isolated white flecks, no foam, no whitecaps, no sparkles, no direct sun reflections or bright glare, no circles, no vortices. Perfectly seamless on all four edges, no focal point, no vignette, no baked shadows. No coast, land, boats, ships, wakes, buildings, objects, horizon, perspective, text, UI, grid or border. Albedo / surface material only, useful as a subtle scrolling texture with shallow natural ripple luminance from which a lightweight shader may derive gradients. Entire square filled with the single water material.
+ 
+ Candidate 15 decodes the 512px WebP once into a 256px display-encoded RGBA8 texture. It preserves the previous 0–0.125 linear quantization, then bakes the fixed tint, Three ACES tone mapping at exposure 1, and sRGB output conversion. This avoids repeating those operations for every ocean pixel. One slowly drifting sample serves both profiles; native also samples cloud shade and applies a fitted display-space attenuation. Exhaustive source-pixel CPU comparison across 11 cloud levels measured maximum error 0.725/255; this is an approximation, not identical arithmetic. Revalidate if source material, tint, exposure, output space, or cloud range changes. The procedural fallback retains normal shader tone mapping. Mirrored wrapping removes edge-value discontinuities.
++
++## Recovered fine-ripple trial
++
++The runtime loads `ocean-fine-256.webp`, an original diffuse material with finer, lower-contrast ripples. The existing 256px display bake, mirrored wrapping, drift and texture sampling budget remain in use. Cloud shade now scales all three display channels equally by `1 - 0.68 * shade`, from 1 to 0.864 at the configured strength. This preserves display-space hue and saturation. It is an artistic darkening curve. The preceding per-channel fit and its sub-byte bound applied to the earlier asset only. With the new WebP, a CPU comparison of all 65,536 decoded source texels across 11 shade levels finds a 7.163-byte maximum error for the previous fit and a 3.392-byte maximum difference for the new art curve versus linear-light shading. This check does not simulate browser filtering or certify appearance.
++
++Generated with built-in image generation on 2026-11-07. Original `exec-2877b59f-9433-4dc9-8463-1c2ac26f3b41.png` is 1254×1254, SHA-256 `6ec29eba1d2be8829ab89975546e39c6767a3d0a7b5193edf92f4f0c1264312e`. The 3,078-byte runtime WebP was prepared with ImageMagick Lanczos resize to 256×256 and WebP quality 90. Runtime SHA-256 `4f0049445a6095534b994f9e39e2c3785c87644be3fc2bb5a4351856e74c1145`. Opposite-edge mismatch measures 3.74/3.92 RGB byte values on average. Mirrored wrapping avoids a value jump, while repeated structures still require visual review.
++
++Exact prompt:
++Use case: photorealistic-natural. Asset type: original square seamless diffuse color texture for the open ocean in a real top-down Pacific aircraft game. Precisely vertical overhead view at moderate altitude, tightly cropped to a uniform patch of open deep Pacific seawater. Low-contrast dark navy-blue and subtle blue-green. Restrained natural wind-driven small capillary ripples and medium wavelets, with a faint irregular staggered rhythm and organic variation in directions. Most of the square is quiet dark water. The wave structures are shallow, short and irregular, not long parallel lines or broad folds. Gentle broken blue reflections describe the small waves without bright specular speckle. Approximately uniform color, value, and texture across the entire square, diffuse overcast light. This texture will be tiled and reduced to 256 pixels for a low-end phone. Maintain a small, consistent wave scale that remains legible when reduced. Seamless repeat at all four edges. No whitecaps, foam, wake, shoreline, boats, land, objects, horizon, cloud reflections, hotspot, spotlight, vignette, broad directional gradient, large waves, braided lines, fabric, crumpled paper, shiny plastic, typography, border, or grid.
+diff --git a/assets/ocean/ocean-fine-256.webp b/assets/ocean/ocean-fine-256.webp
+new file mode 100644
+index 0000000000000000000000000000000000000000..87c8bbbe6100924acf2497c9a78542b67d0e1bb3
+GIT binary patch
+literal 3078
+zcmV+h4Egg?Nk&Hg3jhFDMM6+kP&gp+3jhGHO8}h#DgXfh0X~sLoJ=L7BBCNO>M*bp
+z329|*_*w6|za>(k#!vQt%0ehR1PF-<uHFF0AHW$E*@08nF3K~fviyvj^FHZ+^8WjI
+z=lW;%zWP1(EXl{0ZQuR#yKw)P{*U#j|Nr&D{I~>aU*!7|xLT2<saIlD0MAUF@NuZe
+z1WeIuRANQJQjDpj+vJ-*^FNSPcf>=i8G6`78^CAoK5u300D;^U>HC~Z!Ie}Gh%*es
+z?2;%P;c45@fm=>~^dW9aZVOTbXlY4<26n;ug5D14)7@F*TXov3t(L0<EY$c|aeRU|
+zsw7y(0LTU=M!T{><j26OKdhz6ZQ8s4S)fd-8u*Na$bsjXkeS?bJ7kwHKJ?N*S;^j0
+z(ueF06F?N`5cmj*q$Tf{w7>6thzOP5m34PPRgCT?o*&?~C7z+lUbm|NO_t68QS$ve
+z$F7Sj@-aUKjdVba;=n$KdC(+sv0;m5Z3+(cu3C1`oM%Dd_uSAwBjfrvZxlJkSS9P`
+zX-i};IsW^8?|xSo$v^24poyo?bw&u^6T{=Gt!eNpjQ?c~NA`p_KPH2CmAaS}j6nkL
+zMd${CKfd<%4_^$i(#^A8G+=6TkyPxB?xD~i6J5W+?wW78d>QBs#G1-*2$;RyKV)DN
+zuKJu2j-_pT1)JgX_KtiwD-*n_?<B(psvCH<OeK6JA-B;3t}yCY6D|(~lS8Wv@5A8<
+z>42IbOt*Y_BR*FpRRZEjO}u$3=VF;ifqe^e_xY5{YasSX9T19ELChr?AV~OZT5@ft
+zv+7$DT+e7p!6%#Dg*Kaj0092<QwRh2_6(SYU(VdE$?<=ieSPrD+@YQj+3!D{c^9_j
+zEQc2+16>dDt}<H3*K2bA8%4h;9oVMLHC*9pT`qjey5RZ}Sl%kSoOYN#@QN8z>+PxG
+zoF}g(Rlw0<#o6_(QNVdc|6iDC^vE!0U~wL`r;SI`@`TO*>(s3dtMV|+7}{r*2iG6?
+zICN|V_<I>Et<a5dIWe2yO_QrywxpC80R`Ai+}t#E3;I12eOGxaqd|YypQksi!V+l1
+zBS6<z;H&h6R?K2jVSraq!1qy4(5fchBt*navHzHuNg>cVVgruFG;InJi}k!YsdzCW
+z`J<+9+`466LED+W)fUaB?O^u#O`FUuTd+<j??Ksi0uQ~qPB6gL6&gIzFwTOgnm13x
+zsk*(sto9<^y^FW6k^Q7~Bpl6uev6SO|I9(Oh>vX}Y{-_B`B&k{{>>6j*%dWx?HsHL
+z{$AJECMNvGFbz%lpPxxS=vpOSA5l^1hRS|CV;b5?JBUiH*U&Osz$IFst~?IJP<46Y
+zv9<r+10WlNbCHd2_I1Qm|K)Hm3jeC>!;mYA(t9n_)-eBhktN~Ta#;MCMfea9`bdTx
+z4zdt)zG`&<KM&^6sGbmWToZ!w>H86vF3u`sv(|mSy(-Uf5j2hl0UlzpKSe3+!KIqX
+zsP!1iN!W%ZmrOi2oEw&rCYL3!u|<k}S~X_SaL>)Y>q-%~EyBWO2s>*u^6DD9+ZjDh
+zkeXlGOKZySx43K5uJAIv`O^Bqj=Z?9x!Nk(aW^OTB7OknqGHuFUg2RHCiyvtshnuv
+zeLPxY0f=EVlhYU1xFwzTH2o%<J!kP{jf~`X?TUr#&hYXwyUYF)B*1%H;a7hy3NLT2
+zR#+o7T_-KRT#|^#{D|Q_cEQxa-B+Xh4OC$zF8Z?)J4!qk3NZjNEqG3bFYTfsJWbPm
+zSWqHp;;-aW<`>R8Z-e#I{L-m~BmMkuT6K?DDl=i4%j{GNuY#A2Sj{_*%R9_4J?r89
+zfl^n4qkQJzwh2m&x~V{vYEHY3`qunT%insyQ3jHv6vKJ0$ASWtKSY6DhS{61(0koM
+z21>~eSf0kz4L>EN0^U2&)01tJpdT!cs1UymGE`H?pc$>y5Zvh&troC3?uzM*Cf8_S
+z37?PvyMB#K+r!VYw9DLoHdr<~eg?Fs;wX!i>`u@e6+2}B379TVfC`viA?KIiOi`OD
+zzH8+m1;U?DBae567)<M~yR=(RoZ(1#dc!5$fSD@OK=kfqs6o6fEqg}G=}|H{$0kGQ
+zR@+9?=y(H;+!q*{mIpu0X(g#>$};px)k1SagQT`fdda%6d9|&Oe+T9Ke!%!UKcK5s
+z$_dW%ty_-3u&~n-Q7_ODZ@3YIs!4kt*)Bt5zlesVjWk6KcXz0v5>ONLZqxIsS%=*4
+zrNh_GBS@z<(}e6|k;Mm(q@2J_nx?iVSK{#`BNj)e>#%NbE14~<2v)>}z?e)j0WJ{e
+z_O-~}?5fKrES;_TAl_||H&heU%8aqakuHgV$uQjQnCBYM2#~JGMn$;#EW&QQO90{4
+zmY%gMg}|!>cmvI-9<qf4vrX{t&MWpRe_~W3wH}XMta~oum)3Bap4Q=uvi95Z<w-S9
+zLpSET>e;Hdenk~q2v>@=OfMU1^LnSwVMd{4+a6YE!V!N|+{ayB1S~Unn;$RD<I%sG
+z#b9MMy|+<WM*`bdNk>3pO0Cey4)*Chy?OlON=^mv<qA#SyW)n>mb*V$y?kk`JNgvz
+znwj~8md<={M*~#^PRv9%@E?2EMdra>)E{%^>yBgK?=6s}z-_(hLG^s$SQIsDqX_oh
+z_2QNq;(JgE!}w0#Ds1)uqc+S50BKeR5H#__C8=0A3TBZbsS6cMY6m6xl3T3J1Zb8$
+z$dd%gb4<Je`IRId8DgU?G3N8AY_jt7$@K=-FuDhC&vK?alx6R!bbZTcWCQ^ae$sS{
+z9K`0P4tkH;lH%k(cb8Dk{V3;wf8oaA?E;1HOHMwk3XT%3szKmZGvRKnv93fSg@FB^
+z@2@po(BTBxo_gYT<(r3gWS-#bT10{QE(Zd&O~jJS$X+;Zg6gQ*>0cUc*kB=$AZ0@2
+z9}^5FkM-y31~DpSQQk*YvFpg=d1pIZ&YVL^)IRFo%LpXVil!wqrkK*9)-SMn<{_|F
+z1wpE1TQcyc5}xMY!_mjNpZ}GaObd#nD%9kjgU=?Jw2Y$9);wL}4yZeo5d3!lo@F@i
+zW*vmZUi8Wy%1mSe<NA(@ZgPw8*!cSC*?yLn$`d>cio>HlMdO#*WcP`D=8C@7w&Bf`
+zqTpIdb4M)z3TG%N#=mQ+$&cl20=<BR=BL<RF_h8O?HvYX-=C43*!$yZ4+@!N3GJUX
+zx4Wu5U*&}{<I8e4qq0@HRSEAJy52vEdHUX}-z`)P5E81xWGe(eNpwCpJg_XuT-2H1
+zT9Y~TT)zq^wh}r>*t6F)6Qd>BYaj`7Wai#V6qvt|qlV?4nCQurf)|A9X)YOQ6EbQ)
+zWwjZU34c0?Lw*_sYN7fY^e_X=LE}Gslxgo-^nHQ>t$>JX1;40vO&+OPQy5SS5p|iT
+z(}FJm9N(HHu9)!K6j!|9X6=)FlTc7XnQ=C<Vq-RuLZscrC!g}r`?h$e)-42G6!0o_
+zasR9yhkZqVzb?AkAr?<dBl!AXs`cI>Gp{L2r?+cex$SfX4DHPe(}Di9Q)=x&^-1}K
+z4=Ux3i24M&JsaktnRg9Rd6R>;GBuxUQCrr5q|pSd?R5Z<Lj}gz{S@E_o_u=*Ez0eS
+z!61UmMUe;rWi*|_7IzPLX&sX1B?#zop|+ER;eLIX+JBiYv`c?qgh!2yq;xA?kNBeR
+zVi+kYdbT3~ngiBLxe9c11b}O6T|F24BPUh=I&T{GbR>z5`1(U2RJ!cQu$fpXGf?<w
+z)B<5DvT9>ufqB#6>W@5BPY+9Vn~}KixX-ZTuR1z^a7&M!C**|*TTCLybo^Khzo&C1
+zmPD7UTk#{$16abrLR_Y~XbrbsuEfxUj<C;FK<%{P*5Uix|2~#?Z`!^PhnHAG>Ec1s
+z|4RX_ZGtuKjD?sl9&f5oYd^9D-a%7?`+5INNJ~<nlL^lY;qMK+AM<)(?2hk9^hiBx
+zh08V0vn-C}JT?BK)AHo=izcqZu2#%?XR+bxI>`73Dez{4`52*iV>6={9@6(td<Vd5
+UCZXA3nH8_eu3EY9zN++q0GEdv(f|Me
+
+literal 0
+HcmV?d00001
+
+diff --git a/src/world.js b/src/world.js
+index 4148a8d..2641950 100644
+--- a/src/world.js
++++ b/src/world.js
+@@ -51,7 +51,7 @@ export function preloadOceanMaterial() {
+   oceanReady = new Promise(resolve => {
+     let done = false;
+     const timeout = setTimeout(() => { done = true; resolve(false); }, 2500);
+-    new THREE.TextureLoader().load(new URL('../assets/ocean/ocean-512.webp', import.meta.url).href, texture => {
++    new THREE.TextureLoader().load(new URL('../assets/ocean/ocean-fine-256.webp', import.meta.url).href, texture => {
+       if (done) { texture.dispose(); return; }
+       done = true; clearTimeout(timeout);
+       // Bake display-referred RGB once; avoid fullscreen ACES and gamma math.
+@@ -117,10 +117,10 @@ export function createWorld(scene) {
+           vec3 surface = texture2D(oceanTex, p / 640.0 + drift * .00012).rgb;
+           if (detail > .5) {
+             float cloud = vnoise((p + drift * cloudSpeed) * .0011);
+-            // Least-squares response over this fixed asset and shadow0..0.2.
+-            // CPU validation including filtering is <1/255 error per channel.
++            // Darken the display-encoded material without shifting its hue.
++            // This is an artistic response, not a fit to linear-light shading.
+             float shade=smoothstep(.5,.78,cloud)*cloudStrength;
+-            surface *= vec3(1.0)-vec3(0.0,.69803253,.68415603)*shade;
++            surface *= 1.0 - .68 * shade;
+           }
+           // Already ACES/sRGB encoded. The procedural fallback below retains
+           // both normal conversion chunks and works without the loaded asset.
+-- 
+2.51.1
+

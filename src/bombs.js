@@ -41,7 +41,7 @@ export function updateBombs(game, dt) {
       else if (s.team === 'jp') damageShip(s, damage);
       hit = true; break;
     }
-    if (hit || land) explosion(b.x, b.y, true);
+    if (hit || land) explosion(b.x, b.y, true, land ? 8.5 : 11);
     else splash(b.x, b.y);
   }
   game.bombs = game.bombs.filter(b => b.life > 0);

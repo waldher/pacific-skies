@@ -14,13 +14,16 @@ import { CONFIG } from './config.js';
 import { clamp, angDiff, TAU } from './util.js';
 import { installationKnown, shipObserved, enemyObserved, observedAt, flightSeconds } from './intelligence.js';
 import { drawTheaterMap } from './operations.js';
+import { visualHeight } from './projection.js';
+const aircraftHeight = entity => visualHeight(entity, CONFIG.render.flightHeight);
+const baseHeight = base => base.kind === 'carrier' ? CONFIG.carrier.deckHeight : CONFIG.airfield.deckHeight;
 
 export function drawHud() {
   const { W, H } = view, player = game.player;
   drawNavigation();
   for (const ship of [...game.ships, ...(game.convoys || [])]) {
     if (ship.hp <= 0 || ship.active === false || !shipObserved(game, ship)) continue;
-    const [sx, sy] = w2s(ship.x, ship.y);
+    const [sx, sy] = w2s(ship.x, ship.y, ship.kind === 'transport' ? 10 : 11.5);
     if (sx < -100 || sx > W + 100 || sy < -150 || sy > H + 150) continue;
     ctx.textAlign = 'center'; ctx.font = '700 11px monospace';
     ctx.fillStyle = ship.team === 'us' ? '#83edcb' : '#ffad91';
@@ -34,7 +37,7 @@ export function drawHud() {
   for (const field of game.airfields || []) {
     const holding = game.territories.find(t => t.id === field.territory || t === field.territory);
     if (field.owner !== 'us' && (!holding || !observedAt(game, holding))) continue;
-    const [sx, sy] = w2s(field.x, field.y);
+    const [sx, sy] = w2s(field.x, field.y, CONFIG.airfield.deckHeight);
     if (sx < -80 || sx > W + 80 || sy < -80 || sy > H + 80) continue;
     ctx.textAlign = 'center'; ctx.font = '700 10px system-ui';
     ctx.fillStyle = field.owner === 'us' ? '#82dfbc' : '#ffad91';
@@ -45,7 +48,7 @@ export function drawHud() {
     }
   }
   for (const territory of game.territories.filter(t => t.role && t.role !== 'airfield' && (t.owner === 'us' || observedAt(game,t)))) {
-    const [sx, sy] = w2s(territory.x, territory.y);
+    const [sx, sy] = w2s(territory.x, territory.y, 8.5);
     if (sx < -80 || sx > W + 80 || sy < -80 || sy > H + 80) continue;
     ctx.textAlign = 'center'; ctx.font = '700 10px system-ui';
     ctx.fillStyle = territory.owner === 'us' ? '#82dfbc' : '#ffad91';
@@ -59,7 +62,7 @@ export function drawHud() {
   // Wingmen wear their call signs; a lead pipper marks where to shoot the nearest fighter.
   for (const f of game.allies) {
     if ((f.role ?? 'wing') !== 'wing' || f.hp <= 0 || !f.name) continue;
-    const [sx, sy] = w2s(f.x, f.y);
+    const [sx, sy] = w2s(f.x, f.y, aircraftHeight(f));
     if (sx < -20 || sx > W + 20 || sy < -20 || sy > H + 20) continue;
     ctx.textAlign = 'center'; ctx.font = '600 9px system-ui'; ctx.fillStyle = '#9fe6cf';
     ctx.fillText(f.name + (f.kills >= CONFIG.airWar.wing.veteranKills ? ' ★' : ''), sx, sy + 30);
@@ -73,7 +76,7 @@ export function drawHud() {
     }
     if (mark) {
       const t = best / CONFIG.player.bulletSpeed, v = mark.v ?? mark.speed;
-      const [lx, ly] = w2s(mark.x + Math.cos(mark.a) * v * t, mark.y + Math.sin(mark.a) * v * t);
+      const [lx, ly] = w2s(mark.x + Math.cos(mark.a) * v * t, mark.y + Math.sin(mark.a) * v * t, aircraftHeight(mark));
       ctx.strokeStyle = 'rgba(255,214,122,.9)'; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.arc(lx, ly, 6, 0, TAU); ctx.stroke();
       ctx.fillStyle = 'rgba(255,214,122,.9)'; ctx.fillRect(lx - 1, ly - 1, 2, 2);
@@ -83,7 +86,7 @@ export function drawHud() {
   ctx.fillStyle = 'rgba(255,120,90,0.9)';
   for (const e of game.enemies) {
     if (!enemyObserved(game, e)) continue;
-    const [sx, sy] = w2s(e.x, e.y);
+    const [sx, sy] = w2s(e.x, e.y, aircraftHeight(e));
     if (sx > -10 && sx < W + 10 && sy > -10 && sy < H + 10) {
       if (e.strikeRole && e.phase !== 'retreat') {
         ctx.font = '650 9px system-ui'; ctx.textAlign = 'center'; ctx.fillStyle = '#ffbd83';
@@ -136,32 +139,35 @@ export function hudArrows(game) {
   if (game.waypoint) {
     const { title, detail } = flightPresentation(game);
     const site = game.territories.find(t => t.id === game.waypoint.siteId);
+    const targetShip = game.ships.find(s => s.id === game.waypoint.shipId);
+    const height = targetShip ? 11.5 : site ? 8.5 : 0;
     const progress = site && site.owner !== 'us' && site.progress > 0 ? site.progress / CONFIG.conquest.captureSeconds : 0;
-    arrows.push({ kind: 'objective', x: game.waypoint.x, y: game.waypoint.y, label: title.toUpperCase(), sub: detail, arrived: coursePhase(game) === 'arrived', progress });
+    arrows.push({ kind: 'objective', height, x: game.waypoint.x, y: game.waypoint.y, label: title.toUpperCase(), sub: detail, arrived: coursePhase(game) === 'arrived', progress });
   }
   const bases = availableBases(game).map(b => resolveBase(game, b.id)).filter(Boolean).sort((a, b) => near(p, a) - near(p, b));
   const base = bases[0];
-  if (base && !(game.waypoint && near(game.waypoint, base) < 1)) arrows.push({ kind: 'base', x: base.x, y: base.y, label: 'NEAREST BASE', sub: `${base.kind === 'carrier' ? 'carrier · ' : ''}${flightSeconds(game, base)}s` });
+  if (base && !(game.waypoint && near(game.waypoint, base) < 1)) arrows.push({ kind: 'base', height: baseHeight(base), x: base.x, y: base.y, label: 'NEAREST BASE', sub: `${base.kind === 'carrier' ? 'carrier · ' : ''}${flightSeconds(game, base)}s` });
   const raiders = game.enemies.filter(e => e.strike && e.hp > 0 && e.phase !== 'retreat' && !e.rescue && enemyObserved(game, e));
   if (raiders.length) {
     const first = raiders.reduce((a, b) => near(p, a) < near(p, b) ? a : b);
     const formation = raiders.filter(e => e.targetBaseId === first.targetBaseId), target = raidTarget(first.targetBaseId);
-    arrows.push({ kind: 'raid', x: first.x, y: first.y, label: `RAID ×${formation.length}`, sub: (target?.name || 'friendly base').toUpperCase() });
+    arrows.push({ kind: 'raid', height: aircraftHeight(first), x: first.x, y: first.y, label: `RAID ×${formation.length}`, sub: (target?.name || 'friendly base').toUpperCase() });
   }
   return arrows;
 }
 function drawArrows() {
-  const { W, H } = view, [px, py] = w2s(game.player.x, game.player.y);
-  const arrows = hudArrows(game), headings = [];
+  const { W, H } = view, [px, py] = w2s(game.player.x, game.player.y, aircraftHeight(game.player));
+  const arrows = hudArrows(game), headings = [], labels = [];
+  // Navigation text stays in a stable margin panel, not across the aircraft.
+  // The matching colored chevron still points from the player toward the target.
   arrows.forEach((arrow, i) => {
-    const [sx, sy] = w2s(arrow.x, arrow.y);
+    const [sx, sy] = w2s(arrow.x, arrow.y, arrow.height ?? 0);
     ctx.save(); ctx.strokeStyle = ctx.fillStyle = ARROWS[arrow.kind]; ctx.lineWidth = 1.5;
     if (arrow.kind === 'objective' && arrow.arrived) {
       // A ring at the objective; it fills clockwise as a capture progresses.
       ctx.globalAlpha = .55; ctx.beginPath(); ctx.arc(sx, sy, 18, 0, TAU); ctx.stroke();
       if (arrow.progress > 0) { ctx.globalAlpha = .95; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.arc(sx, sy, 18, -Math.PI / 2, -Math.PI / 2 + TAU * arrow.progress); ctx.stroke(); }
-      ctx.globalAlpha = .9; ctx.font = '650 9px system-ui'; ctx.textAlign = 'center'; ctx.fillText(arrow.label, sx, sy + 32);
-      if (arrow.sub) { ctx.font = '600 8px system-ui'; ctx.fillText(arrow.sub, sx, sy + 42); }
+      labels.push({arrow,angle:Math.atan2(sy-py,sx-px)});
       ctx.restore(); return;
     }
     // On-screen targets need no arrow; the raid's attackers already carry labels.
@@ -175,15 +181,26 @@ function drawArrows() {
     ctx.beginPath(); ctx.moveTo(-5, -5); ctx.lineTo(3, 0); ctx.lineTo(-5, 5);
     if (arrow.kind === 'raid') { ctx.closePath(); ctx.fill(); } else ctx.stroke();
     ctx.rotate(-a);
-    if (arrow.label) {
-      // A stacked arrow labels above its chevron, the one beneath it below.
-      const above = stacked % 2 === 1, ly = above ? (arrow.sub ? -20 : -10) : 18;
-      ctx.font = '650 9px system-ui'; ctx.textAlign = 'center';
-      ctx.fillText(arrow.label, 0, ly);
-      if (arrow.sub) { ctx.font = '600 8px system-ui'; ctx.fillText(arrow.sub, 0, ly + 10); }
-    }
+    if (arrow.label) labels.push({arrow,angle:a});
     ctx.restore();
   });
+  if(labels.length) {
+    const landscape=W>=600, width=landscape?Math.min(310,W-370):Math.min(310,W-28);
+    const left=landscape?(W-width)/2:14, top=landscape?12:106;
+    ctx.save();
+    labels.forEach(({arrow,angle},i)=>{
+      const y=top+i*25;
+      ctx.globalAlpha=1;ctx.fillStyle='rgba(8,27,39,.86)';rr(left,y,width,22,6);
+      ctx.strokeStyle=ctx.fillStyle=ARROWS[arrow.kind];ctx.lineWidth=1.5;
+      ctx.save();ctx.translate(left+12,y+11);ctx.rotate(angle);
+      ctx.beginPath();ctx.moveTo(-4,-4);ctx.lineTo(2,0);ctx.lineTo(-4,4);ctx.stroke();ctx.restore();
+      ctx.font='650 9px system-ui';ctx.textAlign='left';
+      const detail=arrow.sub?' · '+arrow.sub:'';
+      // Canvas maxWidth keeps long translated/objective names inside the panel.
+      ctx.fillText(arrow.label+detail,left+24,y+14,width-34);
+    });
+    ctx.restore();
+  }
 }
 
 const el = id => document.getElementById(id);

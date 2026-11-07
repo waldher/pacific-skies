@@ -1,3 +1,4 @@
+import { surfaceRound } from './projectile-visual.js';
 // Surface patrols and carrier defensive fire. Ships require explosive ordnance.
 import { CONFIG } from './config.js';
 import { game } from './state.js';
@@ -20,7 +21,7 @@ export function updateShips(dt) {
       s.fireCd = s.kind === 'carrier' && s.team === 'us' ? CONFIG.carrier.fireCooldown : CONFIG.ship.fireCooldown;
       const speed = CONFIG.ship.bulletSpeed;
       const rounds = s.team === 'jp' ? game.ebullets : game.bullets;
-      rounds.push({ x: s.x, y: s.y, vx: Math.cos(s.gunAngle) * speed, vy: Math.sin(s.gunAngle) * speed,
+      rounds.push({ ...surfaceRound(s, target, speed, 13), x: s.x, y: s.y, vx: Math.cos(s.gunAngle) * speed, vy: Math.sin(s.gunAngle) * speed,
         life: range / speed, fromShip: true, damage: CONFIG.ship.bulletDamage });
     }
   }
@@ -50,7 +51,7 @@ export function damageShip(s, amount = 1) {
   if (s.hp === 0) {
     s.sinking = 0;
     game.score += CONFIG.ship.score;
-    explosion(s.x, s.y, true); splash(s.x, s.y);
+    explosion(s.x, s.y, true, 8); splash(s.x, s.y);
     notify(game, s.kind === 'carrier' ? 'Enemy carrier sunk · flight deck silenced' : 'Destroyer escort sunk');
   }
 }

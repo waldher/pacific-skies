@@ -1,0 +1,268 @@
+{
+  "comparison": [
+    "raider-physical-paired",
+    "raider-instancing"
+  ],
+  "rows": [
+    {
+      "profile": "phone",
+      "scene": "airfield",
+      "changedPixels": 0,
+      "maxChannelDelta": 0,
+      "p50Ms": [
+        21.800000000745058,
+        20.899999998509884
+      ],
+      "p95Ms": [
+        26.100000001490116,
+        24.300000000745058
+      ],
+      "drawCalls": [
+        22,
+        22
+      ],
+      "triangles": [
+        30877,
+        30877
+      ],
+      "aircraft": [
+        1,
+        1
+      ]
+    },
+    {
+      "profile": "phone",
+      "scene": "coast",
+      "changedPixels": 0,
+      "maxChannelDelta": 0,
+      "p50Ms": [
+        19,
+        17
+      ],
+      "p95Ms": [
+        26.599999997764826,
+        20.199999999254942
+      ],
+      "drawCalls": [
+        22,
+        22
+      ],
+      "triangles": [
+        30877,
+        30877
+      ],
+      "aircraft": [
+        1,
+        1
+      ]
+    },
+    {
+      "profile": "phone",
+      "scene": "fleet",
+      "changedPixels": 0,
+      "maxChannelDelta": 0,
+      "p50Ms": [
+        14.099999997764826,
+        10
+      ],
+      "p95Ms": [
+        19.100000001490116,
+        13.199999999254942
+      ],
+      "drawCalls": [
+        8,
+        8
+      ],
+      "triangles": [
+        4233,
+        4233
+      ],
+      "aircraft": [
+        1,
+        1
+      ]
+    },
+    {
+      "profile": "phone",
+      "scene": "dogfight",
+      "changedPixels": 1,
+      "maxChannelDelta": 12,
+      "p50Ms": [
+        14.699999999254942,
+        14.699999999254942
+      ],
+      "p95Ms": [
+        18.400000002235174,
+        17.199999999254942
+      ],
+      "drawCalls": [
+        26,
+        16
+      ],
+      "triangles": [
+        20487,
+        20487
+      ],
+      "aircraft": [
+        7,
+        7
+      ]
+    },
+    {
+      "profile": "phone",
+      "scene": "stress",
+      "changedPixels": 3,
+      "maxChannelDelta": 22,
+      "p50Ms": [
+        24.199999999254942,
+        24
+      ],
+      "p95Ms": [
+        25.699999999254942,
+        29.600000001490116
+      ],
+      "drawCalls": [
+        80,
+        34
+      ],
+      "triangles": [
+        69249,
+        69249
+      ],
+      "aircraft": [
+        25,
+        25
+      ]
+    },
+    {
+      "profile": "fallback",
+      "scene": "airfield",
+      "changedPixels": 0,
+      "maxChannelDelta": 0,
+      "p50Ms": [
+        10.5,
+        10.900000002235174
+      ],
+      "p95Ms": [
+        18,
+        14.299999997019768
+      ],
+      "drawCalls": [
+        22,
+        22
+      ],
+      "triangles": [
+        30877,
+        30877
+      ],
+      "aircraft": [
+        1,
+        1
+      ]
+    },
+    {
+      "profile": "fallback",
+      "scene": "coast",
+      "changedPixels": 0,
+      "maxChannelDelta": 0,
+      "p50Ms": [
+        8.300000000745058,
+        8.800000000745058
+      ],
+      "p95Ms": [
+        14.5,
+        12.900000002235174
+      ],
+      "drawCalls": [
+        22,
+        22
+      ],
+      "triangles": [
+        30877,
+        30877
+      ],
+      "aircraft": [
+        1,
+        1
+      ]
+    },
+    {
+      "profile": "fallback",
+      "scene": "fleet",
+      "changedPixels": 0,
+      "maxChannelDelta": 0,
+      "p50Ms": [
+        6.399999998509884,
+        5.299999997019768
+      ],
+      "p95Ms": [
+        14.100000001490116,
+        6.5
+      ],
+      "drawCalls": [
+        8,
+        8
+      ],
+      "triangles": [
+        4233,
+        4233
+      ],
+      "aircraft": [
+        1,
+        1
+      ]
+    },
+    {
+      "profile": "fallback",
+      "scene": "dogfight",
+      "changedPixels": 0,
+      "maxChannelDelta": 0,
+      "p50Ms": [
+        8.399999998509884,
+        8.299999997019768
+      ],
+      "p95Ms": [
+        11.399999998509884,
+        12.099999997764826
+      ],
+      "drawCalls": [
+        26,
+        16
+      ],
+      "triangles": [
+        20487,
+        20487
+      ],
+      "aircraft": [
+        7,
+        7
+      ]
+    },
+    {
+      "profile": "fallback",
+      "scene": "stress",
+      "changedPixels": 9,
+      "maxChannelDelta": 88,
+      "p50Ms": [
+        14.199999999254942,
+        14.199999999254942
+      ],
+      "p95Ms": [
+        18.5,
+        18.799999997019768
+      ],
+      "drawCalls": [
+        80,
+        34
+      ],
+      "triangles": [
+        69249,
+        69249
+      ],
+      "aircraft": [
+        25,
+        25
+      ]
+    }
+  ]
+}

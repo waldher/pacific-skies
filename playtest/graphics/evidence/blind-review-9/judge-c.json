@@ -1,0 +1,329 @@
+{
+  "meta": {
+    "judge": "C",
+    "packet": 9,
+    "categories": [
+      "readability",
+      "coherence",
+      "lighting_depth",
+      "environment_material_richness",
+      "effects_polish"
+    ],
+    "weights": [
+      0.3,
+      0.2,
+      0.2,
+      0.15,
+      0.15
+    ],
+    "inspection": "All 25 images individually inspected using view_image at phone-like landscape display scale. No keys, source or other judges read. Own prior packet images hashed only to preserve exact unchanged anchors.",
+    "blinding_limitations": "Repeated controls and visual families recognizable. Sci-fi resembles StarCraft and battlefield references Company of Heroes; tactical title uncertain. No presumed iteration benefit."
+  },
+  "view-01.png": {
+    "scores": [
+      8,
+      8,
+      7.5,
+      8,
+      5.5
+    ],
+    "weighted_score": 7.525,
+    "evidence": "Service compound, dirt lanes, muted trees and roof walls structure base.",
+    "visible_regressions_or_limitations": "Player overlaps roof and contacts heavy. Unchanged anchor."
+  },
+  "view-02.png": {
+    "scores": [
+      5.5,
+      9,
+      9,
+      9.5,
+      9
+    ],
+    "weighted_score": 8.025,
+    "evidence": "Wet reflections, rain, tracer and smoke unify rich rubble/mud.",
+    "visible_regressions_or_limitations": "Dark units merge with terrain. Unchanged reference."
+  },
+  "view-03.png": {
+    "scores": [
+      6.5,
+      9,
+      9,
+      9,
+      9
+    ],
+    "weighted_score": 8.25,
+    "evidence": "Metal ships and cool rock contrast with layered bright explosion.",
+    "visible_regressions_or_limitations": "Blast obscures units; purple forms merge with foliage. Unchanged reference."
+  },
+  "view-04.png": {
+    "scores": [
+      8.5,
+      8,
+      7,
+      7,
+      5.5
+    ],
+    "weighted_score": 7.425,
+    "evidence": "Outlined player separates from grass/rocks; muted trees coherent.",
+    "visible_regressions_or_limitations": "Flat central grass and heavy repeating tree shadows. Unchanged anchor."
+  },
+  "view-05.png": {
+    "scores": [
+      8.5,
+      8,
+      7.5,
+      7.5,
+      6.5
+    ],
+    "weighted_score": 7.75,
+    "evidence": "Clear outlined player, continuous tan panels, raised island and wake.",
+    "visible_regressions_or_limitations": "Uniform deck light and paired wake limit realism. Unchanged anchor."
+  },
+  "view-06.png": {
+    "scores": [
+      7.5,
+      7.5,
+      8,
+      8.5,
+      5.5
+    ],
+    "weighted_score": 7.45,
+    "evidence": "Broad apron, service lanes and raised blue roofs establish functional base; dark blue ocean adds material depth.",
+    "visible_regressions_or_limitations": "Blue player still merges with blue hangar. Noisy grass, abrupt shore segments and strong tree contacts remain; water realism exceeds polygonal land style."
+  },
+  "view-07.png": {
+    "scores": [
+      7.5,
+      7.5,
+      8,
+      7.5,
+      7
+    ],
+    "weighted_score": 7.525,
+    "evidence": "Dark ocean separates pale planes; deck panels, raised island and shaded hull give depth. Tiny orange impact flares read.",
+    "visible_regressions_or_limitations": "Planes on tan deck overlap markings; repeated wake puffs and broad shadows remain. High-frequency water competes with small sprites."
+  },
+  "view-08.png": {
+    "scores": [
+      8,
+      8,
+      8,
+      8.5,
+      6
+    ],
+    "weighted_score": 7.775,
+    "evidence": "Compound, dirt lanes, roof walls and muted trees create rich base structure.",
+    "visible_regressions_or_limitations": "Player/roof overlap, tiny service blocks and heavy shadows persist. Unchanged anchor."
+  },
+  "view-09.png": {
+    "scores": [
+      7,
+      8,
+      7,
+      7,
+      6.5
+    ],
+    "weighted_score": 7.125,
+    "evidence": "Coherent tan deck and dark rim with outline and trailing wake.",
+    "visible_regressions_or_limitations": "Pale plane/deck overlap and repeated dot particles. Unchanged anchor."
+  },
+  "view-10.png": {
+    "scores": [
+      8.5,
+      8,
+      7,
+      7,
+      6
+    ],
+    "weighted_score": 7.5,
+    "evidence": "Outlined lone plane, dark top bars, continuous deck and wake clear.",
+    "visible_regressions_or_limitations": "Soft edges and uniform light limit depth. Unchanged anchor."
+  },
+  "view-11.png": {
+    "scores": [
+      6.5,
+      7,
+      8,
+      7.5,
+      7
+    ],
+    "weighted_score": 7.125,
+    "evidence": "Pale plane silhouettes contrast against dark textured sea; orange impacts and thin smoke have defined forms.",
+    "visible_regressions_or_limitations": "Many equal orange flecks and crossing planes fragment attention. Player near bow remains crowded; smoke rosettes and repeated wake puffs look stamped."
+  },
+  "view-12.png": {
+    "scores": [
+      8,
+      7.5,
+      7.5,
+      7.5,
+      5
+    ],
+    "weighted_score": 7.275,
+    "evidence": "Aircraft outline remains visible beside rocks; shaded trees and varied dark water add depth.",
+    "visible_regressions_or_limitations": "Beach is abrupt narrow strip with segmented upper transitions; flat ground and heavy circular tree contacts contrast with detailed sea. Soft edges limit precision."
+  },
+  "view-13.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7.5,
+      7,
+      6.5
+    ],
+    "weighted_score": 7.275,
+    "evidence": "Dark water frames light carrier and planes; large controls and compact orange flares remain readable.",
+    "visible_regressions_or_limitations": "Soft aircraft edges merge into deck marks. Water is busier than quieter retained controls; wake has repeated oval segments."
+  },
+  "view-14.png": {
+    "scores": [
+      7,
+      8,
+      7.5,
+      7.5,
+      7
+    ],
+    "weighted_score": 7.375,
+    "evidence": "Detailed deck, island and rim with stable HUD and wake.",
+    "visible_regressions_or_limitations": "Plane occlusion and repetitive smoke dots remain. Unchanged anchor."
+  },
+  "view-15.png": {
+    "scores": [
+      8,
+      7.5,
+      8,
+      8,
+      5.5
+    ],
+    "weighted_score": 7.525,
+    "evidence": "Crisp plane outline, dimensional rocks and tree crowns; varied ocean adds surface depth.",
+    "visible_regressions_or_limitations": "Fine water texture contrasts with simple beach and flat grass. Coast still looks a cut edge with an abrupt stepped color transition at top."
+  },
+  "view-16.png": {
+    "scores": [
+      8,
+      7.5,
+      7.5,
+      7,
+      6
+    ],
+    "weighted_score": 7.35,
+    "evidence": "Sparse composition, dark hull edge, readable raised island and light player silhouette on sea.",
+    "visible_regressions_or_limitations": "Player overlaps tan deck at bow; repetitive segmented wake and soft carrier edges. Dark detailed ocean lacks corresponding deck lighting complexity."
+  },
+  "view-17.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7.5,
+      8,
+      5
+    ],
+    "weighted_score": 7.2,
+    "evidence": "Service apron and roads structure base; dark sea provides a clear coastline boundary.",
+    "visible_regressions_or_limitations": "Player nearly merges with middle blue hangar; grass uniform, tree shadows heavy, coastline sharply segmented. Fallback softness reduces material separation."
+  },
+  "view-18.png": {
+    "scores": [
+      8,
+      8,
+      7,
+      7,
+      6
+    ],
+    "weighted_score": 7.35,
+    "evidence": "Continuous tan deck, narrow rim, island shadow and wake coherent.",
+    "visible_regressions_or_limitations": "Pale aircraft on pale deck crowded; limited side lighting. Unchanged anchor."
+  },
+  "view-19.png": {
+    "scores": [
+      6,
+      9,
+      9,
+      9.5,
+      8.5
+    ],
+    "weighted_score": 8.1,
+    "evidence": "Layered fog, trees, tracks and damaged buildings give rich depth.",
+    "visible_regressions_or_limitations": "Units merge with ground/haze. Unchanged reference."
+  },
+  "view-20.png": {
+    "scores": [
+      8,
+      9,
+      9,
+      9,
+      8
+    ],
+    "weighted_score": 8.55,
+    "evidence": "Distinct floors, wall depth, warm/cool light and furniture contacts.",
+    "visible_regressions_or_limitations": "Tiny units/text demanding at phone size. Unchanged reference."
+  },
+  "view-21.png": {
+    "scores": [
+      8,
+      8,
+      7.5,
+      7.5,
+      6.5
+    ],
+    "weighted_score": 7.6,
+    "evidence": "Continuous panel deck, raised island, narrow rim and clear wake; outlined player visible.",
+    "visible_regressions_or_limitations": "Pale aircraft merge with runway marks; paired wake simple. Unchanged anchor."
+  },
+  "view-22.png": {
+    "scores": [
+      7,
+      9,
+      8.5,
+      9,
+      8
+    ],
+    "weighted_score": 8.15,
+    "evidence": "Warm shadowed market with produce/props and traceable colored routes.",
+    "visible_regressions_or_limitations": "Small brown figures merge into surroundings. Unchanged reference."
+  },
+  "view-23.png": {
+    "scores": [
+      6.5,
+      7,
+      7.5,
+      7,
+      6.5
+    ],
+    "weighted_score": 6.875,
+    "evidence": "Dark water provides background contrast to pale aircraft and orange impacts; deck remains traceable.",
+    "visible_regressions_or_limitations": "Numerous equal fire specks, smoke dots and overlapping planes obscure priorities; lower-resolution edges reduce separation on deck."
+  },
+  "view-24.png": {
+    "scores": [
+      8.5,
+      8,
+      7.5,
+      7.5,
+      6
+    ],
+    "weighted_score": 7.675,
+    "evidence": "Outlined plane, muted trees, rocks and partial compound create coherent coast.",
+    "visible_regressions_or_limitations": "Flat noisy ground and simple shore; repeated dark tree contacts. Unchanged anchor."
+  },
+  "view-25.png": {
+    "scores": [
+      8,
+      7.5,
+      8,
+      7.5,
+      6.5
+    ],
+    "weighted_score": 7.6,
+    "evidence": "Raised island, deck seams and dark hull establish carrier volume against deeper-looking ocean.",
+    "visible_regressions_or_limitations": "Player partly merges with runway marks; wake remains repeated puffs and sea fine texture competes with more schematic vessel shading."
+  },
+  "general_next_priorities": [
+    "Reduce competition between detailed dark ocean and schematic vessel/land shading; retain useful dark-value contrast.",
+    "Give player consistent separation over hangars and deck, where blue/gray merges into roofs and markings.",
+    "Differentiate major hits from equal small orange flecks and reduce dense overlap interference.",
+    "Blend shore transitions and add purposeful land relief rather than finer uniform noise.",
+    "Replace repetitive puff-chain wakes with connected irregular foam."
+  ]
+}

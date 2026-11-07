@@ -1,0 +1,12 @@
+{
+  "judge": "B",
+  "framesInspected": 36,
+  "acceptSampledProgression": true,
+  "findings": [
+    "Coast 180 clears Hawk's label from the top objective banner in both profiles. At fleet 120 the label also clears the top-right minimap area. The labels still appear beside Hawk when the sampled route leaves room, such as coast 090 and fleet 180.",
+    "The upright bracket pair remains centered on the player through the sampled turn and translation. At fleet 024–036 its tips cross carrier bow detail, but the pair continues to enclose the aircraft. The flash on coast 006–012 is bright white and separate from the gold runway circle. I did not see a blue overlay covering the plane in these samples.",
+    "Shore foam, wakes, impacts, tracers and smoke remain visible in both profiles. The unlabelled pale runway ring is still present around coast 006–036 and remains a HUD affordance worth explaining.",
+    "RGB comparison against the 36 pilot-brackets samples found 32 identical frames. Each of the four changed frames has one 29 × 7 pixel difference region where the former label appeared."
+  ],
+  "limitations": "I inspected sampled thumbnails and checked the original PNG pixels. This does not establish continuous playback, flicker, frame pacing or physical-device performance."
+}

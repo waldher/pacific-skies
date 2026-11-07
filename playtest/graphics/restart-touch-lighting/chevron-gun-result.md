@@ -1,0 +1,5 @@
+# Crowded-combat and gunfire checkpoint
+
+The detached pilot chevron is rejected. Three independent same-model-family reviewers inspected 45 stills each. All observed reduced pilot findability in crowded dogfight and stress views. Weighted means for the chevron were 7.423 / 7.213 / 7.410, versus 7.416 / 7.263 / 7.400 for the paired lighting build. It fails the visual gain and majority readability gates. The dedicated HUD review identifies the key failure: the detached mark appears to point to the carrier bow.
+
+A separate gunfire patch replaces the pitched square oscillator with four short cached pressure and mechanical transients. The scoped test verified that sound no longer advances the gameplay RNG. The patch applies on top of the recovered candidate 17 touch-lighting patch. Two actual gameplay captures include game audio, with recorder gaps measured and retained. No subjective listening verdict or device performance claim. This checkpoint archives reports, keys, raw ratings and reconstructable patches. PNGs and media bytes are not included.

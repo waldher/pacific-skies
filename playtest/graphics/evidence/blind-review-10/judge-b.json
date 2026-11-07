@@ -1,0 +1,342 @@
+{
+  "reviewer": "B",
+  "packet": 10,
+  "coverage": {
+    "imagesInspected": 25,
+    "method": "Every image opened individually with view_image. No source, keys or other reviewer results inspected."
+  },
+  "criteria": [
+    "readability",
+    "coherence",
+    "lighting/depth",
+    "environment/material richness",
+    "effects polish"
+  ],
+  "weights": [
+    0.3,
+    0.2,
+    0.2,
+    0.15,
+    0.15
+  ],
+  "recognition": "Recognize science-fiction RTS imagery as StarCraft-like, WWII battle imagery as Company of Heroes-like, and tactical room/market imagery as Door Kickers-like. Exact title attribution is not required for scores; recognizable identity cannot be fully blinded.",
+  "images": {
+    "view-01.png": {
+      "scores": [
+        7,
+        9,
+        9,
+        9,
+        9
+      ],
+      "weightedScore": 8.4,
+      "evidence": "Bright layered blast, sparks and lighting unify dense science-fiction units and rocky terrain; the explosion partly obscures targets.",
+      "regressions": "Bloom and unit overlap constrain readability."
+    },
+    "view-02.png": {
+      "scores": [
+        7,
+        7,
+        7,
+        8,
+        5
+      ],
+      "weightedScore": 6.8500000000000005,
+      "evidence": "Soft airfield view has tree clusters, apron, service boxes and distinct roof faces; player overlaps the central hangar.",
+      "regressions": "Soft edges and cyan roof marker leave player/structure separation ambiguous."
+    },
+    "view-03.png": {
+      "scores": [
+        7,
+        7,
+        8,
+        8,
+        6
+      ],
+      "weightedScore": 7.199999999999999,
+      "evidence": "Sharper hangar roof edges, directional shadows, runway markings and service yard establish several material layers.",
+      "regressions": "Cyan roof shape is ambiguous; repeated grass and flat apron remain simple."
+    },
+    "view-04.png": {
+      "scores": [
+        8,
+        9,
+        9,
+        9,
+        8
+      ],
+      "weightedScore": 8.549999999999999,
+      "evidence": "Apartment rooms have differentiated tile/wood, furniture, wall thickness and coherent light pools; paths remain readable.",
+      "regressions": "Small figures and tactical markings compete in the hall."
+    },
+    "view-05.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        7,
+        5
+      ],
+      "weightedScore": 7,
+      "evidence": "Soft coast view separates pale plane from grass; trees cast directional shadows and rocks have several faces.",
+      "regressions": "Coast is a uniform strip without convincing shallows; soft aircraft detail."
+    },
+    "view-06.png": {
+      "scores": [
+        6,
+        7,
+        7,
+        6,
+        6
+      ],
+      "weightedScore": 6.4,
+      "evidence": "Soft crowded carrier view has orange impacts, smoke arcs and a small player ring; pale enemies separate from dark water.",
+      "regressions": "Planes overlap player and deck; small ring does not recover the full silhouette; coarse wake."
+    },
+    "view-07.png": {
+      "scores": [
+        7,
+        7,
+        8,
+        8,
+        6
+      ],
+      "weightedScore": 7.199999999999999,
+      "evidence": "Sharp airfield repeats readable runway, raised hangars, tree shadows and grouped service objects.",
+      "regressions": "No material quality gain over the comparable sharp airfield is visible; player crosses roof geometry."
+    },
+    "view-08.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        6
+      ],
+      "weightedScore": 7.35,
+      "evidence": "Quiet sharp carrier has a raised island, dark rim/hull and coherent deck markings against irregular blue water.",
+      "regressions": "Player merges into deck; stern wake repeats soft puffs and water detail outpaces model detail."
+    },
+    "view-09.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        6
+      ],
+      "weightedScore": 7.35,
+      "evidence": "Sharp coast shows aircraft highlights, faceted rocks and directional tree shadows with clear HUD.",
+      "regressions": "Straight tan shoreline has little water transition; terrain plots remain flat."
+    },
+    "view-10.png": {
+      "scores": [
+        7,
+        7,
+        8,
+        7,
+        7
+      ],
+      "weightedScore": 7.199999999999999,
+      "evidence": "Sharp sparse fight retains raised carrier silhouette, distinct orange impacts, smoke and player indicator.",
+      "regressions": "Player still overlaps deck and hostile aircraft; dark ocean masks shadows."
+    },
+    "view-11.png": {
+      "scores": [
+        6,
+        9,
+        9,
+        10,
+        9
+      ],
+      "weightedScore": 8.25,
+      "evidence": "Rain battlefield has reflective wet ground, rubble, smoke volume and luminous tracer integrating varied materials.",
+      "regressions": "Dark soldiers and debris are hard to separate at phone scale."
+    },
+    "view-12.png": {
+      "scores": [
+        7,
+        7,
+        7,
+        8,
+        5
+      ],
+      "weightedScore": 6.8500000000000005,
+      "evidence": "Soft airfield presents apron, runway, hangars, service boxes and varied tree groups with coherent shading.",
+      "regressions": "Equivalent quality to the other soft airfield; player and cyan marker overlap roof."
+    },
+    "view-13.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        6
+      ],
+      "weightedScore": 7.35,
+      "evidence": "Sharp coast keeps crisp plane and rock edges, directional tree shadows and distinct land/water color families.",
+      "regressions": "No visible meaningful improvement over the other sharp coast; thin uniform beach remains schematic."
+    },
+    "view-14.png": {
+      "scores": [
+        8,
+        6,
+        7,
+        7,
+        6
+      ],
+      "weightedScore": 6.949999999999999,
+      "evidence": "Sharp quiet carrier uses a rounded rectangular tan deck with detailed stripes, dark island and attached wake.",
+      "regressions": "Deck now appears a flat slab above a separately protruding pointed hull; perimeter depth cue is weaker than view08."
+    },
+    "view-15.png": {
+      "scores": [
+        7,
+        9,
+        9,
+        9,
+        8
+      ],
+      "weightedScore": 8.25,
+      "evidence": "Marketplace has varied stalls, produce, paving, props and consistent warm shadows; routes are clearly colored.",
+      "regressions": "Crowd density and long route overlays compete with small actors."
+    },
+    "view-16.png": {
+      "scores": [
+        8,
+        6,
+        6,
+        6,
+        5
+      ],
+      "weightedScore": 6.450000000000001,
+      "evidence": "Soft quiet carrier retains clean HUD, tan markings and a visible island against dark water.",
+      "regressions": "Rounded slab deck and exposed pointed hull appear poorly integrated; softness further weakens hull thickness versus view21."
+    },
+    "view-17.png": {
+      "scores": [
+        6,
+        9,
+        9,
+        10,
+        9
+      ],
+      "weightedScore": 8.25,
+      "evidence": "Fog battlefield layers terrain, broken buildings, autumn trees, vehicles and distant haze with localized impacts.",
+      "regressions": "Muted silhouettes and haze reduce immediate unit readability."
+    },
+    "view-18.png": {
+      "scores": [
+        7,
+        7,
+        7,
+        6,
+        6
+      ],
+      "weightedScore": 6.700000000000001,
+      "evidence": "Soft sparse combat has visible orange hits and player ring with raised rim around the carrier.",
+      "regressions": "Deck/player overlap and coarse repeated wake remain; smaller fire and smoke are soft."
+    },
+    "view-19.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        7,
+        5
+      ],
+      "weightedScore": 7,
+      "evidence": "Soft coastline retains legible plane position, grass plots, faceted rocks and shaded trees.",
+      "regressions": "Visually equivalent to the other soft coast; uniform beach and soft model edges remain."
+    },
+    "view-20.png": {
+      "scores": [
+        7,
+        6,
+        6,
+        6,
+        6
+      ],
+      "weightedScore": 6.300000000000001,
+      "evidence": "Soft sparse fight shows readable orange impacts and ring but carrier is dominated by a plain rounded slab.",
+      "regressions": "Hull protrudes separately below deck and edge depth drops relative to view18; player overlap remains."
+    },
+    "view-21.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        5
+      ],
+      "weightedScore": 6.85,
+      "evidence": "Soft quiet carrier has a clear dark hull/rim beneath tan deck and raised island, with attached stern wake.",
+      "regressions": "Plane blends with deck markings; blurred model edges and repeated wake puffs limit polish."
+    },
+    "view-22.png": {
+      "scores": [
+        6,
+        7,
+        8,
+        7,
+        7
+      ],
+      "weightedScore": 6.9,
+      "evidence": "Sharp dense fight has raised island, bright impact flecks and multiple smoke arcs amid legible pale aircraft.",
+      "regressions": "Crowded central overlap makes player identity difficult; individual effects are small and repetitive."
+    },
+    "view-23.png": {
+      "scores": [
+        7,
+        6,
+        7,
+        7,
+        7
+      ],
+      "weightedScore": 6.8,
+      "evidence": "Sharp sparse combat retains crisp plane and orange effects, deck stripes and attached wake.",
+      "regressions": "Rounded deck reduces rim/hull integration versus view10; lower pointed hull reads as a separate shape."
+    },
+    "view-24.png": {
+      "scores": [
+        6,
+        6,
+        7,
+        7,
+        7
+      ],
+      "weightedScore": 6.5,
+      "evidence": "Sharp dense combat retains differentiated bright fire and gray smoke with crisp enemy silhouettes.",
+      "regressions": "Rounded tan deck loses strong hull edge, adding flatter geometry to an already crowded player/deck overlap."
+    },
+    "view-25.png": {
+      "scores": [
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "weightedScore": 6,
+      "evidence": "Soft dense combat still shows ring, orange impact flecks and pale aircraft on dark ocean.",
+      "regressions": "Soft flat slab carrier and protruding pointed hull reduce depth/coherence versus view06; player remains buried."
+    }
+  },
+  "general_findings": [
+    "Land/coast image pairs have no meaningful visible quality difference at this size; scores remain anchored.",
+    "Rounded rectangular carrier decks weaken visible hull integration and perimeter depth relative to the pointed rim variants. A more realistic planform alone does not establish material quality.",
+    "Dark irregular ocean supports pale-aircraft contrast but competes with subtle smoke and shadows. Clean HUD remains stronger than central combat readability.",
+    "References retain substantially richer material transitions and integrated lighting, while some have lower unit readability."
+  ],
+  "regressions": [
+    "Views14/16/20/23/24/25: flat rounded deck slab with exposed pointed hull below, weaker perimeter thickness and structural integration.",
+    "The crowded views remain difficult to parse despite a small gold player indicator."
+  ],
+  "recommendations": [
+    "Build a continuous visible deck edge and supporting hull beneath the rounded planform; align hull volume and deck silhouette with controlled overhang and directional shading.",
+    "Keep the player silhouette recoverable over tan deck and overlapping enemies, beyond merely locating its center.",
+    "Replace repeated wake puffs with tapered foam and irregular breakup; improve coastal shallow-water transitions.",
+    "Reduce ocean competition around subtle smoke/shadows while preserving pale plane contrast."
+  ],
+  "motion": "No motion10 review requested."
+}

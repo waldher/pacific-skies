@@ -1,0 +1,12 @@
+{
+  "judge": "C",
+  "method": "sampled-still-progression",
+  "framesViewed": 36,
+  "accept": true,
+  "findings": [
+    "Both coast profiles show tighter contacts under the trees through the airfield traverse at 000–036, the shoreline pass at 060–090 and the return at 120–180. At 036 and 060 the shaded footprints stay close to the dark crowns, and neighboring trees stay distinguishable from the surrounding grass. In fallback the effect is softer but still visible.",
+    "By coast 060 and 090, the tree shadows leave more open grass between trees, beach and airfield. The canopy contacts and larger hangar shadows read as different scales. A few individual trees still look slightly detached from their shadow at crop scale, though the viewed progression shows no gross jump or shadow displacement.",
+    "All 18 fleet frames are decoded RGB matches to their earlier fine-water control frames. The damage flash, tracers, fireball, wake and deck crossing remain visually distinct in both runs. No blue player silhouette appears in the inspected images.",
+    "The underlying cyan player ring and the two Hawk label collisions remain visible here. This review isolates the tree contact change against the matching ring control. Continuous transitions, flicker, pacing and device performance are outside the sampled evidence."
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "reviewer": "C",
+  "accept": true,
+  "scope": "Sampled motion acceptance for the five requested criteria in this 3-second sparse-combat sequence only; not acceptance of dense screenshot effects polish or full game motion.",
+  "inspected_files": [
+    "phone-000.png",
+    "phone-006.png",
+    "phone-012.png",
+    "phone-024.png",
+    "phone-036.png",
+    "phone-060.png",
+    "phone-090.png",
+    "phone-120.png",
+    "phone-180.png",
+    "fallback-000.png",
+    "fallback-006.png",
+    "fallback-012.png",
+    "fallback-024.png",
+    "fallback-036.png",
+    "fallback-060.png",
+    "fallback-090.png",
+    "fallback-120.png",
+    "fallback-180.png"
+  ],
+  "sample_times_seconds": [
+    0,
+    0.1,
+    0.2,
+    0.4,
+    0.6,
+    1,
+    1.5,
+    2,
+    3
+  ],
+  "method": "Individually opened all 18 PNGs and read motion.json event/timestamp/state metadata. No source/key read; no actual-device FPS comparison. Sparse frames cannot prove continuous interpolation or frame pacing.",
+  "overall_reason": "The previously weak large-impact distinction is visibly resolved: the 1.0-second event has a substantial orange/yellow fire mass versus the small compact hit at 0.1 seconds. Flash and smoke lifecycle, attached wakes, coherent sampled camera trajectory and persistent control visibility pass. Granular smoke and overstrong aircraft shadows remain visual weaknesses, particularly under higher density.",
+  "findings": {
+    "hit_flash_and_impact_recognition": {
+      "accept": true,
+      "evidence": [
+        "Both profiles show unmistakable white player silhouette at 0.1 and 0.2 seconds and normal material by 0.4 seconds. Hull drops from 35% to 27% and instruction changes to RETURN TO BASE.",
+        "Small impact at 0.1 seconds is a compact orange fire burst; it shrinks/fades by 0.2–0.4 seconds.",
+        "At 1.0 seconds, the large explosion has a much larger filled orange/yellow fire mass with bright core and irregular edge, clearly distinct from the small burst. At 1.5 seconds the fire mass has dispersed into smoke and scattered embers."
+      ],
+      "limitations": "No intermediate samples between 1.0 and 1.5 seconds, so the exact peak/decay transition cannot be judged."
+    },
+    "smoke_fading": {
+      "accept": true,
+      "evidence": [
+        "Early event smoke becomes more dispersed and lower contrast across 0.2–0.6 seconds.",
+        "Large event at 1.0 seconds produces a broader cloud visible by 1.5 seconds near upper right, then largely clears by 2.0 seconds. Metadata fire/ring counts reach zero at 2.0 seconds.",
+        "Continuing 27%-hull aircraft emits a trail through 3.0 seconds. Older puffs toward its far end are less distinct; persistence is consistent with continued emission."
+      ],
+      "regressions": "New smoke has granular rosette texture and regular repeated spacing, reading more like floating debris than soft vapor. This does not fail the observed fading lifecycle but worsens density/clutter risks.",
+      "recommendation": "Soften internal contrast, expand older puffs, vary spacing and overlap them into a plume while lowering opacity."
+    },
+    "wake_continuity": {
+      "accept": true,
+      "evidence": [
+        "Carrier wake remains attached at the rear through early samples as camera follows player.",
+        "Small ship wake at 2.0 seconds tracks behind hull and remains directionally consistent in both profiles.",
+        "No sampled detached or reversed wake segments observed."
+      ],
+      "limitations": "Wake is still two soft streaks and sparse frames cannot exclude between-frame popping."
+    },
+    "camera_motion": {
+      "accept": true,
+      "evidence": [
+        "Player approaches central screen region from lower-left over 0–0.6 seconds, then stays near center through turn and departure.",
+        "World ships translate coherently with camera while HUD remains anchored; metadata positions/heading follow the same continuous turn trajectory.",
+        "Aircraft bank visibly changes wing presentation during the turn at 1.0–1.5 seconds, then full silhouette returns by 2.0 seconds."
+      ],
+      "regressions": "Aircraft casts a large dark sharply separated silhouette below itself; other aircraft have broad blurred shadows. These create competing shapes and can be read as extra units, especially around 0.4–1.5 seconds. Banking briefly narrows player silhouette.",
+      "limitations": "No judgement of smooth frame-to-frame easing or actual phone rendering performance from sampled stills."
+    },
+    "control_visibility": {
+      "accept": true,
+      "evidence": [
+        "Fire and Bomb 2/2 remain fixed, high-contrast and legible in all samples. Hull/heat and objective bars remain legible.",
+        "At 3.0 seconds a ship passes behind Bomb button, but dark backing preserves label contrast.",
+        "Player remains away from action buttons during the sampled turn; no flash covers HUD."
+      ],
+      "limitations": "Touch target behavior, steering controls and input feedback not exercised by these images."
+    }
+  },
+  "profile_comparison": "Fallback softens detail and suppresses sea foam, but large/small explosion difference, flash, fades and wakes remain visible. Phone profile retains sharper smoke texture, which also makes granular repetition more obvious.",
+  "next_priorities": [
+    "Do not generalize this sparse-motion pass to dense combat: screenshot packet7 showed extensive particle and shadow clutter.",
+    "Reduce shadow contrast/size so altitude cues remain secondary to aircraft.",
+    "Refine smoke into expanding translucent plumes and retain the clear new large-impact core.",
+    "Obtain continuous playback if final camera/animation smoothness acceptance is required."
+  ]
+}

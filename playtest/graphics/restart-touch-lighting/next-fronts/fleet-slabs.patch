@@ -1,0 +1,69 @@
+From e20dfc83cf605ea63cad59e8f7ce05e5cae2d18d Mon Sep 17 00:00:00 2001
+From: Codex <codex@openai.com>
+Date: Sat, 7 Nov 2026 13:58:59 +0100
+Subject: [PATCH] Reuse ship-local reciprocal sun across shadow slab tests
+
+---
+ src/naval-scene.js | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
+
+diff --git a/src/naval-scene.js b/src/naval-scene.js
+index 978267e..b7d6250 100644
+--- a/src/naval-scene.js
++++ b/src/naval-scene.js
+@@ -30,26 +30,28 @@ function navalMaterial(occluders = []) {
+   const material = new THREE.MeshLambertMaterial({vertexColors:true});
+   const vec = values => `vec3(${values.map(v=>Number(v).toFixed(4)).join(',')})`;
+   const sun = vec(new THREE.Vector3(...CONFIG.render.sunOffset).normalize().toArray());
+-  const calls = occluders.map(([lo,hi])=>`shipOcclusion=max(shipOcclusion,shipBoxOcclusion(vShipPosition,localSun,${vec(lo)},${vec(hi)}));`).join('\n');
++  const calls = occluders.map(([lo,hi])=>`shipOcclusion=max(shipOcclusion,shipBoxOcclusion(vShipPosition,vShipInvSun,${vec(lo)},${vec(hi)}));`).join('\n');
+   material.onBeforeCompile = shader => {
+     if(occluders.length) {
+-      const varyings='varying vec3 vShipPosition; varying vec3 vShipSun;\n';
++      const varyings='varying vec3 vShipPosition; flat varying vec3 vShipInvSun;\n';
+       shader.vertexShader=varyings+shader.vertexShader;
+       shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
+         vShipPosition=transformed;
+         // Inverse rotation/scale: fixed world sun stays correct as each vessel
+         // turns or sinks. No per-vessel uniforms, uploads or material clones.
+         vec3 shipWorldSun=${sun};
+-        vShipSun=vec3(dot(modelMatrix[0].xyz,shipWorldSun)/dot(modelMatrix[0].xyz,modelMatrix[0].xyz),
++        vec3 localSun=normalize(vec3(dot(modelMatrix[0].xyz,shipWorldSun)/dot(modelMatrix[0].xyz,modelMatrix[0].xyz),
+           dot(modelMatrix[1].xyz,shipWorldSun)/dot(modelMatrix[1].xyz,modelMatrix[1].xyz),
+-          dot(modelMatrix[2].xyz,shipWorldSun)/dot(modelMatrix[2].xyz,modelMatrix[2].xyz));`);
++          dot(modelMatrix[2].xyz,shipWorldSun)/dot(modelMatrix[2].xyz,modelMatrix[2].xyz)));
++        // Shared across this draw. Preserve the sign and near-zero clamp.
++        vec3 safeSun=(step(vec3(0.0),localSun)*2.0-1.0)*max(abs(localSun),vec3(.00001));
++        vShipInvSun=1.0/safeSun;`);
+       shader.fragmentShader=varyings+`
+-        float shipBoxOcclusion(vec3 p, vec3 d, vec3 lo, vec3 hi) {
++        float shipBoxOcclusion(vec3 p, vec3 invD, vec3 lo, vec3 hi) {
+           // A receiver on/inside its own conservative box must never shadow
+           // itself. Other boxes can still shadow that receiver normally.
+           if(all(greaterThanEqual(p,lo-vec3(.06))) && all(lessThanEqual(p,hi+vec3(.06))))return 0.0;
+-          vec3 safeD=(step(vec3(0.0),d)*2.0-1.0)*max(abs(d),vec3(.00001));
+-          vec3 a=(lo-p)/safeD,b=(hi-p)/safeD;
++          vec3 a=(lo-p)*invD,b=(hi-p)*invD;
+           vec3 nearT=min(a,b),farT=max(a,b);
+           float entry=max(max(nearT.x,nearT.y),nearT.z);
+           float leave=min(min(farT.x,farT.y),farT.z);
+@@ -62,7 +64,6 @@ function navalMaterial(occluders = []) {
+       shader.fragmentShader=shader.fragmentShader.replace('#include <lights_fragment_end>', `#include <lights_fragment_end>
+         float shipOcclusion=0.0;
+         if(vShipPosition.y<34.0) {
+-          vec3 localSun=normalize(vShipSun);
+           ${calls}
+         }
+         reflectedLight.directDiffuse*=1.0-.82*shipOcclusion;
+@@ -70,7 +71,7 @@ function navalMaterial(occluders = []) {
+         reflectedLight.indirectDiffuse*=1.0-.08*shipOcclusion;`);
+     }
+   };
+-  material.customProgramCacheKey=()=> 'naval-shadow-v1-'+JSON.stringify(occluders);
++  material.customProgramCacheKey=()=> 'naval-shadow-v2-'+JSON.stringify(occluders);
+   return material;
+ }
+ const shipPaint=navalMaterial(), carrierPaint=navalMaterial(CARRIER_OCCLUDERS), destroyerPaint=navalMaterial(DESTROYER_OCCLUDERS);
+-- 
+2.51.1
+

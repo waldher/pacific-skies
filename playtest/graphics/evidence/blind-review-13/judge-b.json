@@ -1,0 +1,343 @@
+{
+  "reviewer": "B",
+  "packet": 13,
+  "coverage": {
+    "imagesInspected": 25,
+    "method": "All 25 viewed individually; no keys, implementation or other reviewer files read."
+  },
+  "criteria": [
+    "readability",
+    "coherence",
+    "lightingDepth",
+    "environment",
+    "effects"
+  ],
+  "weights": [
+    0.3,
+    0.2,
+    0.2,
+    0.15,
+    0.15
+  ],
+  "recognition": "Recognizable StarCraft-like, Company of Heroes-like and Door Kickers-like reference scenes; no identity-based bonus.",
+  "images": {
+    "view-01.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        6
+      ],
+      "weightedScore": 7.35,
+      "evidence": "Sharp coast anchor: circle locates plane, rocks have faceted highlights and trees cast shadows. Straight pale offshore dashes remain artificial.",
+      "regressions": "Anchor limitations retained; no new regression established."
+    },
+    "view-02.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        8,
+        5
+      ],
+      "weightedScore": 7.15,
+      "evidence": "Soft airfield anchor: hangars, apron, service boxes and tree shadows retain varied structure. Shoreline dashes resemble road paint; plane still overlaps roof.",
+      "regressions": "Anchor limitations retained; no new regression established."
+    },
+    "view-03.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        6
+      ],
+      "weightedScore": 7,
+      "evidence": "Soft sparse carrier with brighter rim: edge is easier to see against ocean, but pale deck markings lose tonal distinction. Ring locates plane without solving deck overlap.",
+      "regressions": "Brighter deck edge increases contour contrast but reduces some dark/light separation among deck markings; no full category-point gain justified."
+    },
+    "view-04.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        8,
+        5
+      ],
+      "weightedScore": 7.15,
+      "evidence": "Soft airfield with revised terrain: more shoreline rocks, greener clustered trees and less uniform coastline add context. Dark blobs under trees and low-detail grass remain; foam still dashed.",
+      "regressions": "Terrain structure improves; shadows and repeated rock forms remain stylized, and foam remains an artificial dashed line."
+    },
+    "view-05.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        6
+      ],
+      "weightedScore": 7,
+      "evidence": "Soft sparse combat anchor: cyan ring and orange impacts readable, raised island coherent. Small overlapping planes/deck and beaded wake remain.",
+      "regressions": "Anchor limitations retained; no new regression established."
+    },
+    "view-06.png": {
+      "scores": [
+        7,
+        7,
+        7,
+        6,
+        6
+      ],
+      "weightedScore": 6.7,
+      "evidence": "Soft swarm with brighter ship edge: central ring clear, many pale aircraft and orange hits identifiable. Added pale deck rim does not untangle overlap; surfaces remain simple.",
+      "regressions": "Brighter deck edge increases contour contrast but reduces some dark/light separation among deck markings; no full category-point gain justified."
+    },
+    "view-07.png": {
+      "scores": [
+        7,
+        7,
+        8,
+        7,
+        7
+      ],
+      "weightedScore": 7.2,
+      "evidence": "Sharp swarm anchor: crisp silhouettes, bright impacts and smoke arcs surround ring. Player body obscured by deck and enemies.",
+      "regressions": "Anchor limitations retained; no new regression established."
+    },
+    "view-08.png": {
+      "scores": [
+        7,
+        7,
+        7,
+        6,
+        6
+      ],
+      "weightedScore": 6.7,
+      "evidence": "Soft swarm anchor: ring gives location amid overlapping pale planes and orange fire. Softness and visual crowding persist.",
+      "regressions": "Anchor limitations retained; no new regression established."
+    },
+    "view-09.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        8,
+        6
+      ],
+      "weightedScore": 7.5,
+      "evidence": "Sharp revised coast: bends in shore, beach width variation, clustered rocks and more varied green vegetation give a richer terrain structure. Foam is still a thin detached dashed border.",
+      "regressions": "Terrain structure improves; shadows and repeated rock forms remain stylized, and foam remains an artificial dashed line."
+    },
+    "view-10.png": {
+      "scores": [
+        6,
+        9,
+        9,
+        10,
+        9
+      ],
+      "weightedScore": 8.25,
+      "evidence": "Rain battlefield reference: wet reflections, smoke, rubble and tracer lighting integrate materials. Small dark units are difficult to separate.",
+      "regressions": "Anchor limitations retained; no new regression established."
+    },
+    "view-11.png": {
+      "scores": [
+        7,
+        9,
+        9,
+        9,
+        8
+      ],
+      "weightedScore": 8.25,
+      "evidence": "Marketplace reference: varied paving, produce, wood and coherent warm shadows. Crowd and tactical routes compete.",
+      "regressions": "Anchor limitations retained; no new regression established."
+    },
+    "view-12.png": {
+      "scores": [
+        8,
+        9,
+        9,
+        9,
+        8
+      ],
+      "weightedScore": 8.55,
+      "evidence": "Apartment reference: wall thickness, flooring, furnishings and light pools are coherent. Hall actors and overlays remain small.",
+      "regressions": "Anchor limitations retained; no new regression established."
+    },
+    "view-13.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        8,
+        5
+      ],
+      "weightedScore": 7.15,
+      "evidence": "Soft revised coast: less uniform shoreline with rock groups and varied trees gives environmental structure. Soft edges, blackish tree-shadow blobs and dashed offshore line limit naturalness.",
+      "regressions": "Terrain structure improves; shadows and repeated rock forms remain stylized, and foam remains an artificial dashed line."
+    },
+    "view-14.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        8,
+        6
+      ],
+      "weightedScore": 7.5,
+      "evidence": "Sharp airfield anchor: runway, raised hangars, service yard and trees provide depth. Player overlaps roof; bright cyan roof marker ambiguous; foam remains graphic.",
+      "regressions": "Anchor limitations retained; no new regression established."
+    },
+    "view-15.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        7
+      ],
+      "weightedScore": 7.5,
+      "evidence": "Sharp sparse combat anchor: raised island, dark hull rim, impacts and ring remain clear. Player/deck overlap, small repeated hits and coarse wake persist.",
+      "regressions": "Anchor limitations retained; no new regression established."
+    },
+    "view-16.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        8,
+        6
+      ],
+      "weightedScore": 7.5,
+      "evidence": "Sharp revised airfield: coastal rock row, greener trees and changed hill/shore give context, with defined buildings and service yard. Rocks can read as a row of repeated props; grass/apron remain flat.",
+      "regressions": "Terrain structure improves; shadows and repeated rock forms remain stylized, and foam remains an artificial dashed line."
+    },
+    "view-17.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        5
+      ],
+      "weightedScore": 6.85,
+      "evidence": "Soft quiet bright-rim carrier: pale perimeter makes outline explicit over dark hull. Deck fixtures/markings flatten together, ring still required for player location; repeated puffs remain.",
+      "regressions": "Brighter deck edge increases contour contrast but reduces some dark/light separation among deck markings; no full category-point gain justified."
+    },
+    "view-18.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        6
+      ],
+      "weightedScore": 7.35,
+      "evidence": "Sharp quiet carrier anchor: dark rim and raised island give depth, circle locates plane. Tan deck and aircraft overlap; coarse wake.",
+      "regressions": "Anchor limitations retained; no new regression established."
+    },
+    "view-19.png": {
+      "scores": [
+        7,
+        9,
+        9,
+        9,
+        9
+      ],
+      "weightedScore": 8.4,
+      "evidence": "Science-fiction RTS reference: blast layers, metallic units and rugged terrain with integrated effects. Large bloom masks nearby action.",
+      "regressions": "Anchor limitations retained; no new regression established."
+    },
+    "view-20.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        5
+      ],
+      "weightedScore": 6.85,
+      "evidence": "Soft quiet carrier anchor: raised island and dark rim remain coherent; circle locates player. Soft edges and repeated wake puffs remain.",
+      "regressions": "Anchor limitations retained; no new regression established."
+    },
+    "view-21.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        6
+      ],
+      "weightedScore": 7.35,
+      "evidence": "Sharp quiet bright-rim carrier: more visible perimeter hardware and pale strip retain hull outline. Brighter deck outlines are not a substantial material-depth improvement; player still overlaps.",
+      "regressions": "Brighter deck edge increases contour contrast but reduces some dark/light separation among deck markings; no full category-point gain justified."
+    },
+    "view-22.png": {
+      "scores": [
+        6,
+        9,
+        9,
+        10,
+        9
+      ],
+      "weightedScore": 8.25,
+      "evidence": "Fog battlefield reference: terrain, vegetation, structures and atmospheric layers are rich. Muted silhouettes limit readability.",
+      "regressions": "Anchor limitations retained; no new regression established."
+    },
+    "view-23.png": {
+      "scores": [
+        7,
+        7,
+        8,
+        7,
+        7
+      ],
+      "weightedScore": 7.2,
+      "evidence": "Sharp swarm with pale rim: detailed ship outline, crisp enemies, orange impacts and ring. Pale deck markings add density around already crowded silhouettes without resolving them.",
+      "regressions": "Brighter deck edge increases contour contrast but reduces some dark/light separation among deck markings; no full category-point gain justified."
+    },
+    "view-24.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        7
+      ],
+      "weightedScore": 7.5,
+      "evidence": "Sharp sparse carrier with pale rim: edge highlights give clear contour and island stays raised. Plane overlaps tan deck; brighter thin lines have limited surface/lighting variety.",
+      "regressions": "Brighter deck edge increases contour contrast but reduces some dark/light separation among deck markings; no full category-point gain justified."
+    },
+    "view-25.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        7,
+        5
+      ],
+      "weightedScore": 7,
+      "evidence": "Soft coast anchor: circle clear, trees shaded and rocks faceted. Thin parallel offshore dashes and uniform beach limit naturalness.",
+      "regressions": "Anchor limitations retained; no new regression established."
+    }
+  },
+  "general_findings": [
+    "Revised coastal contour, rocks and varied vegetation earn a limited environment gain in coast scenes. Airfield scenes already contain richer built context; smaller terrain changes remain in their existing score band.",
+    "Brighter ship perimeter adds definition but does not materially resolve player/deck crowding or model surface simplicity.",
+    "Ring keeps player location clear; actual silhouette is still obscured during crowded deck overlap.",
+    "References remain substantially stronger in material interaction, atmospheric integration and local surface variation."
+  ],
+  "largest_remaining_gaps": [
+    "Foam remains long thin dashes parallel to shore instead of irregular breaking crests or patches interacting with shallows.",
+    "Tree shadows are dark soft blobs; grass/apron and rock/model surfaces remain schematic next to dense ocean texture.",
+    "Carrier, enemies and player overlap in combat; center localization is not silhouette comprehension.",
+    "Repeated puff wakes and small similar fire flecks lack convincing scale variation and breakup."
+  ],
+  "recommendations": [
+    "Build short irregular foam patches of varied width and opacity touching the beach/shallow transition.",
+    "Integrate local material changes around rocks, paths and vegetation; reduce blob-like shadows.",
+    "Separate the player silhouette from nearby deck/enemies with controlled value treatment.",
+    "Preserve strong hull volume while varying deck material and tapered wake structure."
+  ]
+}

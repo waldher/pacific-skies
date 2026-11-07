@@ -1,3 +1,4 @@
+import { updateRoundAltitude, flightAltitude } from './projectile-visual.js';
 // Game loop: flight, combat, surface patrols, conquest, camera and rendering.
 import { recordSession, sessionSummary } from './session-report.js';
 import { updateGuidance } from './objectives.js';
@@ -29,6 +30,8 @@ window.addEventListener('pagehide', () => saveCampaign(game));
 document.addEventListener?.('visibilitychange', () => { if (document.hidden) saveCampaign(game); });
 let graphics;
 let contextLost = false;
+// Deterministic capture/benchmark mode: no competing simulation or RAF renders.
+const manualFrames = typeof location !== 'undefined' && /(?:^|[?&])manualFrames(?:=|&|$)/.test(location.search);
 
 function update(dt) {
   if (game.paused) return;
@@ -47,8 +50,8 @@ function update(dt) {
   game.messageTime = Math.max(0, game.messageTime - dt);
 
   // bullets
-  for (const b of game.bullets) { b.prevX = b.x; b.prevY = b.y; b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt; }
-  for (const b of game.ebullets) { b.prevX = b.x; b.prevY = b.y; b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt; }
+  for (const b of game.bullets) { b.prevX = b.x; b.prevY = b.y; b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt; updateRoundAltitude(b, dt); }
+  for (const b of game.ebullets) { b.prevX = b.x; b.prevY = b.y; b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt; updateRoundAltitude(b, dt); }
   // Rounds that run out of range hit the sea.
   for (const b of game.bullets) if (b.life <= 0) splash(b.x, b.y);
   for (const b of game.ebullets) if (b.life <= 0) splash(b.x, b.y);
@@ -59,7 +62,7 @@ function update(dt) {
       if (e.hp <= 0) continue;
       if (Math.hypot(b.x - e.x, b.y - e.y) < 18) {
         b.life = 0; e.hp--;
-        game.particles.push({ x: b.x, y: b.y, vx: rand(-40, 40), vy: rand(-40, 40), life: 0.2, max: 0.2, size: 3, kind: 'fire' });
+        game.particles.push({ altitude: flightAltitude(e), x: b.x, y: b.y, vx: rand(-40, 40), vy: rand(-40, 40), life: 0.2, max: 0.2, size: 3, kind: 'fire' });
         if (e.hp <= 0) {
           if (e.rescue) game.rescue.intercepts = (game.rescue.intercepts || 0) + 1;
           game.score += Math.round((e.ace ? CONFIG.score.aceKill : CONFIG.score.kill) * (b.pilot ? CONFIG.airWar.wing.killScore : 1));
@@ -68,7 +71,7 @@ function update(dt) {
             if (e.strike) game.raidIntercepts = (game.raidIntercepts || 0) + 1;
           }
           if (b.pilot) creditKill(b.pilot);
-          explosion(e.x, e.y, false);
+          explosion(e.x, e.y, false, flightAltitude(e));
         }
         break;
       }
@@ -80,7 +83,7 @@ function update(dt) {
     for (const s of game.convoys) {
       if (s.hp <= 0 || !hitsShip(b, s)) continue;
       b.life = 0; damageTransport(game, s, 1);
-      game.particles.push({ x: b.x, y: b.y, vx: rand(-40, 40), vy: rand(-40, 40), life: 0.2, max: 0.2, size: 3, kind: 'fire' });
+      game.particles.push({ altitude: 10, x: b.x, y: b.y, vx: rand(-40, 40), vy: rand(-40, 40), life: 0.2, max: 0.2, size: 3, kind: 'fire' });
       break;
     }
   }
@@ -93,7 +96,7 @@ function update(dt) {
     if (b.life > 0) for (const ally of game.allies) {
       if (ally.hp <= 0 || Math.hypot(b.x - ally.x, b.y - ally.y) >= 15) continue;
       b.life = 0; ally.hp -= b.damage ?? CONFIG.enemy.bulletDamage; ally.hitFlash = .25;
-      if (ally.hp <= 0) { explosion(ally.x, ally.y, false); wingmanLost(ally); }
+      if (ally.hp <= 0) { explosion(ally.x, ally.y, false, flightAltitude(ally)); wingmanLost(ally); }
       break;
     }
   }
@@ -147,19 +150,41 @@ function render(dt) {
   drawOperations(game);
 }
 
+let sceneryLoading = null;
+async function prepareScenery() {
+  if (!graphics) return;
+  await graphics.prepare(game, view);
+}
 let last = performance.now();
 function frame(now) {
   const dt = Math.min(0.033, (now - last) / 1000);
   last = now;
   if (!contextLost) {
-    update(dt);
-    render(dt);
+    if (game.mode === 'play' && !graphics.world.isReady(game, view)) {
+      if (!sceneryLoading) {
+        statusText.textContent = 'Preparing island scenery…';
+        status.hidden = false;
+        // Give the browser a paint opportunity before first GPU uploads.
+        sceneryLoading = new Promise(resolve => requestAnimationFrame(resolve))
+          .then(prepareScenery).then(() => { status.hidden = true; })
+          .catch(error => {
+            // Campaign resets can supersede in-flight terrain work. Retry the
+            // current world on the next frame instead of stopping the game.
+            if (error.name === 'AbortError') { status.hidden = true; return; }
+            statusText.textContent = 'Scenery could not load. Retry to continue.';
+            retry.hidden = false; console.error(error); contextLost = true;
+          }).finally(() => { sceneryLoading = null; last = performance.now(); });
+      }
+    } else if (!sceneryLoading) {
+      update(dt);
+      render(dt);
+    }
   }
   requestAnimationFrame(frame);
 }
 // Debug/test API: the playtest harness (and console tinkering) reads
 // live state and drives input through this handle.
-window.__game = { sessionSummary: () => sessionSummary(game), game, CONFIG, startGame, recoverPilot, resumeCampaign, hasSavedCampaign, setSeed, keys, stick, fireTouch, view, angDiff, update, launchTorpedo, launchBomb: () => launchBomb(game), selectSortie: options => selectSortie(game, options), requestCarrier: () => requestCarrier(game), spawnConvoy: () => spawnConvoy(game), hudArrows: () => hudArrows(game) };
+window.__game = { prepareScenery, render, manualFrames, sessionSummary: () => sessionSummary(game), game, CONFIG, startGame, recoverPilot, resumeCampaign, hasSavedCampaign, setSeed, keys, stick, fireTouch, view, angDiff, update, launchTorpedo, launchBomb: () => launchBomb(game), selectSortie: options => selectSortie(game, options), requestCarrier: () => requestCarrier(game), spawnConvoy: () => spawnConvoy(game), hudArrows: () => hudArrows(game) };
 
 
 const status = document.getElementById('loading');
@@ -192,7 +217,7 @@ async function boot() {
     initInput(cvs);
     initOperations(game);
     last = performance.now();
-    requestAnimationFrame(frame);
+    if (!manualFrames) requestAnimationFrame(frame);
   } catch (error) {
     window.__game.rendering.error = String(error);
     statusText.textContent = 'Unable to load the 3D game. Check your connection and that WebGL 2 is enabled, then retry.';

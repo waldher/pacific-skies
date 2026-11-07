@@ -1,0 +1,354 @@
+{
+  "view-01.png": {
+    "scores": [
+      8.5,
+      7.0,
+      6,
+      7,
+      5
+    ],
+    "evidence": "Player ring remains readable; raised buildings and apron coherent. Shore now has thin pale separated strokes following a single parallel line, resembling dashed road markings rather than irregular broken foam. Smooth shallows and repetitive ocean texture remain.",
+    "weighted_score": 6.95,
+    "regressions": "Unchanged visible anchor; exact prior scores retained."
+  },
+  "view-02.png": {
+    "scores": [
+      8.5,
+      6.5,
+      5.5,
+      6.5,
+      4.5
+    ],
+    "evidence": "Player ring remains readable; raised buildings and apron coherent. Shore now has thin pale separated strokes following a single parallel line, resembling dashed road markings rather than irregular broken foam. Smooth shallows and repetitive ocean texture remain.",
+    "weighted_score": 6.6,
+    "regressions": "Unchanged visible anchor; exact prior scores retained."
+  },
+  "view-03.png": {
+    "scores": [
+      8,
+      7,
+      5.5,
+      6,
+      5.5
+    ],
+    "evidence": "Pale carrier edge and fine light deck lines are visible, but reduced dark contrast around the deck structure flattens its raised features. Player ring remains readable; tan surface and repeated wake bands retain schematic material treatment.",
+    "weighted_score": 6.625,
+    "regressions": "Pale outlines replace stronger dark structural contrast, slightly reducing depth despite added line detail."
+  },
+  "view-04.png": {
+    "scores": [
+      8.5,
+      6.5,
+      5.5,
+      7.0,
+      4.5
+    ],
+    "evidence": "More irregular coastline and clustered rocks/trees give terrain a less uniform outline and richer arrangement. Abrupt polygonal bends, linear pale foam dashes and simple grass/field surfaces still limit naturalness. Player ring remains clear.",
+    "weighted_score": 6.675,
+    "regressions": "Rock clusters sometimes form a row along shore; angular bends and dashed foam still look procedural."
+  },
+  "view-05.png": {
+    "scores": [
+      8,
+      7,
+      6,
+      6,
+      5.5
+    ],
+    "evidence": "Ring helps locate player beneath overlapping wings at bow; ship and sea materials otherwise unchanged and soft.",
+    "weighted_score": 6.725,
+    "regressions": "Unchanged visible anchor; exact prior scores retained."
+  },
+  "view-06.png": {
+    "scores": [
+      7,
+      6.5,
+      5.5,
+      6,
+      5.5
+    ],
+    "evidence": "Pale carrier edge and fine light deck lines are visible, but reduced dark contrast around the deck structure flattens its raised features. Player ring remains readable; tan surface and repeated wake bands retain schematic material treatment.",
+    "weighted_score": 6.225,
+    "regressions": "Pale outlines replace stronger dark structural contrast, slightly reducing depth despite added line detail."
+  },
+  "view-07.png": {
+    "scores": [
+      7,
+      7,
+      6.5,
+      6.5,
+      6
+    ],
+    "evidence": "Player ring stands out within dense sharp swarm, improving recovery; wings still obscure aircraft shape and granular smoke dots crowd deck.",
+    "weighted_score": 6.675,
+    "regressions": "Unchanged visible anchor; exact prior scores retained."
+  },
+  "view-08.png": {
+    "scores": [
+      7,
+      6.5,
+      6,
+      6,
+      5.5
+    ],
+    "evidence": "Ring makes player location easier to recover in soft dense swarm; wings still overlap its silhouette and smoke remains granular.",
+    "weighted_score": 6.325,
+    "regressions": "Unchanged visible anchor; exact prior scores retained."
+  },
+  "view-09.png": {
+    "scores": [
+      8.5,
+      7.0,
+      6,
+      7.5,
+      5
+    ],
+    "evidence": "More irregular coastline and clustered rocks/trees give terrain a less uniform outline and richer arrangement. Abrupt polygonal bends, linear pale foam dashes and simple grass/field surfaces still limit naturalness. Player ring remains clear.",
+    "weighted_score": 7.025,
+    "regressions": "Rock clusters sometimes form a row along shore; angular bends and dashed foam still look procedural."
+  },
+  "view-10.png": {
+    "scores": [
+      6,
+      8.5,
+      9,
+      9,
+      8.5
+    ],
+    "evidence": "Wet reflections, rain, smoke and orange tracer integrate; small troops blend into rubble.",
+    "weighted_score": 7.925,
+    "regressions": "Unchanged visible anchor; exact prior scores retained."
+  },
+  "view-11.png": {
+    "scores": [
+      7.5,
+      9,
+      9,
+      9,
+      8
+    ],
+    "evidence": "Market produce, stone, wood and fabric distinct under consistent shadows; thin paths remain visible.",
+    "weighted_score": 8.4,
+    "regressions": "Unchanged visible anchor; exact prior scores retained."
+  },
+  "view-12.png": {
+    "scores": [
+      8.5,
+      9,
+      9,
+      9,
+      8
+    ],
+    "evidence": "Detailed rooms, wall height, warm/cool light, wood and tile create convincing depth.",
+    "weighted_score": 8.7,
+    "regressions": "Unchanged visible anchor; exact prior scores retained."
+  },
+  "view-13.png": {
+    "scores": [
+      8.5,
+      6.5,
+      5.5,
+      7.0,
+      4.5
+    ],
+    "evidence": "More irregular coastline and clustered rocks/trees give terrain a less uniform outline and richer arrangement. Abrupt polygonal bends, linear pale foam dashes and simple grass/field surfaces still limit naturalness. Player ring remains clear.",
+    "weighted_score": 6.675,
+    "regressions": "Rock clusters sometimes form a row along shore; angular bends and dashed foam still look procedural."
+  },
+  "view-14.png": {
+    "scores": [
+      8.5,
+      7.0,
+      6,
+      7,
+      5
+    ],
+    "evidence": "Player ring remains readable; raised buildings and apron coherent. Shore now has thin pale separated strokes following a single parallel line, resembling dashed road markings rather than irregular broken foam. Smooth shallows and repetitive ocean texture remain.",
+    "weighted_score": 6.95,
+    "regressions": "Unchanged visible anchor; exact prior scores retained."
+  },
+  "view-15.png": {
+    "scores": [
+      8,
+      7.5,
+      6.5,
+      6.5,
+      6
+    ],
+    "evidence": "Crisp ring gives player location despite bow overlap; orange sparks and raised bridge remain distinct, with grainy smoke.",
+    "weighted_score": 7.075,
+    "regressions": "Unchanged visible anchor; exact prior scores retained."
+  },
+  "view-16.png": {
+    "scores": [
+      8.5,
+      7.0,
+      6,
+      7.5,
+      5
+    ],
+    "evidence": "More irregular coastline and clustered rocks/trees give terrain a less uniform outline and richer arrangement. Abrupt polygonal bends, linear pale foam dashes and simple grass/field surfaces still limit naturalness. Player ring remains clear.",
+    "weighted_score": 7.025,
+    "regressions": "Rock clusters sometimes form a row along shore; angular bends and dashed foam still look procedural."
+  },
+  "view-17.png": {
+    "scores": [
+      8.5,
+      7,
+      5.5,
+      6,
+      4.5
+    ],
+    "evidence": "Pale carrier edge and fine light deck lines are visible, but reduced dark contrast around the deck structure flattens its raised features. Player ring remains readable; tan surface and repeated wake bands retain schematic material treatment.",
+    "weighted_score": 6.625,
+    "regressions": "Pale outlines replace stronger dark structural contrast, slightly reducing depth despite added line detail."
+  },
+  "view-18.png": {
+    "scores": [
+      8.5,
+      7.5,
+      6.5,
+      6.5,
+      5.5
+    ],
+    "evidence": "Raised bridge and rim restore carrier volume; cyan ring gives a clear location cue, while quiet scene already reads well. Scalloped wake persists.",
+    "weighted_score": 7.15,
+    "regressions": "Unchanged visible anchor; exact prior scores retained."
+  },
+  "view-19.png": {
+    "scores": [
+      6.5,
+      8.5,
+      9,
+      9,
+      9
+    ],
+    "evidence": "Luminous layered explosion, sparks and atmospheric cliffs give depth; nearby units partly disappear.",
+    "weighted_score": 8.15,
+    "regressions": "Unchanged visible anchor; exact prior scores retained."
+  },
+  "view-20.png": {
+    "scores": [
+      8.5,
+      7,
+      6,
+      6,
+      4.5
+    ],
+    "evidence": "Ring isolates player location on soft tan deck, but aircraft still blends with deck and the ring adds no material depth.",
+    "weighted_score": 6.725,
+    "regressions": "Unchanged visible anchor; exact prior scores retained."
+  },
+  "view-21.png": {
+    "scores": [
+      8.5,
+      7.5,
+      6.0,
+      6.5,
+      5.5
+    ],
+    "evidence": "Pale carrier edge and fine light deck lines are visible, but reduced dark contrast around the deck structure flattens its raised features. Player ring remains readable; tan surface and repeated wake bands retain schematic material treatment.",
+    "weighted_score": 7.05,
+    "regressions": "Pale outlines replace stronger dark structural contrast, slightly reducing depth despite added line detail."
+  },
+  "view-22.png": {
+    "scores": [
+      6.5,
+      9,
+      9,
+      9.5,
+      8.5
+    ],
+    "evidence": "Fog, varied vegetation, muddy ruts and weathered shed build rich depth; tanks blend with terrain.",
+    "weighted_score": 8.25,
+    "regressions": "Unchanged visible anchor; exact prior scores retained."
+  },
+  "view-23.png": {
+    "scores": [
+      7,
+      7,
+      6.0,
+      6.5,
+      6
+    ],
+    "evidence": "Pale carrier edge and fine light deck lines are visible, but reduced dark contrast around the deck structure flattens its raised features. Player ring remains readable; tan surface and repeated wake bands retain schematic material treatment.",
+    "weighted_score": 6.575,
+    "regressions": "Pale outlines replace stronger dark structural contrast, slightly reducing depth despite added line detail."
+  },
+  "view-24.png": {
+    "scores": [
+      8,
+      7.5,
+      6.0,
+      6.5,
+      6
+    ],
+    "evidence": "Pale carrier edge and fine light deck lines are visible, but reduced dark contrast around the deck structure flattens its raised features. Player ring remains readable; tan surface and repeated wake bands retain schematic material treatment.",
+    "weighted_score": 6.975,
+    "regressions": "Pale outlines replace stronger dark structural contrast, slightly reducing depth despite added line detail."
+  },
+  "view-25.png": {
+    "scores": [
+      8.5,
+      6.5,
+      5.5,
+      6.5,
+      4.5
+    ],
+    "evidence": "Player ring remains readable; raised buildings and apron coherent. Shore now has thin pale separated strokes following a single parallel line, resembling dashed road markings rather than irregular broken foam. Smooth shallows and repetitive ocean texture remain.",
+    "weighted_score": 6.6,
+    "regressions": "Unchanged visible anchor; exact prior scores retained."
+  },
+  "_summary": {
+    "weights": [
+      0.3,
+      0.2,
+      0.2,
+      0.15,
+      0.15
+    ],
+    "mean_score": 7.067,
+    "strongest": [
+      {
+        "filename": "view-12.png",
+        "weighted_score": 8.7
+      },
+      {
+        "filename": "view-11.png",
+        "weighted_score": 8.4
+      },
+      {
+        "filename": "view-22.png",
+        "weighted_score": 8.25
+      }
+    ],
+    "weakest": [
+      {
+        "filename": "view-23.png",
+        "weighted_score": 6.575
+      },
+      {
+        "filename": "view-08.png",
+        "weighted_score": 6.325
+      },
+      {
+        "filename": "view-06.png",
+        "weighted_score": 6.225
+      }
+    ],
+    "all_images_viewed": true,
+    "visible_regressions": [
+      "Light carrier outlines reduce dark structural contrast and make deck detail flatter.",
+      "Terrain outline is more varied but some bends are visibly polygonal; rock clusters form repeated rows."
+    ],
+    "improvements": [
+      "Irregular shoreline and grouped rocks/trees add environmental variety."
+    ],
+    "top3_gaps": [
+      "Replace single-curve foam dashes with irregular overlapping soft foam patches and varied shore contact.",
+      "Preserve dark contact/occlusion on carrier structures while using pale highlights selectively; uniform light outlines do not substitute for depth.",
+      "Player location ring works, but silhouette overlap and grainy smoke remain during dense combat; ocean and wake patterns repeat."
+    ],
+    "blinding_limitations": "All25 images individually viewed. Only own prior records used to preserve anchors. No key/implementation/other judges inspected; recognizable scene families limit identity blinding."
+  }
+}

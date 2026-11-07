@@ -1,0 +1,12 @@
+{
+  "accept": true,
+  "imagesViewed": 36,
+  "scope": "Accept sampled movement and effect continuity only. Still review separately marks down offshore surface quality.",
+  "findings": {
+    "coast": "Across both modes, the pilot changes heading and moves from the runway to water. The bright shallow band and broken white surf follow the shoreline as the camera tracks. Hawk's label touches the return banner at 180.",
+    "fleet": "The carrier and escorts progress through frame with tapered wakes attached to their sterns. The pilot crosses the bow near 024–036 and the cyan ring remains visible over the deck. The damage smoke follows a curved track around 090; an escort crosses beneath the Bomb button near 180.",
+    "impacts": "The white pilot flash and orange hit are visible at 006 and 012. The bright burst at 060 separates from sea and shore, with embers and smoke at 090. Tracers are distinct at the sampled firing states.",
+    "consistency": "Phone and fallback show the same major progression with softer aircraft and structures in fallback. Short horizontal blue dashes are present throughout and make offshore water appear blocky, especially when the fleet leaves the center of the frame. They do not obscure the wake, pilot or shots in these samples."
+  },
+  "limits": "Nine sampled screenshots for each scene and mode. No frame-by-frame playback, so fine flicker, pacing, performance and real handset behavior cannot be established."
+}

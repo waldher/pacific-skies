@@ -1,0 +1,378 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> pacific-skies@0.2.0 test
+> node playtest/playtest.js && npm run test:expedition && npm run test:balance:combat && npm run test:fun
+
+PASS  3D assets and renderer initialize
+PASS  page loads without JS errors
+PASS  debug handle exposed
+PASS  boots to title screen
+PASS  Space starts the game
+PASS  single-choice sortie is a visual summary without false controls
+PASS  starting aircraft card displays a loaded GLB render
+PASS  starting airfield exposes sortie planning
+PASS  target and landing-request controls are absent in flight
+PASS  bomb button drops one round
+PASS  keyboard ordnance respects cooldown
+PASS  wingmen use P38 models
+PASS  friendly aircraft have independent damage flash materials
+PASS  player starts with a P38 model with animated propeller
+PASS  model noses match all four flight headings
+PASS  orthographic camera preserves aircraft scale
+PASS  every quality level renders — true,true,true,true,true
+PASS  severe foreground stalls still reduce rendering quality
+PASS  failed quality levels are never retried
+PASS  island scenery uses one solid batch and at most one shared-atlas canopy batch — temperate · 1430 trees · 4 villages
+PASS  home airfield view stays under 80 draw calls — 21 draws
+PASS  island traffic moves between frames
+PASS  right turn banks the 3D aircraft
+PASS  propeller animates
+PASS  campaign starts at a friendly airfield in a bomb-equipped P38
+PASS  same campaign seed reproduces the island chain
+PASS  different campaign seeds create different island chains
+PASS  rank zero cannot select a Corsair
+PASS  P38 cannot equip torpedoes
+PASS  new aircraft stay locked before their milestones
+PASS  idle flight time cannot unlock aircraft
+PASS  score alone cannot bypass combat sortie qualifications
+PASS  Dauntless stays locked one combat sortie before qualification
+PASS  first combat return unlocks Dauntless without waiting
+PASS  score and completed combat sorties unlock the Dauntless at an airfield
+PASS  Dauntless releases a heavier, faster-falling bomb
+PASS  points alone do not unlock advanced naval campaign aircraft
+PASS  completed rescue, points and combat sorties unlock all five aircraft
+PASS  Avenger rejects bombs and equips torpedoes
+PASS  Avenger launches a heavy anti-ship torpedo
+PASS  Mustang is selectable at an airfield with the fastest cruise speed
+PASS  sortie changes are rejected in flight
+PASS  living enemy airfield launches a strike group
+PASS  bomb release consumes one of two bombs
+PASS  bomb cooldown blocks duplicate release
+PASS  falling bomb damages airfield through its actual impact
+PASS  second bomb can be released after cooldown
+PASS  two-bomb sortie can disable an airfield
+PASS  destroyed airfield stops launching new attackers
+PASS  empty bomb loadout cannot fire
+PASS  enemy carrier launches attackers from its actual flight deck
+PASS  organized raids include bombers and escorts
+PASS  unintercepted strike damages its target base and retreats
+PASS  escort reaching a base cannot apply bombing damage
+PASS  sinking enemy carrier stops subsequent strikes
+PASS  simultaneously overdue facilities launch only one formation
+PASS  global raid spacing prevents a second immediate launch
+PASS  active offensive cap prevents overlapping major raids after cooldown
+PASS  next local offensive launches after the previous formation clears
+PASS  near-miss bomb splashes in water without ship damage
+PASS  bomb outside tapered bow splashes despite bounding-box overlap
+PASS  precise bomb impact damages a rotated hull
+PASS  shoreline classifies island center as land and open ocean as water
+PASS  distant rank unlock waits for player arrival before rescue attack
+PASS  earning rank activates a vulnerable carrier rescue
+PASS  carrier remains unavailable before its rescue
+PASS  carrier loss schedules a retry without ending campaign
+PASS  failed carrier rescue can be attempted again
+PASS  letting rescue attackers escape cannot unlock the carrier
+PASS  shooting down rescue attackers records required intercepts
+PASS  clearing rescue attackers near carrier unlocks naval operations
+PASS  land-based P38 cannot transfer onto a carrier
+PASS  safely landed pilot can transfer and equip a naval sortie
+PASS  no waves or enemies spawn at the carrier
+PASS  entering hostile airspace activates its fighter patrol once
+PASS  active territories do not repeatedly respawn defenders
+PASS  defenders prevent capture
+PASS  fast rounds intersect the oriented hull
+PASS  bullets cannot damage ship hulls
+PASS  sustained gunfire cannot sink a ship
+PASS  destroyers sink and award points only once
+PASS  clear territory gains capture progress while flying inside it
+PASS  leaving the zone resets an unfinished capture
+PASS  holding cleared airspace captures territory
+PASS  captured territory stays captured without awarding points repeatedly
+PASS  flying no longer repairs health automatically
+PASS  takeoff action has no effect in flight
+PASS  campaign has no selected target
+PASS  off-center pass does not land
+PASS  reverse-direction deck pass does not land
+PASS  crossing the stern at a bad angle does not land
+PASS  being over the deck without a stern approach does not land
+PASS  aligned final approach keeps manual flight control
+PASS  pilot can steer away from the approach
+PASS  small offset and heading errors are accepted
+PASS  stern crossing leaves time for a deck correction
+PASS  correcting alignment after the stern still catches a wire
+PASS  aligned stern crossing lands without requesting assistance
+PASS  landing immediately refills both ordnance types
+PASS  parked player and overlapping enemy do not ram each other
+PASS  guns stay safe on deck
+PASS  deck repairs restore health over time
+PASS  repairs cap at full health and cool guns
+PASS  takeoff begins from the deck
+PASS  takeoff restores normal flight at cruising altitude
+PASS  sortie starts with exactly two torpedoes
+PASS  torpedo launches and consumes one round
+PASS  torpedo cooldown prevents duplicate launches
+PASS  armed torpedo sinks a destroyer through real collisions
+PASS  second torpedo consumes the last round
+PASS  empty loadout stays empty in flight and spent torpedoes expire
+PASS  torpedoes cannot launch on deck
+PASS  carrier rearms both torpedoes
+PASS  stronghold and principal carrier victory does not require every island or escort
+PASS  new campaign resets territory ownership, fleet and flight state
+PASS  a wingman musters at the start of a campaign
+PASS  roaming Zero can spawn far from all territories
+PASS  roaming Zero arrives outside the viewport
+PASS  roaming interceptors do not stack
+PASS  roaming Zero pursues outside island defense boundaries
+PASS  wingmen fly to rejoin a distant player
+PASS  wingmen fire at nearby enemy fighters
+PASS  friendly fighters can be damaged by hostile fire
+PASS  empty takeoff and landing cannot farm combat sorties
+PASS  allied score during a sortie cannot qualify the player
+PASS  landing after personal combat merit credits exactly one sortie
+PASS  waiting parked cannot repeatedly credit the same sortie
+PASS  generated campaign includes airfield, port and radar roles
+PASS  newly captured port needs establishment before repairing the fleet
+PASS  established friendly port repairs a nearby living fleet
+PASS  port cannot resurrect a sunken carrier
+PASS  destroyed outpost is recaptured and campaign can continue
+PASS  friendly radar detects a raid beyond the player vicinity
+PASS  losing radar removes distant raid detection
+PASS  lost forward airfield evacuates a grounded player to a surviving base
+PASS  loss of every operational base ends the campaign
+PASS  freshly captured airfield survives one bomber impact
+PASS  session report records ownership changes, unlock time and carrier loss once
+PASS  restarting clears campaign report outcomes
+PASS  six seeds reproduce finite shoreline geometry deterministically
+PASS  archipelagos contain varied scenery beyond capturable holdings
+PASS  every runway corner and midpoint rests on physical land
+PASS  regional passages have expedition scale and caldera interiors remain water
+PASS  theater offers a home region, connected fronts and a distant stronghold
+PASS  home archipelago includes a forward airfield before the first ocean crossing
+PASS  first foothold does not demand anti-ship weapons
+PASS  both task groups keep hulls offshore across full patrol circuits
+PASS  destroyer escorts retain formation through route turns
+PASS  sinking a carrier leaves surviving escorts underway
+PASS  friendly task group holds position during deck operations
+PASS  remote enemy installations and carrier locations begin unknown
+PASS  captured radar reveals nearby installations immediately
+PASS  hidden fleet motion cannot leak through chart rescaling
+PASS  unobserved carrier contact retains last-known coordinates with uncertainty
+PASS  old mobile fleet contacts expire while discovered installations remain known
+PASS  HUD shows objective, nearest landing and raid arrows
+PASS  head-on fighters sidestep instead of ramming
+PASS  captured airfields launch patrols and the carrier flies a CAP
+PASS  supply convoys spawn between enemy holdings and sink to gunfire — count 2 drawn true hp 0 score +150
+PASS  enemies use Zero GLBs
+PASS  bot can score points — score 550
+PASS  territory combat remains active during free flight
+PASS  3D camera and HUD resize together
+PASS  secondary thumb fires torpedo while steering stays held
+PASS  releasing torpedo thumb preserves steering and does not fire twice
+PASS  native sortie selectors transfer home and switch the rendered aircraft
+PASS  native carrier transfer selects compatible Corsair at deck height
+PASS  dauntless card selects its real flight model and compatible weapon
+PASS  avenger card selects its real flight model and compatible weapon
+PASS  p51 card selects its real flight model and compatible weapon
+PASS  all five aircraft cards contain loaded model renders
+PASS  on-screen takeoff control launches the selected aircraft
+PASS  restart removes old aircraft instances
+PASS  no JS errors during play
+PASS  phone title shows touch instructions without keyboard shortcuts
+PASS  phone sortie selector fits its panel
+PASS  small-phone sortie panel fits without overlapping the HUD
+PASS  small-phone expanded aircraft cards have no clipped labels
+PASS  small-phone last aircraft remains reachable by scrolling
+PASS  small-phone base transfer remains reachable below aircraft choices
+PASS  landscape sortie panel fits without overlapping the HUD
+PASS  landscape expanded aircraft cards have no clipped labels
+PASS  landscape last aircraft remains reachable by scrolling
+PASS  landscape base transfer remains reachable below aircraft choices
+PASS  phone torpedo control has no keyboard prefix
+PASS  small-phone readouts fit the viewport
+PASS  small-phone notice sizes to its text
+PASS  landscape readouts fit the viewport
+PASS  landscape notice sizes to its text
+PASS  tablet readouts fit the viewport
+PASS  tablet notice sizes to its text
+PASS  phone operations chart pauses the live simulation
+PASS  operations chart fits the phone viewport
+PASS  chart touch selects a known destination without steering or firing
+PASS  closing chart resumes simulation without a stuck control
+PASS  keyboard input switches to keyboard restart hint
+PASS  touch input restores touch restart hint
+PASS  responsive HUD has no runtime errors
+PASS  asset failure shows recovery UI
+PASS  failed loading does not start an invisible game
+
+--- gameplay metrics ---
+seed: 1942
+botSurvivedSeconds: 61
+finalScore: 550
+territoriesCaptured: 1
+finalHp: 100
+died: false
+hpOverTime: 1s:100hp/1 sectors 2s:100hp/1 sectors 3s:100hp/1 sectors 4s:100hp/1 sectors 5s:100hp/1 sectors 6s:100hp/1 sectors 7s:100hp/1 sectors 8s:100hp/1 sectors 10s:100hp/1 sectors 11s:100hp/1 sectors 12s:100hp/1 sectors 13s:100hp/1 sectors 14s:100hp/1 sectors 15s:100hp/1 sectors 16s:100hp/1 sectors 17s:100hp/1 sectors 18s:100hp/1 sectors 19s:100hp/1 sectors 20s:100hp/1 sectors 21s:100hp/1 sectors 22s:100hp/1 sectors 23s:100hp/1 sectors 24s:100hp/1 sectors 25s:100hp/1 sectors 26s:100hp/1 sectors 27s:100hp/1 sectors 28s:100hp/1 sectors 29s:100hp/1 sectors 30s:100hp/1 sectors 31s:100hp/1 sectors 32s:100hp/1 sectors 33s:100hp/1 sectors 34s:100hp/1 sectors 35s:100hp/1 sectors 36s:100hp/1 sectors 37s:100hp/1 sectors 38s:100hp/1 sectors 39s:100hp/1 sectors 40s:100hp/1 sectors 41s:100hp/1 sectors 42s:100hp/1 sectors 43s:100hp/1 sectors 44s:100hp/1 sectors 45s:100hp/1 sectors 46s:100hp/1 sectors 47s:100hp/1 sectors 48s:100hp/1 sectors 49s:100hp/1 sectors 50s:100hp/1 sectors 51s:100hp/1 sectors 52s:100hp/1 sectors 53s:100hp/1 sectors 54s:100hp/1 sectors 55s:100hp/1 sectors 56s:100hp/1 sectors 57s:100hp/1 sectors 58s:100hp/1 sectors 59s:100hp/1 sectors 60s:100hp/1 sectors
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> pacific-skies@0.2.0 test:expedition
+> node --experimental-vm-modules playtest/expedition.cjs && node --experimental-vm-modules playtest/expedition-recovery.cjs && node --experimental-vm-modules playtest/coastal-home.cjs && node --experimental-vm-modules playtest/navigation.cjs && node --experimental-vm-modules --no-warnings playtest/coast-refinement.cjs
+
+(node:489) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS 100 seeded game maps preserve atlas anchors and bounded coast detail, deterministic worlds, safe fleet routes; shortest regional link 6634 units
+PASS captured forward airfield unlocks launch access and shortens next operation
+PASS recovery at chosen forward field preserves conquered land, explored chart, session report and aircraft qualifications
+PASS pressure respects regional adjacency; destroying launch source stops new raids
+(node:497) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS recovery preserves war, discovery and qualifications; exact resume; last-base loss; invalid saves; unavailable storage
+(node:505) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS 500 coastal homes: full runway/apron inland, shore 114.6–115.5 units away
+(node:513) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS guidance ends reached surveys, finds uncharted and overrun holdings, then hunts the enemy fleet
+PASS stable arrival state and quiet flight presentation
+PASS actionable objective phases, completion, manual courses, clear course and legacy coastal-save migration
+Checking campaign 100/500
+Checking campaign 200/500
+Checking campaign 300/500
+Checking campaign 400/500
+Checking campaign 500/500
+{"pass":true,"seeds":500,"islands":32849,"maxVertices":256,"maxDisplacement":17.999933904371577,"fixedHome":0}
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> pacific-skies@0.2.0 test:balance:combat
+> node --experimental-vm-modules playtest/combat-balance.cjs
+
+(node:542) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+solo   s11:18s hull-39 col1  s23:34s hull-12 col0  s37:27s hull-42 col2  s51:22s hull-36 col0  s68:43s hull-66 col2  s74:7s hull-15 col1  s85:23s hull-66 col2  s96:11s hull-39 col1  s3:16s hull-51 col1  s8:43s hull-63 col1  s14:27s hull-27 col1  s29:31s hull-12 col0  s42:12s hull-0 col0  s57:11s hull-15 col1  s63:37s hull-12 col0  s77:33s hull-75 col1
+wing   s11:8s hull-39 col1 wk1  s23:13s hull-12 col0 wk1  s37:11s hull-27 col1 wk1  s51:17s hull-39 col1 wk0  s68:5s hull-12 col0 wk0  s74:11s hull-12 col0 wk1  s85:18s hull-36 col0 wk1  s96:10s hull-39 col1 wk0  s3:33s hull-12 col0 wk0  s8:18s hull-63 col1 wk1  s14:9s hull-24 col0 wk2  s29:16s hull-39 col1 wk0  s42:7s hull-0 col0 wk1  s57:33s hull-39 col1 wk1  s63:34s hull-24 col0 wk0  s77:13s hull-75 col1 wk1
+PASS  soloHullLost       35.63   band 12..75
+PASS  soloCollisions      0.88   band 0..1.2
+PASS  collisionShare      0.37   band 0..0.55
+PASS  soloCleared         1.00   band 0.8..1
+PASS  soloSeconds        24.63   band 6..55
+PASS  wingKillShare       0.23   band 0..0.45
+PASS  wingHullRelief      0.86   band 0.35..1.1
+PASS  wingTimeRelief      0.66   band 0.3..0.9
+PASS  wingSurvival        1.00   band 0.6..1
+PASS  ramSurvivable       3.00   band 3..Infinity
+PASS  straightHits        5.00   band 2..Infinity
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> pacific-skies@0.2.0 test:fun
+> node --experimental-vm-modules --no-warnings playtest/fun-audit.cjs
+
+  pacifist seed 58    play      44.5 min  (13s)
+  pacifist seed 7     play      43.3 min  (17s)
+  pacifist seed 23    play      43.3 min  (18s)
+  pacifist seed 1942  over      39.3 min  (27s)
+  pacifist seed 144   play      44.2 min  (11s)
+  pacifist seed 91    play      43.9 min  (16s)
+  rookie   seed 1942  play      44.1 min  (22s)
+  rookie   seed 7     play      44.5 min  (14s)
+  rookie   seed 58    play      44.1 min  (14s)
+  rookie   seed 23    play      44.1 min  (19s)
+  brawler  seed 7     victory   14.9 min  (4s)
+  brawler  seed 1942  victory   20.6 min  (7s)
+  rookie   seed 144   play      44.2 min  (14s)
+  brawler  seed 58    victory   17.1 min  (4s)
+  brawler  seed 23    victory   20.9 min  (7s)
+  brawler  seed 144   victory   21.3 min  (5s)
+  rookie   seed 91    play      44.3 min  (20s)
+  brawler  seed 91    victory   28.9 min  (10s)
+  rusher   seed 1942  victory   26.5 min  (11s)
+  rusher   seed 7     victory   27.2 min  (8s)
+  rusher   seed 58    victory   15.0 min  (4s)
+  rusher   seed 23    victory   30.6 min  (13s)
+  rusher   seed 144   victory   18.8 min  (6s)
+  average  seed 1942  victory   27.7 min  (10s)
+  average  seed 7     victory   27.0 min  (7s)
+  rusher   seed 91    victory   29.0 min  (13s)
+  average  seed 23    victory   24.3 min  (8s)
+  average  seed 58    victory   20.5 min  (4s)
+  average  seed 144   victory   21.2 min  (5s)
+  ace      seed 7     victory   19.6 min  (4s)
+  ace      seed 1942  victory   20.6 min  (7s)
+  ace      seed 23    victory   15.6 min  (5s)
+  average  seed 91    victory   38.9 min  (11s)
+  ace      seed 58    victory   18.0 min  (4s)
+  ace      seed 144   victory   13.6 min  (3s)
+  passive  seed 1942  over      22.2 min  (5s)
+  ace      seed 91    victory   22.4 min  (7s)
+  passive  seed 7     play      25.0 min  (4s)
+  passive  seed 23    play      25.0 min  (5s)
+  passive  seed 58    play      25.0 min  (4s)
+  passive  seed 144   play      25.0 min  (4s)
+  passive  seed 91    play      25.0 min  (5s)
+
+Persona medians
+  persona       winRate victoryMinu deathsPer10 capturesPer travelShare  fightShare   lullShare closeCallsP  peaksPer10 predictabil
+  rookie           0.00       never        5.56        1.11        0.24        0.64        0.00        0.26        0.97        0.09
+  average          1.00          24        0.00        4.71        0.54        0.27        0.03        0.77        2.57        0.10
+  ace              1.00          18        0.00        6.60        0.59        0.16        0.04        0.92        2.09        0.05
+  brawler          1.00          21        0.35        6.22        0.52        0.19        0.00        1.01        2.94        0.06
+  rusher           1.00          26        1.06        5.33        0.51        0.15        0.00        1.77        2.88        0.08
+  pacifist         0.00       never        7.78        0.00        0.31        0.25        0.00        2.23        0.27        0.13
+  passive          0.00       never        0.00        0.00        0.00        0.10        0.12        0.00        0.00        0.03
+
+SMOKE
+  pass         softlocks          0.00 (was 0.00)   healthy 0..0  — Does the war ever stop moving for a pilot following the marker?
+  pass         winnable           1.00 (was 1.00)   healthy 0.8..1  — Can an average pilot who follows the marker win?
+  pass         idle               0.00 (was 0.00)   healthy 0..0.02  — Is there always an objective?
+
+DIFFICULTY
+  known killer rookieWins         0.00 (was 0.00)   healthy 0.5..1  — Can a weak player still win?
+                → Crushingly hard for new players. Consider assists that fade with rank (auto-lead, wider hit radius), fewer defenders early, or enemies that disengage when a fight drags on.
+  ok           aceDanger          0.92 (was 0.92)   healthy 0.3..6  — Does a skilled player ever feel danger?
+  warn         averageDeaths      0.00 (was 0.00)   healthy 0.2..3  — How often does an average pilot lose an aircraft?
+                → Nobody dies: losing an aircraft is not part of the game. Stakes come only from the war map; consider raising enemy lethality on strike escorts and defenders.
+  warn         skillMatters      never   healthy 1.4..3.5  — Does getting better pay off? (rookie time to win ÷ ace time to win)
+                → The skill gap is a cliff: rookies fall far behind. Add catch-up help or a gentler early curve.
+  ok           difficultyCurve    1.09 (was 1.09)   healthy 0.8..2.5  — Does the war get harder as you win? (damage taken, last third ÷ first third)
+  warn         pressure             22 (was 22)   healthy 4..20  — Does the war come to you? (minutes until a passive player first loses a holding)
+                → No stakes: a player who does nothing loses nothing. Enemy raids need teeth or the war needs a clock.
+  ok           hook               1.56 (was 1.56)   healthy 0..6  — Minutes until a weak player captures a first island
+  known killer frustration          12 (was 14)   healthy 0..1.5  — Unresolved fights a rookie abandons per 10 minutes of flying
+                → Weak pilots get stuck in fights nobody wins. Enemies should break off, run low on fuel, or be finishable (a hit-radius assist for rookies).
+
+PACING
+  ok           lulls              0.03 (was 0.00)   healthy 0..0.3  — How much flying time sits in long lulls (45 s+ with nothing happening)?
+  ok           longestLull          45 (was 44)   healthy 0..120  — Longest stretch in the air with nothing happening (seconds, median campaign)
+  ok           rhythm             2.57 (was 2.57)   healthy 1.5..6  — Intensity peaks per 10 minutes of flying (build-up, peak, relax)
+  ok           grind                41 (was 45)   healthy 20..150  — Longest continuous fight (seconds)
+  ok           uncertainty        0.60 (was 0.52)   healthy 0.4..1  — How late does the last setback come? (fraction of the campaign)
+  ok           drama              0.47 (was 0.37)   healthy 0.2..2  — Holdings lost per 10 minutes (setbacks to recover from)
+
+REPETITION
+  ok           novelty            0.94 (was 0.97)   healthy 0.5..1  — When does the last new thing happen? (fraction of the campaign)
+  ok           repeatedSorties    0.00 (was 0.00)   healthy 0..0.5  — Share of sorties that play out exactly like another one
+  ok           predictability     0.10 (was 0.10)   healthy 0.03..0.55  — How compressible is the activity stream vs. a shuffled one? (0 random, 1 fully scripted)
+  ok           evolution          0.24 (was 0.23)   healthy 0.05..0.5  — How much does the second half differ from the first? (Jensen–Shannon divergence of activities and objectives)
+
+VARIETY
+  ok           objectives         0.87 (was 0.87)   healthy 0.55..1  — Variety of objectives the marker gives (normalized entropy of objective titles over flying time)
+
+FLYING
+  warn         travel             0.54 (was 0.51)   healthy 0.2..0.45  — Share of flying spent travelling with nothing to decide
+                → Mostly commuting. Forward bases that rearm closer to the front, shorter survey legs, or content en route.
+  ok           decisionGap          55 (was 53)   healthy 0..150  — Longest stretch without a decision (seconds)
+
+STRATEGY
+  ok           gunsMatter         0.00 (was 0.00)   healthy 0..0.2  — Can you win without firing a shot? (pacifist win rate)
+  ok           fightsPay          1.09 (was 1.09)   healthy 0.85..1.5  — Is skipping fights faster? (rusher time to win ÷ average)
+  ok           huntingPays        0.85 (was 0.85)   healthy 0.8..1.4  — Is hunting every fighter slower? (brawler time to win ÷ average)
+  ok           dominance          0.67 (was 0.50)   healthy 0..0.67  — Share of seeds where the same full strategy wins fastest
+  warn         aircraftChoice     0.96 (was 0.96)   healthy 0.3..0.9  — Share of flying in aircraft unlocked after the start
+                → The starter aircraft is abandoned at once: its unlock is meaningless.
+
+VARIETY
+  ok           encounters         0.63 (was 0.63)   healthy 0.45..1  — Variety of enemies engaged (normalized entropy over raider/defender/bomber/escort/rescue)
+  ok           activities         0.83 (was 0.84)   healthy 0.65..1  — Variety of what the pilot does (normalized entropy over flying activities)
+
+MAP
+  ok           mapFairness        1.90 (was 2.34)   healthy 1..2  — Spread of campaign length across seeds (slowest ÷ fastest, average pilot)
+
+25 ok, 5 warn, 2 fun-killers; no regressions  (101s)

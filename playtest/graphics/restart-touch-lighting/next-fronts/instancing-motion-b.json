@@ -1,0 +1,11 @@
+{
+  "judge": "B",
+  "framesInspected": 36,
+  "acceptSampledProgression": true,
+  "findings": [
+    "Player and nearby aircraft stay visible through sampled translation and banking in the coast and fleet routes, in both profiles. No obvious disappearing airframes or broken silhouettes in this sample.",
+    "The white damage flash remains distinct at coast and fleet 006–012. Tracers, smoke, orange impacts and ship wakes remain identifiable through the sampled action.",
+    "The cyan player ring still overlaps runway detail and the fleet bow. Hawk's label still encroaches on the objective banner at coast 180 and sits in the minimap area at fleet 120 in this isolated set."
+  ],
+  "limitations": "Reviewed 36 discrete thumbnails. The samples cannot establish continuous playback, flicker, frame pacing or physical-device performance."
+}

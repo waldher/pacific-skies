@@ -1,0 +1,714 @@
+{
+  "schema": 1,
+  "name": "transit-13",
+  "sourceHash": "77c4f35ccfc4a310544109b0d26979f2a15cd5b0d081e4f7454804f5fab59f24",
+  "sourceCommitCandidates": [
+    "e3555423aa10e7d5c87b6f9396a4e83d4449292b",
+    "eed95f791026a36afdfae291e756125edf18348f"
+  ],
+  "captureReport": "playtest/graphics/evidence/transit-13/transit.json",
+  "captureReportSha256": "73b7125213dfa4c390535fdca804cf97bbe7f719ad3b8ef9e2cb44e97abce273",
+  "capturedSuiteHash": "0fbca751849f51926e5afdb8b34d81886e35622fdebee12ca71ea4b9eb9a4f63",
+  "files": [
+    {
+      "path": "assets/aircraft/F4U_Corsair.glb",
+      "gitBlobSha": "6e4c75313a58ac80922b9619eb82936de558c3b7",
+      "sha256": "87765c3514b0d2092f203729436a0de2dfed4d5ef122e48b3ef72f6b2fce80c2",
+      "bytes": 203120,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "assets/aircraft/Mitsubishi_Zero.glb",
+      "gitBlobSha": "fd73ec9070af2019aa00e9069cd7fa8db5758533",
+      "sha256": "3d54b95d78c3481c3fab1252b9af740d866c48869d6f9ac4e216a7ff5b24eeee",
+      "bytes": 169492,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "assets/aircraft/P38_Lightning.glb",
+      "gitBlobSha": "a27789c0dbfc44b757723b7b395436074a121198",
+      "sha256": "0476fc023772861de47abbbfa705483c83780cd66d4d26fd739f9413ffb3fa01",
+      "bytes": 100928,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "assets/aircraft/P38_Lightning.md",
+      "gitBlobSha": "d9a3009b2f7167992729e06d842b64c945ffd724",
+      "sha256": "ec9006e3a50717a28891b86a87df43dc93776b72ce9964949a8c8397e7b5df8d",
+      "bytes": 1076,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "assets/aircraft/P51_Mustang.glb",
+      "gitBlobSha": "31e34064c21646796a8ebb11c3b2d254ad694ee1",
+      "sha256": "98eb079119a342e1c762aea1ce7b8bb7a00c9cfe4cb6e1407948f120a96bd053",
+      "bytes": 140484,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "assets/aircraft/README.md",
+      "gitBlobSha": "146c1a1777a6c321792fe810cfc5633b0c452d30",
+      "sha256": "788b082b95863e1de1670763a706bbf0fae584e2087c73378d7c0ee3eb5d6452",
+      "bytes": 1956,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "assets/aircraft/SBD_Dauntless.glb",
+      "gitBlobSha": "f7a9be064ad43aa343d156f0b5c34771a3c27943",
+      "sha256": "4fe3b161d24fdbbd517018533dd4314f7c15ae619598cc5f63dc976d5be9c241",
+      "bytes": 298052,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "assets/aircraft/TBF_Avenger.glb",
+      "gitBlobSha": "981a7e7c7910501af32db2179d76d183c099b7c6",
+      "sha256": "667a56c4b699ebe9e1634af6a2f3be375f4b56d3bd2f0eee4fd0be683aea1c14",
+      "bytes": 162876,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "assets/effects/README.md",
+      "gitBlobSha": "0b9721c074d1a70327a7e7f9478a5010eb4b1daa",
+      "sha256": "73582cbe4c6faadbce5ad57fd2a54808d81bb813097e5f0c20720d2537a19ae1",
+      "bytes": 3359,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "assets/effects/effects-atlas-512.webp",
+      "gitBlobSha": "b9114edad995a6e4df025051e46cb310080806d4",
+      "sha256": "5d3608f2d026795a38095b7840c4991cc1bd56d832e36978df491d974c713d9f",
+      "bytes": 65468,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "assets/ocean/README.md",
+      "gitBlobSha": "33d393da5418977aa8e012494eda1714efcb755a",
+      "sha256": "972bd9e91fac44ca337885e0a9febaa9a60d55597a361027b4845cc99257820d",
+      "bytes": 3277,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "assets/ocean/ocean-512.webp",
+      "gitBlobSha": "9148fa6fbd1f9122ff394fcd68caf221593bcbb9",
+      "sha256": "55d16507dfcd6e1f75001fd1c6b13fb6cc264bb0332e8e9746f8517ce10fac3a",
+      "bytes": 10666,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "assets/terrain/README.md",
+      "gitBlobSha": "20d9dddd404333adcc92fdfdebc9b16d7e9fe329",
+      "sha256": "55464fbf62e07a86d1bfc5e84e40c1b919f88f99aea96cc9d15da23207129a43",
+      "bytes": 2748,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "assets/terrain/grass-soil-v1.webp",
+      "gitBlobSha": "1610d006614036f57c90b419f73eea19ca68525e",
+      "sha256": "72753283ebac416d7f63dddb02c2487a61fc03bc17125320afdb0ebd1c595b96",
+      "bytes": 149756,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "index.html",
+      "gitBlobSha": "fc9b358ea9b7badc82421f9d4bf48a43370130c3",
+      "sha256": "fd85107ec2a1c011ba4c86b048901d7d3ecdbd8bc3322837721331628bcad6c3",
+      "bytes": 14915,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/aircraft-previews.js",
+      "gitBlobSha": "6b5b574439050fa14cda830d9fa0e9dc4add0724",
+      "sha256": "4c8fc8a0debb4f64db8d92b1ff9a0d488efae7925df4ecb8d4ebe129d4d8f258",
+      "bytes": 3321,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/aircraft-types.js",
+      "gitBlobSha": "ada66496e353aa82866497be34a19e8d2cea39fe",
+      "sha256": "7c29cd74f1e2b55da2c713d88e790ffa92e640c3f1d6ec1cf02eb24ece8d5754",
+      "bytes": 1929,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/aircraft.js",
+      "gitBlobSha": "d4c6c01d98406af2f4b4ccb530a3c860d0699dcd",
+      "sha256": "6fa08c7d4397123ad3cb3e6eca3b624b6616d823fe76f9793f7c03a4b63e21fa",
+      "bytes": 11143,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/airwar.js",
+      "gitBlobSha": "7baee8091820b29c768509ae85b891edfbf02e39",
+      "sha256": "e93a3568d0d38ada378149128c8d13929546f3281d710865e2a71a33208094bf",
+      "bytes": 12656,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/audio.js",
+      "gitBlobSha": "593a83a7bd73cca511d2c575a6a5d7d3b27e4102",
+      "sha256": "bf241b5e6c45dfa94dad6e06ead382e9c0e1f1e3a2adbdec04f40cfffdfccbf1",
+      "bytes": 1904,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/bases.js",
+      "gitBlobSha": "415fc5fa0ec3d81e23b12f157cd9e8f1feff6710",
+      "sha256": "1869ab6a3ec531f2d4362bb1058f34015c81a8e265d6e9e4a969ee7613002684",
+      "bytes": 1713,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/bombs.js",
+      "gitBlobSha": "2adcfac4e39b2889cbc88c355f0595e141f2e8f3",
+      "sha256": "8b91a78bbc035f7f6bd0bd41a06e914d486d1ce53688a48b951c3f438518b803",
+      "bytes": 2239,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/campaign.js",
+      "gitBlobSha": "4cf7501beffbc6fd24554f0d22512cb9ec27d2a3",
+      "sha256": "bf6095362132fb5864ff067b045ef1ec9fc2646963c3319fed991da21eed3607",
+      "bytes": 9236,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/canvas.js",
+      "gitBlobSha": "57bd3555a9805cc84d733760a68188fd15f0acff",
+      "sha256": "f63f043f8a4fe4b2329276eee4dcb1a85d50419bcc2ab31039d5969f1e1027c5",
+      "bytes": 781,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/carrier.js",
+      "gitBlobSha": "23767ed6915f302ef4375d705da77229a97f7f06",
+      "sha256": "0332a594193e9ebb637d77b582fc40a647c91fcfd62ac81f49975f62b311fd20",
+      "bytes": 5780,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/coast-refinement.js",
+      "gitBlobSha": "80d9e4e2ec0517230c861c281ecffd04b524d4fb",
+      "sha256": "3d4f3944f16f9172c124362db238d052dfef3d7d6773e43a8c62f568286a99b7",
+      "bytes": 3054,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/coastal-home.js",
+      "gitBlobSha": "5ff499194e63189586b58361ed5fb54d24e008c6",
+      "sha256": "3525ee495f7f6a41885240aa7dbb51926469cf1618f988116e3b617f7dcbb442",
+      "bytes": 1396,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/config.js",
+      "gitBlobSha": "bf5cdc49d6e51d1deca4cc5f8a28fa42bd4875db",
+      "sha256": "a2756977ca756b014f38d16e8b2a7c06e76dbc152428ae9b63e8a63721308ecb",
+      "bytes": 10964,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/convoys.js",
+      "gitBlobSha": "42f4ab05e879c431566ef563e1e29a0408a0d74e",
+      "sha256": "7b9b836dfd008b7005bbb8cf6c759c257695fae856d6cf9a5a521dbfe051a612",
+      "bytes": 5920,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/effects.js",
+      "gitBlobSha": "a2207ea49d03f262b9c0771e17e3a28d1ceb0910",
+      "sha256": "7132bb20717d2c85075ebde56a0db215517c6ab3308e4bdf9e37c84e2985248c",
+      "bytes": 8692,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/enemies.js",
+      "gitBlobSha": "33f953dcc1b0d5b05b5fd567fb3c3bc2d94acdd4",
+      "sha256": "ad25473ab13c7f56cd9d32521056f13450b70981970917ccc7d83338c955678d",
+      "bytes": 9530,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/environment.js",
+      "gitBlobSha": "367d7b9c98e11630aa351d88a8384cb3325e5623",
+      "sha256": "42a404ca4e09bbbd6712251834bb8c040c3fa43823f8f5255bd3e5da5a9b0894",
+      "bytes": 3590,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/expedition-geography.js",
+      "gitBlobSha": "0ca594eb68cada3c880de000ee52b19ac1d38576",
+      "sha256": "535503b32e9bbd1311f14494e976ae6da684b0a3d5b62fc407268593a1d43196",
+      "bytes": 5373,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/fleets.js",
+      "gitBlobSha": "c79c5dac124b8bf860dc6d71053f2b72e84834b3",
+      "sha256": "d3a291c0b2f7e940d80b96f17293397461f513663a5fde8cd62f7dd32e59737e",
+      "bytes": 3896,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/hud.js",
+      "gitBlobSha": "1b789454b1be139ebb86938e2b1e0a3e7f4150c4",
+      "sha256": "9c312a09bb66df9da1979c202203ce538695dd0b1b4abd19ec9024450e42fe87",
+      "bytes": 24001,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/input.js",
+      "gitBlobSha": "07a3f565ff828580afe2235d5d1c2d772d61be95",
+      "sha256": "52d2b4682020c4586e72fdc9f5f3510250f319cfe1c2ea0d423d5d041e9b74c7",
+      "bytes": 4714,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/intelligence.js",
+      "gitBlobSha": "6e7c29af3fed043362be79b15a489b181f43162c",
+      "sha256": "619d8f172f3ecae1f89bfbca85a2e381b2cf217508ab4e2ebe5f05bc4edf015b",
+      "bytes": 5048,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/land-worker-client.js",
+      "gitBlobSha": "748785ae72478fabd2585836b549263262c66789",
+      "sha256": "b0613069fd4e8263dcdffa98b8bd8c805f5af23337a630b59a90b381508cec0e",
+      "bytes": 2294,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/land-worker.js",
+      "gitBlobSha": "93bc9ae68399fd53f02fc006a9baa6bf2a6d4925",
+      "sha256": "ca70cc967bcaa701750e1e249a8e78967d4f5fb5ad5c711fc66f76f05f9bbd79",
+      "bytes": 1492,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/land.js",
+      "gitBlobSha": "2722b6f186224f030193baba3d2ac901f97dbe14",
+      "sha256": "43bdf1a85983b8e2135bb6e3572bf00220d8ae06641a090e8dd85e01435e71f4",
+      "bytes": 57801,
+      "storage": {
+        "kind": "file",
+        "file": "tools/reference/source-history/objects/2722b6f186224f030193baba3d2ac901f97dbe14.js"
+      }
+    },
+    {
+      "path": "src/main.js",
+      "gitBlobSha": "236c85f88d91dcd9a274c9911d4773f83c3b58b5",
+      "sha256": "2b140980a56e3446c747c9ba48af7fae9deb3b77429e88d917745c1fdc1a81b1",
+      "bytes": 10074,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/naval-scene.js",
+      "gitBlobSha": "b6ef79c6724507fb8fdea89d6efbedddf4724ffe",
+      "sha256": "c6bd29cd614affe63944275f8894cd3a862c37b8f8ff49063f071703868ec240",
+      "bytes": 25996,
+      "storage": {
+        "kind": "file",
+        "file": "tools/reference/source-history/objects/b6ef79c6724507fb8fdea89d6efbedddf4724ffe.js"
+      }
+    },
+    {
+      "path": "src/noise.js",
+      "gitBlobSha": "853fafaf601502ed549dd38cac434af9bcd36085",
+      "sha256": "447c20be106a2446ebe363b9d67187e095733f1db722fd4ac49e780c66dde115",
+      "bytes": 4094,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/objectives.js",
+      "gitBlobSha": "45f8b3abe7ba92449cbcd929af8704737c695b98",
+      "sha256": "ca1ae325d5e10c8d82748b34d72da3f707dddd5276c6286d17f2a824404e5b8f",
+      "bytes": 7503,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/operations.js",
+      "gitBlobSha": "2eaf12355d623057eac08ac4ad9c21db585c97de",
+      "sha256": "21e935cff271c4da397a96d314b547a6cde883b52fd518000cb506c05f6bda14",
+      "bytes": 11525,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/particles.js",
+      "gitBlobSha": "8aa26de97b462b6216d6fbf88035283116d8d79a",
+      "sha256": "cb0ea1a23869bbdfb1d0227e45bd2124c0ec395a70d07d3aa464a7d13ac12dbe",
+      "bytes": 1569,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/persistence.js",
+      "gitBlobSha": "5ea78e1df5174d2bf6437334205d756e716bd96b",
+      "sha256": "2f0475cfd45f599db2110bc53cacc07652ddc7dd29e9093c9be9d5f6c1fc866d",
+      "bytes": 8404,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/player.js",
+      "gitBlobSha": "904254c4ddb3f0b87032a256e0a4d16395ab9319",
+      "sha256": "6f529c999ce036122805e5f90f324a321a3908eae5903a7cf0da6c58930cfbc7",
+      "bytes": 5245,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/projectile-visual.js",
+      "gitBlobSha": "6b4c36c75d21aa652c048f7bd7df0aa3957142e4",
+      "sha256": "0c816ef1a1a52543ca58bfa33a1e4b2620d7653d95ba6820562cb54eba1167bd",
+      "bytes": 1014,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/projection.js",
+      "gitBlobSha": "8454e917f8d62f4cd1238a69024a6dcd35bb739f",
+      "sha256": "52702779492cbd85834ee91b389050af55a33260f48777845873fb78fa56c262",
+      "bytes": 1425,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/renderer.js",
+      "gitBlobSha": "f5e64416f958a15922ff97f728bf82fd08c490f5",
+      "sha256": "ff104f7276f2f7ffed9d78822b86e4de3621e3e7f2d46846d314891091af78c8",
+      "bytes": 9333,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/session-report.js",
+      "gitBlobSha": "cf185dfb05eb4ccf2a5515fc8cc57317cb80a6e7",
+      "sha256": "ac3eb275edf048da27025bb36e813e596e77f84ee5d9c299ae3a0e5487cfe1c8",
+      "bytes": 1588,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/ships.js",
+      "gitBlobSha": "64defc45c68e0e674b2da650fabb0736a1a6f97f",
+      "sha256": "1cb19debfbde1b211b09fb78d80f128b70429b03098a9c835960e772bdf6fd15",
+      "bytes": 2706,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/sprites.js",
+      "gitBlobSha": "e4bbc85d22926fec0a364a64e3ff7d2c5e9874a8",
+      "sha256": "d2642c4896911a060dc0f89be7ed2b75a63785986ba43671318721c800f79caa",
+      "bytes": 387,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/state.js",
+      "gitBlobSha": "94b2243eb01984114d64eeb5090d4c5c38fe5911",
+      "sha256": "6b65cfdd0b52b6c189b40b06b91a5d72bc9b884328dc136d10f3314d250a7185",
+      "bytes": 5016,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/strikes.js",
+      "gitBlobSha": "fbcb3b56fb09b003e3884730c04a9c0037f98f11",
+      "sha256": "16f7a9e0ba1ed30634611d47129633ef52b51141c36306ba36624a47fbdb02da",
+      "bytes": 8074,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/surface.js",
+      "gitBlobSha": "e2df99d27c25e75eb2cd260f4212812e88637b8f",
+      "sha256": "0dbd08e2f54993ba649b851b69e1403d1d56306270c84ab1e9ef9e02da1cd6b3",
+      "bytes": 1894,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/theater.js",
+      "gitBlobSha": "e0e3f2c47b44a36f5d5b7a5adb52e294d4070d82",
+      "sha256": "715fa7b0e1fe47018b080b720251ae9b6b5918a006a68d89cec145e224c75d39",
+      "bytes": 9176,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/torpedoes.js",
+      "gitBlobSha": "1ad6eb5aa8ca4ab0406ac8f86686b708f817a497",
+      "sha256": "3f331c056fad4179d0099caed3f03f828f7f166e07e4285337b2fd11198a4d7a",
+      "bytes": 1818,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/traffic.js",
+      "gitBlobSha": "a209e45bb0041705ac450948f77f0ea575515aef",
+      "sha256": "bb2e7d5ea4ab1cd7c5ebb31f36ed7e13ae85961c3a0d3b09c569be844af9bb5b",
+      "bytes": 6822,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/util.js",
+      "gitBlobSha": "3a0c3dbcf823d96bb71a5915fd3342cdef7188dd",
+      "sha256": "512d2711a99974cea53d13b00fc7f3c4ddfdcb818baf6dd8918deba97345f894",
+      "bytes": 945,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/world-cache.js",
+      "gitBlobSha": "a8232da43e3dba3c3b1e5ef4f203c5247824550e",
+      "sha256": "4fa39da06aa51d6f74d5ea5edd0e9c4fe97ea7337f9f1d2a5d22e1b3cf42caf8",
+      "bytes": 2344,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "src/world.js",
+      "gitBlobSha": "84bde1d35e8a46106d7c73e4d59d259f36f78e1c",
+      "sha256": "ffcec047163f8b02152b74742362af31c10d440a6aabb3a7c31694610d9570a1",
+      "bytes": 16396,
+      "storage": {
+        "kind": "file",
+        "file": "tools/reference/source-history/objects/84bde1d35e8a46106d7c73e4d59d259f36f78e1c.js"
+      }
+    },
+    {
+      "path": "vendor/three/LICENSE",
+      "gitBlobSha": "8ada2a5f982916b0ba4b7a0aa7de347587e745d7",
+      "sha256": "8b378ebe60e2fe500158cb0ac71cb5e8b7d92953c2abcc63a0eb90499653b5bc",
+      "bytes": 1081,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "vendor/three/README.md",
+      "gitBlobSha": "1a0d7e24e4c6eeb747883170cb9f042406d74165",
+      "sha256": "84607fa6def807acfd61c3293e10403f593b3f4f264dd13de740fc41d60b03c0",
+      "bytes": 652,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "vendor/three/addons/loaders/GLTFLoader.js",
+      "gitBlobSha": "91629ef9f7a39b11180acb7459701eccc6cd3aa0",
+      "sha256": "97642d720f16cc9a0c9844934198e4d0c023bea8e89576d0f7545d03b2d103d2",
+      "bytes": 114959,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "vendor/three/addons/utils/BufferGeometryUtils.js",
+      "gitBlobSha": "4e1221c238634f36110688a6b309d1686f1834b4",
+      "sha256": "5c552223a9309883743b80538d6e9cdb45e3227f30d3ec56fb2c39b46e78d595",
+      "bytes": 37621,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "vendor/three/addons/utils/SkeletonUtils.js",
+      "gitBlobSha": "836c2e2bf2be3c5c5fd6b65ed260f84b3d589258",
+      "sha256": "b1632a703206c3d830de9fcbe515696770d04b71a15ee6b50afa6d2c3298c86f",
+      "bytes": 11535,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "vendor/three/three.core.min.js",
+      "gitBlobSha": "fcf90d35125fb8032944f3211a57fb5f29433bae",
+      "sha256": "05b2609338c76cd65daf74f3ac515bc9a5045e1b3b33edc07d8c9bd55250fa90",
+      "bytes": 385386,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    },
+    {
+      "path": "vendor/three/three.module.min.js",
+      "gitBlobSha": "5ae623ca0c049185052dafc5ef764d236ec93bfe",
+      "sha256": "86bcee248b64f44bcfc23c331ae74619061957d59cab040171dcb6fb5900beb6",
+      "bytes": 365552,
+      "storage": {
+        "kind": "git-object",
+        "reachableFrom": "59802ea25474edbe4943507ddd414607b0541227"
+      }
+    }
+  ]
+}

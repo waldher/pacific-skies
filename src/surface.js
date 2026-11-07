@@ -11,6 +11,7 @@ export function insidePolygon(x, y, points) {
 }
 export function islandOutline(t, radius = t.radius, jitter = .22, seed = 2) {
   if (t.shoreline) {
+    if(radius===t.radius)return t.shoreline; // canonical immutable shape; no per-hit cloning
     const factor = radius / t.radius;
     return t.shoreline.map(([x,y]) => [x * factor, y * factor]);
   }

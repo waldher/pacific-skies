@@ -1,0 +1,330 @@
+{
+  "meta": {
+    "judge": "C",
+    "packet": 4,
+    "categories": [
+      "readability",
+      "coherence",
+      "lighting_depth",
+      "environment_material_richness",
+      "effects_polish"
+    ],
+    "weights": [
+      0.3,
+      0.2,
+      0.2,
+      0.15,
+      0.15
+    ],
+    "scale": "1–10, same anchors as prior packet",
+    "inspection": "All 25 images opened individually using view_image. Only packet directory inspected; no source, mapping, keys or other judge outputs read. Compared at displayed landscape phone-like scale.",
+    "blinding_limitations": "Distinct visual families and repeated scenes are recognizable. Sci-fi view-05 resembles StarCraft; battlefield views 11/18 resemble Company of Heroes; market/interior tactical title uncertain. Prior controls are visually recognizable from remembered review, so blinding is incomplete. Scores follow visible craft without assuming iteration order. Comparison statements describe visible differences, not verified versions."
+  },
+  "view-01.png": {
+    "scores": [
+      7,
+      9,
+      8.5,
+      9,
+      8
+    ],
+    "weighted_score": 8.15,
+    "evidence": "Warm market light, worn stone, produce and varied props give convincing depth and materials; colored paths remain traceable while tiny figures blend into browns.",
+    "visible_regressions_or_limitations": "No clear regression versus the visually matching prior reference."
+  },
+  "view-02.png": {
+    "scores": [
+      7.5,
+      7.5,
+      6,
+      6.5,
+      5.5
+    ],
+    "weighted_score": 6.75,
+    "evidence": "Stable dark objective bars and pale aircraft on teal water read clearly. Hull edge and island shading create modest depth; wake remains two soft bands.",
+    "visible_regressions_or_limitations": "Plane/deck overlap remains weak; no new regression visible versus matching prior capture."
+  },
+  "view-03.png": {
+    "scores": [
+      8,
+      7.5,
+      6,
+      6,
+      5.5
+    ],
+    "weighted_score": 6.825,
+    "evidence": "Sparse green land keeps the blue aircraft distinct. Dark objective bars, tree shadows and roof panes create a coherent simple coast.",
+    "visible_regressions_or_limitations": "Broad blank grass and cream shore lack depth; no new regression versus matching prior capture."
+  },
+  "view-04.png": {
+    "scores": [
+      8,
+      7.5,
+      7,
+      7,
+      5.5
+    ],
+    "weighted_score": 7.175,
+    "evidence": "Carrier island now has visible mast and strong dark side, while rim lines and deck details are crisp. Sea flecks add variation; lone plane remains readable.",
+    "visible_regressions_or_limitations": "Compared with view-06, long directional ship wake is absent or much less visible; island shadow is a heavy nearly solid patch."
+  },
+  "view-05.png": {
+    "scores": [
+      6.5,
+      9,
+      9,
+      9,
+      9
+    ],
+    "weighted_score": 8.25,
+    "evidence": "Cool rocky terrain and metallic ships contrast with layered orange explosion rays and debris. Strong environmental depth and material detail.",
+    "visible_regressions_or_limitations": "Blast hides units and purple silhouettes merge with foliage at phone size; unchanged reference appearance."
+  },
+  "view-06.png": {
+    "scores": [
+      8,
+      7.5,
+      6.5,
+      7,
+      6
+    ],
+    "weighted_score": 7.15,
+    "evidence": "Single plane and top objective strips remain clear. Carrier rim/island structure, restrained sea flecks and trailing wake make a coherent stylized ocean.",
+    "visible_regressions_or_limitations": "Uniform ocean repetition remains; no visible change versus visually matching prior capture."
+  },
+  "view-07.png": {
+    "scores": [
+      7,
+      7.5,
+      6.5,
+      7,
+      6.5
+    ],
+    "weighted_score": 6.925,
+    "evidence": "Dark objective strips remain readable through dense planes and particles. Crisp hull lines and small foam flecks add detail.",
+    "visible_regressions_or_limitations": "Plane overlap around stern and repeated soft smoke puffs remain cluttered; no new regression versus matching prior image."
+  },
+  "view-08.png": {
+    "scores": [
+      8,
+      9,
+      9,
+      9,
+      8
+    ],
+    "weighted_score": 8.55,
+    "evidence": "Thick walls, different room floors and warm/cool light zones create strong spatial reading. Furnishings and contact shadows have rich depth; cones and rings are restrained.",
+    "visible_regressions_or_limitations": "Small units and annotation text remain demanding on a phone; reference appears unchanged."
+  },
+  "view-09.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7,
+      7,
+      6
+    ],
+    "weighted_score": 7.1,
+    "evidence": "Detailed raised island and dark directional aircraft shadows improve separation from sea. Crisp silhouettes and top navigation strips preserve readability.",
+    "visible_regressions_or_limitations": "Shadows can read as duplicate planes, and the prior long carrier wake is lost or strongly reduced compared with view-24."
+  },
+  "view-10.png": {
+    "scores": [
+      8,
+      7.5,
+      7.5,
+      7,
+      6
+    ],
+    "weighted_score": 7.35,
+    "evidence": "Rocks along a softened shore, stronger tree contact shadows and raised hangar edges deepen the coast. Blue aircraft remains distinct over green grass; sea flecks add texture.",
+    "visible_regressions_or_limitations": "Compared with view-16, near-black tree shadows are heavier and rocks beside the aircraft add local clutter; shoreline still lacks surf."
+  },
+  "view-11.png": {
+    "scores": [
+      5.5,
+      9,
+      9,
+      9.5,
+      9
+    ],
+    "weighted_score": 8.025,
+    "evidence": "Wet-ground highlights, rain streaks, tank smoke and glowing tracer unify a dark battlefield. Mud, rubble and tracks are richly layered.",
+    "visible_regressions_or_limitations": "Dark infantry and vehicles merge into ground at phone size; visually matching reference has no new regression."
+  },
+  "view-12.png": {
+    "scores": [
+      7.5,
+      7.5,
+      6,
+      6.5,
+      5.5
+    ],
+    "weighted_score": 6.75,
+    "evidence": "Runway edging, roof panes and shaded trees make the airfield identifiable. Top objective strip is clear.",
+    "visible_regressions_or_limitations": "Blue player aircraft blends into blue hangar roof; grass and cream shoreline are flat. No new regression versus matching prior image."
+  },
+  "view-13.png": {
+    "scores": [
+      7.5,
+      7.5,
+      6.5,
+      6.5,
+      5.5
+    ],
+    "weighted_score": 6.85,
+    "evidence": "Raised carrier island with mast and stronger directional plane shadows add depth to a clean teal ocean. Dark UI strips preserve text.",
+    "visible_regressions_or_limitations": "Compared with view-02 the ship's long wake disappears and edges remain soft; dark aircraft shadows can look like extra units."
+  },
+  "view-14.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7,
+      7,
+      5.5
+    ],
+    "weighted_score": 7.025,
+    "evidence": "Shore rocks, softer tan coast, raised roof walls and deeper tree shadows make airfield volume more convincing. Thin ground tracks add land variation.",
+    "visible_regressions_or_limitations": "Player still overlaps similarly colored roof. Strong tree shadows and rocks add darkness without resolving that focal ambiguity compared with view-12."
+  },
+  "view-15.png": {
+    "scores": [
+      7.5,
+      7.5,
+      6.5,
+      7,
+      6
+    ],
+    "weighted_score": 7,
+    "evidence": "Crisp runway border and roof frame, shaded trees and sea flecks support a consistent stylized airfield.",
+    "visible_regressions_or_limitations": "Player aircraft remains hard to isolate on blue roof; long cream shore remains flat. No new regression versus visually matching prior."
+  },
+  "view-16.png": {
+    "scores": [
+      8,
+      7.5,
+      6.5,
+      6.5,
+      6
+    ],
+    "weighted_score": 7.075,
+    "evidence": "Quiet green land and dark objective bars keep the small blue aircraft legible. Roof trim, tree shading and small sea flecks add depth and texture.",
+    "visible_regressions_or_limitations": "Large empty grass and abrupt cream coast remain; no new regression versus visually matching prior."
+  },
+  "view-17.png": {
+    "scores": [
+      6.5,
+      7.5,
+      7,
+      7,
+      6.5
+    ],
+    "weighted_score": 6.875,
+    "evidence": "Stronger aircraft shadows and raised mast/island create greater height cues amid the dense carrier fight. Top objective bars remain clean.",
+    "visible_regressions_or_limitations": "Compared with view-07, many dark plane shadows add a second repeated shape layer and reduce battle readability; long ship wake is missing."
+  },
+  "view-18.png": {
+    "scores": [
+      6,
+      9,
+      9,
+      9.5,
+      8.5
+    ],
+    "weighted_score": 8.1,
+    "evidence": "Fog layers, autumn trees, track marks and damaged structures yield deep atmospheric terrain. Flashes punctuate combat convincingly.",
+    "visible_regressions_or_limitations": "Tiny units merge with textured terrain and haze at phone size; visually matching reference unchanged."
+  },
+  "view-19.png": {
+    "scores": [
+      7,
+      7,
+      6,
+      6.5,
+      6
+    ],
+    "weighted_score": 6.575,
+    "evidence": "Dark top strips keep navigation readable despite crowded pale aircraft. Shaded hull and deck stripes provide some depth on low-contrast teal water.",
+    "visible_regressions_or_limitations": "Smoke puffs and spark dots lack clear impact hierarchy; no new regression versus matching prior capture."
+  },
+  "view-20.png": {
+    "scores": [
+      8,
+      7.5,
+      6.5,
+      6.5,
+      5
+    ],
+    "weighted_score": 6.925,
+    "evidence": "Uncrowded aircraft/carrier composition and stable top bars are easy to parse. Mast and dark island side increase vertical structure.",
+    "visible_regressions_or_limitations": "Compared with view-25, absent long wake reduces motion cue. Island side looks nearly black; softer edges retain limited material detail."
+  },
+  "view-21.png": {
+    "scores": [
+      8,
+      7.5,
+      7,
+      6.5,
+      5.5
+    ],
+    "weighted_score": 7.1,
+    "evidence": "Added coastal rocks, tree contact shadows and hangar walls deepen the otherwise simple green coast. Blue aircraft still separates well from grass.",
+    "visible_regressions_or_limitations": "Compared with view-03, dense dark tree shadows can feel stamped; rocks beside the plane compete slightly with its silhouette."
+  },
+  "view-22.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7.5,
+      7.5,
+      6
+    ],
+    "weighted_score": 7.275,
+    "evidence": "Crisp roof walls, varied shore rocks, tree shadows and softened beach band enrich the airfield. Wave flecks add a consistent sea texture.",
+    "visible_regressions_or_limitations": "Player aircraft still merges with blue roof; strong tree shadows and repeated rock pairs look patterned compared with quieter view-15."
+  },
+  "view-23.png": {
+    "scores": [
+      6.5,
+      7,
+      6.5,
+      6.5,
+      6
+    ],
+    "weighted_score": 6.525,
+    "evidence": "Top objective bars remain readable; stronger plane shadows and raised island add depth to dense combat.",
+    "visible_regressions_or_limitations": "Compared with view-19, dark shadow duplicates add clutter among already repeated smoke puffs and sparks. Carrier wake is absent or sharply diminished."
+  },
+  "view-24.png": {
+    "scores": [
+      7.5,
+      7.5,
+      6.5,
+      7,
+      6.5
+    ],
+    "weighted_score": 7.075,
+    "evidence": "Crisp aircraft and rim details stay readable around detailed carrier. Restrained pale sea flecks and long wake enrich the ocean.",
+    "visible_regressions_or_limitations": "White flecks compete mildly with pale wings and stern remains crowded; visually matching prior image has no new regression."
+  },
+  "view-25.png": {
+    "scores": [
+      8,
+      7.5,
+      6,
+      6.5,
+      5.5
+    ],
+    "weighted_score": 6.9,
+    "evidence": "Single aircraft, clear objective strips and simple carrier arrangement provide strong hierarchy. Raised island and hull rim add modest volume; long wake indicates direction.",
+    "visible_regressions_or_limitations": "Water strokes and wake remain simple; no visible regression versus matching prior capture."
+  },
+  "general_next_priorities": [
+    "Restore or clarify a directional carrier wake in captures where it is absent; stern foam alone conveys less motion.",
+    "Reduce opacity and repeated silhouette precision of aircraft shadows in dense fights; strong shadows add depth but also clutter.",
+    "Improve player aircraft contrast over blue hangar roofs, where extra scenery and contact shadows do not solve focal readability.",
+    "Keep the richer rocks, softened beach transition and raised roof walls, but vary their spacing and soften darkest contact shadows.",
+    "Shape combat impacts and smoke with a clearer size/value hierarchy rather than many repeated dots; preserve stable dark navigation bars."
+  ]
+}

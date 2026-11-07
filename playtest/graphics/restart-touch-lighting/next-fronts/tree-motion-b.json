@@ -1,0 +1,11 @@
+{
+  "judge": "B",
+  "framesInspected": 36,
+  "acceptSampledProgression": true,
+  "findings": [
+    "At coast 000 through 120, the shorter, softer canopy shadows stay visually attached to their trees as the camera passes the runway, field and beach. Tree clusters near the runway remain legible in both profiles.",
+    "The brighter runway marks, shoreline foam, damage flash and orange impacts remain legible during the sampled banks. The cyan selection circle still overlaps the runway area around coast 006\u2013024 and merges with carrier bow lines at fleet 024\u2013036.",
+    "Hawk still crowds the objective banner at coast 180 and approaches the minimap at fleet 120 in this set. Those prior HUD fixes remain useful on integration."
+  ],
+  "limitations": "Reviewed 36 discrete thumbnails. The samples cannot establish continuous playback, flicker, frame pacing or physical-device performance."
+}

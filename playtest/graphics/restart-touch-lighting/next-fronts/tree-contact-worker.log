@@ -1,0 +1,72 @@
+{
+  "results": [
+    {
+      "id": 0,
+      "canopy": true,
+      "controlDiff": 0,
+      "unflippedDiff": 2434422,
+      "geometryEqual": true,
+      "trafficEqual": true,
+      "changedChannels": 0,
+      "maxDifference": 0,
+      "textureHash": "59de66dfbbfbc6f2737ad324f42c450977a43d8bc58984d69c4ca01d46826621",
+      "workerTextureHash": "59de66dfbbfbc6f2737ad324f42c450977a43d8bc58984d69c4ca01d46826621",
+      "width": 826,
+      "height": 1024
+    },
+    {
+      "id": 3,
+      "canopy": true,
+      "controlDiff": 0,
+      "unflippedDiff": 2665460,
+      "geometryEqual": true,
+      "trafficEqual": true,
+      "changedChannels": 0,
+      "maxDifference": 0,
+      "textureHash": "3e6340303fe1224eb3c18754dede5b2316fd34966b9f7915748784b9b9980998",
+      "workerTextureHash": "3e6340303fe1224eb3c18754dede5b2316fd34966b9f7915748784b9b9980998",
+      "width": 893,
+      "height": 1024
+    },
+    {
+      "id": 87,
+      "canopy": true,
+      "controlDiff": 0,
+      "unflippedDiff": 2546232,
+      "geometryEqual": true,
+      "trafficEqual": true,
+      "changedChannels": 0,
+      "maxDifference": 0,
+      "textureHash": "9ff69132460a3e6e05785e239c90659f8515d5553b9995885b7ca911fed47a1b",
+      "workerTextureHash": "9ff69132460a3e6e05785e239c90659f8515d5553b9995885b7ca911fed47a1b",
+      "width": 847,
+      "height": 1024
+    }
+  ],
+  "scheduler": {
+    "cameraRejected": true,
+    "fallback": {
+      "mode": "sync-fallback",
+      "reason": "Error: Worker/OffscreenCanvas unavailable",
+      "builds": 0,
+      "lastBuildMs": 0,
+      "lastSerializeMs": 0
+    },
+    "ready": true,
+    "onlyCurrentTerrain": true,
+    "stats": {
+      "mode": "worker",
+      "reason": null,
+      "builds": 4,
+      "lastBuildMs": 29.299999997019768,
+      "lastSerializeMs": 22.5,
+      "generation": 2,
+      "pending": 0,
+      "inFlight": false,
+      "staleResults": 2,
+      "hydrateMs": 0.19999999925494194
+    }
+  },
+  "backend": "Chromium --disable-gpu; Canvas2D only, no WebGL context"
+}
+PASS real worker geometry, traffic, texture pixels and stale-world scheduler

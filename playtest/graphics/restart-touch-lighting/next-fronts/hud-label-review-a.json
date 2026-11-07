@@ -1,0 +1,542 @@
+{
+  "view-01.png": {
+    "scores": [
+      8.3,
+      8.0,
+      7.6,
+      7.4,
+      6.8
+    ],
+    "evidence": "The bracket pair straddles the blue fighter at the carrier bow and keeps deck paint and the plane visible.",
+    "regressions": "The bow and fighter are still similar values, and the right bracket falls over the carrier deck edge.",
+    "identicalPriorAnchor": "view-34.png"
+  },
+  "view-02.png": {
+    "scores": [
+      7.8,
+      7.8,
+      7.3,
+      7.2,
+      6.8
+    ],
+    "evidence": "Sharp brackets anchor the player over the softened bow rather than pointing at the ship from below.",
+    "regressions": "The brackets span parts of other aircraft and the nearby gold pipper overlaps the midpoint.",
+    "identicalPriorAnchor": "view-25.png"
+  },
+  "view-03.png": {
+    "scores": [
+      8.1,
+      8.8,
+      9.2,
+      8.8,
+      9.4
+    ],
+    "evidence": "Explosive bloom and warm cores separate machines from cool foreground; machinery and terrain have rich material detail.",
+    "regressions": "Bright blast occludes nearby actors.",
+    "identicalPriorAnchor": "view-44.png"
+  },
+  "view-04.png": {
+    "scores": [
+      8.3,
+      8.0,
+      7.6,
+      7.4,
+      6.8
+    ],
+    "evidence": "The bracket pair straddles the blue fighter at the carrier bow and keeps deck paint and the plane visible.",
+    "regressions": "The bow and fighter are still similar values, and the right bracket falls over the carrier deck edge.",
+    "identicalPriorAnchor": "view-34.png"
+  },
+  "view-05.png": {
+    "scores": [
+      9.1,
+      9,
+      8.7,
+      8.9,
+      8.5
+    ],
+    "evidence": "Warm and cool pools, clean floor-plan edges and distinct objects support tactical paths, sight zones and selected units.",
+    "regressions": "Some controls overlap busy furnishings.",
+    "identicalPriorAnchor": "view-03.png"
+  },
+  "view-06.png": {
+    "scores": [
+      6.7,
+      5.1,
+      4.8,
+      5.2,
+      4.6
+    ],
+    "evidence": "Runway and planted plots remain recognizable.",
+    "regressions": "Square color patches, faceted trees and target text crossing the aircraft flatten the scene.",
+    "identicalPriorAnchor": "view-01.png"
+  },
+  "view-07.png": {
+    "scores": [
+      8.4,
+      8.0,
+      7.4,
+      7.5,
+      6.5
+    ],
+    "evidence": "The opposing brackets immediately localize the blue airframe over the blue roof; wings and markings stay visible.",
+    "regressions": "The high-contrast brackets are heavier than the other nearby navigation marks.",
+    "identicalPriorAnchor": "view-08.png"
+  },
+  "view-08.png": {
+    "scores": [
+      8.2,
+      7.9,
+      7.1,
+      7.4,
+      6.4
+    ],
+    "evidence": "The bright pair frames the player against a low-contrast hangar roof while leaving wings unobscured.",
+    "regressions": "The softened roof and aircraft still blend and the paired marks are prominent against the airfield.",
+    "identicalPriorAnchor": "view-28.png"
+  },
+  "view-09.png": {
+    "scores": [
+      7.4,
+      6.9,
+      6.5,
+      6.2,
+      5.8
+    ],
+    "evidence": "Runway silhouette and coastline clearly divide the scene; cyan plane edge and smooth surface ripples.",
+    "regressions": "Trees look detached and terrain plots are softly blurred.",
+    "identicalPriorAnchor": "view-19.png"
+  },
+  "view-10.png": {
+    "scores": [
+      8.3,
+      9,
+      8.9,
+      9.2,
+      8.4
+    ],
+    "evidence": "Market layout and repeated crates frame credible shadows; thin colored paths separate teams in a crowded setting.",
+    "regressions": "Muted character outfits sometimes blend into the market clutter.",
+    "identicalPriorAnchor": "view-17.png"
+  },
+  "view-11.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7,
+      7.1,
+      7.1
+    ],
+    "evidence": "The midpoint of two high-contrast markers directs attention to the correct aircraft cluster on the bow.",
+    "regressions": "The brackets span neighboring wings and the gold ring and softened silhouette still slow exact identification.",
+    "identicalPriorAnchor": "view-31.png"
+  },
+  "view-12.png": {
+    "scores": [
+      8.0,
+      7.8,
+      7.3,
+      7.2,
+      7.4
+    ],
+    "evidence": "Opposing marks frame the blue fighter on the bow through nearby aircraft and scattered orange bursts.",
+    "regressions": "One bracket is tight against a cream wing and the overlapping gold pipper competes with the plane itself.",
+    "identicalPriorAnchor": "view-38.png"
+  },
+  "view-13.png": {
+    "scores": [
+      8.1,
+      7.7,
+      7,
+      7.3,
+      6.4
+    ],
+    "evidence": "Paired brackets give the soft blue airframe a clear center over grass.",
+    "regressions": "The brackets are much sharper than the underlying plane and somewhat oversized in this open space.",
+    "identicalPriorAnchor": "view-41.png"
+  },
+  "view-14.png": {
+    "scores": [
+      7.2,
+      7.1,
+      6.9,
+      6.3,
+      6.3
+    ],
+    "evidence": "Stern plume tapers and ring-like player highlight sits apart from peripheral fighters.",
+    "regressions": "Soft aircraft and deck, prominent wing overlap at the bow, and repetitive water.",
+    "identicalPriorAnchor": "view-10.png"
+  },
+  "view-15.png": {
+    "scores": [
+      6.6,
+      5.4,
+      5.4,
+      5.4,
+      4.7
+    ],
+    "evidence": "Peripheral units and deck outlines stay identifiable.",
+    "regressions": "Square wake, flat smoke circles and objective labels obscure depth and bow.",
+    "identicalPriorAnchor": "view-13.png"
+  },
+  "view-16.png": {
+    "scores": [
+      6.5,
+      5.2,
+      4.7,
+      5.2,
+      4.5
+    ],
+    "evidence": "Field stripes and aircraft silhouette are sharp, with small sea streaks.",
+    "regressions": "Text overlaps aircraft, faceted trees sit on patchy green land, and shoreline is a uniform stripe.",
+    "identicalPriorAnchor": "view-18.png"
+  },
+  "view-17.png": {
+    "scores": [
+      8.0,
+      7.9,
+      7.5,
+      7.3,
+      6.8
+    ],
+    "evidence": "Left and right brackets identify the aircraft cluster at deck level, with the blue aircraft near their midpoint.",
+    "regressions": "The gold pipper and overlapping wings still obscure the exact nose.",
+    "identicalPriorAnchor": "view-23.png"
+  },
+  "view-18.png": {
+    "scores": [
+      7.4,
+      7.2,
+      7,
+      6.5,
+      6.6
+    ],
+    "evidence": "Wing markings remain distinct; quiet smoke allows the deck to read.",
+    "regressions": "Sea flecks compete with impacts and the nose overlap hides the player shape.",
+    "identicalPriorAnchor": "view-22.png"
+  },
+  "view-19.png": {
+    "scores": [
+      7.3,
+      9,
+      9.2,
+      9.4,
+      9.1
+    ],
+    "evidence": "Wet ground, rubble, vehicle shadows and smoke layers form a coherent setting; tracer provides a clear focal cue.",
+    "regressions": "Dark infantry silhouettes and atmospheric layers reduce immediate readability.",
+    "identicalPriorAnchor": "view-35.png"
+  },
+  "view-20.png": {
+    "scores": [
+      8.2,
+      7.9,
+      7.1,
+      7.4,
+      6.4
+    ],
+    "evidence": "The bright pair frames the player against a low-contrast hangar roof while leaving wings unobscured.",
+    "regressions": "The softened roof and aircraft still blend and the paired marks are prominent against the airfield.",
+    "identicalPriorAnchor": "view-28.png"
+  },
+  "view-21.png": {
+    "scores": [
+      8.4,
+      8.0,
+      7.4,
+      7.5,
+      6.5
+    ],
+    "evidence": "The opposing brackets immediately localize the blue airframe over the blue roof; wings and markings stay visible.",
+    "regressions": "The high-contrast brackets are heavier than the other nearby navigation marks.",
+    "identicalPriorAnchor": "view-08.png"
+  },
+  "view-22.png": {
+    "scores": [
+      8.0,
+      7.8,
+      7.3,
+      7.2,
+      7.4
+    ],
+    "evidence": "Opposing marks frame the blue fighter on the bow through nearby aircraft and scattered orange bursts.",
+    "regressions": "One bracket is tight against a cream wing and the overlapping gold pipper competes with the plane itself.",
+    "identicalPriorAnchor": "view-38.png"
+  },
+  "view-23.png": {
+    "scores": [
+      6.4,
+      5.3,
+      5.2,
+      5.3,
+      4.6
+    ],
+    "evidence": "Peripheral fighters and ship remain identifiable.",
+    "regressions": "Soft image, overlapping labels, flat burst circles and square wake obscure the center.",
+    "identicalPriorAnchor": "view-04.png"
+  },
+  "view-24.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7,
+      7.1,
+      7.1
+    ],
+    "evidence": "The midpoint of two high-contrast markers directs attention to the correct aircraft cluster on the bow.",
+    "regressions": "The brackets span neighboring wings and the gold ring and softened silhouette still slow exact identification.",
+    "identicalPriorAnchor": "view-31.png"
+  },
+  "view-25.png": {
+    "scores": [
+      7.7,
+      7.5,
+      7.2,
+      6.4,
+      6.6
+    ],
+    "evidence": "Clean fleet silhouette with visible deck markings, raised island and tapered wake.",
+    "regressions": "Player merges with bow; sea ripple is smooth and repetitive.",
+    "identicalPriorAnchor": "view-06.png"
+  },
+  "view-26.png": {
+    "scores": [
+      7.1,
+      6.8,
+      6.7,
+      6.3,
+      6.6
+    ],
+    "evidence": "Bordering aircraft read and translucent particles leave much of deck visible.",
+    "regressions": "Soft units crowd the ship and inner smoke reads blocky.",
+    "identicalPriorAnchor": "view-15.png"
+  },
+  "view-27.png": {
+    "scores": [
+      8.1,
+      7.8,
+      7.3,
+      7.1,
+      6.7
+    ],
+    "evidence": "The paired marks center attention over the fighter at the deck edge while leaving its wings unobscured.",
+    "regressions": "The softened airframe is still close in value to the deck and the right bracket nearly touches deck markings.",
+    "identicalPriorAnchor": "view-43.png"
+  },
+  "view-28.png": {
+    "scores": [
+      8.1,
+      7.8,
+      7.3,
+      7.1,
+      6.7
+    ],
+    "evidence": "The paired marks center attention over the fighter at the deck edge while leaving its wings unobscured.",
+    "regressions": "The softened airframe is still close in value to the deck and the right bracket nearly touches deck markings.",
+    "identicalPriorAnchor": "view-43.png"
+  },
+  "view-29.png": {
+    "scores": [
+      8.0,
+      7.9,
+      7.5,
+      7.3,
+      6.8
+    ],
+    "evidence": "Left and right brackets identify the aircraft cluster at deck level, with the blue aircraft near their midpoint.",
+    "regressions": "The gold pipper and overlapping wings still obscure the exact nose.",
+    "identicalPriorAnchor": "view-23.png"
+  },
+  "view-30.png": {
+    "scores": [
+      7.8,
+      7.6,
+      7.4,
+      6.6,
+      6.7
+    ],
+    "evidence": "Clean deck texture, tower and hull edge give the carrier recognizable volume and a restrained wake.",
+    "regressions": "Player blends into the deck tip; thin white flecks are spread uniformly across water.",
+    "identicalPriorAnchor": "view-39.png"
+  },
+  "view-31.png": {
+    "scores": [
+      8.3,
+      7.9,
+      7.3,
+      7.5,
+      6.5
+    ],
+    "evidence": "The blue aircraft reads easily and the symmetrical bracket pair gives it an unambiguous center over grass.",
+    "regressions": "Over open grass the bright pair feels oversized and visually competes with the pale navigation arrow.",
+    "identicalPriorAnchor": "view-29.png"
+  },
+  "view-32.png": {
+    "scores": [
+      7.8,
+      7.8,
+      7.3,
+      7.2,
+      6.8
+    ],
+    "evidence": "Sharp brackets anchor the player over the softened bow rather than pointing at the ship from below.",
+    "regressions": "The brackets span parts of other aircraft and the nearby gold pipper overlaps the midpoint.",
+    "identicalPriorAnchor": "view-25.png"
+  },
+  "view-33.png": {
+    "scores": [
+      5.9,
+      5.1,
+      5.3,
+      5.4,
+      4.5
+    ],
+    "evidence": "Strong aircraft shape and color exist outside the central deck cluster.",
+    "regressions": "Opaque-looking disks, square wake and objective text cover the deck and aircraft.",
+    "identicalPriorAnchor": "view-27.png"
+  },
+  "view-34.png": {
+    "scores": [
+      6.4,
+      5.2,
+      5.1,
+      5.2,
+      4.3
+    ],
+    "evidence": "Large deck and adjacent plane are still identifiable.",
+    "regressions": "Soft rendering, square wake and centered labels make it resemble a flat icon.",
+    "identicalPriorAnchor": "view-20.png"
+  },
+  "view-35.png": {
+    "scores": [
+      7.6,
+      7.1,
+      6.8,
+      6.4,
+      5.9
+    ],
+    "evidence": "Sharp plane trim and a clear runway corner; trees cast shadows near the distinct land edge.",
+    "regressions": "Simplified grass patches, geometrical rocks and detached white sea flecks.",
+    "identicalPriorAnchor": "view-37.png"
+  },
+  "view-36.png": {
+    "scores": [
+      6.3,
+      5.1,
+      4.6,
+      5.1,
+      4.3
+    ],
+    "evidence": "A sharp shore and large crop strips divide land from sea.",
+    "regressions": "Objective text overlaps player, shoreline has a hard flat border, and field seams are noisy.",
+    "identicalPriorAnchor": "view-11.png"
+  },
+  "view-37.png": {
+    "scores": [
+      8.3,
+      7.9,
+      7.3,
+      7.5,
+      6.5
+    ],
+    "evidence": "The blue aircraft reads easily and the symmetrical bracket pair gives it an unambiguous center over grass.",
+    "regressions": "Over open grass the bright pair feels oversized and visually competes with the pale navigation arrow.",
+    "identicalPriorAnchor": "view-29.png"
+  },
+  "view-38.png": {
+    "scores": [
+      6.5,
+      5.1,
+      4.6,
+      5.1,
+      4.4
+    ],
+    "evidence": "Airstrip and field pattern remain legible.",
+    "regressions": "Visible labels obscure the player and low-resolution trees, crops and coast flatten into patches.",
+    "identicalPriorAnchor": "view-40.png"
+  },
+  "view-39.png": {
+    "scores": [
+      7.8,
+      7.4,
+      6.9,
+      7,
+      6
+    ],
+    "evidence": "Sharp runway and matching small hangars read; shadows help separate vegetation from grass.",
+    "regressions": "Simple geometry at left and the repeating white water marks are conspicuous; plane is hard to separate from roofs.",
+    "identicalPriorAnchor": "view-24.png"
+  },
+  "view-40.png": {
+    "scores": [
+      8.1,
+      7.7,
+      7,
+      7.3,
+      6.4
+    ],
+    "evidence": "Paired brackets give the soft blue airframe a clear center over grass.",
+    "regressions": "The brackets are much sharper than the underlying plane and somewhat oversized in this open space.",
+    "identicalPriorAnchor": "view-41.png"
+  },
+  "view-41.png": {
+    "scores": [
+      7.6,
+      7.4,
+      7.2,
+      6.6,
+      6.5
+    ],
+    "evidence": "Sharp fighters and raised carrier island with clear deck markings frame the action.",
+    "regressions": "Mild impact contrast and sea flecks compete for attention; center silhouettes overlap.",
+    "identicalPriorAnchor": "view-32.png"
+  },
+  "view-42.png": {
+    "scores": [
+      6.7,
+      5.4,
+      5.3,
+      5.4,
+      4.4
+    ],
+    "evidence": "Deck markings and outer carrier shape read at a glance.",
+    "regressions": "Square wake and hard flat deck contrast with sea and text overlays the bow.",
+    "identicalPriorAnchor": "view-26.png"
+  },
+  "view-43.png": {
+    "scores": [
+      5.6,
+      4.9,
+      5.1,
+      5.2,
+      4.3
+    ],
+    "evidence": "Colored fighters are still distinguishable outside the middle of the frame.",
+    "regressions": "Soft overlapping planes, label, flat discs and square wake swamp the carrier's readability.",
+    "identicalPriorAnchor": "view-07.png"
+  },
+  "view-44.png": {
+    "scores": [
+      7.6,
+      7.3,
+      6.7,
+      6.9,
+      5.8
+    ],
+    "evidence": "Airfield composition and painted runway read; facility sides and canopy shadows add depth.",
+    "regressions": "Player edge is subtle on roof; grass and canopy shapes blur and coast lacks a crisp break.",
+    "identicalPriorAnchor": "view-36.png"
+  },
+  "view-45.png": {
+    "scores": [
+      7.7,
+      9,
+      9.1,
+      9.5,
+      8.6
+    ],
+    "evidence": "Vehicle tracks, shadows and fog give a clear slope to a dense believable battlefield; restrained flashes anchor the action.",
+    "regressions": "Small tanks blend into distant fog and muted earth.",
+    "identicalPriorAnchor": "view-21.png"
+  }
+}

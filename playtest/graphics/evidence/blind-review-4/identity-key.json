@@ -1,0 +1,102 @@
+{
+  "view-01.png": {
+    "kind": "reference",
+    "name": "dk2-0-phone"
+  },
+  "view-02.png": {
+    "kind": "candidate-3",
+    "name": "fallback-dogfight"
+  },
+  "view-03.png": {
+    "kind": "candidate-3",
+    "name": "fallback-coast"
+  },
+  "view-04.png": {
+    "kind": "candidate-4",
+    "name": "phone-fleet"
+  },
+  "view-05.png": {
+    "kind": "reference",
+    "name": "sc2-0-phone"
+  },
+  "view-06.png": {
+    "kind": "candidate-3",
+    "name": "phone-fleet"
+  },
+  "view-07.png": {
+    "kind": "candidate-3",
+    "name": "phone-stress"
+  },
+  "view-08.png": {
+    "kind": "reference",
+    "name": "dk2-1-phone"
+  },
+  "view-09.png": {
+    "kind": "candidate-4",
+    "name": "phone-dogfight"
+  },
+  "view-10.png": {
+    "kind": "candidate-4",
+    "name": "phone-coast"
+  },
+  "view-11.png": {
+    "kind": "reference",
+    "name": "coh3-0-phone"
+  },
+  "view-12.png": {
+    "kind": "candidate-3",
+    "name": "fallback-airfield"
+  },
+  "view-13.png": {
+    "kind": "candidate-4",
+    "name": "fallback-dogfight"
+  },
+  "view-14.png": {
+    "kind": "candidate-4",
+    "name": "fallback-airfield"
+  },
+  "view-15.png": {
+    "kind": "candidate-3",
+    "name": "phone-airfield"
+  },
+  "view-16.png": {
+    "kind": "candidate-3",
+    "name": "phone-coast"
+  },
+  "view-17.png": {
+    "kind": "candidate-4",
+    "name": "phone-stress"
+  },
+  "view-18.png": {
+    "kind": "reference",
+    "name": "coh3-1-phone"
+  },
+  "view-19.png": {
+    "kind": "candidate-3",
+    "name": "fallback-stress"
+  },
+  "view-20.png": {
+    "kind": "candidate-4",
+    "name": "fallback-fleet"
+  },
+  "view-21.png": {
+    "kind": "candidate-4",
+    "name": "fallback-coast"
+  },
+  "view-22.png": {
+    "kind": "candidate-4",
+    "name": "phone-airfield"
+  },
+  "view-23.png": {
+    "kind": "candidate-4",
+    "name": "fallback-stress"
+  },
+  "view-24.png": {
+    "kind": "candidate-3",
+    "name": "phone-dogfight"
+  },
+  "view-25.png": {
+    "kind": "candidate-3",
+    "name": "fallback-fleet"
+  }
+}

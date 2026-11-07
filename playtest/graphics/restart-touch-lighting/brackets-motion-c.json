@@ -1,0 +1,12 @@
+{
+  "judge": "C",
+  "method": "sampled-still-progression",
+  "framesViewed": 36,
+  "accept": true,
+  "findings": [
+    "Coast, both profiles: paired cyan brackets stay level and center the player during runway crossing at 000–024, rotation through 036 and 060, and shoreline flight at 090–180. The dark edge stays readable over runway paint, grass, beach and sea. At 006 and 012, the white damage silhouette remains inside the brackets and the gold runway ring remains distinct beneath them.",
+    "Fleet, both profiles: brackets frame the flashing aircraft at 006–012 and clearly distinguish the same blue-gray player from a similar aircraft beside the deck at 024–036. At 024, one bracket is over the deck and the other over water. At 036, both hold against deck paint. These frames tie the cue to the player more clearly than the detached chevron. Sparks or tracers near the brackets at 012, 060 and 090 do not visually merge with the cyan pair. In the steep bank at 090 the horizontal pair is proportionally wide around the narrow fuselage but still centers it.",
+    "Damage flash, 35% to 27% hull transition, tracers, fireball and later smoke remain distinct. The ship wakes follow their ships, coastal foam follows the shore, and no blue silhouette overlays the player in the reviewed frames. Hawk's name still overlaps the objective banner at coast 180 and crowds the minimap at fleet 120.",
+    "Sampled progression establishes visible tracking at inspected frames. Continuous flicker, frame pacing and handset performance were outside this review."
+  ]
+}

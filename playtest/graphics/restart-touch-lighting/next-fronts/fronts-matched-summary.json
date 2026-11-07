@@ -1,0 +1,82 @@
+[
+  {
+    "profile": "phone",
+    "scene": "airfield",
+    "baselineMedianP95": 26.600000001490116,
+    "candidateMedianP95": 28.099999997764826,
+    "ratio": 1.0563909773004014,
+    "passGate": false
+  },
+  {
+    "profile": "phone",
+    "scene": "coast",
+    "baselineMedianP95": 23.899999998509884,
+    "candidateMedianP95": 23.699999999254942,
+    "ratio": 0.9916317991938322,
+    "passGate": true
+  },
+  {
+    "profile": "phone",
+    "scene": "fleet",
+    "baselineMedianP95": 13.800000000745058,
+    "candidateMedianP95": 14.100000001490116,
+    "ratio": 1.0217391304875987,
+    "passGate": true
+  },
+  {
+    "profile": "phone",
+    "scene": "dogfight",
+    "baselineMedianP95": 17.5,
+    "candidateMedianP95": 19.099999997764826,
+    "ratio": 1.0914285713008471,
+    "passGate": false
+  },
+  {
+    "profile": "phone",
+    "scene": "stress",
+    "baselineMedianP95": 25.399999998509884,
+    "candidateMedianP95": 27.300000000745058,
+    "ratio": 1.0748031496986865,
+    "passGate": false
+  },
+  {
+    "profile": "fallback",
+    "scene": "airfield",
+    "baselineMedianP95": 15.199999999254942,
+    "candidateMedianP95": 17,
+    "ratio": 1.1184210526864005,
+    "passGate": false
+  },
+  {
+    "profile": "fallback",
+    "scene": "coast",
+    "baselineMedianP95": 14,
+    "candidateMedianP95": 15.399999998509884,
+    "ratio": 1.0999999998935632,
+    "passGate": false
+  },
+  {
+    "profile": "fallback",
+    "scene": "fleet",
+    "baselineMedianP95": 5.600000001490116,
+    "candidateMedianP95": 10.5,
+    "ratio": 1.874999999501077,
+    "passGate": false
+  },
+  {
+    "profile": "fallback",
+    "scene": "dogfight",
+    "baselineMedianP95": 10.899999998509884,
+    "candidateMedianP95": 13.5,
+    "ratio": 1.2385321102610602,
+    "passGate": false
+  },
+  {
+    "profile": "fallback",
+    "scene": "stress",
+    "baselineMedianP95": 15.700000002980232,
+    "candidateMedianP95": 18.100000001490116,
+    "ratio": 1.152866241914287,
+    "passGate": false
+  }
+]

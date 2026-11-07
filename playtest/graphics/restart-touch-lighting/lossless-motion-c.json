@@ -1,0 +1,12 @@
+{
+  "accept": true,
+  "imagesViewed": 36,
+  "scope": "Sampled visual continuity in both scenes and rendering modes.",
+  "findings": {
+    "coast": "Runway, rocks, shallow-water gradient and segmented foam scroll together as the ringed aircraft banks offshore. Hawk and the return banner touch at 180.",
+    "fleet": "Wakes remain anchored at the sterns and taper behind moving ships. The cyan ring survives overlap with the carrier bow at 024–036. An escort crosses under the Bomb button at 180.",
+    "impacts": "Pilot damage flash and orange hits appear at 006 and 012. The strong orange burst at 060 yields to smoke and sparse embers at 090. Paired tracers and the curved damage trail remain distinct.",
+    "water": "Fine broken crests remain visible in both modes through the last open-sea frames, avoiding the coarse horizontal blocks of the previous packet. Crest contrast stays below the cyan ring, wakes and tracers. The fallback still softens aircraft and deck edges."
+  },
+  "limits": "Nine sampled stills per scene and mode support consistency at those positions. They cannot establish playback smoothness, between-sample flicker, frame pacing or handset performance."
+}

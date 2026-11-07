@@ -1,0 +1,209 @@
+PASS  3D assets and renderer initialize
+PASS  page loads without JS errors
+PASS  debug handle exposed
+PASS  boots to title screen
+PASS  Space starts the game
+PASS  single-choice sortie is a visual summary without false controls
+PASS  starting aircraft card displays a loaded GLB render
+PASS  starting airfield exposes sortie planning
+PASS  target and landing-request controls are absent in flight
+PASS  bomb button drops one round
+PASS  keyboard ordnance respects cooldown
+PASS  wingmen use P38 models
+PASS  friendly aircraft have independent damage flash materials
+PASS  player starts with a P38 model with animated propeller
+PASS  model noses match all four flight headings
+PASS  orthographic camera preserves aircraft scale
+PASS  every quality level renders — true,true,true,true,true
+PASS  severe foreground stalls still reduce rendering quality
+PASS  failed quality levels are never retried
+PASS  island scenery uses one solid batch and at most one shared-atlas canopy batch — temperate · 1430 trees · 4 villages
+PASS  home airfield view stays under 80 draw calls — 20 draws
+PASS  island traffic moves between frames
+PASS  right turn banks the 3D aircraft
+PASS  propeller animates
+PASS  campaign starts at a friendly airfield in a bomb-equipped P38
+PASS  same campaign seed reproduces the island chain
+PASS  different campaign seeds create different island chains
+PASS  rank zero cannot select a Corsair
+PASS  P38 cannot equip torpedoes
+PASS  new aircraft stay locked before their milestones
+PASS  idle flight time cannot unlock aircraft
+PASS  score alone cannot bypass combat sortie qualifications
+PASS  Dauntless stays locked one combat sortie before qualification
+PASS  first combat return unlocks Dauntless without waiting
+PASS  score and completed combat sorties unlock the Dauntless at an airfield
+PASS  Dauntless releases a heavier, faster-falling bomb
+PASS  points alone do not unlock advanced naval campaign aircraft
+PASS  completed rescue, points and combat sorties unlock all five aircraft
+PASS  Avenger rejects bombs and equips torpedoes
+PASS  Avenger launches a heavy anti-ship torpedo
+PASS  Mustang is selectable at an airfield with the fastest cruise speed
+PASS  sortie changes are rejected in flight
+PASS  living enemy airfield launches a strike group
+PASS  bomb release consumes one of two bombs
+PASS  bomb cooldown blocks duplicate release
+PASS  falling bomb damages airfield through its actual impact
+PASS  second bomb can be released after cooldown
+PASS  two-bomb sortie can disable an airfield
+PASS  destroyed airfield stops launching new attackers
+PASS  empty bomb loadout cannot fire
+PASS  enemy carrier launches attackers from its actual flight deck
+PASS  organized raids include bombers and escorts
+PASS  unintercepted strike damages its target base and retreats
+PASS  escort reaching a base cannot apply bombing damage
+PASS  sinking enemy carrier stops subsequent strikes
+PASS  simultaneously overdue facilities launch only one formation
+PASS  global raid spacing prevents a second immediate launch
+PASS  active offensive cap prevents overlapping major raids after cooldown
+PASS  next local offensive launches after the previous formation clears
+PASS  near-miss bomb splashes in water without ship damage
+PASS  bomb outside tapered bow splashes despite bounding-box overlap
+PASS  precise bomb impact damages a rotated hull
+PASS  shoreline classifies island center as land and open ocean as water
+PASS  distant rank unlock waits for player arrival before rescue attack
+PASS  earning rank activates a vulnerable carrier rescue
+PASS  carrier remains unavailable before its rescue
+PASS  carrier loss schedules a retry without ending campaign
+PASS  failed carrier rescue can be attempted again
+PASS  letting rescue attackers escape cannot unlock the carrier
+PASS  shooting down rescue attackers records required intercepts
+PASS  clearing rescue attackers near carrier unlocks naval operations
+PASS  land-based P38 cannot transfer onto a carrier
+PASS  safely landed pilot can transfer and equip a naval sortie
+PASS  no waves or enemies spawn at the carrier
+PASS  entering hostile airspace activates its fighter patrol once
+PASS  active territories do not repeatedly respawn defenders
+PASS  defenders prevent capture
+PASS  fast rounds intersect the oriented hull
+PASS  bullets cannot damage ship hulls
+PASS  sustained gunfire cannot sink a ship
+PASS  destroyers sink and award points only once
+PASS  clear territory gains capture progress while flying inside it
+PASS  leaving the zone resets an unfinished capture
+PASS  holding cleared airspace captures territory
+PASS  captured territory stays captured without awarding points repeatedly
+PASS  flying no longer repairs health automatically
+PASS  takeoff action has no effect in flight
+PASS  campaign has no selected target
+PASS  off-center pass does not land
+PASS  reverse-direction deck pass does not land
+PASS  crossing the stern at a bad angle does not land
+PASS  being over the deck without a stern approach does not land
+PASS  aligned final approach keeps manual flight control
+PASS  pilot can steer away from the approach
+PASS  small offset and heading errors are accepted
+PASS  stern crossing leaves time for a deck correction
+PASS  correcting alignment after the stern still catches a wire
+PASS  aligned stern crossing lands without requesting assistance
+PASS  landing immediately refills both ordnance types
+PASS  parked player and overlapping enemy do not ram each other
+PASS  guns stay safe on deck
+PASS  deck repairs restore health over time
+PASS  repairs cap at full health and cool guns
+PASS  takeoff begins from the deck
+PASS  takeoff restores normal flight at cruising altitude
+PASS  sortie starts with exactly two torpedoes
+PASS  torpedo launches and consumes one round
+PASS  torpedo cooldown prevents duplicate launches
+PASS  armed torpedo sinks a destroyer through real collisions
+PASS  second torpedo consumes the last round
+PASS  empty loadout stays empty in flight and spent torpedoes expire
+PASS  torpedoes cannot launch on deck
+PASS  carrier rearms both torpedoes
+PASS  stronghold and principal carrier victory does not require every island or escort
+PASS  new campaign resets territory ownership, fleet and flight state
+PASS  a wingman musters at the start of a campaign
+PASS  roaming Zero can spawn far from all territories
+PASS  roaming Zero arrives outside the viewport
+PASS  roaming interceptors do not stack
+PASS  roaming Zero pursues outside island defense boundaries
+PASS  wingmen fly to rejoin a distant player
+PASS  wingmen fire at nearby enemy fighters
+PASS  friendly fighters can be damaged by hostile fire
+PASS  empty takeoff and landing cannot farm combat sorties
+PASS  allied score during a sortie cannot qualify the player
+PASS  landing after personal combat merit credits exactly one sortie
+PASS  waiting parked cannot repeatedly credit the same sortie
+PASS  generated campaign includes airfield, port and radar roles
+PASS  newly captured port needs establishment before repairing the fleet
+PASS  established friendly port repairs a nearby living fleet
+PASS  port cannot resurrect a sunken carrier
+PASS  destroyed outpost is recaptured and campaign can continue
+PASS  friendly radar detects a raid beyond the player vicinity
+PASS  losing radar removes distant raid detection
+PASS  lost forward airfield evacuates a grounded player to a surviving base
+PASS  loss of every operational base ends the campaign
+PASS  freshly captured airfield survives one bomber impact
+PASS  session report records ownership changes, unlock time and carrier loss once
+PASS  restarting clears campaign report outcomes
+PASS  six seeds reproduce finite shoreline geometry deterministically
+PASS  archipelagos contain varied scenery beyond capturable holdings
+PASS  every runway corner and midpoint rests on physical land
+PASS  regional passages have expedition scale and caldera interiors remain water
+PASS  theater offers a home region, connected fronts and a distant stronghold
+PASS  home archipelago includes a forward airfield before the first ocean crossing
+PASS  first foothold does not demand anti-ship weapons
+PASS  both task groups keep hulls offshore across full patrol circuits
+PASS  destroyer escorts retain formation through route turns
+PASS  sinking a carrier leaves surviving escorts underway
+PASS  friendly task group holds position during deck operations
+PASS  remote enemy installations and carrier locations begin unknown
+PASS  captured radar reveals nearby installations immediately
+PASS  hidden fleet motion cannot leak through chart rescaling
+PASS  unobserved carrier contact retains last-known coordinates with uncertainty
+PASS  old mobile fleet contacts expire while discovered installations remain known
+PASS  HUD shows objective, nearest landing and raid arrows
+PASS  head-on fighters sidestep instead of ramming
+PASS  captured airfields launch patrols and the carrier flies a CAP
+PASS  supply convoys spawn between enemy holdings and sink to gunfire — count 2 drawn true hp 0 score +150
+PASS  enemies use Zero GLBs
+PASS  bot can score points — score 350
+PASS  territory combat remains active during free flight
+PASS  3D camera and HUD resize together
+PASS  secondary thumb fires torpedo while steering stays held
+PASS  releasing torpedo thumb preserves steering and does not fire twice
+PASS  native sortie selectors transfer home and switch the rendered aircraft
+PASS  native carrier transfer selects compatible Corsair at deck height
+PASS  dauntless card selects its real flight model and compatible weapon
+PASS  avenger card selects its real flight model and compatible weapon
+PASS  p51 card selects its real flight model and compatible weapon
+PASS  all five aircraft cards contain loaded model renders
+PASS  on-screen takeoff control launches the selected aircraft
+PASS  restart removes old aircraft instances
+PASS  no JS errors during play
+PASS  phone title shows touch instructions without keyboard shortcuts
+PASS  phone sortie selector fits its panel
+PASS  small-phone sortie panel fits without overlapping the HUD
+PASS  small-phone expanded aircraft cards have no clipped labels
+PASS  small-phone last aircraft remains reachable by scrolling
+PASS  small-phone base transfer remains reachable below aircraft choices
+PASS  landscape sortie panel fits without overlapping the HUD
+PASS  landscape expanded aircraft cards have no clipped labels
+PASS  landscape last aircraft remains reachable by scrolling
+PASS  landscape base transfer remains reachable below aircraft choices
+PASS  phone torpedo control has no keyboard prefix
+PASS  small-phone readouts fit the viewport
+PASS  small-phone notice sizes to its text
+PASS  landscape readouts fit the viewport
+PASS  landscape notice sizes to its text
+PASS  tablet readouts fit the viewport
+PASS  tablet notice sizes to its text
+PASS  phone operations chart pauses the live simulation
+PASS  operations chart fits the phone viewport
+PASS  chart touch selects a known destination without steering or firing
+PASS  closing chart resumes simulation without a stuck control
+PASS  keyboard input switches to keyboard restart hint
+PASS  touch input restores touch restart hint
+PASS  responsive HUD has no runtime errors
+PASS  asset failure shows recovery UI
+PASS  failed loading does not start an invisible game
+
+--- gameplay metrics ---
+seed: 1942
+botSurvivedSeconds: 61
+finalScore: 350
+territoriesCaptured: 1
+finalHp: 73
+died: false
+hpOverTime: 1s:100hp/1 sectors 2s:100hp/1 sectors 3s:100hp/1 sectors 4s:88hp/1 sectors 5s:88hp/1 sectors 6s:88hp/1 sectors 7s:73hp/1 sectors 8s:73hp/1 sectors 10s:73hp/1 sectors 11s:73hp/1 sectors 12s:73hp/1 sectors 13s:73hp/1 sectors 14s:73hp/1 sectors 15s:73hp/1 sectors 16s:73hp/1 sectors 18s:73hp/1 sectors 19s:73hp/1 sectors 20s:73hp/1 sectors 21s:73hp/1 sectors 22s:73hp/1 sectors 23s:73hp/1 sectors 24s:73hp/1 sectors 25s:73hp/1 sectors 26s:73hp/1 sectors 27s:73hp/1 sectors 28s:73hp/1 sectors 29s:73hp/1 sectors 30s:73hp/1 sectors 31s:73hp/1 sectors 32s:73hp/1 sectors 33s:73hp/1 sectors 34s:73hp/1 sectors 35s:73hp/1 sectors 36s:73hp/1 sectors 37s:73hp/1 sectors 38s:73hp/1 sectors 39s:73hp/1 sectors 40s:73hp/1 sectors 41s:73hp/1 sectors 42s:73hp/1 sectors 43s:73hp/1 sectors 44s:73hp/1 sectors 45s:73hp/1 sectors 46s:73hp/1 sectors 47s:73hp/1 sectors 48s:73hp/1 sectors 49s:73hp/1 sectors 50s:73hp/1 sectors 51s:73hp/1 sectors 52s:73hp/1 sectors 53s:73hp/1 sectors 54s:73hp/1 sectors 55s:73hp/1 sectors 57s:73hp/1 sectors 58s:73hp/1 sectors 59s:73hp/1 sectors 60s:73hp/1 sectors 61s:73hp/1 sectors

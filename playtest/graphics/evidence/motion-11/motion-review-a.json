@@ -1,0 +1,89 @@
+{
+  "accept": true,
+  "all_images_viewed": 18,
+  "profiles": [
+    "phone",
+    "fallback"
+  ],
+  "sample_times_seconds": [
+    0,
+    0.1,
+    0.2,
+    0.4,
+    0.6,
+    1,
+    1.5,
+    2,
+    3
+  ],
+  "findings": [
+    {
+      "category": "Hit flash and impact recognition",
+      "accept": true,
+      "evidence": "White player silhouette at .1/.2 seconds returns gray by .4. Persistent cyan location ring remains visually separate from the small orange impact. Large yellow-orange fireball at 1 second is clearly larger and disperses by 1.5.",
+      "files": [
+        "phone-006.png",
+        "phone-012.png",
+        "phone-024.png",
+        "phone-060.png",
+        "fallback-060.png"
+      ]
+    },
+    {
+      "category": "Smoke fading and plume continuity",
+      "accept": true,
+      "evidence": "Same connected elongated damage trail as accepted motion-9, visible at .4/.6 and curved behind player at 1.5 seconds. Older portions spread and fade toward the tail at 2/3 seconds; explosion cloud disperses. Fine grain and segmented far-tail sections remain cosmetic weaknesses.",
+      "files": [
+        "phone-024.png",
+        "phone-036.png",
+        "phone-090.png",
+        "phone-180.png",
+        "fallback-090.png",
+        "fallback-180.png"
+      ]
+    },
+    {
+      "category": "Wake continuity",
+      "accept": true,
+      "evidence": "Wakes remain attached to ship sterns throughout sampled camera movement, widening and fading behind carrier and escorts. Rounded repeating bands remain conspicuous.",
+      "files": [
+        "phone-000.png",
+        "phone-036.png",
+        "phone-120.png",
+        "fallback-120.png"
+      ]
+    },
+    {
+      "category": "Camera continuity",
+      "accept": true,
+      "evidence": "Initial player position recenters by .6 seconds; player remains near center while background and vessels translate during turn and forward flight. Location ring consistently tracks aircraft in each sampled frame; no sampled jump or detached ring.",
+      "files": [
+        "phone-000.png",
+        "phone-036.png",
+        "phone-090.png",
+        "phone-180.png"
+      ]
+    },
+    {
+      "category": "Control and player visibility",
+      "accept": true,
+      "evidence": "HUD, mission, minimap and buttons remain readable throughout. Escort behind Bomb at3 seconds does not hide label. Cyan ring helps distinguish player from carrier and other aircraft at .4/.6; it neither hides white damage flash nor nearby fireball. It is an obvious interface graphic, not additional realistic lighting.",
+      "files": [
+        "phone-024.png",
+        "phone-036.png",
+        "phone-180.png",
+        "fallback-036.png",
+        "fallback-180.png"
+      ]
+    }
+  ],
+  "blockers": [],
+  "nonblocking": [
+    "Smoke remains grainy, with only modest lateral diffusion.",
+    "Wake foam repeats scalloped rounded bands.",
+    "Dense rippled ocean sometimes looks clothlike.",
+    "Opening camera recenters conspicuously.",
+    "Cyan ring helps location but does not resolve actual silhouette overlap over roofs or other aircraft."
+  ],
+  "limits": "All18 supplied frames and simulation timestamps/events reviewed. Acceptance is for sampled recognition/continuity, not full material realism, continuous playback smoothness or actual phone FPS. No source or identity keys read."
+}

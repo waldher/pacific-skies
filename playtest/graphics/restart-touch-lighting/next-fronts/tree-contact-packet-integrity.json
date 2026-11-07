@@ -1,0 +1,30 @@
+{
+  "suiteHash": "68068d6fc3d154ab81b5c22ecd8832a2533367231b3cd07d68b93dc04fba3076",
+  "reports": {
+    "original-baseline": {
+      "sourceHash": "6a9bbae3c7f0741952c5830c4c1c3a5a1ece142b9129884353297e3c96bdc0ad",
+      "reportSha256": "5b2a6dc55d522cdcaf68a07beeb55d64b9bc17014ab5bc5c4626a9b5d15594d4",
+      "browser": "141.0.7390.37",
+      "dirty": true
+    },
+    "retained-six": {
+      "sourceHash": "61c5ca830e59baece895abdcc1d35c1fb082468616ac99e2cd9c16e6c1fd4514",
+      "reportSha256": "6c3a7df5e4d98ff29d468e7b69cfa008fdfbcdec3b0055f9375a33b12c0419ab",
+      "browser": "141.0.7390.37",
+      "dirty": true
+    },
+    "ocean-lossless": {
+      "sourceHash": "f8c0aa3a801fa02e247070faf0eab40e7706513cdb56857bb66591aab641d49b",
+      "reportSha256": "4bb03331eda0c10798b7f2e2c8bd1a83619de3bfde4b5493e6325201f1c9444b",
+      "browser": "141.0.7390.37",
+      "dirty": false
+    },
+    "tree-contact": {
+      "sourceHash": "0bf67d5840d7082767fcf173949e16003c068f3d0bdbf0df0a277114e828818f",
+      "reportSha256": "30507399daa40ac4afb0a21296b4e8e0acacfba356a57fd1f12a370dea0ca8ba",
+      "browser": "141.0.7390.37",
+      "dirty": false
+    }
+  },
+  "images": 45
+}

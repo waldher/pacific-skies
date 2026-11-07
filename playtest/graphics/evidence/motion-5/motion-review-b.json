@@ -1,0 +1,76 @@
+{
+  "reviewer": "B",
+  "accept": false,
+  "scope": "Visual acceptance of the supplied 3-second actual-simulation sequence, not performance certification.",
+  "coverage": {
+    "imagesInspected": 18,
+    "profiles": [
+      "phone",
+      "fallback"
+    ],
+    "ticks": [
+      0,
+      6,
+      12,
+      24,
+      36,
+      60,
+      90,
+      120,
+      180
+    ],
+    "timeSeconds": [
+      0,
+      0.1,
+      0.2,
+      0.4,
+      0.6,
+      1,
+      1.5,
+      2,
+      3
+    ],
+    "metadataRead": "motion.json timestamps, events, camera/player states and particle counts; no source or keys read"
+  },
+  "reason": "Hit flash, persistent controls and wake continuity are acceptable, but the event labeled large explosion is visually a small pale core inside a thin ring, with too little identifiable blast/smoke structure to accept impact recognition as polished.",
+  "findings": {
+    "hitFlash": {
+      "accept": true,
+      "evidence": "At 0.1s and 0.2s, both profiles show a conspicuous white player silhouette, hull decreases from 35% to 27%, and the objective changes to RETURN TO BASE. By 0.4s normal aircraft material returns. This is unambiguous damage feedback.",
+      "weakness": "The full white silhouette temporarily removes aircraft surface detail, but its brief sampled duration and preserved silhouette make this acceptable."
+    },
+    "impactRecognition": {
+      "accept": false,
+      "evidence": "The small impact at 0.1s/0.2s appears as a pale yellow ring and tiny central point. The large event at 1.0s likewise shows a thin ring roughly 50px wide around a very small pale core near the aircraft. At 1.5s no comparably strong fire/smoke mass is visible, despite metadata reporting remaining fire and smoke particles.",
+      "weakness": "Small and large impacts share an overly similar ring-and-dot visual vocabulary. The large event does not read as a forceful explosion at this viewport scale; the particles are weaker than surrounding aircraft and water accents.",
+      "recommendation": "Give the large event a brief irregular luminous core with a warmer outer flare, several clearly directed fragments, and a readable expanding smoke mass. Keep the ring secondary. Preserve target visibility and differentiate large/small event silhouettes."
+    },
+    "smokeFading": {
+      "accept": true,
+      "evidence": "Dotted smoke trails follow the aircraft's previous route through 0.4s, 0.6s and the turn at 1.0–1.5s. Older parts grow faint and disappear by later samples. Fire counts reach zero by 2.0s; residual 2.0–3.0s smoke is consistent with continuing damage emission at 27% hull.",
+      "weakness": "Smoke reads as evenly spaced soft beads more than turbulent smoke. Sparse samples cannot independently establish every particle's fade curve, and explosive smoke lacks presence.",
+      "recommendation": "Vary puff scale and opacity, overlap some puffs into a tapering trail, and make event smoke distinct from the continuous damage trail."
+    },
+    "wakeContinuity": {
+      "accept": true,
+      "evidence": "Carrier and escort wakes remain attached and consistently oriented while vessels move across the sampled views in both profiles. The escort entering lower-center at 1.0s retains its trailing wake at 1.5s and 2.0s; no sampled detached wake or abrupt disappearance is visible.",
+      "weakness": "Wakes remain simple parallel blurred streaks with little hull-edge turbulence. The phone whitecaps are conspicuous compared with the fallback surface."
+    },
+    "cameraMotion": {
+      "accept": true,
+      "evidence": "The player begins low-left at 0s, shifts toward center over 0.1–0.4s, and remains near center through the right turn and subsequent travel. Carrier and escorts traverse the view consistently with that tracking. Camera coordinates and player heading in the timestamps support the observed directional progression.",
+      "weakness": "There is a noticeable initial recentering transient. Nine samples per profile cannot certify frame-to-frame smoothness or absence of jitter; later 0.5–1s gaps especially limit that judgment.",
+      "recommendation": "Initialize the camera at its follow target when entering this scenario, then inspect a contiguous recording for turn-follow smoothness."
+    },
+    "controlVisibility": {
+      "accept": true,
+      "evidence": "Hull/heat, objective strip, minimap, Bomb 2/2 and Fire remain fixed, high contrast and legible in all 18 frames. Aircraft and ships pass behind UI without covering button labels; heat rises during firing and is low again at 3s.",
+      "weakness": "The bomb button occludes some world action on the right at 1.5s and 3s. No steering affordance is visible in the screenshots; touch steering usability cannot be inferred from a keyboard-driven sequence."
+    }
+  },
+  "profileComparison": "Both profiles preserve the same sampled event ordering, camera path and HUD feedback. Fallback world detail is softer and has fewer sea flecks, but the white hit flash remains unmistakable. The weak large explosion presentation occurs in both.",
+  "performanceStatement": "No conclusions about actual phone FPS or hardware frame pacing were drawn from metadata costs.",
+  "blockingFixes": [
+    "Make the large explosion visually distinct and recognizable at 852x393, then capture denser event-centered samples or a contiguous recording to verify the peak, expansion and fade."
+  ]
+}

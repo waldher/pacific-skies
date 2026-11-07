@@ -1,0 +1,82 @@
+{
+  "reviewer": "B",
+  "accept": true,
+  "scope": "Accept sampled feedback in this sparse scenario. No certification of continuous smoothness, touch response, dense-combat readability or phone FPS.",
+  "coverage": {
+    "imagesInspected": 18,
+    "profiles": [
+      "phone",
+      "fallback"
+    ],
+    "ticks": [
+      0,
+      6,
+      12,
+      24,
+      36,
+      60,
+      90,
+      120,
+      180
+    ],
+    "timeSeconds": [
+      0,
+      0.1,
+      0.2,
+      0.4,
+      0.6,
+      1,
+      1.5,
+      2,
+      3
+    ],
+    "metadataRead": "motion.json"
+  },
+  "findings": {
+    "hitFlash": {
+      "accept": true,
+      "evidence": "White player silhouette is clear at 0.1 and 0.2 seconds and normal again at 0.4; hull changes 35% to 27% with return prompt. Cyan ring does not hide the white flash."
+    },
+    "impactRecognition": {
+      "accept": true,
+      "evidence": "Small orange impact at 0.1/0.2 differs clearly from broad irregular orange/yellow fireball at 1 second. At 1.5 seconds residual sparks and smoke remain, with no fire at 2/3 seconds.",
+      "weakness": "Sparse sampling cannot resolve exact onset or transition continuity."
+    },
+    "smokeFading": {
+      "accept": true,
+      "evidence": "Curved smoke at 1.5 seconds records the turn; earlier portions thin/fade in later samples. No persistent opaque fire disk.",
+      "weakness": "Gray granular smoke competes with mottled water and can be difficult to see."
+    },
+    "wakeContinuity": {
+      "accept": true,
+      "evidence": "Carrier and escort wakes stay attached to sterns as ships move across frames.",
+      "weakness": "Repeated soft puffs still resemble a trail of beads rather than tapered foam."
+    },
+    "cameraMotion": {
+      "accept": true,
+      "evidence": "Initial catch-up leads to player held centrally through the turn while carrier exits upward and escort crosses below/right.",
+      "weakness": "Initial catch-up is noticeable; still samples cannot exclude between-frame jitter."
+    },
+    "controlVisibility": {
+      "accept": true,
+      "evidence": "HUD and right action buttons stay fixed, heat changes visibly, and large cyan circle keeps player location clear even when crossing the deck at 0.4–0.6.",
+      "weakness": "Circle resembles a persistent selection/shield annotation, is jagged in fallback, and does not isolate aircraft silhouette from deck. Ship passes under Bomb at 3 seconds; touch response untested."
+    },
+    "altitude": {
+      "accept": true,
+      "evidence": "Offset plane shadow and raised carrier island retain depth.",
+      "weakness": "Dark ocean masks dark shadows. Large circle is a screen-space identity cue, not altitude information."
+    }
+  },
+  "regressionsAndLimits": [
+    "No new sampled motion failure observed.",
+    "Cyan player ring improves tracking but is visually prominent in quiet open water; fallback rasterization is coarse.",
+    "Shoreline changes from screenshot packet are not covered by this ocean-only motion sequence.",
+    "No timing-to-phone-FPS inference made."
+  ],
+  "priorities": [
+    "Preserve player localization while reducing persistent ring dominance in uncluttered scenes.",
+    "Improve smoke/water separation and taper wake foam.",
+    "Validate continuous motion and actual touch input separately."
+  ]
+}

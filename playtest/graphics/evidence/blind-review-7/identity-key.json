@@ -1,0 +1,102 @@
+{
+  "view-01.png": {
+    "kind": "candidate-6",
+    "name": "phone-stress"
+  },
+  "view-02.png": {
+    "kind": "candidate-7",
+    "name": "fallback-fleet"
+  },
+  "view-03.png": {
+    "kind": "reference",
+    "name": "dk2-0-phone"
+  },
+  "view-04.png": {
+    "kind": "candidate-7",
+    "name": "fallback-stress"
+  },
+  "view-05.png": {
+    "kind": "candidate-7",
+    "name": "phone-airfield"
+  },
+  "view-06.png": {
+    "kind": "candidate-6",
+    "name": "fallback-fleet"
+  },
+  "view-07.png": {
+    "kind": "candidate-6",
+    "name": "phone-airfield"
+  },
+  "view-08.png": {
+    "kind": "candidate-7",
+    "name": "phone-coast"
+  },
+  "view-09.png": {
+    "kind": "reference",
+    "name": "coh3-1-phone"
+  },
+  "view-10.png": {
+    "kind": "candidate-6",
+    "name": "phone-fleet"
+  },
+  "view-11.png": {
+    "kind": "candidate-6",
+    "name": "fallback-stress"
+  },
+  "view-12.png": {
+    "kind": "candidate-7",
+    "name": "phone-fleet"
+  },
+  "view-13.png": {
+    "kind": "reference",
+    "name": "coh3-0-phone"
+  },
+  "view-14.png": {
+    "kind": "candidate-6",
+    "name": "phone-coast"
+  },
+  "view-15.png": {
+    "kind": "candidate-6",
+    "name": "fallback-coast"
+  },
+  "view-16.png": {
+    "kind": "candidate-6",
+    "name": "phone-dogfight"
+  },
+  "view-17.png": {
+    "kind": "candidate-7",
+    "name": "fallback-dogfight"
+  },
+  "view-18.png": {
+    "kind": "candidate-7",
+    "name": "fallback-coast"
+  },
+  "view-19.png": {
+    "kind": "candidate-7",
+    "name": "fallback-airfield"
+  },
+  "view-20.png": {
+    "kind": "reference",
+    "name": "dk2-1-phone"
+  },
+  "view-21.png": {
+    "kind": "candidate-6",
+    "name": "fallback-airfield"
+  },
+  "view-22.png": {
+    "kind": "candidate-7",
+    "name": "phone-dogfight"
+  },
+  "view-23.png": {
+    "kind": "candidate-6",
+    "name": "fallback-dogfight"
+  },
+  "view-24.png": {
+    "kind": "reference",
+    "name": "sc2-0-phone"
+  },
+  "view-25.png": {
+    "kind": "candidate-7",
+    "name": "phone-stress"
+  }
+}

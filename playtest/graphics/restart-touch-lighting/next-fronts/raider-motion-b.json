@@ -1,0 +1,12 @@
+{
+  "judge": "B",
+  "framesInspected": 36,
+  "acceptSampledProgression": true,
+  "findings": [
+    "Aircraft remain distinguishable through the sampled banks and translation in both profiles. Tracers, smoke and orange impacts remain identifiable at coast and fleet 060.",
+    "The cyan player circle tracks the aircraft through the sampled coast turn. At fleet 024\u2013036 it merges with deck lines and briefly reads as a marker on the carrier bow. At coast 006\u2013012 a separate pale runway circle remains visible just below it.",
+    "The brief white flash occupies the player silhouette at coast and fleet 006\u2013012. I saw no opaque blue aircraft overlay in the sampled frames.",
+    "Hawk still crowds the objective banner at coast 180 and the minimap area at fleet 120. Keep those HUD fixes when integrating the aircraft change."
+  ],
+  "limitations": "Reviewed 36 discrete thumbnails. They cannot establish continuous playback, flicker, frame pacing or physical-device performance."
+}

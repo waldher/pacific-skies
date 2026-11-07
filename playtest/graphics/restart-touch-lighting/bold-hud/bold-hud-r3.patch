@@ -1,0 +1,56 @@
+diff --git a/index.html b/index.html
+index 74efe46..bcbe3c9 100644
+--- a/index.html
++++ b/index.html
+@@ -60,6 +60,7 @@
+   #fire-indicator { position:fixed; right:18px; bottom:56px; display:grid; place-content:center; text-align:center; pointer-events:none; background:#091d27bb; }
+   #fire-indicator small { display:block; margin-top:3px; color:#c5d8d7; font:700 8px/1 ui-monospace,monospace; letter-spacing:.13em; }
+   #flight-controls button:focus-visible { outline:2px solid #fff5db; outline-offset:3px; }
++  #fire-indicator[data-cooling="true"] { color:#ffd4bd; border-color:#f0a18d; }
+   #fire-indicator[data-firing="true"] { background:#953f34db; border-color:#f0a18d; }
+   #campaign-status { position:absolute; left:12px; top:102px; font-size:10px; color:var(--muted); background:var(--panel); border-radius:7px; padding:4px 8px; max-width:160px; }
+   #rank-value { color:var(--accent); } #carrier-status { margin-top:2px; }
+@@ -132,7 +133,7 @@
+ <div id="flight-hud" class="readout" hidden>
+   <div id="stats">
+     <div class="gauges"><div><div class="gauge-heading"><span>HULL</span><span id="hull-value">100%</span></div><div class="track"><i id="health-fill"></i></div></div>
+-      <div><div class="gauge-heading"><span>HEAT</span></div><div class="track"><i id="heat-fill"></i></div></div></div>
++      <div><div class="gauge-heading"><span id="heat-label">HEAT</span></div><div class="track"><i id="heat-fill"></i></div></div></div>
+   </div>
+ 
+   <div id="toast" hidden></div>
+@@ -146,7 +147,7 @@
+ <details id="qualification"><summary>Aircraft unlocks</summary><p id="sortie-unlock" hidden></p></details>
+ </section>
+ <div id="flight-controls" hidden><button id="torpedo-action">TORPEDO</button><button id="carrier-action">CARRIER</button></div>
+-<div id="fire-indicator" class="readout" hidden><span>FIRE</span><small>HOLD RIGHT</small></div>
++<div id="fire-indicator" class="readout" hidden><span id="fire-label">FIRE</span><small id="fire-hint">HOLD RIGHT</small></div>
+ <button id="map-open" aria-label="Open operations chart" hidden></button>
+ <section id="operations-panel" role="dialog" aria-modal="true" aria-labelledby="operations-title" hidden>
+ <header><div><h2 id="operations-title">Operations chart</h2><small>Campaign paused</small></div><button id="operations-close">Return to flight</button></header>
+diff --git a/src/hud.js b/src/hud.js
+index 128cca4..91f5e12 100644
+--- a/src/hud.js
++++ b/src/hud.js
+@@ -452,7 +452,12 @@ export function drawMenus() {
+   el('flight-controls').hidden = !playing;
+   el('menu').hidden = playing;
+   el('fire-indicator').hidden = !playing || !isTouchDevice || p?.flight !== 'flying';
+-  el('fire-indicator').dataset.firing = String(fireTouch.active);
++  const cooling = Boolean(playing && p.flight === 'flying' && p.overheated);
++  const fireIndicator = el('fire-indicator');
++  fireIndicator.dataset.cooling = String(cooling);
++  fireIndicator.dataset.firing = String(fireTouch.active && !cooling);
++  text('fire-label', cooling ? 'GUNS HOT' : 'FIRE');
++  text('fire-hint', cooling ? 'COOLING' : 'HOLD RIGHT');
+   if (playing) {
+     text('score-value', game.score.toLocaleString());
+     text('hull-value', `${Math.ceil(p.hp)}%`);
+@@ -471,6 +476,7 @@ export function drawMenus() {
+     text('islands-value', `${game.territories.filter(t => t.owner === 'us').length} / ${game.territories.length}`);
+     el('health-fill').style.width = `${clamp(p.hp / CONFIG.player.hp, 0, 1) * 100}%`;
+     el('health-fill').style.background = p.hp > 35 ? '#82dfbc' : '#f18f7c';
++    text('heat-label', cooling ? 'GUNS COOLING' : 'HEAT');
+     el('heat-fill').style.width = `${p.heat * 100}%`;
+     el('heat-fill').style.background = p.overheated ? '#f18f7c' : '#e5b76f';
+     // One line at the bottom: the landing hint while lining up, otherwise the latest message

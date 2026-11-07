@@ -1,0 +1,331 @@
+{
+  "meta": {
+    "judge": "C",
+    "packet": 7,
+    "categories": [
+      "readability",
+      "coherence",
+      "lighting_depth",
+      "environment_material_richness",
+      "effects_polish"
+    ],
+    "weights": [
+      0.3,
+      0.2,
+      0.2,
+      0.15,
+      0.15
+    ],
+    "inspection": "All 25 images individually opened; no keys/source/other judges inspected. Static phone-like landscape assessment.",
+    "anchors": "Recognizable unchanged controls retain exact prior scores.",
+    "blinding_limitations": "Related capture families and repeated controls recognizable. Sci-fi reference resembles StarCraft and battlefield references Company of Heroes; tactical reference title uncertain. No verified identity or iteration order used."
+  },
+  "view-01.png": {
+    "scores": [
+      7,
+      8,
+      7.5,
+      7.5,
+      7
+    ],
+    "weighted_score": 7.375,
+    "evidence": "Crisp continuous deck, narrow rim and raised island remain coherent amid dense aircraft; long wake evident.",
+    "visible_regressions_or_limitations": "Pale planes merge with tan deck, player partly occluded, smoke dots repetitive. Unchanged anchor."
+  },
+  "view-02.png": {
+    "scores": [
+      8,
+      8,
+      7.5,
+      7,
+      6
+    ],
+    "weighted_score": 7.45,
+    "evidence": "Raised island with larger side/shadow and visible dark hull face gives carrier height. Player silhouette is larger and outlined; wake clear.",
+    "visible_regressions_or_limitations": "Player overlays pale runway and appears partly merged with markings. Island shadow is a hard block; broader forward hull face almost black."
+  },
+  "view-03.png": {
+    "scores": [
+      7,
+      9,
+      8.5,
+      9,
+      8
+    ],
+    "weighted_score": 8.15,
+    "evidence": "Warm market shadows, worn paving, varied produce and props provide rich materials; colored routes traceable.",
+    "visible_regressions_or_limitations": "Small brown figures blend into surroundings. Unchanged reference anchor."
+  },
+  "view-04.png": {
+    "scores": [
+      5.5,
+      6.5,
+      7.5,
+      7,
+      6
+    ],
+    "weighted_score": 6.4,
+    "evidence": "Gray clustered particles and orange fire have more shaped texture than pale dots; ship side/island create height.",
+    "visible_regressions_or_limitations": "Severe clutter: identical gray clusters cover aircraft and deck, orange flecks have near-equal emphasis everywhere, and large blurred dark shadows add another repeated shape layer. Player ring barely separates the focal aircraft."
+  },
+  "view-05.png": {
+    "scores": [
+      7.5,
+      7.5,
+      8,
+      8.5,
+      6
+    ],
+    "weighted_score": 7.525,
+    "evidence": "Raised hangar walls and roof planes, service compound, tall tree shading and shore rocks show stronger vertical structure.",
+    "visible_regressions_or_limitations": "Blue player directly overlaps blue roof despite outline. Very mottled grass competes with small props; pale cyan patch on upper hangar reads as an unexplained attached slab. Shore remains plain."
+  },
+  "view-06.png": {
+    "scores": [
+      8.5,
+      8,
+      7,
+      7,
+      6
+    ],
+    "weighted_score": 7.5,
+    "evidence": "Single outlined aircraft, dark top bars and continuous tan carrier deck create strong hierarchy; wake present.",
+    "visible_regressions_or_limitations": "Soft edges, uniform deck light and paired wake remain simple. Unchanged anchor."
+  },
+  "view-07.png": {
+    "scores": [
+      8,
+      8,
+      8,
+      8.5,
+      6
+    ],
+    "weighted_score": 7.775,
+    "evidence": "Crisp roof walls, vehicle compound, dirt lanes and muted shaded trees create organized base; player outline helps.",
+    "visible_regressions_or_limitations": "Tiny service blocks and heavy dark tree shadows remain; shoreline flat. Unchanged anchor."
+  },
+  "view-08.png": {
+    "scores": [
+      8,
+      7.5,
+      8,
+      7.5,
+      6
+    ],
+    "weighted_score": 7.525,
+    "evidence": "Larger outlined plane and deeper building/tree shadows improve height and separation. Shore rocks and partial compound add structure.",
+    "visible_regressions_or_limitations": "Plane overlaps beach rock, grass is noisier and dark circular tree contacts heavy. Enlarged aircraft consumes more of quiet land focal area without extra material detail."
+  },
+  "view-09.png": {
+    "scores": [
+      6,
+      9,
+      9,
+      9.5,
+      8.5
+    ],
+    "weighted_score": 8.1,
+    "evidence": "Fog layers, autumn trees, tracks and damaged structures create atmospheric depth.",
+    "visible_regressions_or_limitations": "Tiny units merge with terrain/haze. Unchanged reference anchor."
+  },
+  "view-10.png": {
+    "scores": [
+      8.5,
+      8,
+      7.5,
+      7.5,
+      6.5
+    ],
+    "weighted_score": 7.75,
+    "evidence": "Outlined player separates at stern; continuous panels, raised island and narrow rim coherent; clear trailing wake.",
+    "visible_regressions_or_limitations": "Uniform deck light and paired blurred wake still simple. Unchanged anchor."
+  },
+  "view-11.png": {
+    "scores": [
+      7,
+      8,
+      7,
+      7,
+      6.5
+    ],
+    "weighted_score": 7.125,
+    "evidence": "Tan continuous deck and dark rim coherent, local player outline and long wake support focus.",
+    "visible_regressions_or_limitations": "Pale aircraft overlap deck and each other; repeated smoke/spark dots lack hierarchy. Unchanged anchor."
+  },
+  "view-12.png": {
+    "scores": [
+      8,
+      8,
+      8,
+      7.5,
+      6.5
+    ],
+    "weighted_score": 7.7,
+    "evidence": "Crisp raised island sides, mast and dark hull edge convey height; larger outlined aircraft has a clear silhouette; wake visible.",
+    "visible_regressions_or_limitations": "Plane overlaps runway marks, hull face almost black and island shadow solid. Material response remains mostly flat fills."
+  },
+  "view-13.png": {
+    "scores": [
+      5.5,
+      9,
+      9,
+      9.5,
+      9
+    ],
+    "weighted_score": 8.025,
+    "evidence": "Wet highlights, rain, smoke and tracer unify richly textured mud/rubble.",
+    "visible_regressions_or_limitations": "Infantry and dark tanks merge with ground at phone size. Unchanged reference anchor."
+  },
+  "view-14.png": {
+    "scores": [
+      8.5,
+      8,
+      7.5,
+      7.5,
+      6
+    ],
+    "weighted_score": 7.675,
+    "evidence": "Crisp outlined plane and muted shaded trees separate over olive terrain; rocks and partial compound enrich coast.",
+    "visible_regressions_or_limitations": "Uniform noisy land, dark tree contacts and simple shore remain. Unchanged anchor."
+  },
+  "view-15.png": {
+    "scores": [
+      8.5,
+      8,
+      7,
+      7,
+      5.5
+    ],
+    "weighted_score": 7.425,
+    "evidence": "Outlined plane separates from grass and rocks; muted trees fit terrain and partial compound adds land use.",
+    "visible_regressions_or_limitations": "Central grass remains flat, dark shadows repeated. Unchanged anchor."
+  },
+  "view-16.png": {
+    "scores": [
+      8,
+      8,
+      7.5,
+      7.5,
+      6.5
+    ],
+    "weighted_score": 7.6,
+    "evidence": "Crisp continuous deck, narrow rim and raised island coherent; outlined player and wake visible.",
+    "visible_regressions_or_limitations": "Light aircraft on deck remain crowded; wake is soft and paired. Unchanged anchor."
+  },
+  "view-17.png": {
+    "scores": [
+      7,
+      7.5,
+      7.5,
+      7,
+      6.5
+    ],
+    "weighted_score": 7.125,
+    "evidence": "Raised island and larger aircraft give height; gray smoke clusters and orange fire make active hits more apparent.",
+    "visible_regressions_or_limitations": "Smoke resembles granular gray debris and overlaps deck/planes; broad dark aircraft shadows pull attention. Player partly merges with stern details."
+  },
+  "view-18.png": {
+    "scores": [
+      8,
+      7.5,
+      7.5,
+      7,
+      5.5
+    ],
+    "weighted_score": 7.275,
+    "evidence": "Larger outlined player, raised hangars and stronger tree shadows imply altitude and structure.",
+    "visible_regressions_or_limitations": "Busy grass and large dark contacts compete with plane; plane overlaps shoreline rocks and beach remains simple flat strip."
+  },
+  "view-19.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7.5,
+      8,
+      5.5
+    ],
+    "weighted_score": 7.275,
+    "evidence": "Raised hangar walls, roof planes, service compound and road structure create coherent airfield volume.",
+    "visible_regressions_or_limitations": "Player remains merged with blue roof; pale cyan top-roof shape seems disconnected from roof material. Noisy grass softens object distinction."
+  },
+  "view-20.png": {
+    "scores": [
+      8,
+      9,
+      9,
+      9,
+      8
+    ],
+    "weighted_score": 8.55,
+    "evidence": "Distinct floors, thick walls, warm/cool lighting and furniture contact shadows give clear interior depth.",
+    "visible_regressions_or_limitations": "Tiny units and labels demanding at phone size. Unchanged reference anchor."
+  },
+  "view-21.png": {
+    "scores": [
+      8,
+      8,
+      7.5,
+      8,
+      5.5
+    ],
+    "weighted_score": 7.525,
+    "evidence": "Muted trees, compound vehicles, dirt lanes and hangar walls give purposeful base terrain; outline separates player better.",
+    "visible_regressions_or_limitations": "Compound tiny and player still overlaps roof. Dark tree shadows heavy. Unchanged anchor."
+  },
+  "view-22.png": {
+    "scores": [
+      7,
+      7.5,
+      8,
+      7.5,
+      7
+    ],
+    "weighted_score": 7.375,
+    "evidence": "Crisper raised ship/island, orange impact flecks and granular smoke have stronger physical detail; long wake maintained.",
+    "visible_regressions_or_limitations": "Clusters resemble debris more than soft smoke, occlude deck, and have repeated rosette shapes. Large dark blurred aircraft shadows are distracting; player ring is crowded."
+  },
+  "view-23.png": {
+    "scores": [
+      8,
+      8,
+      7,
+      7,
+      6
+    ],
+    "weighted_score": 7.35,
+    "evidence": "Continuous tan deck, narrow shaded rim and island shadow coherent; outline and long wake aid location.",
+    "visible_regressions_or_limitations": "Pale planes blend with deck markings and hull lighting remains limited. Unchanged anchor."
+  },
+  "view-24.png": {
+    "scores": [
+      6.5,
+      9,
+      9,
+      9,
+      9
+    ],
+    "weighted_score": 8.25,
+    "evidence": "Detailed metallic ships and cool rock terrain contrast with layered bright explosion and debris.",
+    "visible_regressions_or_limitations": "Blast obscures units and purple shapes merge with foliage. Unchanged reference anchor."
+  },
+  "view-25.png": {
+    "scores": [
+      5.5,
+      6.5,
+      8,
+      7.5,
+      6.5
+    ],
+    "weighted_score": 6.65,
+    "evidence": "Crisp textured smoke clusters, hot orange fire and raised carrier structure show more detail/height.",
+    "visible_regressions_or_limitations": "High-density gray rosettes obscure units, repeated flames lack hierarchy, and dark blurred shadows resemble extra threats. More detailed effects reduce phone-scale readability substantially."
+  },
+  "general_next_priorities": [
+    "Prioritize dense-fight legibility: new gray rosette particles and orange flecks cover the play area. Fewer larger semitransparent plumes and clearly ranked impact cores would communicate events better.",
+    "Reduce the contrast and uniformity of large blurred aircraft shadows; their repeated dark disks become competing objects.",
+    "Keep building and ship height cues but soften near-black side/shadow slabs with coherent lighting and selected material variation.",
+    "Player outline helps over terrain, yet blue aircraft overlapping blue roofs and busy deck remains unresolved. Use a stable focal marker or smarter local separation.",
+    "Reduce grass texture contrast/frequency so service vehicles, trees and aircraft gain separation; add purposeful ground wear instead.",
+    "Keep attached long wakes; their soft paired-strip shape still limits realism. No improvement in animation quality inferred from static frames."
+  ]
+}

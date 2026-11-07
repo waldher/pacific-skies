@@ -8,7 +8,7 @@ export const CONFIG = {
     bankResponse: 8,
     propellerSpeed: 55,      // radians/s
     sunOffset: [-240, 800, -320], // sun position relative to the camera; shadows and ocean lighting share it
-    lighting: { sky: '#c5e6ff', ground: '#506273', hemisphere: 2.2, sun: '#fff0d2', sunIntensity: 2.5 },
+    lighting: { sky: '#c5e6ff', ground: '#506273', hemisphere: 1.25, sun: '#fff0d2', sunIntensity: 3.5 },
     quality: {
       // Adaptive quality ladder, best first. The renderer steps down while
       // frames stay slow and back up only into levels that never failed.
@@ -38,9 +38,9 @@ export const CONFIG = {
       cloudSpeed: 2.5,         // cloud shadows drift at wind × this
       cloudStrength: .2,       // how much cloud shadows darken the sea (0..1)
       glitter: .6,             // sun sparkle intensity
-      foam: .7,                // whitecap density
+      foam: .14,                // whitecap density
       surf: .55,               // shoreline foam ring opacity
-      deep: '#0f4468', mid: '#1c6b8a', shallows: '#39aeb0',
+      deep: '#103f4b', mid: '#236975', shallows: '#39aeb0',
       shallowsRadius: 1.9,     // lagoon fade-out distance, in island radii
       shallowsOpacity: .6,     // strength of the turquoise skirt at the shoreline
     },

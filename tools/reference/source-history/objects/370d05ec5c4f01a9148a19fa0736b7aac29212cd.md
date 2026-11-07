@@ -1,0 +1,12 @@
+# Overhead canopy atlas
+
+Actual runtime foliage sprites, not screenshot/background art. Generated using built-in image_gen with transparent_background=true, 2026-11-07.
+Source: exec-ed17044e-cf66-4085-a765-7c39fd3cb642.png, 1254×1254 RGBA, 2,415,097 bytes.
+SHA256: c005bc867c6b5c252dd3d488a7b04dee52b7c81c1306a358ae73a75db0ed33a5
+
+Runtime: canopy-atlas-512.webp, ImageMagick resize512²/WebP quality88, alpha preserved. Approx92KB download and1.33MiB mipmapped GPU texture shared across islands. Source archived losslessly in seven chunks under tools/reference/generated-foliage; reconstruct.py validates every part and original SHA. Never loaded by runtime. An alpha composite on grass was inspected; no background square or unwanted ground/trunk/shadow is included.
+
+Rendering: one opaque alpha-tested canopy batch per island, fixed world orientation preserving baked gentle upper-left lighting, four atlas variants, subtle normalized biome tint, two triangles per crown. Native trunks and baked ground shadows remain. Main and worker asset availability agree through an explicit init flag; load failure chooses native crown meshes, not missing trees. Shared texture retained once per module lifetime; island disposal frees geometry and island albedo only.
+
+Exact generation prompt:
+Use case: photorealistic-natural. Asset type: transparent game foliage sprite atlas for a top-down Pacific island air combat game. Create a square 2-by-2 atlas, four separate mature broadleaf tree crowns, each perfectly centered within its own equal square quadrant with generous transparent padding. Camera strictly orthographic directly overhead, no perspective, no ground, no trunk visible, no cast ground shadow. Each crown is a different irregular natural silhouette of overlapping dense leafy branches. Detailed realistic foliage with large readable clustered boughs, fine leaf edge cutouts, deep ambient crevices and soft cool olive/forest greens, restrained saturation. Diffuse daylight with a gentle brighter upper-left canopy, no hard sun or glossy plastic. Top-left dense temperate green tree; top-right slightly lighter sparse broadleaf; bottom-left darker irregular tropical broadleaf; bottom-right small clustered olive broadleaf. Consistent visual scale and exposure. Must work as tiny 20–35 pixel sprites in an RTS, clear broad volumes not high contrast speckles. True transparent background between and around all four crowns; no checkerboard, labels, borders, text, UI, ground, mountains or scene. Original production artwork, not a screenshot or game mockup.

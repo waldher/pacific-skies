@@ -1,0 +1,91 @@
+{
+  "accept": true,
+  "all_images_viewed": 18,
+  "profiles": [
+    "phone",
+    "fallback"
+  ],
+  "sample_times_seconds": [
+    0,
+    0.1,
+    0.2,
+    0.4,
+    0.6,
+    1,
+    1.5,
+    2,
+    3
+  ],
+  "findings": [
+    {
+      "category": "Hit flash and impact recognition",
+      "accept": true,
+      "evidence": "White silhouette at .1/.2 returns gray by .4; orange compact impact differs clearly from large fireball at1 second, which disperses by1.5. Cyan ring does not obscure these changes.",
+      "files": [
+        "phone-006.png",
+        "phone-012.png",
+        "phone-024.png",
+        "phone-060.png",
+        "fallback-060.png"
+      ]
+    },
+    {
+      "category": "Smoke fading and continuity",
+      "accept": true,
+      "evidence": "Elongated trail overlaps at .4/.6, curves continuously after turn at1.5 and becomes broader/fainter toward older tail portions at2/3. Fine grain and patchy distal portions remain, matching previously accepted sequence quality.",
+      "files": [
+        "phone-036.png",
+        "phone-090.png",
+        "phone-180.png",
+        "fallback-090.png",
+        "fallback-180.png"
+      ]
+    },
+    {
+      "category": "Wake continuity",
+      "accept": true,
+      "evidence": "Carrier and escorts retain attached tapering wakes through all sampled translations. Scalloped repeating bands remain a cosmetic weakness.",
+      "files": [
+        "phone-000.png",
+        "phone-060.png",
+        "phone-120.png",
+        "fallback-120.png"
+      ]
+    },
+    {
+      "category": "Camera continuity",
+      "accept": true,
+      "evidence": "Initial recenter settles player near middle by.6; ring stays attached through turning and travel. No discontinuity visible in sampled positions.",
+      "files": [
+        "phone-000.png",
+        "phone-036.png",
+        "phone-090.png",
+        "phone-180.png"
+      ]
+    },
+    {
+      "category": "Controls and player clarity",
+      "accept": true,
+      "evidence": "HUD and buttons readable in both profiles; ring helps recover player location over carrier. Escort behind Bomb at3 seconds leaves label readable. Ring does not resolve actual aircraft silhouette overlaps.",
+      "files": [
+        "phone-036.png",
+        "phone-180.png",
+        "fallback-036.png",
+        "fallback-180.png"
+      ]
+    },
+    {
+      "category": "Shoreline motion",
+      "accept": null,
+      "evidence": "No coastline appears in these 18 motion frames. Shoreline foam naturalness assessed only in screenshot packet12; its animation cannot be verified from this sequence."
+    }
+  ],
+  "blockers": [],
+  "nonblocking": [
+    "Grainy smoke and modest plume diffusion.",
+    "Repeated scalloped wakes.",
+    "Clothlike ocean texture.",
+    "Opening camera recenter remains conspicuous."
+  ],
+  "limits": "All18 PNGs viewed independently and motion.json simulation timestamps/events read. Acceptance applies to supplied sampled effects and continuity, not naturalistic material parity, continuous playback smoothness, shoreline animation or actual phone FPS. No source/identity keys inspected."
+}

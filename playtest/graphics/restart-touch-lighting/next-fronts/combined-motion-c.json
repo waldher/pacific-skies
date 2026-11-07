@@ -1,0 +1,12 @@
+{
+  "judge": "C",
+  "method": "sampled-still-progression",
+  "framesViewed": 36,
+  "accept": true,
+  "findings": [
+    "In both coast profiles, compact tree contacts remain associated with their crowns through the runway traverse at 000–036 and through the shoreline banking at 060–090 and return at 120–180. Small trees and larger hangar shadows read as different scales. Some canopy detail still softens in fallback.",
+    "In both fleet profiles, fine surface texture adds depth without swallowing the narrow tracers or soft ship wakes. The moving camera exposes richer patterned water at 090–180, but the blue-gray aircraft sometimes has low contrast against it. The dark-edged cyan brackets compensate without covering the wings.",
+    "The player remains identifiable through white damage flash at 006–012 and alongside another aircraft at the fleet bow at 024–036. Brackets become proportionally wide in steep banks. The pale runway circle remains unexplained alongside RETURN TO BASE. The cyan Hawk text clears the objective at coast 180 and the minimap at fleet 120, and appears again away from the minimap at fleet 180.",
+    "No separate blue silhouette overlays the player in the sampled frames. Continuous transitions, water shimmer and frame pacing need moving footage; handset performance was outside this visual review."
+  ]
+}

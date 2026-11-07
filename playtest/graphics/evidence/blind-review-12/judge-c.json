@@ -1,0 +1,328 @@
+{
+  "meta": {
+    "judge": "C",
+    "packet": 12,
+    "categories": [
+      "readability",
+      "coherence",
+      "lighting_depth",
+      "environment_material_richness",
+      "effects_polish"
+    ],
+    "weights": [
+      0.3,
+      0.2,
+      0.2,
+      0.15,
+      0.15
+    ],
+    "inspection": "All 25 images individually inspected using view_image. Exact anchors preserved from own prior image hashes. No source, key or other judges inspected. Near-identical carrier scenes judged visually with no novelty reward.",
+    "blinding_limitations": "Repeated controls and visual families recognizable; sci-fi resembles StarCraft, battlefields Company of Heroes; tactical title uncertain."
+  },
+  "view-01.png": {
+    "scores": [
+      8.5,
+      7,
+      7.5,
+      7.5,
+      5
+    ],
+    "weighted_score": 7.325,
+    "evidence": "Cyan circle clearly locates aircraft over grass/rocks; soft coast scene remains readable.",
+    "visible_regressions_or_limitations": "Broad glowing shoreline lacks irregular surf structure and emphasizes artificial edge. Grass flat and trees carry heavy repeated contact shadows."
+  },
+  "view-02.png": {
+    "scores": [
+      7,
+      7,
+      7.5,
+      7,
+      6.5
+    ],
+    "weighted_score": 7.025,
+    "evidence": "Cyan player circle provides a focal location amid pale overlapping aircraft; dark hull and sea remain legible.",
+    "visible_regressions_or_limitations": "Ring cannot separate overlapping aircraft within it. Equal orange impacts and smoke stamps still fragment attention; soft edges limit definition. Near-match to prior carrier scene: no score-level visual difference at phone display size."
+  },
+  "view-03.png": {
+    "scores": [
+      8,
+      7.5,
+      8,
+      7.5,
+      7
+    ],
+    "weighted_score": 7.675,
+    "evidence": "Cyan ring adds focal location to sparse combat; crisp planes and small orange hits read against dark water.",
+    "visible_regressions_or_limitations": "Overlapping planes and runway marks inside ring remain ambiguous. Repeated smoke and wake stamps lack organic variation."
+  },
+  "view-04.png": {
+    "scores": [
+      8,
+      7.5,
+      7.5,
+      7,
+      6.5
+    ],
+    "weighted_score": 7.425,
+    "evidence": "Player ring helps locate bow aircraft among sparse opponents; impacts and hull remain clear.",
+    "visible_regressions_or_limitations": "Aircraft within circle still merges into pale deck markings. Soft edges, puff wake and fine busy water remain."
+  },
+  "view-05.png": {
+    "scores": [
+      6,
+      9,
+      9,
+      9.5,
+      8.5
+    ],
+    "weighted_score": 8.1,
+    "evidence": "Layered fog, trees, tracks and damaged buildings give rich depth.",
+    "visible_regressions_or_limitations": "Units merge with ground/haze. Unchanged reference."
+  },
+  "view-06.png": {
+    "scores": [
+      7,
+      9,
+      8.5,
+      9,
+      8
+    ],
+    "weighted_score": 8.15,
+    "evidence": "Warm shadowed market with produce/props and traceable colored routes.",
+    "visible_regressions_or_limitations": "Small brown figures merge into surroundings. Unchanged reference."
+  },
+  "view-07.png": {
+    "scores": [
+      8.5,
+      7.5,
+      8,
+      7.5,
+      6.5
+    ],
+    "weighted_score": 7.75,
+    "evidence": "Crisp cyan circle identifies player on carrier bow; raised island and exposed continuous hull rim give depth.",
+    "visible_regressions_or_limitations": "Extra ring is a readable overlay, not increased material richness. Uniform deck lighting, busy ocean and segmented wake remain. Near-match to prior carrier scene: no score-level visual difference at phone display size."
+  },
+  "view-08.png": {
+    "scores": [
+      6.5,
+      9,
+      9,
+      9,
+      9
+    ],
+    "weighted_score": 8.25,
+    "evidence": "Metal ships and cool rock contrast with layered bright explosion.",
+    "visible_regressions_or_limitations": "Blast obscures units; purple forms merge with foliage. Unchanged reference."
+  },
+  "view-09.png": {
+    "scores": [
+      8,
+      7,
+      7.5,
+      8,
+      5
+    ],
+    "weighted_score": 7.25,
+    "evidence": "Cyan player ring remains easy to locate; runway, shaded roofs/trees and dark ocean retain prior structure. Thin pale broken shore strokes are visible beyond the beach.",
+    "visible_regressions_or_limitations": "Shore strokes read as narrow dashed lines at a nearly constant offset from beach, rather than irregular connected foam. Broad blue shallows remain too uniform; angular beach transitions persist. No material naturalness improvement sufficient to change scores. Player material still merges with roof where overlapping; ring supplies location only."
+  },
+  "view-10.png": {
+    "scores": [
+      5.5,
+      9,
+      9,
+      9.5,
+      9
+    ],
+    "weighted_score": 8.025,
+    "evidence": "Wet reflections, rain, tracer and smoke unify rich rubble/mud.",
+    "visible_regressions_or_limitations": "Dark units merge with terrain. Unchanged reference."
+  },
+  "view-11.png": {
+    "scores": [
+      8.5,
+      7.5,
+      8,
+      7.5,
+      6.5
+    ],
+    "weighted_score": 7.75,
+    "evidence": "Crisp cyan circle identifies player on carrier bow; raised island and exposed continuous hull rim give depth.",
+    "visible_regressions_or_limitations": "Extra ring is a readable overlay, not increased material richness. Uniform deck lighting, busy ocean and segmented wake remain."
+  },
+  "view-12.png": {
+    "scores": [
+      7,
+      7,
+      8,
+      7.5,
+      7
+    ],
+    "weighted_score": 7.275,
+    "evidence": "Player circle gives a clearer location amid dense aircraft; dark hull and detailed sea preserve depth.",
+    "visible_regressions_or_limitations": "Circle encompasses overlapping planes rather than separating them. Numerous equal orange effects and smoke rosettes remain distracting; HUD-plane overlap at top persists. Near-match to prior carrier scene: no score-level visual difference at phone display size."
+  },
+  "view-13.png": {
+    "scores": [
+      8,
+      7,
+      8,
+      8.5,
+      5.5
+    ],
+    "weighted_score": 7.5,
+    "evidence": "Cyan player ring remains easy to locate; runway, shaded roofs/trees and dark ocean retain prior structure. Thin pale broken shore strokes are visible beyond the beach.",
+    "visible_regressions_or_limitations": "Shore strokes read as narrow dashed lines at a nearly constant offset from beach, rather than irregular connected foam. Broad blue shallows remain too uniform; angular beach transitions persist. No material naturalness improvement sufficient to change scores. Player material still merges with roof where overlapping; ring supplies location only."
+  },
+  "view-14.png": {
+    "scores": [
+      7,
+      7,
+      7.5,
+      7,
+      6.5
+    ],
+    "weighted_score": 7.025,
+    "evidence": "Cyan player circle provides a focal location amid pale overlapping aircraft; dark hull and sea remain legible.",
+    "visible_regressions_or_limitations": "Ring cannot separate overlapping aircraft within it. Equal orange impacts and smoke stamps still fragment attention; soft edges limit definition."
+  },
+  "view-15.png": {
+    "scores": [
+      8.5,
+      7,
+      7.5,
+      7.5,
+      5
+    ],
+    "weighted_score": 7.325,
+    "evidence": "Cyan player ring remains easy to locate; runway, shaded roofs/trees and dark ocean retain prior structure. Thin pale broken shore strokes are visible beyond the beach.",
+    "visible_regressions_or_limitations": "Shore strokes read as narrow dashed lines at a nearly constant offset from beach, rather than irregular connected foam. Broad blue shallows remain too uniform; angular beach transitions persist. No material naturalness improvement sufficient to change scores. Player material still merges with roof where overlapping; ring supplies location only."
+  },
+  "view-16.png": {
+    "scores": [
+      8,
+      7.5,
+      8,
+      7.5,
+      7
+    ],
+    "weighted_score": 7.675,
+    "evidence": "Cyan ring adds focal location to sparse combat; crisp planes and small orange hits read against dark water.",
+    "visible_regressions_or_limitations": "Overlapping planes and runway marks inside ring remain ambiguous. Repeated smoke and wake stamps lack organic variation. Near-match to prior carrier scene: no score-level visual difference at phone display size."
+  },
+  "view-17.png": {
+    "scores": [
+      8,
+      7.5,
+      7.5,
+      7,
+      6.5
+    ],
+    "weighted_score": 7.425,
+    "evidence": "Player ring helps locate bow aircraft among sparse opponents; impacts and hull remain clear.",
+    "visible_regressions_or_limitations": "Aircraft within circle still merges into pale deck markings. Soft edges, puff wake and fine busy water remain. Near-match to prior carrier scene: no score-level visual difference at phone display size."
+  },
+  "view-18.png": {
+    "scores": [
+      8.5,
+      7.5,
+      7.5,
+      7,
+      6
+    ],
+    "weighted_score": 7.5,
+    "evidence": "Cyan circle isolates player location on pale carrier bow; restored narrow hull rim reads continuously.",
+    "visible_regressions_or_limitations": "Ring locates plane without improving aircraft material contrast. Deck shading remains uniform, ocean busy and wake repeated puffs."
+  },
+  "view-19.png": {
+    "scores": [
+      8.5,
+      7.5,
+      7.5,
+      7,
+      6
+    ],
+    "weighted_score": 7.5,
+    "evidence": "Cyan circle isolates player location on pale carrier bow; restored narrow hull rim reads continuously.",
+    "visible_regressions_or_limitations": "Ring locates plane without improving aircraft material contrast. Deck shading remains uniform, ocean busy and wake repeated puffs. Near-match to prior carrier scene: no score-level visual difference at phone display size."
+  },
+  "view-20.png": {
+    "scores": [
+      8.5,
+      7,
+      8,
+      8,
+      5.5
+    ],
+    "weighted_score": 7.575,
+    "evidence": "Cyan circle makes player easy to locate beside rocks; shaded trees and dark ocean retain depth.",
+    "visible_regressions_or_limitations": "Coast now has broad uniform cyan glow that reads as illumination rather than irregular surf. Abrupt segmented beach transition remains; flat grass and heavy tree contacts persist."
+  },
+  "view-21.png": {
+    "scores": [
+      7,
+      7,
+      8,
+      7.5,
+      7
+    ],
+    "weighted_score": 7.275,
+    "evidence": "Player circle gives a clearer location amid dense aircraft; dark hull and detailed sea preserve depth.",
+    "visible_regressions_or_limitations": "Circle encompasses overlapping planes rather than separating them. Numerous equal orange effects and smoke rosettes remain distracting; HUD-plane overlap at top persists."
+  },
+  "view-22.png": {
+    "scores": [
+      8,
+      9,
+      9,
+      9,
+      8
+    ],
+    "weighted_score": 8.55,
+    "evidence": "Distinct floors, wall depth, warm/cool light and furniture contacts.",
+    "visible_regressions_or_limitations": "Tiny units/text demanding at phone size. Unchanged reference."
+  },
+  "view-23.png": {
+    "scores": [
+      8,
+      7,
+      7.5,
+      8,
+      5
+    ],
+    "weighted_score": 7.25,
+    "evidence": "Ring helps locate player over middle blue hangar; service apron and runway give clear base organization.",
+    "visible_regressions_or_limitations": "Soft aircraft still merges with roof. Broad cyan shore band looks emissive; coarse grass and strong tree shadows remain stylistically mismatched with sea."
+  },
+  "view-24.png": {
+    "scores": [
+      8,
+      7,
+      8,
+      8.5,
+      5.5
+    ],
+    "weighted_score": 7.5,
+    "evidence": "Cyan circle finds player above matching blue roof; apron, lanes and runway remain clearly structured.",
+    "visible_regressions_or_limitations": "Aircraft body still blends into hangar. New shore glow is continuous bright cyan rather than convincing foam or shallow-water structure; segmented beach edge persists."
+  },
+  "view-25.png": {
+    "scores": [
+      8.5,
+      7,
+      8,
+      8,
+      5.5
+    ],
+    "weighted_score": 7.575,
+    "evidence": "Cyan player ring remains easy to locate; runway, shaded roofs/trees and dark ocean retain prior structure. Thin pale broken shore strokes are visible beyond the beach.",
+    "visible_regressions_or_limitations": "Shore strokes read as narrow dashed lines at a nearly constant offset from beach, rather than irregular connected foam. Broad blue shallows remain too uniform; angular beach transitions persist. No material naturalness improvement sufficient to change scores. Player material still merges with roof where overlapping; ring supplies location only."
+  },
+  "general_next_priorities": [
+    "Make shore foam irregular in width, opacity and distance from water edge, with short connected patches rather than thin dashed rails.",
+    "Preserve ring clarity while separating aircraft material from deck and hangar.",
+    "Improve major-versus-minor impact hierarchy; dense equal sparks and repeated smoke remain distracting.",
+    "Coordinate ocean texture, land shading and vessel materials; detail alone does not resolve style mismatch."
+  ]
+}

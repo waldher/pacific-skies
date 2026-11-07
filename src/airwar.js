@@ -1,3 +1,4 @@
+import { aircraftRound } from './projectile-visual.js';
 // Friendly air activity and the occasional roaming Zero.
 //
 //   wing     the player's squadron: formation off the quarters, engages what
@@ -57,7 +58,7 @@ function attack(f, target, dt, gunnery = CONFIG.airWar.gunnery) {
   const diff = steer(f, tx, ty, off > 1.1 ? 0 : 1, dt);
   if (f.fireCd <= 0 && Math.abs(diff) < aim && distance(f, target) < CONFIG.enemy.engageDist) {
     f.fireCd = cooldown;
-    game.bullets.push({ x: f.x + Math.cos(f.a) * 22, y: f.y + Math.sin(f.a) * 22,
+    game.bullets.push({ ...aircraftRound(f), x: f.x + Math.cos(f.a) * 22, y: f.y + Math.sin(f.a) * 22,
       vx: Math.cos(f.a) * CONFIG.player.bulletSpeed, vy: Math.sin(f.a) * CONFIG.player.bulletSpeed,
       life: CONFIG.player.bulletLife, fromShip: true, fromAlly: true, pilot: f.name });
   }
@@ -197,7 +198,7 @@ function flyStrike(f, dt) {
         for (const field of game.airfields) if (field.territory === holding.id && field.owner === 'enemy') field.hp = Math.max(0, field.hp - K.damage);
       }
     }
-    explosion(f.target.x, f.target.y, true);
+    explosion(f.target.x, f.target.y, true, f.target.ship ? 11.5 : 8.5);
     return;
   }
   if (!carrier || carrier.active === false || carrier.hp <= 0) { f.departed = true; return; }

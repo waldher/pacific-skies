@@ -1,0 +1,5 @@
+# Pilot brackets and PCM listening pair
+
+The brackets pass the dedicated crowded-combat still check. Three independent reviewer sessions reported stronger association during carrier crossing, with overlap and the gold pipper still competing. Each of the 45 stills has a score, with 35 identical anchors retained. All new stills and the 36 sampled motion frames were viewed by each judge. Scores were 7.549 / 7.345 / 7.560 versus 7.423 / 7.213 / 7.410 for the rejected chevron. Median visual gain +0.132 falls short of +0.15, so the bracket candidate is not accepted. No matched performance or continuous motion verdict. Sampled motion passed, with remaining HUD label overlap.
+
+A capture-only AudioWorklet PCM option recorded the live stereo game mix without missing render blocks after startup in both tiers for both stock and pressure-transient gunfire. Four verified reports identify the exact capture suite, source, and artifact hashes. The new runtime audio remains an isolated patch. Continuous video has compositor gaps and listening remains pending. This checkpoint preserves source patches and reports. Screenshot and media bytes remain local.

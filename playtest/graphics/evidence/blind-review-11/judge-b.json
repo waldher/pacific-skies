@@ -1,0 +1,311 @@
+{
+  "reviewer": "B",
+  "packet": 11,
+  "coverage": {
+    "imagesInspected": 25,
+    "method": "All PNGs viewed individually; no source/key/other reviewer read."
+  },
+  "criteria": [
+    "readability",
+    "coherence",
+    "lighting/depth",
+    "environment/material richness",
+    "effects polish"
+  ],
+  "weights": [
+    0.3,
+    0.2,
+    0.2,
+    0.15,
+    0.15
+  ],
+  "recognition": "StarCraft-like, Company of Heroes-like and Door Kickers-like imagery is recognizable; identities cannot be fully blinded.",
+  "images": {
+    "view-01.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        6
+      ],
+      "evidence": "Sharp coast: faceted rocks, plane highlights and tree shadows establish depth; uniform narrow beach remains schematic.",
+      "regressions": "Existing limitations retained; no new visible regression established."
+    },
+    "view-02.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        6
+      ],
+      "evidence": "Sharp coast with cyan player circle: location is obvious; broad turquoise shoreline band adds a water-depth transition but reads as uniform glow rather than variable shallows.",
+      "regressions": "Shoreline band risks an artificial luminous border; physical material integration remains weak."
+    },
+    "view-03.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        5
+      ],
+      "evidence": "Soft quiet carrier with cyan circle: player location over deck is clearer; pointed dark rim and raised island remain. Soft plane/deck overlap still prevents complete silhouette isolation.",
+      "regressions": "Circle adds visual annotation but does not fix actual silhouette overlap."
+    },
+    "view-04.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        5
+      ],
+      "evidence": "Soft quiet carrier: coherent dark rim and island; player merges into deck markings; wake remains repeated puffs.",
+      "regressions": "Existing limitations retained; no new visible regression established."
+    },
+    "view-05.png": {
+      "scores": [
+        7,
+        7,
+        8,
+        7,
+        7
+      ],
+      "evidence": "Sharp sparse fight: crisp orange flecks, smoke and raised island; small gold indicator is overwhelmed by player/deck overlap.",
+      "regressions": "Existing limitations retained; no new visible regression established."
+    },
+    "view-06.png": {
+      "scores": [
+        7,
+        7,
+        7,
+        6,
+        6
+      ],
+      "evidence": "Soft swarm with cyan circle: circle provides a stronger player anchor amid pale aircraft and orange specks. Multiple planes still cross inside the same circle.",
+      "regressions": "Circle adds visual annotation but does not fix actual silhouette overlap."
+    },
+    "view-07.png": {
+      "scores": [
+        6,
+        9,
+        9,
+        10,
+        9
+      ],
+      "evidence": "Rain battle reference: wet reflections, debris, fog and bright tracer create rich integrated materials; dark soldiers remain hard to isolate.",
+      "regressions": "Existing limitations retained; no new visible regression established."
+    },
+    "view-08.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        8,
+        6
+      ],
+      "evidence": "Sharp airfield with circle: player is easier to locate over hangar; roof faces, trees, apron and service yard retain depth. Glowing shore band has an abrupt visible change near the upper-right runway coast.",
+      "regressions": "Shoreline band risks an artificial luminous border; physical material integration remains weak."
+    },
+    "view-09.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        6
+      ],
+      "evidence": "Sharp quiet carrier with circle: player location clear over tan deck, strong dark hull rim and raised island. Still no clean aircraft/deck separation; puff wake unchanged.",
+      "regressions": "Circle adds visual annotation but does not fix actual silhouette overlap."
+    },
+    "view-10.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        7,
+        5
+      ],
+      "evidence": "Soft coast with circle: clear player location and tree shadows; broad pale cyan beach glow is smooth and uniform, with limited natural water/beach interaction.",
+      "regressions": "Shoreline band risks an artificial luminous border; physical material integration remains weak."
+    },
+    "view-11.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        6
+      ],
+      "evidence": "Soft sparse combat with circle: player is easier to locate, orange impacts visible; soft edges and crossed silhouettes remain.",
+      "regressions": "Circle adds visual annotation but does not fix actual silhouette overlap."
+    },
+    "view-12.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        7
+      ],
+      "evidence": "Sharp sparse combat with circle: ring clearly anchors player while retaining detailed carrier rim, small fire and smoke. Ring does not distinguish overlapping aircraft within it.",
+      "regressions": "Circle adds visual annotation but does not fix actual silhouette overlap."
+    },
+    "view-13.png": {
+      "scores": [
+        6,
+        9,
+        9,
+        10,
+        9
+      ],
+      "evidence": "Fog battle reference: layered autumn trees, broken architecture, vehicles and haze form coherent varied terrain; unit contrast is limited.",
+      "regressions": "Existing limitations retained; no new visible regression established."
+    },
+    "view-14.png": {
+      "scores": [
+        7,
+        7,
+        7,
+        6,
+        6
+      ],
+      "evidence": "Soft sparse combat without large circle: orange effects and small center marker visible; player overlaps deck and another plane.",
+      "regressions": "Existing limitations retained; no new visible regression established."
+    },
+    "view-15.png": {
+      "scores": [
+        7,
+        9,
+        9,
+        9,
+        8
+      ],
+      "evidence": "Market tactical reference: produce, stalls, paving and warm shadows form rich coherent materials; crowds and route overlays compete.",
+      "regressions": "Existing limitations retained; no new visible regression established."
+    },
+    "view-16.png": {
+      "scores": [
+        8,
+        9,
+        9,
+        9,
+        8
+      ],
+      "evidence": "Apartment tactical reference: strong wall thickness, varied flooring, furniture and light pools; hall actors remain small.",
+      "regressions": "Existing limitations retained; no new visible regression established."
+    },
+    "view-17.png": {
+      "scores": [
+        6,
+        7,
+        7,
+        6,
+        6
+      ],
+      "evidence": "Soft swarm without large circle: effects and pale aircraft readable independently; central player is buried in overlaps.",
+      "regressions": "Existing limitations retained; no new visible regression established."
+    },
+    "view-18.png": {
+      "scores": [
+        7,
+        7,
+        8,
+        7,
+        7
+      ],
+      "evidence": "Sharp swarm with circle: improved player localization amid crisp enemies, fire flecks and smoke; full player silhouette remains obscured.",
+      "regressions": "Circle adds visual annotation but does not fix actual silhouette overlap."
+    },
+    "view-19.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        7,
+        5
+      ],
+      "evidence": "Soft coast without circle: plane readable on grass, trees shaded, rocks faceted; simple beach strip and soft edges limit richness.",
+      "regressions": "Existing limitations retained; no new visible regression established."
+    },
+    "view-20.png": {
+      "scores": [
+        7,
+        7,
+        8,
+        8,
+        6
+      ],
+      "evidence": "Sharp airfield without circle: raised hangars, service yard and tree shadows; player overlaps central roof and cyan roof marker is ambiguous.",
+      "regressions": "Existing limitations retained; no new visible regression established."
+    },
+    "view-21.png": {
+      "scores": [
+        6,
+        7,
+        8,
+        7,
+        7
+      ],
+      "evidence": "Sharp swarm without circle: raised island, smoke arcs and bright impacts provide depth; central overlap compromises identity.",
+      "regressions": "Existing limitations retained; no new visible regression established."
+    },
+    "view-22.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        8,
+        5
+      ],
+      "evidence": "Soft airfield with circle: player location clearer on roof; runway and yard remain coherent. Broad cyan coast band includes an abrupt change and looks luminous rather than shallow.",
+      "regressions": "Shoreline band risks an artificial luminous border; physical material integration remains weak."
+    },
+    "view-23.png": {
+      "scores": [
+        7,
+        7,
+        7,
+        8,
+        5
+      ],
+      "evidence": "Soft airfield without circle: terrain props and directional shadows add variety; player/roof and cyan marker remain ambiguous.",
+      "regressions": "Existing limitations retained; no new visible regression established."
+    },
+    "view-24.png": {
+      "scores": [
+        7,
+        9,
+        9,
+        9,
+        9
+      ],
+      "evidence": "Science-fiction RTS reference: layered radiant blast and sparks integrate with metallic units and rocky terrain; bloom hides some action.",
+      "regressions": "Existing limitations retained; no new visible regression established."
+    },
+    "view-25.png": {
+      "scores": [
+        8,
+        7,
+        8,
+        7,
+        6
+      ],
+      "evidence": "Sharp quiet carrier without circle: strong dark rim, raised island and crisp markings; player blends with deck and repeated wake is artificial.",
+      "regressions": "Existing limitations retained; no new visible regression established."
+    }
+  },
+  "general_findings": [
+    "Large cyan player circle improves localization in airfield and crowded/sparse combat. Quiet and coast views already had relatively high readability; no automatic extra point.",
+    "Carrier retains coherent pointed rim and raised island; rounded slab regression from prior packet is absent.",
+    "Cyan shoreline band provides tonal transition, but is too uniform and luminous to count as richer natural material rendering; airfield shoreline has a conspicuous change in band near the upper-right coast.",
+    "Detailed water, relatively plain land surfaces and simplified models remain mismatched in material complexity."
+  ],
+  "recommendations": [
+    "Retain player localization while reducing circle dominance once the player is clearly visible; resolve actual overlap with silhouette treatment.",
+    "Replace uniform shoreline glow with irregular shallow-water color, broken foam and varied beach width, eliminating band seams.",
+    "Improve wake geometry and material transitions instead of adding more uniform detail."
+  ]
+}

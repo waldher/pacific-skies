@@ -7,12 +7,15 @@
 // back up, so short hitches do not cause oscillation, and never back into a
 // level that already failed. ?quality=N pins a level.
 import * as THREE from 'three';
+import { createEnvironment } from './environment.js';
+import { OBLIQUE, applyObliqueProjection, recordVisualHeight } from './projection.js';
 import { enemyObserved } from './intelligence.js';
 import { CONFIG } from './config.js';
 import { loadAircraft, createAircraft, updateAircraft, setShadowMode } from './aircraft.js';
-import { createWorld } from './world.js';
+import { createWorld, preloadOceanMaterial } from './world.js';
+import { preloadTerrainMaterial } from './land.js';
 import { createNavalScene } from './naval-scene.js';
-import { createEffects } from './effects.js';
+import { createEffects, preloadEffectAtlas } from './effects.js';
 import { renderAircraftPreviews } from './aircraft-previews.js';
 
 export async function createRenderer(canvas) {
@@ -38,7 +41,10 @@ export async function createRenderer(canvas) {
   sun.shadow.camera.near = 1;
   sun.shadow.camera.far = 2200;
   scene.add(sun, sun.target);
+  const environment = createEnvironment(renderer, scene);
+  await Promise.all([preloadTerrainMaterial(), preloadOceanMaterial()]);
   const world = createWorld(scene);
+  await preloadEffectAtlas();
   const effects = createEffects(scene, renderer);
   const naval = createNavalScene(scene);
   const templates = await loadAircraft();
@@ -47,6 +53,7 @@ export async function createRenderer(canvas) {
   let lastW = 0, lastH = 0, lastRatio = 0;
   const diagnostics = {
     ready: true, engine: 'Three.js', revision: THREE.REVISION,
+    environmentMode: environment.mode, environmentFallback: environment.reason, environmentBytes: environment.bytes,
     aircraft: 0, drawCalls: 0, triangles: 0, chunks: 0,
     quality: 0, pixelRatio: 1, frameMs: 0,
   };
@@ -111,7 +118,7 @@ export async function createRenderer(canvas) {
     renderer.setSize(view.W, view.H, false);
     camera.left = -view.W / 2; camera.right = view.W / 2;
     camera.top = view.H / 2; camera.bottom = -view.H / 2;
-    camera.updateProjectionMatrix();
+    applyObliqueProjection(camera);
     const range = Math.max(view.W, view.H) / 2 + 220;
     Object.assign(sun.shadow.camera, { left: -range, right: range, top: range, bottom: -range });
     sun.shadow.camera.updateProjectionMatrix();
@@ -125,7 +132,19 @@ export async function createRenderer(canvas) {
   return {
     diagnostics,
     // Exposed via __game for meaningful renderer checks and visual inspection.
-    scene, camera, aircraft, renderer, naval, world,
+    scene, camera, aircraft, renderer, naval, world, environment,
+    async prepare(game, view) {
+      await world.prepare(game, view);
+      // Perform first texture/buffer submission while the loading overlay is
+      // visible. Worker construction alone does not warm the GPU.
+      scene.traverse(node => {
+        for (const material of Array.isArray(node.material) ? node.material : [node.material]) {
+          const texture = material?.uniforms?.albedoMap?.value;
+          if (texture) renderer.initTexture(texture);
+        }
+      });
+      this.render(game, view, 0, 0, 0);
+    },
     quality: {
       get level() { return state.level; },
       get locked() { return state.locked; },
@@ -135,7 +154,7 @@ export async function createRenderer(canvas) {
     render(game, view, dt, shakeX, shakeY) {
       adapt();
       resize(view);
-      camera.position.set(game.cam.x - shakeX, 1000, game.cam.y - shakeY);
+      camera.position.set(game.cam.x - shakeX, OBLIQUE.cameraHeight, game.cam.y - shakeY);
       camera.lookAt(game.cam.x - shakeX, 0, game.cam.y - shakeY);
       const [sx, sy, sz] = CONFIG.render.sunOffset;
       sun.position.set(game.cam.x + sx, sy, game.cam.y + sz);
@@ -154,13 +173,14 @@ export async function createRenderer(canvas) {
         const player = entity === game.player;
         if (!aircraft.has(entity)) {
           const kind = entity.aircraft || (player || entity.team === 'us' ? 'us' : 'jp');
-          const visual = createAircraft(templates[kind] || templates.us, entity, level().shadows);
+          const visual = createAircraft(templates[kind] || templates.us, entity, level().shadows, player);
           visual.aircraftType = kind;
           aircraft.set(entity, visual); scene.add(visual.root, visual.shadow);
         }
         updateAircraft(aircraft.get(entity), entity, dt,
           player ? CONFIG.player.turnRate : entity.turn,
           (player || entity.team === 'us') && entity.hitFlash > .12);
+        recordVisualHeight(entity, aircraft.get(entity).root.position.y);
       }
       naval.update(game);
       effects.update(game);
@@ -169,6 +189,9 @@ export async function createRenderer(canvas) {
       diagnostics.drawCalls = renderer.info.render.calls;
       diagnostics.triangles = renderer.info.render.triangles;
       diagnostics.chunks = world.chunkCount;
+      diagnostics.oceanMaterial = world.oceanMaterialInfo;
+      diagnostics.effectAtlas = effects.atlasMode;
+      diagnostics.terrainWorker = world.workerStats;
     },
   };
 }
