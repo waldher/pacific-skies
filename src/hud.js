@@ -238,6 +238,7 @@ function drawNavigation() {
 
 // Gold is the assigned course, teal the nearest recovery point, red a detected raid.
 const ARROWS = { objective: '#edce91', base: '#82dfbc', raid: '#ff8a6b' };
+let courseBrief = null;
 export function hudArrows(game) {
   const p = game.player, arrows = [];
   if (!p || game.mode !== 'play' || p.flight !== 'flying') return arrows;
@@ -261,18 +262,97 @@ export function hudArrows(game) {
   }
   return arrows;
 }
+
+function drawSlipstream(px, py, ux, uy, distance, panels) {
+  const { x, y } = game.player;
+  const ahead = x * ux + y * uy, across = y * ux - x * uy;
+  const start = 102, reach = Math.min(194, distance);
+  // Advect a handful of strands through a world-coordinate lattice. Moving
+  // the camera or pilot exposes new strands instead of dragging an icon.
+  const spacing = 78, laneWidth = 27;
+  const nearestLane = Math.round(across / laneWidth);
+  const phase = game.time * CONFIG.hudCourse.slipstreamSpeed;
+  let visibility = 0;
+  ctx.lineCap = 'round';
+  for (let lane = nearestLane - 1; lane <= nearestLane + 1; lane++) {
+    const offset = lane * laneWidth - across;
+    const wave = phase + lane * 25 - ahead;
+    const first = start + ((wave - start) % spacing + spacing) % spacing;
+    for (let along = first; along < reach; along += spacing) {
+      const x = px + ux * along - uy * offset, y = py + uy * along + ux * offset;
+      const tailX = x - ux * 64, tailY = y - uy * 64;
+      if (!boxClear(Math.min(x, tailX) - 9, Math.min(y, tailY) - 9,
+          Math.abs(x - tailX) + 18, Math.abs(y - tailY) + 18, panels)) continue;
+      const opacity = Math.min(1, (along - start) / 16, (reach - along) / 18);
+      visibility = Math.max(visibility, opacity);
+      // Open, gently bowed strokes read as wisps in the airflow. A faint
+      // dark edge retains contrast over white water and runway concrete.
+      ctx.globalAlpha = opacity;
+      ctx.beginPath(); ctx.moveTo(tailX, tailY);
+      ctx.bezierCurveTo(x - ux * 45 + uy * 6, y - uy * 45 - ux * 6,
+        x - ux * 16 - uy * 7, y - uy * 16 + ux * 7, x, y);
+      ctx.strokeStyle = 'rgba(28, 36, 37, .22)'; ctx.lineWidth = 3; ctx.stroke();
+      ctx.strokeStyle = 'rgba(249, 247, 229, .58)'; ctx.lineWidth = 1.25; ctx.stroke();
+    }
+  }
+  ctx.globalAlpha = 1;
+  return visibility;
+}
+
+function drawCourseTip(px, py, angle, distance, panels, opacity, triggerHeld) {
+  const ux = Math.cos(angle), uy = Math.sin(angle);
+  // In combat try an adjacent lane first so the tip and lead pipper do not
+  // share the firing axis. Keep the true bearing even if the tip shifts.
+  const lanes = triggerHeld ? [-23, 23, 0, -42, 42] : [0, -23, 23, -42, 42];
+  for (const reach of [76, 58, 98, 124]) {
+    if (reach > distance) continue;
+    for (const offset of lanes) {
+      const x = px + ux * reach - uy * offset, y = py + uy * reach + ux * offset;
+      if (!boxClear(x - 12, y - 12, 24, 24, panels)) continue;
+      ctx.save();
+      ctx.translate(x, y); ctx.rotate(angle);
+      ctx.globalAlpha = opacity;
+      ctx.beginPath(); ctx.moveTo(-7, -4); ctx.lineTo(0, 0); ctx.lineTo(-7, 4);
+      ctx.strokeStyle = '#142022'; ctx.lineWidth = 3.5; ctx.stroke();
+      ctx.strokeStyle = '#eee9d7'; ctx.lineWidth = 1.4; ctx.stroke();
+      ctx.restore();
+      return;
+    }
+  }
+}
+
 function drawArrows(map, reserved) {
   const { W, H } = view;
   const arrows = hudArrows(game);
   const main = arrows.find(a => a.kind === 'objective') || arrows.find(a => a.kind === 'base') || arrows[0];
-  if (!main) return [];
-  const secondary = arrows.filter(a => a !== main && (!firing() || a.kind === 'raid'));
+  if (!main) {
+    courseBrief = null;
+    return [];
+  }
+  const wp = game.waypoint;
+  const identity = wp?.siteId ?? wp?.baseId ?? wp?.shipId ?? wp?.fleetSearch ?? wp?.name;
+  if (!courseBrief || courseBrief.world !== game.terrain || courseBrief.identity !== identity ||
+      courseBrief.label !== main.label || courseBrief.arrived !== main.arrived || courseBrief.since > game.time) {
+    courseBrief = { world: game.terrain, identity, label: main.label, arrived: main.arrived, since: game.time };
+  }
+  const briefing = game.time - courseBrief.since < CONFIG.hudCourse.briefSeconds;
+  const triggerHeld = firing();
+  const secondary = arrows.filter(a => a !== main && (a.kind === 'raid' || (briefing && !triggerHeld)));
+  const reportLine = report => report.label + (report.sub ? '  ·  ' + report.sub : '');
+  const line = reportLine(main);
   const gapStart = statsPanel.x + statsPanel.w + 10, gapEnd = map.x - 10;
   const gap = gapEnd - gapStart;
   const compact = gap < 224;
   const top = compact ? map.y + map.h + 10 : map.y;
-  const height = secondary.length ? 52 : 34;
-  let width = compact ? Math.min(294, W - 28) : Math.min(294, gap);
+  const headerH = briefing ? 34 : 24;
+  const height = headerH + (secondary.length ? 18 : 0);
+  ctx.save();
+  ctx.font = '750 11px system-ui';
+  const lineWidth = Math.ceil(ctx.measureText(line).width) + 42;
+  ctx.font = '650 9px system-ui';
+  const reportWidth = secondary.length ? Math.ceil(ctx.measureText(reportLine(secondary[0])).width) + 29 : 0;
+  const desiredWidth = briefing ? 294 : Math.max(144, lineWidth, reportWidth);
+  let width = Math.min(desiredWidth, compact ? W - 28 : gap);
   let left = compact ? Math.round((W - width) / 2)
     : Math.round(clamp((W - width) / 2, gapStart, gapEnd - width));
   if (compact && !boxClear(left, top, width, height, reserved)) {
@@ -289,11 +369,11 @@ function drawArrows(map, reserved) {
   const dx = sx - px, dy = sy - py;
   const angle = Math.atan2(dy, dx);
   const color = ARROWS[main.kind];
-  ctx.save();
+  const panels = [...reserved, panel];
   if (main.arrived) {
     // Arrival is a specific contact marker. An active capture alone has progress.
     if (sx > 30 && sx < W - 30 && sy > 30 && sy < H - 30 &&
-        !panelAt(sx, sy, [...reserved, panel], 27)) {
+        !panelAt(sx, sy, panels, 27)) {
       ctx.strokeStyle = '#101b22'; ctx.lineWidth = 4;
       ctx.beginPath();
       ctx.moveTo(sx - 15, sy - 7); ctx.lineTo(sx - 21, sy); ctx.lineTo(sx - 15, sy + 7);
@@ -307,50 +387,41 @@ function drawArrows(map, reserved) {
         ctx.fillStyle = color; ctx.fillRect(sx - 18, sy + 25, 36 * clamp(main.progress, 0, 1), 3);
       }
     }
-  } else {
-    // Follow the air current to the course. Keep its tail clear of the pilot.
-    const d = Math.hypot(dx, dy), reach = Math.min(104, d);
-    const ux = Math.cos(angle), uy = Math.sin(angle);
-    const tail = Math.max(40, reach - 45);
-    const x = px + ux * reach, y = py + uy * reach;
-    const fromX = px + ux * tail, fromY = py + uy * tail;
-    const length = reach - tail;
-    if (length >= 16 && boxClear(Math.min(x, fromX) - 8, Math.min(y, fromY) - 8,
-        Math.abs(x - fromX) + 16, Math.abs(y - fromY) + 16, [...reserved, panel])) {
-      ctx.save(); ctx.translate(x, y); ctx.rotate(angle);
-      ctx.strokeStyle = '#142022'; ctx.lineWidth = 3.5;
-      ctx.beginPath(); ctx.moveTo(-8, -4); ctx.lineTo(0, 0); ctx.lineTo(-8, 4); ctx.stroke();
-      ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.stroke();
-      // The strokes increase in weight toward the tip so direction survives
-      // at a glance, including when the main stroke crosses pale surf.
-      const traces = [[-length, 2.5, -.56 * length, 1.5], [-.73 * length, -3, -10, -1]];
-      ctx.fillStyle = color;
-      traces.forEach(([x0, y0, x1, y1], i) => {
-        ctx.globalAlpha = i ? .82 : .46;
-        ctx.beginPath(); ctx.moveTo(x0, y0); ctx.quadraticCurveTo((x0 + x1) / 2, y0, x1, y1);
-        ctx.lineTo(x1, y1 + (i ? 1.9 : 1.25)); ctx.closePath(); ctx.fill();
-      });
-      ctx.restore();
+  } else if (main.kind !== 'raid') {
+    if (isTouchDevice && stick.active) {
+      panels.push({ x:stick.ax - 60, y:stick.ay - 60, w:120, h:120 });
     }
+    const distance = Math.hypot(dx, dy);
+    const visibility = triggerHeld ? 0 : drawSlipstream(px, py, Math.cos(angle), Math.sin(angle), distance, panels);
+    if (visibility < .5) drawCourseTip(px, py, angle, distance, panels, 1 - 2 * visibility, triggerHeld);
   }
 
-  // One compact instrument strip. Secondary reports never add another world arrow.
+  // Keep the action and its bearing after the briefing collapses. A detected
+  // raid keeps its own row even while firing or after the briefing expires.
   ctx.fillStyle = '#101e24'; rr(left, top, width, panel.h, 3);
-  ctx.fillStyle = color; ctx.fillRect(left, top, 3, 34);
-  ctx.textAlign = 'left'; ctx.font = '700 8px monospace';
-  ctx.fillText(main.arrived ? 'ON STATION' : 'ACTIVE COURSE', left + 12, top + 12);
+  ctx.fillStyle = color; ctx.fillRect(left, top, 3, headerH);
+  ctx.textAlign = 'left';
+  if (briefing) {
+    ctx.font = '700 8px monospace';
+    ctx.fillText(main.arrived ? 'ON STATION' : 'ACTIVE COURSE', left + 12, top + 12);
+  }
   ctx.font = '750 11px system-ui'; ctx.fillStyle = '#f2eee1';
-  ctx.fillText(main.label + (main.sub ? '  ·  ' + main.sub : ''), left + 12, top + 27, width - 34);
-  ctx.save(); ctx.translate(left + width - 15, top + 17); ctx.rotate(angle);
-  ctx.beginPath(); ctx.moveTo(-4, -4); ctx.lineTo(3, 0); ctx.lineTo(-4, 4);
+  ctx.fillText(line, left + 12, top + (briefing ? 27 : 16), width - 34);
+  ctx.save(); ctx.translate(left + width - 15, top + (briefing ? 17 : 12));
+  ctx.beginPath();
+  if (main.arrived) {
+    ctx.moveTo(0, -4); ctx.lineTo(4, 0); ctx.lineTo(0, 4); ctx.lineTo(-4, 0); ctx.closePath();
+  } else {
+    ctx.rotate(angle); ctx.moveTo(-4, -4); ctx.lineTo(3, 0); ctx.lineTo(-4, 4);
+  }
   ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore();
   if (secondary.length) {
-    ctx.fillStyle = '#39484a'; ctx.fillRect(left + 12, top + 34, width - 24, 1);
-    ctx.font = '650 8px system-ui';
+    ctx.fillStyle = '#39484a'; ctx.fillRect(left + 12, top + headerH, width - 24, 1);
+    ctx.font = '650 9px system-ui';
     const span = (width - 24) / secondary.length;
     secondary.forEach((report, i) => {
       ctx.fillStyle = ARROWS[report.kind];
-      ctx.fillText(report.label + (report.sub ? '  ·  ' + report.sub : ''), left + 12 + span * i, top + 46, span - 5);
+      ctx.fillText(reportLine(report), left + 12 + span * i, top + headerH + 12, span - 5);
     });
   }
   ctx.restore();

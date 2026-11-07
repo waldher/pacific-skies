@@ -112,6 +112,7 @@ export const CONFIG = {
     p51: { speedCruise: 315, speedBoost: 430, speedBrake: 180, turnRate: 3.3, fireCooldown: .1, heatPerShot: .075, gunOffsets: [-6, 6] },
   },
   navigation: { repairHull: 30, arrivalRadius: 500, departureRadius: 700 },
+  hudCourse: { briefSeconds: 2.5, slipstreamSpeed: 500 },
   // Speed trades for turn: braked aircraft turn tight, boosted ones turn wide.
   // Applies to every aircraft, so cutting inside a circle is a choice.
   flight: { turnScale: { brake: 1.3, boost: .75 } },
