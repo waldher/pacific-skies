@@ -21,8 +21,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: graphics-${{ github.sha }}
-          path: playtest/shots/graphics/
+          name: graphics-captures
+          path: playtest/shots/graphics
+          if-no-files-found: warn
   review:
     runs-on: ubuntu-latest
     steps:

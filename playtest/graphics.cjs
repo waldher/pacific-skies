@@ -3,6 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const http = require('node:http');
+const os = require('node:os');
 const crypto = require('node:crypto');
 const { execFileSync } = require('node:child_process');
 const { chromium } = require('playwright');
@@ -26,7 +27,7 @@ const hash = b => crypto.createHash('sha256').update(b).digest('hex');
   });
   let browser;
   await new Promise(r => server.listen(0, '127.0.0.1', r));
-  const report = { schema: 1, sourceHash: require('./graphics/source-hash.cjs')(ROOT), suiteHash: hash(fs.readFileSync(__filename)), commit: execFileSync('git', ['rev-parse', 'HEAD'], {cwd: ROOT}).toString().trim(), dirty: !!execFileSync('git', ['status', '--porcelain'], {cwd: ROOT}).toString().trim(), seed: 1942, samples, timing: 'SwiftShader completed GPU render cost; NOT phone FPS', results: [], errors: [] };
+  const report = { schema: 2, protocol: 'graphics-v2-fixed-42-step-capture', visualRenderSteps: 42, environment: { node: process.version, platform: process.platform, arch: process.arch, cpu: os.cpus()[0]?.model, logicalCpus: os.cpus().length, totalMemoryBytes: os.totalmem(), concurrentWorkloads: 'Operator must run matched pairs sequentially without competing browser/test workloads' }, sourceHash: require('./graphics/source-hash.cjs')(ROOT), suiteHash: hash(fs.readFileSync(__filename)), commit: execFileSync('git', ['rev-parse', 'HEAD'], {cwd: ROOT}).toString().trim(), dirty: !!execFileSync('git', ['status', '--porcelain'], {cwd: ROOT}).toString().trim(), seed: 1942, samples, timing: 'SwiftShader completed GPU render cost; NOT phone FPS', results: [], errors: [] };
   try {
     browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH, args: ['--enable-unsafe-swiftshader', '--use-angle=swiftshader'] });
     report.browser = browser.version();
@@ -59,24 +60,36 @@ const hash = b => crypto.createHash('sha256').update(b).digest('hex');
             g.particles.push({x:x+Math.cos(a)*r,y:y+Math.sin(a)*r,vx:0,vy:0,life:.5,max:1,size:3+i%9,kind:i%3?'smoke':'fire'});
           }
         }
-        // Compile and populate chunks before timing. Advance effects by fixed ticks.
+        // Fixed visual fixture matches the original 30-sample capture exactly.
+        // Timing sample count must never alter traffic positions in judged images.
         for(let i=0;i<12;i++) graphics.render(g,view,1/60,0,0);
-        const gl=graphics.renderer.getContext(), pixel=new Uint8Array(4), times=[];
-        for(let i=0;i<samples;i++) {
-          g.time=12+i/60;
-          const t=performance.now(); graphics.render(g,view,1/60,0,0);
-          gl.readPixels(0,0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,pixel);
-          times.push(performance.now()-t);
-        }
-        // Reset ocean and propeller phase; sample count is part of the frozen protocol.
+        for(let i=0;i<30;i++) { g.time=12+i/60; graphics.render(g,view,1/60,0,0); }
         g.time=12;
         for(const v of graphics.aircraft.values()) for(const p of v.propellers) p.rotation.z=0;
         api.render(0);
-        times.sort((a,b)=>a-b);
-        return {camera:g.cam, meanMs:times.reduce((a,b)=>a+b,0)/times.length,p50Ms:times[Math.floor(times.length*.5)],p95Ms:times[Math.ceil(times.length*.95)-1],maxMs:times.at(-1),...graphics.diagnostics,geometries:graphics.renderer.info.memory.geometries,textures:graphics.renderer.info.memory.textures};
+        const gl=graphics.renderer.getContext(), ext=gl.getExtension('WEBGL_debug_renderer_info');
+        const backend={ vendor:gl.getParameter(gl.VENDOR), renderer:gl.getParameter(gl.RENDERER), version:gl.getParameter(gl.VERSION), shadingLanguage:gl.getParameter(gl.SHADING_LANGUAGE_VERSION), unmaskedVendor:ext?gl.getParameter(ext.UNMASKED_VENDOR_WEBGL):null, unmaskedRenderer:ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):null };
+        return {camera:{...g.cam},backend,userAgent:navigator.userAgent,hardwareConcurrency:navigator.hardwareConcurrency,deviceMemoryGiB:navigator.deviceMemory??null,...graphics.diagnostics,geometries:graphics.renderer.info.memory.geometries,textures:graphics.renderer.info.memory.textures};
       }, {scene,samples});
       const file=`${profile.name}-${scene}.png`;
       await page.screenshot({path:path.join(out,file)});
+      // Capture first, then benchmark the same scene. Nothing can contaminate the
+      // judged image, and the explicit readback drains ALL pending warmup draws.
+      const timing = await page.evaluate(samples => {
+        const {game:g,graphics,view}=window.__game;
+        const gl=graphics.renderer.getContext(),pixel=new Uint8Array(4),rawMs=[];
+        gl.readPixels(0,0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,pixel);
+        for(let i=0;i<samples;i++) {
+          g.time=12+i/60;
+          const start=performance.now();
+          graphics.render(g,view,1/60,0,0);
+          gl.readPixels(0,0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,pixel);
+          rawMs.push(performance.now()-start);
+        }
+        const sorted=[...rawMs].sort((a,b)=>a-b);
+        return {rawMs,meanMs:rawMs.reduce((a,b)=>a+b,0)/rawMs.length,p50Ms:sorted[Math.floor(sorted.length*.5)],p95Ms:sorted[Math.ceil(sorted.length*.95)-1],maxMs:sorted.at(-1)};
+      }, samples);
+      Object.assign(result,timing);
       report.results.push({profile,scene,...result,screenshot:file,sha256:hash(fs.readFileSync(path.join(out,file)))});
       console.log(`${profile.name}/${scene}: p95 ${result.p95Ms.toFixed(1)} ms, ${result.drawCalls} draws`);
       await page.close();

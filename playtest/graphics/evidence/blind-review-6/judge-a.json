@@ -1,0 +1,338 @@
+{
+  "view-01.png": {
+    "scores": [
+      8.5,
+      9,
+      9,
+      9,
+      8
+    ],
+    "weighted_score": 8.7,
+    "evidence": "Cutaway rooms have convincing wall depth, warm/cool illumination, wooden and tiled floors, furniture and restrained tactical marks."
+  },
+  "view-02.png": {
+    "scores": [
+      6.5,
+      9,
+      9,
+      9.5,
+      8.5
+    ],
+    "weighted_score": 8.25,
+    "evidence": "Fog, autumn vegetation, muddy ruts and weathered buildings create rich physical depth; gray tanks blend with terrain at this scale."
+  },
+  "view-03.png": {
+    "scores": [
+      8.5,
+      7.5,
+      5,
+      6.5,
+      4
+    ],
+    "weighted_score": 6.625,
+    "evidence": "Small service structures and a dirt compound give the airfield purpose; lighter player edging separates it from roofs, but ground remains broad mottling and roofs are simple planes."
+  },
+  "view-04.png": {
+    "scores": [
+      7.5,
+      9,
+      9,
+      9,
+      8
+    ],
+    "weighted_score": 8.4,
+    "evidence": "Produce stalls, wood, stone and fabric show distinct material and shadow treatment; tactical paths remain visible among dense figures."
+  },
+  "view-05.png": {
+    "scores": [
+      7.5,
+      7,
+      5,
+      5.5,
+      4.5
+    ],
+    "weighted_score": 6.15,
+    "evidence": "Full-width tan carrier deck contrasts with water and long wake is visible; cream aircraft overlap the similarly pale deck, limiting local silhouette clarity."
+  },
+  "view-06.png": {
+    "scores": [
+      8.5,
+      8,
+      5.5,
+      7,
+      5
+    ],
+    "weighted_score": 7.05,
+    "evidence": "Sharp fenced service compound, small sheds, tracks, hangars and runway form a coherent airfield; shaded trees add depth, although grass and road material remain simplified."
+  },
+  "view-07.png": {
+    "scores": [
+      8.5,
+      7.5,
+      5,
+      6.5,
+      4
+    ],
+    "weighted_score": 6.625,
+    "evidence": "Blue-white player edge improves separation from mottled grass; muted varied tree crowns and a partial service compound enrich the coast, but all surfaces remain soft."
+  },
+  "view-08.png": {
+    "scores": [
+      8,
+      7,
+      5,
+      6,
+      4
+    ],
+    "weighted_score": 6.3,
+    "evidence": "Mottled olive ground, shore rocks and dark hangar sides provide variety; runway reads clearly but grass still looks like blurred broad texture."
+  },
+  "view-09.png": {
+    "scores": [
+      7.5,
+      7.5,
+      5.5,
+      6,
+      5.5
+    ],
+    "weighted_score": 6.575,
+    "evidence": "Sharp deck strips and clearer outer carrier shape sit against teal water with a long wake; pale aircraft still merge with pale deck at overlap points."
+  },
+  "view-10.png": {
+    "scores": [
+      8,
+      7,
+      5,
+      5.5,
+      4.5
+    ],
+    "weighted_score": 6.3,
+    "evidence": "Narrow striped deck and dark hull add structure with a coherent wake, but the dark outer band weakens ship-water separation."
+  },
+  "view-11.png": {
+    "scores": [
+      8,
+      7.5,
+      5.5,
+      6,
+      5.5
+    ],
+    "weighted_score": 6.725,
+    "evidence": "Plank-like deck strips, hull band, bow foam and long wake enrich the quiet ship; metallic response and hull-water contact remain modest."
+  },
+  "view-12.png": {
+    "scores": [
+      6.5,
+      7,
+      5.5,
+      6,
+      5.5
+    ],
+    "weighted_score": 6.175,
+    "evidence": "Detailed narrow deck, bow foam and long wake remain visible beneath a crowd; many identical cream wings and soft particles obscure the player."
+  },
+  "view-13.png": {
+    "scores": [
+      8,
+      7,
+      5,
+      6,
+      4
+    ],
+    "weighted_score": 6.3,
+    "evidence": "Mottled olive grass and faint field rows enrich coastline with grounded trees and stones; material definition stays soft."
+  },
+  "view-14.png": {
+    "scores": [
+      7.5,
+      7,
+      5.5,
+      6,
+      5.5
+    ],
+    "weighted_score": 6.475,
+    "evidence": "Sharp deck striping, dark hull edge and long wake give form; outer hull blends with water and aircraft crowd the near end."
+  },
+  "view-15.png": {
+    "scores": [
+      6.5,
+      8.5,
+      9,
+      9,
+      9
+    ],
+    "weighted_score": 8.15,
+    "evidence": "Layered explosion rays, sparks and bloom integrate with detailed machinery and atmospheric cliffs; the bright blast obscures nearby silhouettes."
+  },
+  "view-16.png": {
+    "scores": [
+      8.5,
+      7.5,
+      5.5,
+      6,
+      5.5
+    ],
+    "weighted_score": 6.875,
+    "evidence": "Broad pale deck makes quiet carrier silhouette clear against water; striped deck, raised bridge and wake add form, while surface lighting remains simple."
+  },
+  "view-17.png": {
+    "scores": [
+      8.5,
+      7,
+      5,
+      5.5,
+      4.5
+    ],
+    "weighted_score": 6.45,
+    "evidence": "Uncrowded full-width tan deck separates cleanly from teal water; bridge and long wake help volume, but soft strips and flat shading limit material depth."
+  },
+  "view-18.png": {
+    "scores": [
+      7.5,
+      7,
+      5,
+      5.5,
+      4.5
+    ],
+    "weighted_score": 6.15,
+    "evidence": "Deck strips and long wake add interest beneath clear aircraft; soft edges and dark outer hull reduce separation from water."
+  },
+  "view-19.png": {
+    "scores": [
+      8,
+      7.5,
+      5.5,
+      6.5,
+      5
+    ],
+    "weighted_score": 6.725,
+    "evidence": "Sharp hangars and runway sit on varied olive grass with rocks and sand transition; richer texture still lacks small-scale physical light response."
+  },
+  "view-20.png": {
+    "scores": [
+      6.5,
+      7,
+      5,
+      5.5,
+      5
+    ],
+    "weighted_score": 5.925,
+    "evidence": "Busy ship has varied deck strips and bow foam; lighter shadows help relative to dark duplicate shapes, but crowded planes and dots still hide the player."
+  },
+  "view-21.png": {
+    "scores": [
+      8.5,
+      8,
+      5.5,
+      6.5,
+      5
+    ],
+    "weighted_score": 6.975,
+    "evidence": "Player edging, more natural tree tones and partial service-compound detail strengthen hierarchy; coast remains sparse and fields are still rectangular patches."
+  },
+  "view-22.png": {
+    "scores": [
+      6.5,
+      7,
+      5,
+      5.5,
+      5
+    ],
+    "weighted_score": 5.925,
+    "evidence": "Broad tan deck is visible beneath a dense cream-aircraft swarm; wake and dots convey activity, but wing/deck colors are similar and player remains hard to isolate."
+  },
+  "view-23.png": {
+    "scores": [
+      6.5,
+      7.5,
+      5.5,
+      6,
+      5.5
+    ],
+    "weighted_score": 6.275,
+    "evidence": "Sharper broad deck and long wake make the ship coherent; overlapping pale planes and particle dots remain the dominant readability problem."
+  },
+  "view-24.png": {
+    "scores": [
+      6,
+      8.5,
+      9,
+      9,
+      8.5
+    ],
+    "weighted_score": 7.925,
+    "evidence": "Wet reflections, rain, smoke and bright tracer light integrate convincingly; small dark infantry remain hard to read at phone size."
+  },
+  "view-25.png": {
+    "scores": [
+      8,
+      7.5,
+      5.5,
+      6,
+      5
+    ],
+    "weighted_score": 6.65,
+    "evidence": "Sharper trees, stones, hangars and field rows complement olive ground; water flecks add activity but appear partly detached from underlying waves."
+  },
+  "_summary": {
+    "weights": [
+      0.3,
+      0.2,
+      0.2,
+      0.15,
+      0.15
+    ],
+    "mean_score": 6.827,
+    "strongest": [
+      {
+        "filename": "view-01.png",
+        "weighted_score": 8.7
+      },
+      {
+        "filename": "view-04.png",
+        "weighted_score": 8.4
+      },
+      {
+        "filename": "view-02.png",
+        "weighted_score": 8.25
+      }
+    ],
+    "weakest": [
+      {
+        "filename": "view-18.png",
+        "weighted_score": 6.15
+      },
+      {
+        "filename": "view-20.png",
+        "weighted_score": 5.925
+      },
+      {
+        "filename": "view-22.png",
+        "weighted_score": 5.925
+      }
+    ],
+    "all_images_viewed": true,
+    "visible_regressions": [
+      {
+        "images": [
+          "view-05.png",
+          "view-09.png",
+          "view-22.png",
+          "view-23.png"
+        ],
+        "comparison": "The full pale deck improves overall ship-water separation versus dark-border versions, but cream wings overlap a more similarly colored surface. This is a local contrast tradeoff; swarm player readability remains low."
+      }
+    ],
+    "top3_gaps": [
+      "Material depth is still modest: deck, hangar roofs, grass and sand lack physically varied surface illumination despite added detail.",
+      "The player remains difficult to isolate within the crowded carrier views; brighter edging helps coastal views much more than overlapping aircraft.",
+      "Ship wakes are coherent but schematic pale streaks; surrounding white flecks and soft spark dots are only loosely integrated."
+    ],
+    "recommendations": [
+      "Prioritize a player-only edge/contrast cue that remains distinct over both tan deck and cream aircraft, with nearby particles subdued.",
+      "Keep new service compounds; add restrained ground contact and surface-specific shading to roofs, aprons, dirt tracks and carrier deck rather than more global texture noise.",
+      "Give ship wake a hull-connected foam base, gradual width/opacity variation and coherent small streak direction; maintain strong outer hull-water contrast."
+    ],
+    "blinding_limitations": "Viewed all 25 PNGs and did not open mapping, source or outside files. Familiar reference/control compositions are recognizable and exact established score vectors were retained when visually unchanged. Comparative remarks refer to appearances, not assumed chronology."
+  }
+}

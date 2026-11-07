@@ -1,0 +1,348 @@
+{
+  "view-01.png": {
+    "scores": [
+      8,
+      7,
+      5,
+      6,
+      4
+    ],
+    "weighted_score": 6.3,
+    "evidence": "Mottled olive ground, shoreline boulders and dark hangar sides give more surface variety; runway remains readable but ground still resembles a broad blurred texture."
+  },
+  "view-02.png": {
+    "scores": [
+      8,
+      7,
+      5,
+      5.5,
+      4.5
+    ],
+    "weighted_score": 6.3,
+    "evidence": "Deck has alternating plank-like strips and darker surrounding hull, with a visible long wake; narrow tan deck separates less strongly from the sea than the pale full-width deck in view-12."
+  },
+  "view-03.png": {
+    "scores": [
+      6.5,
+      7,
+      5,
+      5.5,
+      5
+    ],
+    "weighted_score": 5.925,
+    "evidence": "Busy carrier scene shows varied deck strips and white bow foam; lighter aircraft shadows avoid some dark duplicates, though overlapping wings and spark dots still hide the player."
+  },
+  "view-04.png": {
+    "scores": [
+      8,
+      7.5,
+      5.5,
+      6,
+      5
+    ],
+    "weighted_score": 6.65,
+    "evidence": "Crisp roof frames, runway, shoreline rocks and tree shadows give physical structure; broad grass is still flat despite visible tracks."
+  },
+  "view-05.png": {
+    "scores": [
+      8,
+      7.5,
+      5.5,
+      6.5,
+      5
+    ],
+    "weighted_score": 6.725,
+    "evidence": "Crisp hangars and runway sit on visibly varied olive grass with boulders and sand transition; surface variation adds richness without convincing small-scale material lighting."
+  },
+  "view-06.png": {
+    "scores": [
+      7.5,
+      9,
+      9,
+      9,
+      8
+    ],
+    "weighted_score": 8.4,
+    "evidence": "Market stalls separate produce, stone, wood and fabric with coherent light and cast shadows; thin tactical paths remain visible through a dense crowd."
+  },
+  "view-07.png": {
+    "scores": [
+      6.5,
+      8.5,
+      9,
+      9,
+      9
+    ],
+    "weighted_score": 8.15,
+    "evidence": "Explosion contains layered rays, sparks and bloom against complex machinery and atmospheric cliffs; intense light and overlapping units reduce local silhouette clarity."
+  },
+  "view-08.png": {
+    "scores": [
+      8,
+      7,
+      5,
+      5.5,
+      4
+    ],
+    "weighted_score": 6.225,
+    "evidence": "Shoreline stones and deeper tree/building shadows give volume; fields remain plain patches and smooth sea/grass look schematic."
+  },
+  "view-09.png": {
+    "scores": [
+      8,
+      7,
+      5,
+      6,
+      4
+    ],
+    "weighted_score": 6.3,
+    "evidence": "Olive grass has mottled variation and field rows are visible; rocks and cast shadows enrich the coast, but scenery remains soft with limited material distinction."
+  },
+  "view-10.png": {
+    "scores": [
+      8,
+      7,
+      5,
+      5.5,
+      4
+    ],
+    "weighted_score": 6.225,
+    "evidence": "Boulders and tree shadows provide depth around a readable base; roof, grass and road surfaces have modest differentiation and soft edges."
+  },
+  "view-11.png": {
+    "scores": [
+      8,
+      7.5,
+      5.5,
+      6,
+      5
+    ],
+    "weighted_score": 6.65,
+    "evidence": "Sharper trees, stones and hangar edges combine with olive ground variation and subtle field rows; water flecks add activity but look detached from waves."
+  },
+  "view-12.png": {
+    "scores": [
+      8,
+      7,
+      5,
+      4.5,
+      3.5
+    ],
+    "weighted_score": 6,
+    "evidence": "Raised bridge and shadows help height in a clear quiet frame; deck is broad and flat, water is soft, and no developed trailing wake is visible."
+  },
+  "view-13.png": {
+    "scores": [
+      6.5,
+      7,
+      5.5,
+      6,
+      5.5
+    ],
+    "weighted_score": 6.175,
+    "evidence": "Planked deck, bright bow foam and trailing wake enrich the crowded carrier; sharper wings and lighter shadows help relative separation, but many identical planes still overlap."
+  },
+  "view-14.png": {
+    "scores": [
+      7.5,
+      7,
+      5.5,
+      6,
+      5.5
+    ],
+    "weighted_score": 6.475,
+    "evidence": "Sharper deck strips, hull edge and visible wake improve carrier form and effects; darkened outer hull blends into teal water and aircraft pile up at the near end."
+  },
+  "view-15.png": {
+    "scores": [
+      8.5,
+      9,
+      9,
+      9,
+      8
+    ],
+    "weighted_score": 8.7,
+    "evidence": "Cutaway rooms show consistent warm/cool illumination, wall depth, textured floors and furniture; tactical symbols stay distinguishable within rich environmental detail."
+  },
+  "view-16.png": {
+    "scores": [
+      7.5,
+      7,
+      5,
+      5.5,
+      4.5
+    ],
+    "weighted_score": 6.15,
+    "evidence": "Visible deck strips and long ship wake add material/effect interest; soft aircraft edges and muted hull-water contrast limit clarity."
+  },
+  "view-17.png": {
+    "scores": [
+      8,
+      7.5,
+      5.5,
+      5.5,
+      5
+    ],
+    "weighted_score": 6.575,
+    "evidence": "Strong tree/hangar shadows and shoreline boulders ground the coast; large fields remain smooth rectangular patches beside sparse water flecks."
+  },
+  "view-18.png": {
+    "scores": [
+      6,
+      7,
+      5.5,
+      5,
+      5
+    ],
+    "weighted_score": 5.8,
+    "evidence": "Directional plane shadows add depth but multiply dark silhouettes around the crowded carrier; cream wings, soft dots and whitecaps compete at the center."
+  },
+  "view-19.png": {
+    "scores": [
+      6.5,
+      9,
+      9,
+      9.5,
+      8.5
+    ],
+    "weighted_score": 8.25,
+    "evidence": "Layered fog, autumn trees, muddy ruts and weathered shed establish rich depth; smoke and fire integrate well but gray tanks blend with terrain."
+  },
+  "view-20.png": {
+    "scores": [
+      8,
+      7.5,
+      5.5,
+      5,
+      4.5
+    ],
+    "weighted_score": 6.425,
+    "evidence": "Crisp rails and raised carrier bridge give a clear shape and volume; flat deck materials and absent long wake limit finish."
+  },
+  "view-21.png": {
+    "scores": [
+      6,
+      7,
+      5,
+      4.5,
+      4.5
+    ],
+    "weighted_score": 5.55,
+    "evidence": "Soft planes and offset dark shadows create a dense swarm around flat deck; spark dots make the central player harder to isolate."
+  },
+  "view-22.png": {
+    "scores": [
+      7.5,
+      7,
+      5,
+      4.5,
+      3.5
+    ],
+    "weighted_score": 5.85,
+    "evidence": "Directional shadows establish aircraft height, with clear top HUD; soft rendering, flat deck and weak wake hold back depth and effects."
+  },
+  "view-23.png": {
+    "scores": [
+      7.5,
+      7,
+      5.5,
+      5,
+      4.5
+    ],
+    "weighted_score": 6.175,
+    "evidence": "Sharp aircraft and elevated bridge give more form, but heavy dark duplicate shadows and missing long wake reduce polish."
+  },
+  "view-24.png": {
+    "scores": [
+      6,
+      8.5,
+      9,
+      9,
+      8.5
+    ],
+    "weighted_score": 7.925,
+    "evidence": "Wet reflections, rain, smoke volume and orange tracer integrate convincingly; small dark troops are difficult to distinguish at phone scale."
+  },
+  "view-25.png": {
+    "scores": [
+      8,
+      7.5,
+      5.5,
+      6,
+      5.5
+    ],
+    "weighted_score": 6.725,
+    "evidence": "Uncluttered carrier shows plank-like strips, dark hull band, bow foam and long wake; realistic metallic response and convincing hull-water contact remain limited."
+  },
+  "_summary": {
+    "weights": [
+      0.3,
+      0.2,
+      0.2,
+      0.15,
+      0.15
+    ],
+    "mean_score": 6.665,
+    "strongest": [
+      {
+        "filename": "view-15.png",
+        "weighted_score": 8.7
+      },
+      {
+        "filename": "view-06.png",
+        "weighted_score": 8.4
+      },
+      {
+        "filename": "view-19.png",
+        "weighted_score": 8.25
+      }
+    ],
+    "weakest": [
+      {
+        "filename": "view-22.png",
+        "weighted_score": 5.85
+      },
+      {
+        "filename": "view-18.png",
+        "weighted_score": 5.8
+      },
+      {
+        "filename": "view-21.png",
+        "weighted_score": 5.55
+      }
+    ],
+    "all_images_viewed": true,
+    "top3_gaps": [
+      "Material variation is improving but surfaces still lack convincing physical light response and contact depth.",
+      "Crowded carrier scenarios retain severe overlap of similar cream aircraft and soft effects around the player.",
+      "Sea highlights, bright bow foam and narrow pale wake need coherent contact with hull and wave direction."
+    ],
+    "recommendations": [
+      "Prioritize player separation in crowded frames: preserve a clear silhouette with restrained contrasting outline or local contrast, reduce nearby particle opacity, and keep aircraft shadows subordinate to aircraft.",
+      "Add scale-appropriate material detail and directional response to hangar roofs, carrier hull and runway: subtle panel seams, edge highlights, contact occlusion and localized wear rather than more broad color noise.",
+      "Build the hull-water contact as one integrated effect: thin edge foam following the hull, a widening translucent wake and a few directional foam streaks matching wave scale; tone down isolated white fragments.",
+      "Make land feel specific through a small amount of placed detail: concrete aprons around hangars, dirt transitions at roads, irregular grass wear near structures, and varied shoreline erosion. Preserve the clear runway markings."
+    ],
+    "visible_regressions": [
+      {
+        "images": [
+          "view-02.png",
+          "view-14.png",
+          "view-16.png",
+          "view-25.png"
+        ],
+        "comparison": "Compared with pale full-width carrier decks in views 12, 20, 22 and 23, the dark outer hull band lowers carrier-water silhouette contrast. Added material structure is useful, but the edge should remain clear."
+      },
+      {
+        "images": [
+          "view-01.png",
+          "view-05.png",
+          "view-09.png",
+          "view-11.png"
+        ],
+        "comparison": "New-looking mottled olive ground is richer than smooth green ground but adds broad visual noise; this is a tradeoff, not a major readability regression, and does not yet read as detailed grass."
+      }
+    ],
+    "blinding_limitations": "Every image inspected through view_image. No keys, source, metadata or outside files opened. Repeated controls and reference compositions are visually recognizable from prior packets; their established score vectors are preserved. Comparisons are based on visible appearance, not inferred iteration names."
+  }
+}

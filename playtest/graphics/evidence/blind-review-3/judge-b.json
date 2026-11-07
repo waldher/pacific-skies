@@ -1,0 +1,279 @@
+{
+  "reviewer": "B",
+  "packet": "judge-packet-3",
+  "coverage": "All 25 PNG files inspected individually with view_image; no other directory, source, mapping, or reviewer inspected.",
+  "criteria": [
+    "readability",
+    "coherence",
+    "lighting/depth",
+    "environment/material richness",
+    "effects polish"
+  ],
+  "weights": [
+    0.3,
+    0.2,
+    0.2,
+    0.15,
+    0.15
+  ],
+  "recognition": "View 01 resembles StarCraft II; views 05 and 17 resemble Company of Heroes. These are tentative visual recognitions, not verified identities. Views 09 and 14 look like a tactical planning game, but I cannot confidently identify it. Scores use visible image qualities only.",
+  "images": {
+    "view-01.png": {
+      "scores": [
+        7,
+        9,
+        9,
+        9,
+        9
+      ],
+      "evidence": "Large luminous impact, sparks, and hot beam cores create a strong focal point; ships and rocky alien terrain have layered surface detail and atmospheric separation. Dense dark units merge together and the explosion obscures targets."
+    },
+    "view-02.png": {
+      "scores": [
+        6,
+        6,
+        4,
+        4,
+        4
+      ],
+      "evidence": "Large action buttons and a distinct central carrier are legible. Objective text crosses the deck, the player overlaps its stern, and the flat beige deck plus broad soft water pattern offer little material definition; wake and shadows are basic."
+    },
+    "view-03.png": {
+      "scores": [
+        6,
+        7,
+        5,
+        5,
+        5
+      ],
+      "evidence": "Top objective strips separate text from combat, dark hull edges and deck equipment improve carrier structure, and sea streaks add direction. Many near-identical aircraft crowd the stern; diffuse dot particles and overlapping silhouettes weaken action readability."
+    },
+    "view-04.png": {
+      "scores": [
+        8,
+        7,
+        5,
+        5,
+        5
+      ],
+      "evidence": "Separated objective strips, sparse scene, and high-contrast carrier outline are easy to parse. Deck fittings add form, but broad empty water, thin geometry, weak material response, and a simple twin wake limit richness."
+    },
+    "view-05.png": {
+      "scores": [
+        6,
+        9,
+        9,
+        10,
+        9
+      ],
+      "evidence": "Wet road reflections, rubble, directional smoke, rain, fire, and illuminated projectile trails convincingly share a stormy battlefield. Dark tanks and tiny infantry merge into textured ground, reducing phone-scale subject identification."
+    },
+    "view-06.png": {
+      "scores": [
+        7,
+        7,
+        5,
+        5,
+        5
+      ],
+      "evidence": "Darkened carrier hull, raised-looking island and deck fixtures, teal wave pattern, and anchored objective strips form a coherent scene. Planes overlap the carrier and player marker; thin wing detail and modest shadows give limited depth."
+    },
+    "view-07.png": {
+      "scores": [
+        7,
+        7,
+        6,
+        6,
+        6
+      ],
+      "evidence": "Sharper aircraft and deck edges, restrained sea highlights, and carrier side shading improve surface definition. White water fragments can compete with small aircraft; overall scene still lacks varied lighting and convincing interaction around the hull."
+    },
+    "view-08.png": {
+      "scores": [
+        6,
+        6,
+        4,
+        5,
+        5
+      ],
+      "evidence": "Fields, runway, beach, and faceted trees distinguish land use, and sea flecks break up the ocean. Labels crowd the player, mottled land is visually noisy, buildings are blank squares, and shoreline depth is nearly absent."
+    },
+    "view-09.png": {
+      "scores": [
+        7,
+        9,
+        9,
+        9,
+        8
+      ],
+      "evidence": "Detailed market stalls, produce, carts, warm directional lighting, and grounded shadows create a readable physical location. Colored planning paths remain distinct; tiny people and multiple small icons are crowded at this scale."
+    },
+    "view-10.png": {
+      "scores": [
+        6,
+        6,
+        5,
+        5,
+        5
+      ],
+      "evidence": "Aircraft silhouettes are crisp and white water accents add detail to the blue sea. Objective text still runs across the pale carrier, sea flecks compete with wings, and the uniform beige carrier surface lacks convincing structure."
+    },
+    "view-11.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        6,
+        6
+      ],
+      "evidence": "Isolated carrier, fixed objective bars, sharp runway markings, dark hull rim, and muted wave flecks improve legibility and finish. The surrounding sea remains repetitive, the wake very simple, and the player silhouette overlaps the stern."
+    },
+    "view-12.png": {
+      "scores": [
+        6,
+        6,
+        4,
+        5,
+        5
+      ],
+      "evidence": "Runway markings and road establish a clear airfield layout; polygonal trees and fields provide context. Blank building blocks, noisy grass texture, hard beach edge, and objective text touching the plane make the scene feel schematic."
+    },
+    "view-13.png": {
+      "scores": [
+        7,
+        6,
+        5,
+        4,
+        5
+      ],
+      "evidence": "Sparse layout and strong deck silhouette keep the main object readable, with crisp markings and scattered whitecaps. Floating objectives cross the deck, the player fuses with the stern, and the carrier remains a mostly featureless beige slab."
+    },
+    "view-14.png": {
+      "scores": [
+        8,
+        9,
+        9,
+        9,
+        8
+      ],
+      "evidence": "Thick walls, furniture, floor materials, room-specific warm and cool light, and soft occlusion clearly articulate the apartment. Thin planning paths and tiny figures need concentration; grid exterior and some small icons remain visually busy."
+    },
+    "view-15.png": {
+      "scores": [
+        8,
+        7,
+        5,
+        5,
+        5
+      ],
+      "evidence": "Top objective strips free the player area, simple green terrain makes the aircraft easy to spot, and buildings have roof panels and outlines. Broad featureless grass, barely differentiated fields, and a hard uniform beach leave environmental richness modest."
+    },
+    "view-16.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        6,
+        6
+      ],
+      "evidence": "Clean objective placement, crisp runway structures, tree shadows, and subtle ocean flecks give a more finished readable coast. Large plain lawn and uniformly straight sand edge remain simplistic, and plane-ground separation is modest."
+    },
+    "view-17.png": {
+      "scores": [
+        6,
+        9,
+        9,
+        10,
+        9
+      ],
+      "evidence": "Fog recedes through trees and ruins, terrain varies with tracks and debris, and muzzle flashes and smoke sit convincingly in depth. Camouflaged units and tiny infantry blend with the detailed landscape at phone size."
+    },
+    "view-18.png": {
+      "scores": [
+        8,
+        7,
+        5,
+        6,
+        5
+      ],
+      "evidence": "Clearly marked runway, roof panels, shaded trees, and a top objective bar improve airfield hierarchy. Player overlaps building edges, grass is repetitive and flat, and coastline lacks surf or depth changes."
+    },
+    "view-19.png": {
+      "scores": [
+        6,
+        7,
+        6,
+        6,
+        6
+      ],
+      "evidence": "Crisp planes, deck fittings, dark hull outline, and subdued water highlights bring material separation to a busy scene. The aircraft swarm still merges at the stern and along the deck; similar dot-like action particles lack clear impact hierarchy."
+    },
+    "view-20.png": {
+      "scores": [
+        5,
+        6,
+        4,
+        4,
+        4
+      ],
+      "evidence": "Action buttons remain readable and red wing tips distinguish planes from sea. Dense aircraft and floating objective text overlap the carrier, broad blurred water and beige deck lack depth, and soft particles do little to explain the action."
+    },
+    "view-21.png": {
+      "scores": [
+        6,
+        6,
+        4,
+        4,
+        4
+      ],
+      "evidence": "Large runway arrow and road establish location, with faceted trees providing scale. The runway and blank building pads appear flat, grass texture is noisy, and objective text intersects the player's position."
+    },
+    "view-22.png": {
+      "scores": [
+        6,
+        6,
+        4,
+        5,
+        4
+      ],
+      "evidence": "Field boundaries, trees, runway, and beach provide distinct environmental zones. Player labels compete with the plane, the grass mottling is coarse, and broad blue ocean plus flat building pads give limited depth or polish."
+    },
+    "view-23.png": {
+      "scores": [
+        7,
+        6,
+        4,
+        4,
+        4
+      ],
+      "evidence": "Simple central carrier and large HUD controls are easy to find. Objective text overlays the runway, player and stern silhouettes merge, and the flat deck and broad soft ocean pattern leave few convincing material cues."
+    },
+    "view-24.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        6,
+        6
+      ],
+      "evidence": "Sharper runway edging and roof frames, tree shadows, muted whitecaps, and separated objective bar create a clean readable layout. Plain grass and uniform beach still feel procedural; plane overlaps the hangar and contact effects are minimal."
+    },
+    "view-25.png": {
+      "scores": [
+        5,
+        6,
+        5,
+        5,
+        5
+      ],
+      "evidence": "Crisp aircraft edges and whitecap accents add definition, while red markings preserve some unit distinction. Aircraft, bright flecks, diffuse particles, and objective labels crowd the carrier; the flat pale deck lacks structure and the focal player is difficult to isolate."
+    }
+  },
+  "general_findings": [
+    "Readable UI and visually rich environments are separate strengths: detailed battlefield scenes lose unit legibility at this size, while sparse aviation scenes keep controls clear but lack material and lighting complexity.",
+    "Top objective bars consistently preserve the central play area better than floating labels across the carrier or aircraft.",
+    "Sharper carrier geometry, visible deck fittings, roof panels, coherent shadows and restrained ocean highlights improve finish; foam alone does not solve flat lighting or empty terrain.",
+    "Crowded aircraft scenes need stronger player separation and effect hierarchy. Many repeated planes and similar soft dots obscure the stern and central action.",
+    "Highest priorities: isolate player silhouette, retain separated objectives, add coherent hull/shore interaction and contact shadows, diversify ground/building materials without coarse noise, and consolidate action particles into identifiable impacts."
+  ]
+}

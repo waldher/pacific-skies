@@ -11,6 +11,7 @@ import { enemyObserved } from './intelligence.js';
 import { CONFIG } from './config.js';
 import { loadAircraft, createAircraft, updateAircraft, setShadowMode } from './aircraft.js';
 import { createWorld } from './world.js';
+import { preloadTerrainMaterial } from './land.js';
 import { createNavalScene } from './naval-scene.js';
 import { createEffects } from './effects.js';
 import { renderAircraftPreviews } from './aircraft-previews.js';
@@ -38,6 +39,7 @@ export async function createRenderer(canvas) {
   sun.shadow.camera.near = 1;
   sun.shadow.camera.far = 2200;
   scene.add(sun, sun.target);
+  await preloadTerrainMaterial();
   const world = createWorld(scene);
   const effects = createEffects(scene, renderer);
   const naval = createNavalScene(scene);
@@ -154,7 +156,7 @@ export async function createRenderer(canvas) {
         const player = entity === game.player;
         if (!aircraft.has(entity)) {
           const kind = entity.aircraft || (player || entity.team === 'us' ? 'us' : 'jp');
-          const visual = createAircraft(templates[kind] || templates.us, entity, level().shadows);
+          const visual = createAircraft(templates[kind] || templates.us, entity, level().shadows, player);
           visual.aircraftType = kind;
           aircraft.set(entity, visual); scene.add(visual.root, visual.shadow);
         }

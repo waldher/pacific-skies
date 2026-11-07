@@ -152,7 +152,9 @@ export function hudArrows(game) {
 }
 function drawArrows() {
   const { W, H } = view, [px, py] = w2s(game.player.x, game.player.y);
-  const arrows = hudArrows(game), headings = [];
+  const arrows = hudArrows(game), headings = [], labels = [];
+  // Navigation text stays in a stable margin panel, not across the aircraft.
+  // The matching colored chevron still points from the player toward the target.
   arrows.forEach((arrow, i) => {
     const [sx, sy] = w2s(arrow.x, arrow.y);
     ctx.save(); ctx.strokeStyle = ctx.fillStyle = ARROWS[arrow.kind]; ctx.lineWidth = 1.5;
@@ -160,8 +162,7 @@ function drawArrows() {
       // A ring at the objective; it fills clockwise as a capture progresses.
       ctx.globalAlpha = .55; ctx.beginPath(); ctx.arc(sx, sy, 18, 0, TAU); ctx.stroke();
       if (arrow.progress > 0) { ctx.globalAlpha = .95; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.arc(sx, sy, 18, -Math.PI / 2, -Math.PI / 2 + TAU * arrow.progress); ctx.stroke(); }
-      ctx.globalAlpha = .9; ctx.font = '650 9px system-ui'; ctx.textAlign = 'center'; ctx.fillText(arrow.label, sx, sy + 32);
-      if (arrow.sub) { ctx.font = '600 8px system-ui'; ctx.fillText(arrow.sub, sx, sy + 42); }
+      labels.push({arrow,angle:Math.atan2(sy-py,sx-px)});
       ctx.restore(); return;
     }
     // On-screen targets need no arrow; the raid's attackers already carry labels.
@@ -175,15 +176,26 @@ function drawArrows() {
     ctx.beginPath(); ctx.moveTo(-5, -5); ctx.lineTo(3, 0); ctx.lineTo(-5, 5);
     if (arrow.kind === 'raid') { ctx.closePath(); ctx.fill(); } else ctx.stroke();
     ctx.rotate(-a);
-    if (arrow.label) {
-      // A stacked arrow labels above its chevron, the one beneath it below.
-      const above = stacked % 2 === 1, ly = above ? (arrow.sub ? -20 : -10) : 18;
-      ctx.font = '650 9px system-ui'; ctx.textAlign = 'center';
-      ctx.fillText(arrow.label, 0, ly);
-      if (arrow.sub) { ctx.font = '600 8px system-ui'; ctx.fillText(arrow.sub, 0, ly + 10); }
-    }
+    if (arrow.label) labels.push({arrow,angle:a});
     ctx.restore();
   });
+  if(labels.length) {
+    const landscape=W>=600, width=landscape?Math.min(310,W-370):Math.min(310,W-28);
+    const left=landscape?(W-width)/2:14, top=landscape?12:106;
+    ctx.save();
+    labels.forEach(({arrow,angle},i)=>{
+      const y=top+i*25;
+      ctx.globalAlpha=1;ctx.fillStyle='rgba(8,27,39,.86)';rr(left,y,width,22,6);
+      ctx.strokeStyle=ctx.fillStyle=ARROWS[arrow.kind];ctx.lineWidth=1.5;
+      ctx.save();ctx.translate(left+12,y+11);ctx.rotate(angle);
+      ctx.beginPath();ctx.moveTo(-4,-4);ctx.lineTo(2,0);ctx.lineTo(-4,4);ctx.stroke();ctx.restore();
+      ctx.font='650 9px system-ui';ctx.textAlign='left';
+      const detail=arrow.sub?' · '+arrow.sub:'';
+      // Canvas maxWidth keeps long translated/objective names inside the panel.
+      ctx.fillText(arrow.label+detail,left+24,y+14,width-34);
+    });
+    ctx.restore();
+  }
 }
 
 const el = id => document.getElementById(id);

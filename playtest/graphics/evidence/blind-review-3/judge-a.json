@@ -1,0 +1,297 @@
+{
+  "view-01.png": {
+    "scores": [
+      6.5,
+      8.5,
+      9,
+      9,
+      9
+    ],
+    "evidence": "Bright radial explosion has layered sparks and colored bloom; intricate mechanical surfaces and atmospheric cliffs give depth, though crowded silhouettes near blast lose separation."
+  },
+  "view-02.png": {
+    "scores": [
+      7,
+      6,
+      3.5,
+      3,
+      3.5
+    ],
+    "evidence": "Buttons and aircraft silhouettes are clear, but flat beige carrier lacks structure, sea is broad blurry blue cells, and central objective text overlaps deck."
+  },
+  "view-03.png": {
+    "scores": [
+      6.5,
+      7,
+      4.5,
+      4.5,
+      4.5
+    ],
+    "evidence": "Top objective bars separate text from play; deck structures and teal wave streaks add detail, but crowded identical aircraft and soft dot particles obscure the player."
+  },
+  "view-04.png": {
+    "scores": [
+      8,
+      7,
+      4.5,
+      4.5,
+      4
+    ],
+    "evidence": "Uncluttered deck and top objective bars read clearly; tower and edge rails add form while sea, deck and wake remain softly rendered and weakly lit."
+  },
+  "view-05.png": {
+    "scores": [
+      6,
+      8.5,
+      9,
+      9,
+      8.5
+    ],
+    "evidence": "Wet ground reflections, smoke columns, rain and orange projectile lighting create convincing atmosphere; dark small troops and gray vehicles are difficult to separate at this size."
+  },
+  "view-06.png": {
+    "scores": [
+      7.5,
+      7,
+      4.5,
+      4.5,
+      4
+    ],
+    "evidence": "Aircraft have clear cream/red silhouettes and dark shadows; carrier structures help depth, while repeating watery streaks and flat material shading limit realism."
+  },
+  "view-07.png": {
+    "scores": [
+      7.5,
+      7,
+      5,
+      5,
+      5
+    ],
+    "evidence": "Sharper deck rail edges and aircraft markings combine with scattered sea highlights; white flecks give surface activity but look detached from broad waves."
+  },
+  "view-08.png": {
+    "scores": [
+      7,
+      6,
+      4,
+      4,
+      4
+    ],
+    "evidence": "Fields and runway are easy to identify, but repetitive checker grass and simple faceted trees look schematic; floating labels crowd the plane and shoreline."
+  },
+  "view-09.png": {
+    "scores": [
+      7.5,
+      9,
+      9,
+      9,
+      8
+    ],
+    "evidence": "Market stalls have distinct produce, wood, stone and fabric with consistent cast shadows; thin colored route lines remain visible despite densely packed figures."
+  },
+  "view-10.png": {
+    "scores": [
+      7,
+      6,
+      4,
+      3.5,
+      4.5
+    ],
+    "evidence": "Cream aircraft and outlined controls are crisp; white water flecks add variation, but featureless beige carrier and overlapping yellow label reduce environmental finish."
+  },
+  "view-11.png": {
+    "scores": [
+      8,
+      7.5,
+      5,
+      5,
+      5
+    ],
+    "evidence": "Deck stripes, rails and superstructure read clearly with restrained top HUD; sparse foam flecks and wake add interest, though materials stay flat."
+  },
+  "view-12.png": {
+    "scores": [
+      7,
+      6,
+      4,
+      4,
+      4
+    ],
+    "evidence": "Runway markings and coastline are readable; grass pattern is noisy and buildings are plain pale squares, with objective label crossing the central aircraft."
+  },
+  "view-13.png": {
+    "scores": [
+      7.5,
+      6,
+      4,
+      3.5,
+      4.5
+    ],
+    "evidence": "Quiet carrier composition and clear controls aid scanning; broad tan deck is nearly unmodeled and bright floating sea fragments feel more decorative than physical."
+  },
+  "view-14.png": {
+    "scores": [
+      8.5,
+      9,
+      9,
+      9,
+      8
+    ],
+    "evidence": "Cutaway rooms show coherent warm/cool light, wall depth, wood grain, tiled baths and furniture; small tactical marks stay legible against varied surfaces."
+  },
+  "view-15.png": {
+    "scores": [
+      8,
+      7,
+      4.5,
+      4.5,
+      4
+    ],
+    "evidence": "Objective bars are legible; runway has hangar forms and perimeter detail, trees have soft grounding shadows, but fields and grass are blurred and nearly uniform."
+  },
+  "view-16.png": {
+    "scores": [
+      8,
+      7.5,
+      5,
+      5,
+      5
+    ],
+    "evidence": "Clean objective bars and sharpened runway details improve hierarchy; rounded tree shadows ground objects while sparse sea glints remain shallow and repetitive."
+  },
+  "view-17.png": {
+    "scores": [
+      6.5,
+      9,
+      9,
+      9.5,
+      8.5
+    ],
+    "evidence": "Layered fog, varied autumn vegetation, road ruts and weathered shed create rich depth; flashes and smoke integrate well, though gray tanks blend into terrain."
+  },
+  "view-18.png": {
+    "scores": [
+      8,
+      7,
+      4.5,
+      4.5,
+      4
+    ],
+    "evidence": "Runway, three hangars and roadway form a coherent base; subtle tree shadows help height, but broad grass and roof planes show little material variation."
+  },
+  "view-19.png": {
+    "scores": [
+      6.5,
+      7,
+      5,
+      5,
+      5
+    ],
+    "evidence": "Sharper aircraft outlines and carrier detail survive crowding; whitecaps and sparks enrich the surface, but stacked planes and translucent dots obscure center action."
+  },
+  "view-20.png": {
+    "scores": [
+      6,
+      5.5,
+      3.5,
+      3,
+      4
+    ],
+    "evidence": "Dense ring of repeated aircraft hides carrier edges and central player; yellow objective overlaps action, with soft dots and flat ocean providing little depth."
+  },
+  "view-21.png": {
+    "scores": [
+      7,
+      6,
+      3.5,
+      3.5,
+      3.5
+    ],
+    "evidence": "Runway is clearly shaped but three buildings are blank squares; coarse grass and minimal shadows flatten the land, and yellow objective overlays the aircraft."
+  },
+  "view-22.png": {
+    "scores": [
+      7,
+      6,
+      3.5,
+      3.5,
+      3.5
+    ],
+    "evidence": "Field rectangles and faceted trees provide landmarks; broad blue water and patterned grass are flat, and central labels compete with small plane."
+  },
+  "view-23.png": {
+    "scores": [
+      7.5,
+      6,
+      3.5,
+      3,
+      3.5
+    ],
+    "evidence": "Single carrier and large buttons read easily; beige deck is almost featureless, water is blurred cellular color, and wake is a simple pale streak."
+  },
+  "view-24.png": {
+    "scores": [
+      8,
+      7.5,
+      5,
+      5,
+      5
+    ],
+    "evidence": "Crisp hangar frames, runway edging and markings support clear geography; tree shading and scattered sea glints add depth without detailed material response."
+  },
+  "view-25.png": {
+    "scores": [
+      6,
+      5.5,
+      4,
+      3.5,
+      4.5
+    ],
+    "evidence": "Sharper aircraft and white water flecks add surface activity, but dense aircraft swarm, soft sparks and overlaid objective text obscure the carrier center."
+  },
+  "_summary": {
+    "weights": [
+      0.3,
+      0.2,
+      0.2,
+      0.15,
+      0.15
+    ],
+    "mean_score": 6.122999999999999,
+    "strongest": [
+      {
+        "filename": "view-14.png",
+        "weighted_score": 8.7
+      },
+      {
+        "filename": "view-09.png",
+        "weighted_score": 8.399999999999999
+      },
+      {
+        "filename": "view-17.png",
+        "weighted_score": 8.25
+      }
+    ],
+    "weakest": [
+      {
+        "filename": "view-02.png",
+        "weighted_score": 4.9750000000000005
+      },
+      {
+        "filename": "view-25.png",
+        "weighted_score": 4.9
+      },
+      {
+        "filename": "view-20.png",
+        "weighted_score": 4.6499999999999995
+      }
+    ],
+    "top3_gaps": [
+      "Most aircraft/coastal frames have flat large surfaces: stronger directional illumination, contact shadow and distinguishable deck/roof/soil material response are needed.",
+      "Crowded aircraft and center-position objective labels compete with the player; maintain silhouette separation and text hierarchy in busy scenes.",
+      "Ocean flecks, wakes and spark dots need more coherent scale, shape and integration; currently many read as detached decoration."
+    ],
+    "blinding_limitations": "No outside files or mapping inspected. Several images visibly share the same aircraft/carrier game and HUD, so family grouping is apparent. Five images depict much more detailed distinct tactical or battlefield scenes; visual style makes cross-family identity obvious, but no exact source titles or iteration mapping used.",
+    "all_images_viewed": true
+  }
+}

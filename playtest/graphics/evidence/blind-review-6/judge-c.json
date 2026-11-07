@@ -1,0 +1,331 @@
+{
+  "meta": {
+    "judge": "C",
+    "packet": 6,
+    "categories": [
+      "readability",
+      "coherence",
+      "lighting_depth",
+      "environment_material_richness",
+      "effects_polish"
+    ],
+    "weights": [
+      0.3,
+      0.2,
+      0.2,
+      0.15,
+      0.15
+    ],
+    "inspection": "All 25 PNGs individually opened with view_image; only supplied image paths inspected. No keys, game source or other judges read. Phone-like displayed landscape scale; static craft only.",
+    "anchors": "Recognizable unchanged images retain exact prior five-category scores; no assumed iteration order.",
+    "blinding_limitations": "Visual families and repeated controls remain recognizable. Sci-fi reference resembles StarCraft; battlefield references resemble Company of Heroes. Tactical interior/market title uncertain. These associations are unverified and do not determine scoring."
+  },
+  "view-01.png": {
+    "scores": [
+      8,
+      9,
+      9,
+      9,
+      8
+    ],
+    "weighted_score": 8.55,
+    "evidence": "Warm/cool room lighting, thick walls and contrasting floor materials create convincing interior volume; restrained rings and cones preserve layout.",
+    "visible_regressions_or_limitations": "Tiny characters/labels remain demanding at phone size. Recognizable unchanged reference; exact anchor retained."
+  },
+  "view-02.png": {
+    "scores": [
+      6,
+      9,
+      9,
+      9.5,
+      8.5
+    ],
+    "weighted_score": 8.1,
+    "evidence": "Fog layers, autumn trees, track marks and damaged buildings produce atmospheric material depth.",
+    "visible_regressions_or_limitations": "Small units merge with textured ground and haze. Unchanged reference anchor."
+  },
+  "view-03.png": {
+    "scores": [
+      8,
+      8,
+      7.5,
+      8,
+      5.5
+    ],
+    "weighted_score": 7.525,
+    "evidence": "Darker subdued trees, service compound/vehicle bays, dirt tracks and hangar walls give the airfield purposeful terrain structure. Pale player outline separates its wings better from blue roof.",
+    "visible_regressions_or_limitations": "Compound vehicles and fences remain tiny; dark tree contacts are heavy and broad grass mottling still flat. Player is improved but still overlaps roof detail."
+  },
+  "view-04.png": {
+    "scores": [
+      7,
+      9,
+      8.5,
+      9,
+      8
+    ],
+    "weighted_score": 8.15,
+    "evidence": "Warm worn market paving, produce stalls and props give varied surfaces; colored planned paths are traceable.",
+    "visible_regressions_or_limitations": "Small brown figures merge into environment. Unchanged reference anchor."
+  },
+  "view-05.png": {
+    "scores": [
+      8,
+      8,
+      7,
+      7,
+      6
+    ],
+    "weighted_score": 7.35,
+    "evidence": "Continuous tan deck and narrow shaded rim remove the large dark forward slab; island shadow adds height. Pale player edge and long wake aid location and direction.",
+    "visible_regressions_or_limitations": "Pale enemy planes merge with tan deck markings. Hull still lacks a clearly lit side plane, and wake remains paired soft bands."
+  },
+  "view-06.png": {
+    "scores": [
+      8,
+      8,
+      8,
+      8.5,
+      6
+    ],
+    "weighted_score": 7.775,
+    "evidence": "Crisp roof walls, vehicle compound, dirt lanes, rocks and shaded muted trees create a richer organized airbase. Player outline is clearer against roof.",
+    "visible_regressions_or_limitations": "Tiny service objects read mostly as blocks; player/roof overlap remains and darkest tree shadows look stamped. Shoreline remains a smooth tan band."
+  },
+  "view-07.png": {
+    "scores": [
+      8.5,
+      8,
+      7,
+      7,
+      5.5
+    ],
+    "weighted_score": 7.425,
+    "evidence": "Pale outline makes blue plane distinct from textured grass and nearby rock. Muted trees fit olive terrain; a cropped compound adds land use.",
+    "visible_regressions_or_limitations": "No substantive new material-depth cue across the central grass; repeated dark tree shadows remain heavy and broad shore stays simple."
+  },
+  "view-08.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7,
+      7.5,
+      5.5
+    ],
+    "weighted_score": 7.1,
+    "evidence": "Olive ground variation, shore rocks, tree contacts and raised roof walls give modest material richness.",
+    "visible_regressions_or_limitations": "Aircraft still merges with blue roof; mottling adds detail without focal contrast. Recognizable unchanged prior image; exact anchor retained."
+  },
+  "view-09.png": {
+    "scores": [
+      8,
+      8,
+      7.5,
+      7.5,
+      6.5
+    ],
+    "weighted_score": 7.6,
+    "evidence": "Crisp tan deck panels now cover the forward area; narrow dark hull rim and raised island form a coherent stylized carrier. Player outline and wake are legible.",
+    "visible_regressions_or_limitations": "Light aircraft on light runway remain crowded. Deck looks broadly level and uniformly lit; wake still lacks widening turbulence."
+  },
+  "view-10.png": {
+    "scores": [
+      8,
+      7.5,
+      7,
+      7,
+      6
+    ],
+    "weighted_score": 7.25,
+    "evidence": "Panel variation, dark rim, island and long wake establish carrier materials in a sparse scene.",
+    "visible_regressions_or_limitations": "Large dark forward hull reads as a flat block; player overlaps stern detail. Unchanged prior control; exact anchor retained."
+  },
+  "view-11.png": {
+    "scores": [
+      8,
+      7.5,
+      7.5,
+      7.5,
+      6.5
+    ],
+    "weighted_score": 7.5,
+    "evidence": "Crisp deck panels, hull openings, raised island and trailing wake provide material definition.",
+    "visible_regressions_or_limitations": "Broad dark forward surface is unmodulated; aircraft overlaps stern marks and wake is mechanically paired. Unchanged prior control."
+  },
+  "view-12.png": {
+    "scores": [
+      7,
+      7.5,
+      7.5,
+      7.5,
+      7
+    ],
+    "weighted_score": 7.275,
+    "evidence": "Crisp panel deck, dark rim and trailing wake deepen dense carrier fight; pale planes separate from teal sea.",
+    "visible_regressions_or_limitations": "Smoke/spark dots repeat and stern remains crowded by texture and aircraft. Unchanged prior control; exact anchor retained."
+  },
+  "view-13.png": {
+    "scores": [
+      8,
+      7.5,
+      7,
+      7,
+      5.5
+    ],
+    "weighted_score": 7.175,
+    "evidence": "Olive grass variation, subtly lined fields, trees and shore rocks enrich a quiet coastal view.",
+    "visible_regressions_or_limitations": "Mottling adds surface variation rather than depth; narrow shore lacks surf. Unchanged prior control."
+  },
+  "view-14.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7.5,
+      7.5,
+      6.5
+    ],
+    "weighted_score": 7.35,
+    "evidence": "Crisp deck texture, raised island and rim details pair with long wake and sea flecks.",
+    "visible_regressions_or_limitations": "Dark forward hull remains flat and planes blend with deck marks. Unchanged prior control."
+  },
+  "view-15.png": {
+    "scores": [
+      6.5,
+      9,
+      9,
+      9,
+      9
+    ],
+    "weighted_score": 8.25,
+    "evidence": "Detailed metal ships and cool rocky terrain contrast with layered orange explosion rays/debris.",
+    "visible_regressions_or_limitations": "Blast obscures nearby units and purple silhouettes merge into foliage. Unchanged reference anchor."
+  },
+  "view-16.png": {
+    "scores": [
+      8.5,
+      8,
+      7.5,
+      7.5,
+      6.5
+    ],
+    "weighted_score": 7.75,
+    "evidence": "Outlined blue player is easier to isolate at stern; continuous tan panel deck, raised island and narrow shaded rim make a coherent ship. Wake clearly indicates direction.",
+    "visible_regressions_or_limitations": "Beyond rim and island, deck is uniformly lit; broad forward tan area is sparse. Two blurred wake bands still look synthetic."
+  },
+  "view-17.png": {
+    "scores": [
+      8.5,
+      8,
+      7,
+      7,
+      6
+    ],
+    "weighted_score": 7.5,
+    "evidence": "Single outlined aircraft and stable top bars create strong hierarchy. Continuous tan carrier deck avoids the prior oversized dark platform; long wake is evident.",
+    "visible_regressions_or_limitations": "Soft edges and uniform deck illumination still limit material depth; player remains physically over stern markings and wake remains simple."
+  },
+  "view-18.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7,
+      7,
+      6
+    ],
+    "weighted_score": 7.1,
+    "evidence": "Deck panel variation, dark rim and long wake distinguish carrier from teal ocean.",
+    "visible_regressions_or_limitations": "Broad dark forward platform reduces perceived volume; soft plane edges and pale deck markings overlap. Unchanged prior control."
+  },
+  "view-19.png": {
+    "scores": [
+      7.5,
+      7.5,
+      7.5,
+      8,
+      6
+    ],
+    "weighted_score": 7.35,
+    "evidence": "Fine roof borders, varied olive ground and rocky soft beach separate materials.",
+    "visible_regressions_or_limitations": "Player on blue roof remains poorly isolated; grass variation adds richness without useful focus. Unchanged prior control."
+  },
+  "view-20.png": {
+    "scores": [
+      7,
+      7.5,
+      7,
+      7,
+      6.5
+    ],
+    "weighted_score": 7.025,
+    "evidence": "Layered deck/rim and long wake add structure amid many pale aircraft. Dark HUD stays readable.",
+    "visible_regressions_or_limitations": "Dense pale smoke puffs and yellow dots lack impact hierarchy; stern heavily occluded. Unchanged prior control."
+  },
+  "view-21.png": {
+    "scores": [
+      8.5,
+      8,
+      7.5,
+      7.5,
+      6
+    ],
+    "weighted_score": 7.675,
+    "evidence": "Crisp outlined plane is distinct against grass; muted shaded trees, roof borders, rocks and a partial compound give a coherent coast. Sea flecks add controlled texture.",
+    "visible_regressions_or_limitations": "Terrain remains mostly a flat noisy plane and central shore lacks wave transition. Tree shadows remain nearly black; small compound fragment alone adds little navigation structure."
+  },
+  "view-22.png": {
+    "scores": [
+      7,
+      8,
+      7,
+      7,
+      6.5
+    ],
+    "weighted_score": 7.125,
+    "evidence": "Continuous tan carrier deck is more coherent than a broad dark platform; player outline helps locally and long wake anchors motion.",
+    "visible_regressions_or_limitations": "Pale planes overlap the light deck and each other, so dense-fight clarity remains limited. Repeated smoke dots and sparks have no dominant impact focus."
+  },
+  "view-23.png": {
+    "scores": [
+      7,
+      8,
+      7.5,
+      7.5,
+      7
+    ],
+    "weighted_score": 7.375,
+    "evidence": "Crisp continuous deck paneling, narrow dark hull rim, raised island and long wake maintain a coherent setting under dense action.",
+    "visible_regressions_or_limitations": "Light aircraft still merge with tan marks; outlined player is partly hidden by clustered planes. Particle shapes remain repeated soft dots rather than differentiated impacts."
+  },
+  "view-24.png": {
+    "scores": [
+      5.5,
+      9,
+      9,
+      9.5,
+      9
+    ],
+    "weighted_score": 8.025,
+    "evidence": "Wet reflections, rain, smoke and tracer lighting unify deeply detailed mud, rubble and tracks.",
+    "visible_regressions_or_limitations": "Dark infantry and vehicles merge into ground at phone size. Unchanged reference anchor."
+  },
+  "view-25.png": {
+    "scores": [
+      8,
+      7.5,
+      7.5,
+      7.5,
+      6
+    ],
+    "weighted_score": 7.425,
+    "evidence": "Sharp roof trim and coast rocks, olive ground variation and shaded trees enrich a quiet land view.",
+    "visible_regressions_or_limitations": "Ground is busy without height changes; rocks by plane compete slightly. Unchanged prior control."
+  },
+  "general_next_priorities": [
+    "Player edge contrast visibly helps in sparse scenes, especially over roof and grass. Dense carrier fight still needs occlusion handling or a restrained player indicator that survives stacked plane silhouettes.",
+    "The service compound and dirt lanes add purposeful terrain structure. Extend material transitions around hangars/roads and beach shallows rather than adding more uniform grass mottling.",
+    "Continuous tan deck is more coherent than the broad dark block, but material depth still requires a lit side face, convincing hull contact and localized deck wear/shadow variation.",
+    "Preserve visible long wakes while introducing widening, fragmented turbulence and transparent decay instead of two near-parallel blurred streaks.",
+    "Dense combat remains below references in effects hierarchy: distinguish hot impact cores, fire/debris and fading smoke by scale, brightness and lifetime. Static dot density is not evidence of polished impacts.",
+    "Keep muted tree palette but soften the nearly black repeated contact patches. Improvements should retain the strong clear HUD and avoid overloading the focal play area."
+  ]
+}

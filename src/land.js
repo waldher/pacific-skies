@@ -3,11 +3,11 @@
 // shared noise field, so every device sees the same hills, and the forests
 // stand exactly where the ground shader shades the slopes.
 //
-// Cost model: one draw for the ground (a flat polygon coloured per pixel from
-// the noise texture), one for the beach, one for the whole vertex-coloured
-// scenery batch, and one each for the surf and shallows skirts. Nothing here
-// casts shadows.
+// Cost model: one draw and one bounded baked texture for the ground, one
+// draw for the beach, one vertex-coloured scenery batch and one draw each for
+// surf and shallows. Static tree/house contact shade is baked, never shadow-mapped.
 import * as THREE from 'three';
+import { withRelief } from './projection.js';
 import { CONFIG } from './config.js';
 import { islandOutline, insidePolygon } from './surface.js';
 import { noise, noiseTexture, NOISE_GLSL } from './noise.js';
@@ -16,9 +16,34 @@ import { TAU, hash2 } from './util.js';
 export const HILL_SCALE = .012;     // world units → hill-noise cells (≈83 units per cell)
 const FOREST_SCALE = .02;
 
+// Optional diffuse material: a failed/slow download selects the deterministic
+// procedural fallback for the whole session, never a late style change midflight.
+let terrainImage = null, terrainMaterialLoad = null;
+export function preloadTerrainMaterial() {
+  if (terrainMaterialLoad) return terrainMaterialLoad;
+  terrainMaterialLoad = new Promise(resolve => {
+    if (typeof Image === 'undefined') { resolve(false); return; }
+    const image = new Image();
+    let settled = false;
+    const finish = ok => {
+      if (settled) return;
+      settled = true; clearTimeout(timeout);
+      image.onload = image.onerror = null;
+      if (ok) terrainImage = image;
+      resolve(ok);
+    };
+    const timeout = setTimeout(() => finish(false), 2500);
+    image.onload = () => finish(image.naturalWidth > 0);
+    image.onerror = () => finish(false);
+    image.src = new URL('../assets/terrain/grass-soil-v1.webp', import.meta.url).href;
+  });
+  return terrainMaterialLoad;
+}
+
+
 const BIOMES = {
   jungle:    { sand: '#e6d7a4', low: '#3f7f3c', high: '#2c5a2f', patch: '#5c9a45', rock: '#5d6552', trees: ['#2e6d35', '#3b8342', '#27612c', '#4a8f3d'], palms: true, forest: .62, huts: 'thatch', road: '#8a7a58', mountains: true },
-  temperate: { sand: '#e3d49b', low: '#6f8054', high: '#4d6342', patch: '#8d9868', rock: '#7a7468', trees: ['#4d8b3a', '#63a04a', '#8c9a3a', '#3f7a35'], palms: false, forest: .45, huts: 'house', road: '#5b5a57', fields: true, mountains: true, snow: true },
+  temperate: { sand: '#e3d49b', low: '#6f8054', high: '#4d6342', patch: '#8d9868', rock: '#7a7468', trees: ['#405e35', '#536b3e', '#697449', '#38583a'], palms: false, forest: .45, huts: 'house', road: '#5b5a57', fields: true, mountains: true, snow: true },
   volcanic:  { sand: '#4d4945', low: '#4c7040', high: '#454240', patch: '#6a8150', rock: '#4a4744', trees: ['#2f6a37', '#3d7f44', '#356f3a'], palms: true, forest: .38, huts: 'thatch', road: '#6b625a', volcano: true },
   atoll:     { sand: '#f3ead0', low: '#b8c586', high: '#8ea86a', patch: '#d3d49a', rock: '#b5ad95', trees: ['#4d9a4b', '#5faa53', '#3f8a44'], palms: true, forest: .34, huts: 'thatch', road: '#cbb98e', palmOnly: true },
   desert:    { sand: '#ecd9a3', low: '#dcbd78', high: '#b98a55', patch: '#c9a465', rock: '#8f6a4c', trees: ['#6c7a3f', '#7b8746'], palms: true, forest: .1, huts: 'adobe', road: '#a88d62', dunes: true, oasis: true, scrub: true },
@@ -177,6 +202,16 @@ class Batch {
     }
     this.disc(x, y, crown + .2, 2.4, 5, shade(color, .7));
   }
+  // Interlocking crowns give trees a leafy silhouette rather than one gemstone.
+  broadleaf(x,y,base,radius,color,phase) {
+    this.box(x,y,base,1.6,1.6,9,0,rgb('#4f4932'));
+    for(let i=0;i<4;i++) {
+      const a=phase+i*TAU/4, r=radius*(.48+(i%2)*.08);
+      const cx=x+Math.cos(a)*radius*.38,cy=y+Math.sin(a)*radius*.38;
+      this.cone(cx,cy,base+7+(i%2)*2,r,4.5,7,shade(color,.78+i*.065),shade(color,1.12+i*.025),a);
+    }
+    this.cone(x,y,base+11,radius*.58,3.5,7,color,shade(color,1.25),phase+.2);
+  }
   // Ribbon along a polyline, mitred at the joints.
   ribbon(points, width, h, color) {
     const ref = [points[0][0], h - 1, points[0][1]], left = [], right = [];
@@ -198,80 +233,111 @@ class Batch {
   }
 }
 
-// Ground: the interior polygon, coloured per pixel from the noise field with
-// slope lighting that matches the Lambert scenery, plus cloud shadows shared
-// with the ocean. Per-island uniforms pick the biome palette.
+// Static terrain is painted once per loaded island, including contact shadows.
+// A bounded 1024² texture replaces the old full-screen stack of noise/farm taps.
+// All decoration is local to the unchanged physical shore polygon.
+class TerrainBake {
+  constructor(shore, biome, seed) {
+    this.minX = Math.min(...shore.map(p => p[0]));
+    this.minY = Math.min(...shore.map(p => p[1]));
+    this.width = Math.max(...shore.map(p => p[0])) - this.minX;
+    this.height = Math.max(...shore.map(p => p[1])) - this.minY;
+    const longest = Math.max(this.width, this.height);
+    const resolution = Math.max(256, Math.min(1024, 2 ** Math.ceil(Math.log2(longest))));
+    this.canvas = document.createElement('canvas');
+    this.canvas.width = Math.max(128, Math.round(resolution * this.width / longest));
+    this.canvas.height = Math.max(128, Math.round(resolution * this.height / longest));
+    const ctx = this.ctx = this.canvas.getContext('2d');
+    const random = seeded(seed * 37 + 127);
+    // A constant undercoat avoids a million seeded JS pixel operations on cold
+    // chunks. Natural detail comes from the decoded diffuse tile below.
+    ctx.fillStyle = biome.low;
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    ctx.setTransform(this.canvas.width / this.width, 0, 0, this.canvas.height / this.height,
+      -this.minX * this.canvas.width / this.width, -this.minY * this.canvas.height / this.height);
+    // The generated file is only diffuse grass/soil material. It is tiled into
+    // this static albedo bake underneath authored fields, coasts and shadows;
+    // every frame still reads the same one bounded terrain texture.
+    if (terrainImage && !biome.dunes && !biome.oasis) {
+      const pattern = ctx.createPattern(terrainImage, 'repeat');
+      if (pattern) {
+        const tileSize = 240; // ~40 metres at the aircraft/world scale
+        pattern.setTransform(new DOMMatrix().scale(tileSize / terrainImage.width));
+        ctx.save();
+        ctx.fillStyle = pattern; ctx.globalAlpha = biome.palmOnly ? .38 : .90;
+        ctx.fillRect(this.minX, this.minY, this.width, this.height);
+        // Preserve biome hue while retaining natural surface luminance variation.
+        ctx.globalCompositeOperation = 'color'; ctx.globalAlpha = .35;
+        ctx.fillStyle = biome.low; ctx.fillRect(this.minX, this.minY, this.width, this.height);
+        ctx.restore();
+      }
+    }
+    // Broad continuous terrain masses, using a few soft washes rather than a
+    // repeated noise lattice. Crop and forest detail carry the small-scale texture.
+    for (let i = 0; i < 28; i++) {
+      const x = this.minX + random() * this.width, y = this.minY + random() * this.height;
+      const radius = 35 + random() * 150;
+      const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
+      g.addColorStop(0, i % 3 ? 'rgba(31,45,28,0.13)' : 'rgba(182,166,117,0.12)');
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g; ctx.fillRect(x-radius,y-radius,radius*2,radius*2);
+    }
+    this.texture = new THREE.CanvasTexture(this.canvas);
+    this.texture.colorSpace = THREE.SRGBColorSpace;
+    this.texture.minFilter = THREE.LinearMipmapLinearFilter;
+    this.texture.magFilter = THREE.LinearFilter;
+    this.texture.generateMipmaps = true;
+  }
+  path(points) {
+    const c = this.ctx; c.beginPath();
+    points.forEach(([x,y],i)=>i ? c.lineTo(x,y) : c.moveTo(x,y)); c.closePath();
+  }
+  patch(points, color) { this.path(points); this.ctx.fillStyle=color; this.ctx.fill(); }
+  road(points, width, color) {
+    const c=this.ctx; c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));
+    c.lineWidth=width;c.lineCap='round';c.lineJoin='round';c.strokeStyle=color;c.stroke();
+  }
+  shadow(x,y,radius,height,opacity=.32) {
+    const [sx,sy,sz]=CONFIG.render.sunOffset;
+    const xx=x-sx/sy*height, yy=y-sz/sy*height;
+    const c=this.ctx,g=c.createRadialGradient(xx,yy,0,xx,yy,radius*1.35);
+    g.addColorStop(0,`rgba(10,19,19,${opacity})`);
+    g.addColorStop(.5,`rgba(10,19,19,${opacity*.78})`);
+    g.addColorStop(1,'rgba(10,19,19,0)');
+    c.fillStyle=g;c.fillRect(xx-radius*1.35,yy-radius*1.35,radius*2.7,radius*2.7);
+  }
+  building(x,y,w,d,angle,height) {
+    const c=Math.cos(angle),s=Math.sin(angle),[sx,sy,sz]=CONFIG.render.sunOffset;
+    const p=[[-w/2,-d/2],[w/2,-d/2],[w/2,d/2],[-w/2,d/2]].map(([u,v])=>[x+u*c-v*s,y+u*s+v*c]);
+    const projected=p.map(([x,y])=>[x-sx/sy*height,y-sz/sy*height]);
+    // Contact and cast shade stay on the island texture, not expensive shadow maps.
+    this.patch(projected,'rgba(14,22,20,.32)');
+    for(let i=0;i<4;i++)this.patch([p[i],p[(i+1)%4],projected[(i+1)%4],projected[i]],'rgba(14,22,20,.25)');
+    this.shadow(x,y,Math.max(w,d)*.65,0,.18);
+  }
+  finish() { this.texture.needsUpdate=true; return this.texture; }
+}
+
 function groundShader(shared) {
   const L = CONFIG.render.lighting;
   return new THREE.ShaderMaterial({
     uniforms: {
-      noiseTex: { value: noiseTexture() }, time: shared.time, wind: shared.wind,
-      cloudSpeed: shared.cloudSpeed, cloudStrength: shared.cloudStrength, sunDir: shared.sunDir,
-      sunLight: { value: new THREE.Color(L.sun).multiplyScalar(L.sunIntensity) },
-      skyLight: { value: new THREE.Color(L.sky).multiplyScalar(L.hemisphere) },
-      groundLight: { value: new THREE.Color(L.ground).multiplyScalar(L.hemisphere) },
-      low: { value: new THREE.Color() }, high: { value: new THREE.Color() }, patchColor: { value: new THREE.Color() }, rock: { value: new THREE.Color() },
-      clearings: { value: Array.from({length:8},()=>new THREE.Vector3()) }, clearingCount: {value:0},
-      fields: { value: 0 }, dunes: { value: 0 }, relief: { value: 60 }, origin: { value: new THREE.Vector2() }, angle: { value: 0 },
-      cropA: { value: new THREE.Color('#9c9164') }, cropB: { value: new THREE.Color('#879265') }, cropC: { value: new THREE.Color('#887253') }, cropD: { value: new THREE.Color('#61734d') }, hedgeColor: { value: new THREE.Color('#536344') },
+      albedoMap:{value:null}, terrainMin:{value:new THREE.Vector2()}, terrainSize:{value:new THREE.Vector2(1,1)},
+      noiseTex:{value:noiseTexture()},time:shared.time,wind:shared.wind,cloudSpeed:shared.cloudSpeed,cloudStrength:shared.cloudStrength,
+      light:{value:new THREE.Color(L.sky).multiplyScalar(L.hemisphere).add(new THREE.Color(L.sun).multiplyScalar(L.sunIntensity * new THREE.Vector3(...CONFIG.render.sunOffset).normalize().y)).multiplyScalar(.3183)},
     },
-    vertexShader: `varying vec2 worldXZ;
-      void main() {
-        vec4 world = modelMatrix * vec4(position, 1.0);
-        worldXZ = world.xz;
-        gl_Position = projectionMatrix * viewMatrix * world;
-      }`,
-    fragmentShader: `varying vec2 worldXZ;
-      uniform float time, cloudSpeed, cloudStrength, fields, dunes, relief, angle;
-      uniform vec3 clearings[8]; uniform int clearingCount;
-      uniform vec2 wind, origin; uniform vec3 sunDir, sunLight, skyLight, groundLight, low, high, patchColor, rock, cropA, cropB, cropC, cropD, hedgeColor;
+    vertexShader:`varying vec2 localXZ;varying vec2 worldXZ;
+      void main(){vec4 w=modelMatrix*vec4(position,1.0);worldXZ=w.xz;localXZ=vec2(position.x,-position.y);gl_Position=projectionMatrix*viewMatrix*w;}`,
+    fragmentShader:`varying vec2 localXZ;varying vec2 worldXZ;
+      uniform sampler2D albedoMap;uniform vec2 terrainMin,terrainSize,wind;
+      uniform vec3 light;uniform float time,cloudSpeed,cloudStrength;
       ${NOISE_GLSL}
-      const float HILL = ${HILL_SCALE};
-      void main() {
-        vec2 p = worldXZ;
-        float ca = cos(angle), sa = sin(angle);
-        vec2 q = mat2(ca, -sa, sa, ca) * (p - origin);   // island-local, so fields align with the coast
-        vec3 coarse = vnoiseGrad(p * HILL), fine = vnoiseGrad(p * HILL * 3.1 + 5.0);
-        float hill = coarse.x;
-        float h = hill * .72 + fine.x * .28;
-        vec2 g = (coarse.yz * .72 + fine.yz * (.28 * 3.1)) * HILL;
-        float speck = vnoise2(p * .24);
-        vec3 albedo = mix(low, high, smoothstep(.34, .8, h));
-        albedo = mix(albedo, patchColor, smoothstep(.35, .8, speck) * .18);
-        albedo = mix(albedo, rock, smoothstep(.76, .9, h));
-        albedo *= .92 + speck * .16;
-        if (fields > .5) {
-          // Farmland: whole plots in the lowlands, each a rectangle of one crop with
-          // a hedge around it. Deciding per plot (not per pixel) keeps hedges closed.
-          vec2 cell = floor(q / 72.0), f = fract(q / 72.0), centre = (cell + .5) * 72.0;
-          vec2 world = origin + mat2(ca, sa, -sa, ca) * centre;
-          float farm = vnoise2(centre * .0045 + 7.3);
-          float plotHill = vnoise(world * HILL) * .72 + vnoise(world * HILL * 3.1 + 5.0) * .28;
-          float use = step(.52, farm) * step(plotHill, .55);
-          // Keep cultivation outside airfields, ports and radar compounds.
-          for (int i=0; i<8; i++) {
-            if (i>=clearingCount) break;
-            vec2 delta=p-clearings[i].xy;
-            float radius=clearings[i].z;
-            use *= smoothstep(radius*radius,(radius+50.0)*(radius+50.0),dot(delta,delta));
-          }
-          float pick = vnoise2(cell * 5.3 + 1.5);
-          vec3 crop = pick < .3 ? cropA : pick < .55 ? cropB : pick < .8 ? cropC : cropD;
-          crop *= .96 + .04 * step(.5, fract(q.x / 6.0 + pick * 3.0));
-          float hedge = smoothstep(.0, .10, f.x) * smoothstep(.0, .10, f.y) * (1.0 - smoothstep(.90, 1.0, f.x)) * (1.0 - smoothstep(.90, 1.0, f.y));
-          albedo = mix(albedo, mix(hedgeColor, crop, hedge), use);
-        }
-        if (dunes > .5) {
-          float u = (q.x + vnoise(p * .02) * 45.0) * .12 + q.y * .01;
-          albedo *= .94 + .06 * sin(u);
-          g += mat2(ca, sa, -sa, ca) * (cos(u) * vec2(.12, .01)) * .02;
-        }
-        vec3 n = normalize(vec3(-g.x * relief, 1.0, -g.y * relief));
-        vec3 irradiance = mix(groundLight, skyLight, n.y * .5 + .5) + sunLight * max(dot(n, sunDir), 0.0);
-        vec3 color = albedo * irradiance * 0.3183;
-        float cloud = vnoise((p + wind * time * cloudSpeed) * .0011);
-        color *= 1.0 - smoothstep(.5, .78, cloud) * cloudStrength;
-        gl_FragColor = vec4(color, 1.0);
+      void main(){
+        vec2 uv=(localXZ-terrainMin)/terrainSize;
+        vec3 color=texture2D(albedoMap,vec2(uv.x,1.0-uv.y)).rgb*light;
+        float cloud=vnoise((worldXZ+wind*time*cloudSpeed)*.0011);
+        color*=1.0-smoothstep(.5,.78,cloud)*cloudStrength;
+        gl_FragColor=vec4(color,1.0);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
       }`,
@@ -288,12 +354,7 @@ const flat = (geometry, material, height) => {
 export function createLand(scene, shared) {
   const L = CONFIG.render.land;
   const groundTemplate = groundShader(shared);
-  const sceneryMaterial = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.FrontSide });
-  const sandMaterials = new Map();
-  const sandFor = hex => {
-    if (!sandMaterials.has(hex)) sandMaterials.set(hex, new THREE.MeshLambertMaterial({ color: hex }));
-    return sandMaterials.get(hex);
-  };
+  const sceneryMaterial = withRelief(new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.FrontSide }));
   // Shallows: a turquoise skirt from the shoreline outward, fading with the
   // vertex alpha and broken up by the noise field so reefs read as reefs.
   const shallowsMaterial = new THREE.ShaderMaterial({
@@ -340,11 +401,30 @@ export function createLand(scene, shared) {
     const group = new THREE.Group();
     group.position.set(t.x, 0, t.y);
     const shore = islandOutline(t);
-    const interior = t.shoreline ? insetShore(shore, Math.min(14, radius * .12)) : islandOutline(t, radius * .86, .12, 2);
+    // Physical shoreline stays exactly the same. Densify only the inland
+    // vegetation edge to give beaches naturally varying width.
+    const denseShore=[];
+    for(let i=0;i<shore.length;i++) {
+      const p=shore[i],q=shore[(i+1)%shore.length],steps=Math.max(1,Math.ceil(Math.hypot(q[0]-p[0],q[1]-p[1])/28));
+      for(let k=0;k<steps;k++)denseShore.push([p[0]+(q[0]-p[0])*k/steps,p[1]+(q[1]-p[1])*k/steps]);
+    }
+    const inset=insetShore(denseShore,Math.min(26,radius*.12));
+    const interior=inset.map((p,i)=>{
+      const shorePoint=denseShore[i];
+      const f=.42+.58*noise((p[0]+t.x)*.016,(p[1]+t.y)*.016,1);
+      return [shorePoint[0]+(p[0]-shorePoint[0])*f,shorePoint[1]+(p[1]-shorePoint[1])*f];
+    });
     const usable = insetShore(interior, 26);
     // Installations on this island keep a clear footprint; the scenery roads lead to them.
     const clears = holdings.map(h => ({ x: h.x - t.x, y: h.y - t.y, r: L.clearRadius[h.role] ?? 170, a: h.a ?? 0, role: h.role }));
     const clear = (x, y, margin = 0) => clears.every(c => Math.hypot(x - c.x, y - c.y) > c.r + margin);
+    // Small scenery may approach the real apron instead of leaving a giant
+    // circular empty lawn. No decoration enters runway or hangar footprints.
+    const detailClear=(x,y,margin=0)=>clears.every(c=>{
+      if(c.role!=='airfield')return Math.hypot(x-c.x,y-c.y)>c.r+margin;
+      const dx=x-c.x,dy=y-c.y,along=dx*Math.cos(c.a)+dy*Math.sin(c.a),across=-dx*Math.sin(c.a)+dy*Math.cos(c.a);
+      return Math.abs(along)>CONFIG.airfield.length/2+28+margin || across< -CONFIG.airfield.width/2-28-margin || across>152+margin;
+    });
     const hill = (x, y) => noise((x + t.x) * HILL_SCALE, (y + t.y) * HILL_SCALE, 0);
     const forestNoise = (x, y) => noise((x + t.x) * FOREST_SCALE, (y + t.y) * FOREST_SCALE, 1);
     const inside = (x, y) => insidePolygon(x, y, usable);
@@ -363,7 +443,7 @@ export function createLand(scene, shared) {
     // on these near-star-shaped coasts; a fixed outward offset crosses itself
     // at concave vertices and the overlaps show as bright rays.
     const outer = islandOutline(t, radius * (1 + Math.min(CONFIG.render.ocean.shallowsRadius - 1, 240 / radius)), .22, 2);
-    group.add(flat(new THREE.ShapeGeometry(shapeOf(shore)), sandFor(B.sand), 3.5));
+
     // The waterline is a gradient, not an edge: water laps a few units onto
     // the beach, then the shallows fade out to sea, with foam on the line.
     const shallows = new THREE.Mesh(bandGeometry([insetShore(shore, 9), shore, outer], [0, 1, 0]), shallowsMaterial);
@@ -372,20 +452,133 @@ export function createLand(scene, shared) {
     surf.position.y = 3.7; group.add(surf);
     const ground = groundTemplate.clone();
     ground.uniforms.noiseTex.value = noiseTexture();
-    for (const key of ['time', 'wind', 'cloudSpeed', 'cloudStrength', 'sunDir']) ground.uniforms[key] = shared[key];
-    ground.uniforms.low.value.set(B.low); ground.uniforms.high.value.set(B.high);
-    ground.uniforms.patchColor.value.set(B.patch); ground.uniforms.rock.value.set(B.rock);
-    ground.uniforms.fields.value = B.fields ? 1 : 0; ground.uniforms.dunes.value = B.dunes ? 1 : 0;
-    ground.uniforms.relief.value = B.dunes ? 40 : 22;
-    ground.uniforms.clearingCount.value = Math.min(8, clears.length);
-    clears.slice(0,8).forEach((c,i)=>ground.uniforms.clearings.value[i].set(t.x+c.x,t.y+c.y,c.r));
-    ground.uniforms.origin.value.set(t.x, t.y); ground.uniforms.angle.value = t.a ?? 0;
+    for (const key of ['time', 'wind', 'cloudSpeed', 'cloudStrength']) ground.uniforms[key] = shared[key];
+    const bake = new TerrainBake(shore, B, t.seed ?? t.id ?? 0);
+    // Fields are discrete irregular cultivated plots, with margin from the
+    // actual coast and installations. Their neutral palette sits below aircraft.
+    if(B.fields) {
+      const crops=['#8a8861','#7c8058','#908266','#727c52'];
+      for(let u=-radius-72;u<=radius+72;u+=72)for(let v=-radius-72;v<=radius+72;v+=72) {
+        const cx=u+36,cy=v+36,x=cx*ca-cy*sa,y=cx*sa+cy*ca;
+        if(!farmland(x,y)||!clear(x,y,65)||polygonDistance(x,y,shore)<65||!inside(x,y))continue;
+        const h=hash2(x+gx,y+gy),margin=5+h*5;
+        const pts=[[-36+margin,-36+margin],[34-margin,-34+margin],
+          [34-margin,33-margin],[-34+margin,35-margin]].map(([a,b],i)=>{
+            const bend=(hash2(cx+i*15,cy+gy)-.5)*7;
+            return [(cx+a+bend)*ca-(cy+b)*sa,(cx+a+bend)*sa+(cy+b)*ca];
+          });
+        if(!pts.every(([x,y])=>inside(x,y)))continue;
+        bake.patch(pts,crops[Math.floor(h*crops.length)]);
+        bake.ctx.save();bake.path(pts);bake.ctx.clip();
+        for(let line=-26;line<30;line+=9) {
+          const p0=[(cx-30)*ca-(cy+line)*sa,(cx-30)*sa+(cy+line)*ca];
+          const p1=[(cx+30)*ca-(cy+line)*sa,(cx+30)*sa+(cy+line)*ca];
+          bake.road([p0,p1],1.1,'rgba(45,51,29,.13)');
+        }
+        bake.ctx.restore();
+      }
+    }
+    // A feathered intertidal material is baked onto both the beach and land
+    // polygons. The actual outer water/collision edge remains shore unchanged.
+    const sand=new THREE.Color(B.sand).multiplyScalar(.57).convertLinearToSRGB();
+    const sandCss=`${Math.round(sand.r*255)},${Math.round(sand.g*255)},${Math.round(sand.b*255)}`;
+    for(let i=0;i<denseShore.length;i++) {
+      const p=denseShore[i],q=denseShore[(i+1)%denseShore.length];
+      const width=20+22*noise((p[0]+t.x)*.009,(p[1]+t.y)*.009,1);
+      // Layered low-alpha strokes make a wide soft grass/sand transition. No
+      // full-screen blend pass or repeated transparent draw is needed at runtime.
+      bake.road([p,q],width+18,`rgba(${sandCss},.14)`);
+      bake.road([p,q],width+9,`rgba(${sandCss},.20)`);
+      bake.road([p,q],width,`rgba(${sandCss},.68)`);
+      bake.road([p,q],7,'rgba(66,92,84,.28)');
+      // Long coherent slate/seaweed reaches break up the uniform pale strip;
+      // every stroke follows the real collider edge, never a fabricated coast.
+      const rocky = noise((p[0]+t.x)*.004+19,(p[1]+t.y)*.004,1);
+      if(!B.palmOnly && !B.dunes && rocky>.46) {
+        bake.road([p,q],width*.8,'rgba(76,78,60,.68)');
+        bake.road([p,q],8,'rgba(40,60,56,.65)');
+        const inner=interior[i];
+        bake.road([inner,interior[(i+1)%interior.length]],3,'rgba(115,111,78,.50)');
+      }
+    }
+    // Exterior service drainage and worn access strips make installations sit
+    // in their landscape. Coordinates align with actual runway/apron layout.
+    for(const c of clears.filter(c=>c.role==='airfield')) {
+      const point=(u,v)=>[c.x+u*Math.cos(c.a)-v*Math.sin(c.a),c.y+u*Math.sin(c.a)+v*Math.cos(c.a)];
+      for(const side of [-1,1]) {
+        const lateral=side<0?-66:160;
+        const points=[point(-170,lateral),point(-75,lateral+side*5),point(60,lateral+side*3),point(170,lateral)];
+        if(points.every(([x,y])=>insidePolygon(x,y,interior))) {
+          bake.road(points,9,'rgba(122,111,79,.28)');
+          bake.road(points,2.5,'rgba(36,49,31,.40)');
+          bake.road(points.map(([x,y])=>[x-1,y-1]),1.2,'rgba(167,160,114,.32)');
+        }
+      }
+    }
+    // Sparse erosion channels connect broader ground masses. They are baked
+    // contour detail, not an overlaid grain field; do not cross installations.
+    const drainageRng=seeded((t.seed??t.id??0)*19+39);
+    for(let i=0;i<Math.min(18,Math.ceil(radius/90));i++) {
+      const x=(drainageRng()-.5)*radius*1.5,y=(drainageRng()-.5)*radius*1.5,a=drainageRng()*TAU;
+      const points=[];
+      for(let k=0;k<6;k++) {
+        const along=(k-2.5)*24,bend=Math.sin(k*.8+a)*15;
+        points.push([x+Math.cos(a)*along-Math.sin(a)*bend,y+Math.sin(a)*along+Math.cos(a)*bend]);
+      }
+      if(!points.every(([x,y])=>inside(x,y)&&detailClear(x,y,20)&&!farmland(x,y)))continue;
+      bake.road(points,11,'rgba(115,101,68,.12)');
+      bake.road(points,4,'rgba(47,62,36,.14)');
+      bake.road(points.map(([x,y])=>[x-2,y-2]),2,'rgba(158,147,97,.14)');
+    }
+    ground.uniforms.terrainMin.value.set(bake.minX,bake.minY);
+    ground.uniforms.terrainSize.value.set(bake.width,bake.height);
     const GROUND = 8.5;
+    // Do not shade the whole island twice: beach geometry has an inland hole.
+    const beachShape=shapeOf(shore);
+    beachShape.holes.push(new THREE.Path(interior.map(([x,y])=>new THREE.Vector2(x,-y))));
+    group.add(flat(new THREE.ShapeGeometry(beachShape), ground, 3.5));
     group.add(flat(new THREE.ShapeGeometry(shapeOf(interior)), ground, GROUND));
 
     const batch = new Batch();
     const villages = [], roads = [], traffic = { trucks: [], people: [], boats: [] };
     const blocked = []; // circles scenery keeps out of: villages, ponds, peaks
+
+    // A compact airfield supply yard establishes land use beyond the runway.
+    // All pieces are baked or merged into the existing scenery batch; no new
+    // materials/draw calls. Validate the entire footprint against real land.
+    for(const c of clears.filter(c=>c.role==='airfield')) {
+      const co=Math.cos(c.a),si=Math.sin(c.a);
+      const at=(u,v)=>[c.x+u*co-v*si,c.y+u*si+v*co];
+      const yard=[at(-132,166),at(108,166),at(118,231),at(-125,239)];
+      if(!yard.every(([x,y])=>inside(x,y)))continue;
+      bake.patch(yard,'rgba(121,111,84,.82)');
+      bake.road([...yard,yard[0]],5,'rgba(82,82,60,.65)');
+      // Two worn wheel lanes curve into the existing apron access corridor.
+      for(const v of [180,186])bake.road([at(-145,145),at(-113,v),at(98,v)],2.8,'rgba(54,54,43,.55)');
+      for(let j=0;j<6;j++) {
+        const u=-112+j*37;
+        bake.road([at(u,193),at(u,229)],.8,'rgba(188,176,132,.44)');
+      }
+      // Sparse logistics stacks and fuel vessels rather than arbitrary clutter.
+      for(let j=0;j<5;j++) {
+        const [x,y]=at(-100+j*42,215), w=j<3?23:14,d=j<3?12:14,h=j<3?6:9;
+        const col=rgb(j<3?['#77705a','#636953','#787b66'][j]:'#656d68');
+        bake.building(x,y,w,d,c.a,h);
+        batch.box(x,y,GROUND,w,d,h,c.a,shade(col,.65),col);
+        if(j<3)for(const du of [-7,7]) {
+          const [xx,yy]=at(-100+j*42+du,215);
+          batch.box(xx,yy,GROUND+h,.8,d+.3,.35,c.a,rgb('#a49978'));
+        }
+      }
+      // Drainage bank and fence line frame the yard without blocking aircraft.
+      bake.road([at(-130,244),at(120,239)],7,'rgba(47,59,37,.52)');
+      for(let j=0;j<12;j++) {
+        const [x,y]=at(-128+j*22,242);
+        batch.box(x,y,GROUND,1,1,5,c.a,rgb('#746c55'));
+      }
+      batch.ribbon([at(-128,242),at(114,242)],.7,GROUND+3,rgb('#8c846d'));
+      blocked.push({x:at(-5,205)[0],y:at(-5,205)[1],r:125});
+    }
 
     // --- Villages -----------------------------------------------------------
     const villageCount = radius < L.villageRadius ? (rng() < .5 ? 1 : 0) : radius < 500 ? 1 : radius < 900 ? 2 : 3 + Math.floor(rng() * 2);
@@ -444,6 +637,7 @@ export function createLand(scene, shared) {
       if (entry && inside(entry.x, entry.y) && inside(approach.x, approach.y)) {
         nodes.push(approach);
         roads.push([[approach.x, approach.y], [entry.x, entry.y]]);
+        bake.road(roads[roads.length-1],L.roadWidth+6,'rgba(131,117,88,.45)');
         batch.ribbon(roads[roads.length - 1], L.roadWidth, GROUND + .3, rgb(B.road));
       } else if (nodes.length) {
         const near = nodes[0], d = Math.hypot(near.x - c.x, near.y - c.y) || 1;
@@ -475,6 +669,7 @@ export function createLand(scene, shared) {
         }
         if (!ok) continue;
         points.push([b.x, b.y]);
+        bake.road(points,L.roadWidth+6,'rgba(131,117,88,.45)');
         batch.ribbon(points, L.roadWidth, GROUND + .3, rgb(B.road));
         roads.push(points);
         // Villages line up along the road that serves them.
@@ -498,6 +693,7 @@ export function createLand(scene, shared) {
         const x = v.x + u * c - vv * s, y = v.y + u * s + vv * c;
         const w = L.houseSize * (.75 + rng() * .5), d = L.houseSize * (.6 + rng() * .4), rot = lane + (rng() - .5) * .25;
         if (!inside(x, y) || !clear(x, y, 10) || nearRoad(x, y, L.roadWidth / 2 + Math.max(w, d) * .6 + 2)) continue;
+        bake.building(x,y,w,d,rot,B.huts==='house'?9:6);
         if (B.huts === 'thatch') {
           if (rng() < .6) batch.cone(x, y, GROUND, 5 + rng() * 3, 6, 7, rgb('#8d6d3f'), rgb('#6f532f'), rng() * TAU);
           else { batch.box(x, y, GROUND, w, d, 3, rot, rgb('#8a7350')); batch.roof(x, y, GROUND + 3, w, d, 4, rot, rgb('#a3874f')); }
@@ -543,6 +739,7 @@ export function createLand(scene, shared) {
     }
     for (const [i, p] of peaks.entries()) {
       const size = B.volcano ? Math.min(120, 40 + radius * .08) : Math.min(95, 20 + radius * .03) * (i ? .7 : 1);
+      bake.shadow(p.x,p.y,size*.95,size*.45,.28);
       if (B.volcano) {
         batch.cone(p.x, p.y, GROUND, size, size * .55, 10, rgb('#4a5a40'), rgb('#3a3634'), rng() * TAU);
         batch.cone(p.x, p.y, GROUND + size * .3, size * .55, size * .28, 10, rgb('#3a3634'), rgb('#232120'), rng() * TAU);
@@ -565,7 +762,7 @@ export function createLand(scene, shared) {
     let trees = 0;
     for (let x = -radius - spacing; x <= radius + spacing; x += spacing) for (let y = -radius - spacing; y <= radius + spacing; y += spacing) {
       const jx = x + (hash2(x + gx, y) - .5) * spacing * .9, jy = y + (hash2(y + gy, x) - .5) * spacing * .9;
-      if (!inside(jx, jy) || !clear(jx, jy) || isBlocked(jx, jy) || nearRoad(jx, jy, 10)) continue;
+      if (!inside(jx, jy) || !detailClear(jx, jy,12) || isBlocked(jx, jy) || nearRoad(jx, jy, 10)) continue;
       const h = hill(jx, jy), coast = polygonDistance(jx, jy, shore);
       if (coast < 24) continue;   // the beach is sand, not forest
       const f = smoothstep(.3, .7, forestNoise(jx, jy)) * (1 - smoothstep(.72, .88, h)) + (coast < 75 ? .15 : 0);
@@ -574,15 +771,39 @@ export function createLand(scene, shared) {
       if (f < threshold || (farmland(jx, jy) && r > .06)) continue;
       trees++;
       const color = treeColors[Math.floor(r * treeColors.length)];
+      // Irregular leaf litter anchors each crown and joins close trees into
+      // woodland masses. Seven cheap polygon vertices, no extra gradient.
+      const litter=[];
+      for(let k=0;k<7;k++) { const a=k*TAU/7,rr=(15+r*9)*( .8+hash2(k,jx)*.35);litter.push([jx+Math.cos(a)*rr,jy+Math.sin(a)*rr]); }
+      bake.patch(litter,'rgba(57,66,36,.30)');
+      bake.shadow(jx,jy,11+r*5,18,.57);
       if (B.palmOnly || (B.palms && (coast < 90 || r < .12))) batch.palm(jx, jy, GROUND, 8 + r * 5, color, r * TAU);
       else if (B.acacia) { batch.cone(jx, jy, GROUND + 6, 9 + r * 5, 3, 6, color, shade(color, .85), r * TAU); batch.box(jx, jy, GROUND, 1.6, 1.6, 6, 0, rgb('#5a4630')); }
-      else batch.cone(jx, jy, GROUND, 7 + r * 5, 9 + r * 7, 6, color, shade(color, 1.18), r * TAU);
+      else batch.broadleaf(jx,jy,GROUND,10+r*6,color,r*TAU);
     }
-    for (let i = 0; i < shore.length; i++) {
-      if (rng() > .22) continue;
-      const p = shore[i], q = interior[i % interior.length], x = (p[0] + q[0]) / 2, y = (p[1] + q[1]) / 2;
-      if (!clear(x, y)) continue;
-      batch.cone(x, y, 3.5, 4 + rng() * 7, 3 + rng() * 4, 5, rgb(B.rock), shade(rgb(B.rock), 1.2), rng() * TAU);
+    // Low coastal outcrops, drift and scrub form irregular groups instead of
+    // single gems spaced at polygon vertices. All centers remain on real land.
+    for(let i=0;i<denseShore.length;i+=2) {
+      const p=denseShore[i],q=interior[i],h=hash2(p[0]+gx,p[1]+gy);
+      if(h>.55)continue;
+      const dx=q[0]-p[0],dy=q[1]-p[1],distance=Math.hypot(dx,dy)||1;
+      const nx=dx/distance,ny=dy/distance,x=p[0]+nx*(16+h*32),y=p[1]+ny*(16+h*32);
+      if(!insidePolygon(x,y,shore)||!detailClear(x,y,15)||nearRoad(x,y,12))continue;
+      const count=2+Math.floor(h*5);
+      for(let j=0;j<count;j++) {
+        const offset=(j-(count-1)/2)*8,xx=x-ny*offset+nx*(hash2(i,j)-.5)*8,yy=y+nx*offset+ny*(hash2(j,i)-.5)*8;
+        if(!insidePolygon(xx,yy,shore)||!detailClear(xx,yy,12))continue;
+        const rockSize=4+hash2(xx+gx,yy+gy)*7;
+        const grass=insidePolygon(xx,yy,interior),height=grass?GROUND:3.5;
+        bake.shadow(xx,yy,rockSize*1.15,rockSize*.5,.36);
+        if(j===0&&h<.22&&grass) {
+          batch.cone(xx,yy,height,rockSize*.85,3,7,shade(rgb(B.trees[0]),.75),rgb(B.trees[1]),h*TAU);
+          batch.cone(xx+rockSize*.5,yy-rockSize*.3,height+1,rockSize*.65,2.5,6,rgb(B.trees[0]),shade(rgb(B.trees[1]),1.05),h*TAU);
+        } else {
+          batch.cone(xx,yy,height,rockSize,rockSize*.46,6,shade(rgb(B.rock),.75),shade(rgb(B.rock),1.12),h*TAU+j);
+          if(j===1)batch.box(xx,yy,height+.8,rockSize*1.3,1.5,1.4,Math.atan2(ny,nx)+.5,rgb('#665e46'),rgb('#8d805c'));
+        }
+      }
     }
     if (B.scrub || B.volcano) for (let i = 0; i < radius / 40; i++) {
       const a = rng() * TAU, r = rng() * radius * .8, x = Math.cos(a) * r, y = Math.sin(a) * r;
@@ -590,6 +811,7 @@ export function createLand(scene, shared) {
       batch.cone(x, y, GROUND, 5 + rng() * 9, 4 + rng() * 5, 5, rgb(B.rock), shade(rgb(B.rock), 1.25), rng() * TAU);
     }
 
+    ground.uniforms.albedoMap.value=bake.finish();
     if (batch.n) group.add(new THREE.Mesh(batch.build(), sceneryMaterial));
     group.userData = { radius, extent: t.extent ?? radius, biome: biomeName, villages: villages.length, roads: roads.length, trees, traffic };
     return group;
@@ -598,10 +820,11 @@ export function createLand(scene, shared) {
   return {
     build,
     dispose(group) {
+      const disposed=new Set();
       group.traverse(node => {
         if (!node.isMesh) return;
         node.geometry.dispose();
-        if (node.material.uniforms?.low) node.material.dispose();
+        if (node.material.uniforms?.albedoMap && !disposed.has(node.material)) { disposed.add(node.material); node.material.uniforms.albedoMap.value?.dispose(); node.material.dispose(); }
       });
     },
   };

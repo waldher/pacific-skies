@@ -17,6 +17,7 @@ import { CONFIG } from './config.js';
 import { noiseTexture, NOISE_GLSL } from './noise.js';
 import { createLand } from './land.js';
 import { createTraffic } from './traffic.js';
+import { DetachedLandCache, estimateLandBytes, LAND_CACHE_BYTES, LAND_BUILD_RESERVE_BYTES } from './world-cache.js';
 
 const WORLD_VERTEX = `varying vec2 worldXZ;
   void main() {
@@ -55,19 +56,21 @@ export function createWorld(scene) {
       void main() {
         vec2 p = worldXZ, drift = wind * time;
         // Ripples: three ridged octaves, each rotated so the noise grid never lines up.
-        vec4 o1 = ridge((p + drift) * .011);
-        vec4 o2 = ridge(R1 * (p - drift * .7) * .026);
+        vec4 o1 = ridge((p + drift) * vec2(.018, .055));
+        vec4 o2 = ridge(R1 * (p - drift * .7) * vec2(.024, .075));
         float h1 = o1.x, h = h1 * .55 + o2.x * .45, twinkle = o2.w;
-        vec2 g = o1.yz * (.55 * .011) + (R1T * o2.yz) * (.45 * .026);
+        vec2 g = o1.yz * (.55 * vec2(.018, .055)) + R1T * (o2.yz * (.45 * vec2(.024, .075)));
         if (detail > .5) {
           vec4 o3 = ridge(R2 * (p + drift * 1.6) * .058);
           twinkle = o3.w;
           h = h1 * .45 + o2.x * .33 + o3.x * .22;
-          g = o1.yz * (.45 * .011) + (R1T * o2.yz) * (.33 * .026) + (R2T * o3.yz) * (.22 * .058);
+          g = o1.yz * (.45 * vec2(.018, .055)) + R1T * (o2.yz * (.33 * vec2(.024, .075))) + (R2T * o3.yz) * (.22 * .058);
         }
-        vec3 water = mix(deepColor, midColor, .15 + h * .7);
+        // Restrained directional wavelets leave silhouettes and impacts dominant.
+        vec3 water = mix(deepColor, midColor, .38 + h * .20);
+        water *= .97 + .08 * smoothstep(.72, .96, h);
         // Lit waves and sun glitter from the wave slope.
-        vec3 n = normalize(vec3(-g.x * 10.0, 1.0, -g.y * 10.0));
+        vec3 n = normalize(vec3(-g.x * 2.8, 1.0, -g.y * 2.8));
         water *= .82 + .3 * max(dot(n, sunDir), 0.0);
         if (detail > 1.5) {
           vec3 halfway = normalize(sunDir + vec3(0.0, 1.0, 0.0));
@@ -77,7 +80,7 @@ export function createWorld(scene) {
           // Whitecaps: sparse flecks stretched along the wind, clustered on the big swell crests (h1).
           vec2 w = normalize(wind), along = vec2(dot(p, w), dot(p, vec2(-w.y, w.x)));
           float fleck = vnoise2(along * vec2(.045, .16) + vec2(-time * .3, 13.0));
-          water = mix(water, vec3(.9, .95, .97), foam * smoothstep(.9, .96, fleck) * smoothstep(.7, .95, h1));
+          water = mix(water, vec3(.9, .95, .97), foam * smoothstep(.84, .98, fleck) * smoothstep(.75, .98, h1));
         }
         if (detail > .5) {
           // Cloud shadows drifting over everything.
@@ -116,35 +119,66 @@ export function createWorld(scene) {
   const land = createLand(scene, { ...shared, surfMaterial });
   const traffic = createTraffic(scene);
   const chunks = new Map();
+  const cache = new DetachedLandCache(group => land.dispose(group));
+  let terrainIdentity = null, geographySeed = null, coldBuilds = 0;
+  function syncLand(game, view) {
+    const cam = game.cam, territories = game.terrain || game.territories || [];
+    // A new campaign/save owns a different procedural world. Never retain its
+    // textures or groups merely because coordinates happen to match.
+    if (terrainIdentity !== territories || geographySeed !== (game.geographySeed ?? 0)) {
+      for (const group of chunks.values()) { scene.remove(group); land.dispose(group); }
+      chunks.clear(); cache.clear();
+      terrainIdentity = territories; geographySeed = game.geographySeed ?? 0;
+    }
+    const needed = new Set();
+    for (const territory of territories) {
+      const margin = (territory.extent ?? territory.radius) * 1.4 + 150;
+      if (Math.abs(territory.x - cam.x) <= view.W / 2 + margin &&
+          Math.abs(territory.y - cam.y) <= view.H / 2 + margin) needed.add(territory);
+    }
+    // Detach first: they stop drawing/animating but keep uploaded resources.
+    for (const [key, group] of chunks) {
+      if (needed.has(key)) continue;
+      scene.remove(group); chunks.delete(key); cache.put(key, group);
+    }
+    // Reattach all hits before reserving space for any cold build, so incoming
+    // visible groups cannot accidentally be evicted by the reservation.
+    for (const territory of needed) {
+      if (chunks.has(territory)) continue;
+      const group = cache.take(territory);
+      if (group) { chunks.set(territory, group); scene.add(group); }
+    }
+    for (const territory of needed) {
+      if (chunks.has(territory)) continue;
+      cache.reserveBuild();
+      const holdings = territory.role ? [territory]
+        : (game.territories || []).filter(h => h.terrainId != null ? h.terrainId === territory.id
+          : Math.hypot(h.x - territory.x, h.y - territory.y) < (territory.extent ?? territory.radius));
+      const group = land.build(territory, { sectors: game.sectors, holdings, geographySeed });
+      chunks.set(territory, group); scene.add(group); coldBuilds++;
+    }
+  }
   return {
     setDetail(level) { oceanMaterial.uniforms.detail.value = level; },
+    // Loading-screen callers can build the initial home view before accepting
+    // input. GPU upload still requires a renderer frame. This is deliberately
+    // not advertised as asynchronous/staged generation.
+    prewarm(game, view) { syncLand(game, view); },
     update(game, view, dt, pixelRatio) {
-      const cam = game.cam, territories = game.terrain || game.territories || [];
+      const cam = game.cam;
       ocean.position.set(cam.x, 0, cam.y);
       ocean.scale.set(view.W + 1000, view.H + 1000, 1);
       shared.time.value = game.time;
-      const needed = new Set();
-      for (const territory of territories) {
-        const margin = (territory.extent ?? territory.radius) * 1.4 + 150;
-        if (Math.abs(territory.x - cam.x) > view.W / 2 + margin ||
-            Math.abs(territory.y - cam.y) > view.H / 2 + margin) continue;
-        needed.add(territory);
-        if (!chunks.has(territory)) {
-          // Older saves lack terrainId; fall back to whichever holdings sit on this landmass.
-          const holdings = territory.role ? [territory]
-            : (game.territories || []).filter(h => h.terrainId != null ? h.terrainId === territory.id
-              : Math.hypot(h.x - territory.x, h.y - territory.y) < (territory.extent ?? territory.radius));
-          const group = land.build(territory, { sectors: game.sectors, holdings, geographySeed: game.geographySeed ?? 0 });
-          chunks.set(territory, group); scene.add(group);
-        }
-      }
-      for (const [key, group] of chunks) {
-        if (needed.has(key)) continue;
-        scene.remove(group);
-        land.dispose(group);
-        chunks.delete(key);
-      }
+      syncLand(game, view);
       traffic.update(dt, chunks.values(), game.time);
+    },
+    get cacheStats() {
+      let activeBytes = 0;
+      for (const group of chunks.values()) activeBytes += estimateLandBytes(group);
+      return { detachedBytes: cache.bytes, detachedCount: cache.entries.size,
+        maxDetachedBytes: LAND_CACHE_BYTES, buildReserveBytes: LAND_BUILD_RESERVE_BYTES,
+        activeBytes, estimatedResidentBytes: activeBytes + cache.bytes,
+        hits: cache.hits, evictions: cache.evictions, coldBuilds };
     },
     get chunkCount() { return chunks.size; },
     get chunks() { return chunks; },

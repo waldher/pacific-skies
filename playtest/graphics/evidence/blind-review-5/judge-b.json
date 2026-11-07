@@ -1,0 +1,290 @@
+{
+  "reviewer": "B",
+  "packet": "judge-packet-5",
+  "coverage": "All 25 PNGs individually inspected using view_image. No mapping, sources, other reviewers or outside-directory files opened.",
+  "criteria": [
+    "readability",
+    "coherence",
+    "lighting/depth",
+    "environment/material richness",
+    "effects polish"
+  ],
+  "weights": [
+    0.3,
+    0.2,
+    0.2,
+    0.15,
+    0.15
+  ],
+  "recognition": "Tentatively recognize StarCraft II in view07 and Company of Heroes in views19/24; tactical planning references06/15 are recognizable but exact title uncertain. Unchanged image/reference scores preserved from preceding packets.",
+  "images": {
+    "view-01.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        7,
+        5
+      ],
+      "evidence": "Airfield, shaded trees, rocks and raised hangars read clearly; warmer mottled grass adds surface variation. Plane overlaps a hangar, soft edges blur small details, and uniform stones and beach remain repetitive."
+    },
+    "view-02.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        6,
+        5
+      ],
+      "evidence": "Dark hull border and planked central deck distinguish materials; restored long twin wake communicates motion. Soft resolution and broad featureless dark bow limit finish, while player remains merged with stern."
+    },
+    "view-03.png": {
+      "scores": [
+        6,
+        7,
+        6,
+        6,
+        5
+      ],
+      "evidence": "Textured deck and dark hull separate the carrier surface from water; long wake adds motion. Aircraft and diffuse particles still crowd the stern, small deck marks compete with units, and depth cues under aircraft are weaker than in dark-shadow variants."
+    },
+    "view-04.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        7,
+        6
+      ],
+      "evidence": "Sharp roofs, wall sides, tree shadows, shoreline stones, faint tracks and whitecaps enrich the airfield. Plane overlaps central hangar; repeated stones and nearly uniform beach remain artificial."
+    },
+    "view-05.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        7,
+        6
+      ],
+      "evidence": "Sharp hangars and shadows ground the airfield, with warmer grass variation and shoreline rocks adding material detail. Similar-colored mottling does not create substantial new landmarks; player still crosses the central roof and shoreline lacks surf."
+    },
+    "view-06.png": {
+      "scores": [
+        7,
+        9,
+        9,
+        9,
+        8
+      ],
+      "evidence": "Detailed market stalls, produce, carts, warm lighting and shadows create coherent space. Colored paths stand apart, but tiny people and numerous icons crowd the phone-scale view."
+    },
+    "view-07.png": {
+      "scores": [
+        7,
+        9,
+        9,
+        9,
+        9
+      ],
+      "evidence": "Bright impact, sparks and beams create strong focus against richly detailed ships and alien terrain. Dense dark units merge and the blast obscures targets."
+    },
+    "view-08.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        6,
+        5
+      ],
+      "evidence": "Rocks, tree shadows and raised hangars give the coast depth. Soft detail, repeated stones, broad plain grass and little water contact limit material quality."
+    },
+    "view-09.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        6,
+        5
+      ],
+      "evidence": "Open layout and fixed objectives keep plane easy to find; olive grass mottling and pale fields add variation. Soft rendering and repeated shore rocks remain; grass variation is largely cosmetic and does not resolve empty terrain."
+    },
+    "view-10.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        7,
+        5
+      ],
+      "evidence": "Shore rocks, shaded trees, raised roof sides and faint tracks enrich the airfield. Soft edges and regular stone placement feel schematic; plane overlaps a roof and shoreline has minimal contact detail."
+    },
+    "view-11.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        6
+      ],
+      "evidence": "Crisp hangars, tree shadows and rocks anchor the coast, while sea highlights and warmer grass add texture. Broad open ground remains plain in structure, nearby rocks compete slightly with plane, and beach is uniform."
+    },
+    "view-12.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        5,
+        4
+      ],
+      "evidence": "Fixed objectives and elevated island make the isolated carrier legible. Soft geometry, missing long wake, repetitive water and player-stern overlap limit physical integration."
+    },
+    "view-13.png": {
+      "scores": [
+        6,
+        7,
+        6,
+        7,
+        6
+      ],
+      "evidence": "Sharp planked deck, dark hull border, muted whitecaps and restored wake improve material definition. Dense aircraft and soft particle dots obscure player; additional deck marks compete with tiny action details and aircraft shadows are less explicit than in shadow-heavy views."
+    },
+    "view-14.png": {
+      "scores": [
+        7,
+        7,
+        6,
+        7,
+        6
+      ],
+      "evidence": "Crisp planked deck and contrasting hull sides add materials, while long wake restores motion. Pale aircraft still overlap deck markings and player overlaps stern; aircraft height is less strongly expressed than in offset-shadow variants."
+    },
+    "view-15.png": {
+      "scores": [
+        8,
+        9,
+        9,
+        9,
+        8
+      ],
+      "evidence": "Thick walls, furniture, distinct floor materials and warm/cool lighting clearly articulate rooms. Tiny figures and thin planning paths require scrutiny."
+    },
+    "view-16.png": {
+      "scores": [
+        7,
+        7,
+        6,
+        6,
+        5
+      ],
+      "evidence": "Dark carrier rim, planked deck and long wake add surface and motion cues. Soft aircraft edges and deck overlap persist, and the large dark bow cap is flat."
+    },
+    "view-17.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        6
+      ],
+      "evidence": "Tree shadows, shoreline stones, soft sand transition and raised hangar edges give coast depth. Plane is legible, but adjacent rocks compete slightly and broad grass and fields remain basic."
+    },
+    "view-18.png": {
+      "scores": [
+        6,
+        7,
+        7,
+        6,
+        5
+      ],
+      "evidence": "Offset aircraft shadows and elevated carrier island create clear height cues. Duplicate dark silhouettes add swarm clutter, particles lack impact hierarchy, and no long wake communicates carrier movement."
+    },
+    "view-19.png": {
+      "scores": [
+        6,
+        9,
+        9,
+        10,
+        9
+      ],
+      "evidence": "Fog, trees, ruins, tracks and smoke form layered battlefield depth. Muzzle flashes are integrated but small camouflaged units merge into the rich terrain."
+    },
+    "view-20.png": {
+      "scores": [
+        8,
+        7,
+        7,
+        6,
+        5
+      ],
+      "evidence": "Sharp rim and raised island with dark sides give carrier volume; restrained sea flecks preserve clarity. Missing long wake weakens motion and player still overlaps stern."
+    },
+    "view-21.png": {
+      "scores": [
+        6,
+        7,
+        6,
+        5,
+        4
+      ],
+      "evidence": "Aircraft shadows and raised island support height, with clean objective bars. Soft planes, duplicated shadows and diffuse dots crowd central action; absent long wake weakens motion."
+    },
+    "view-22.png": {
+      "scores": [
+        7,
+        7,
+        6,
+        5,
+        4
+      ],
+      "evidence": "Offset shadows and island sides add volume despite soft rendering. No long wake or convincing hull-water contact is visible; overlapping stern silhouettes remain."
+    },
+    "view-23.png": {
+      "scores": [
+        7,
+        7,
+        7,
+        6,
+        5
+      ],
+      "evidence": "Crisp planes with offset shadows and elevated shaded island establish height. No long wake, stern overlap and tiny pale puffs limit motion and player readability."
+    },
+    "view-24.png": {
+      "scores": [
+        6,
+        9,
+        9,
+        10,
+        9
+      ],
+      "evidence": "Reflective wet roads, rubble, rain, smoke and luminous projectiles form a cohesive storm battlefield. Dark tanks and small infantry blend with complex ground."
+    },
+    "view-25.png": {
+      "scores": [
+        8,
+        7,
+        6,
+        7,
+        6
+      ],
+      "evidence": "Sharp planked deck, contrasting dark hull and long wake provide richer materials and clear motion. The broad dark bow remains flat, small repetitive fittings do not yield rich lighting, and player overlaps stern."
+    }
+  },
+  "general_findings": [
+    "The planked-deck variants add material differentiation and visibly restore a long wake. Their aircraft have weaker obvious offset shadows than the corresponding shadow-heavy variants; material gains should not be mistaken for universal lighting gains.",
+    "Olive grass variation changes land surface appearance, but layout remains broad empty lawns, repeated stones, rectangular fields and identical hangars. This is a modest cosmetic gain, not a large richness jump.",
+    "Crowded aircraft scenes still conceal the player at the stern; extra plank/deck detail can compete with small units. All maintain clear fixed objective bars.",
+    "Reference images remain stronger in variation of light, occlusion, localized material response, environment storytelling and purposeful effects. Aviation scenes retain relatively clear HUD and open-space readability."
+  ],
+  "regressions": [
+    "Aircraft height separation is less pronounced in planked-deck variants relative to offset-shadow views18/23.",
+    "Added fine deck texture increases local noise where planes already overlap.",
+    "Warm mottled grass changes the palette without resolving repetitive environmental structure; avoid intensifying noise to chase detail."
+  ],
+  "recommendations": [
+    "Make the player unmistakable in swarm scenes through a distinct silhouette/accent and consistent thin outline or localized halo that survives carrier overlap; suppress nearby incidental particles.",
+    "Retain restored wake and deck materials, restore subtle coherent aircraft shadows without the heavy duplicate black silhouettes, and integrate hull-edge foam into the wake.",
+    "Add structural land variation: service apron, paths, small utility objects and broken vegetation clusters; use a few strong readable shapes instead of uniform noise.",
+    "Improve material-specific lighting: roof highlights and dark wall contacts, deck edge occlusion, hull-side shading, and a shallow-water gradient with localized surf along the shore.",
+    "Replace generic soft dots with a hierarchy of identifiable effects: brief hot impact core, restrained sparks, smoke with directional drift, and readable projectile trajectories."
+  ]
+}

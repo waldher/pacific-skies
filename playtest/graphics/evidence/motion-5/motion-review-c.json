@@ -1,0 +1,93 @@
+{
+  "reviewer": "C",
+  "accept": false,
+  "scope": "Independent review of all 18 provided PNGs and motion.json timestamps/events. No game source or key read. This is a sampled simulation sequence review, not a real-time playback, touch-input, or actual-device FPS test.",
+  "inspected_files": [
+    "phone-000.png",
+    "phone-006.png",
+    "phone-012.png",
+    "phone-024.png",
+    "phone-036.png",
+    "phone-060.png",
+    "phone-090.png",
+    "phone-120.png",
+    "phone-180.png",
+    "fallback-000.png",
+    "fallback-006.png",
+    "fallback-012.png",
+    "fallback-024.png",
+    "fallback-036.png",
+    "fallback-060.png",
+    "fallback-090.png",
+    "fallback-120.png",
+    "fallback-180.png"
+  ],
+  "sample_times_seconds": [
+    0,
+    0.1,
+    0.2,
+    0.4,
+    0.6,
+    1,
+    1.5,
+    2,
+    3
+  ],
+  "overall_reason": "Hit flash, visible HUD controls and sampled wake/camera continuity are adequate. I would not accept the impact-effects polish gate yet: the event identified as a large explosion reads mainly as a thin ring and tiny bright dot, with weak scale distinction from the small impact. Smoke is visibly transient but remains a chain of separate small puffs.",
+  "findings": {
+    "hit_flash_and_impact_recognition": {
+      "accept": false,
+      "evidence": [
+        "At 0.1 and 0.2 seconds in both profiles the player becomes an unmistakable bright-white silhouette; hull text/bar falls from 35% to 27% and instruction changes to RETURN TO BASE. By 0.4 seconds the plane returns to its normal blue-gray material, consistent with hitFlash returning to zero in metadata.",
+        "The small impact at 0.1 seconds is a narrow yellow ring with tiny center. It expands/fades by 0.2 and is no longer prominent at 0.4 seconds.",
+        "The event marked actual large explosion at 1.0 seconds is again a thin yellow ring and small pale center, somewhat larger than the earlier ring but without a strong fire mass or visually dominant impact core. By 1.5 seconds it leaves scattered small faint particles. At phone display scale the major-impact significance is weak."
+      ],
+      "recommendation": "Retain the clear brief player-white flash. Give the large explosion a visibly larger bright core, short shaped fire/debris phase and wider softer smoke development so event scale is recognizable without metadata."
+    },
+    "smoke_fading": {
+      "accept": true,
+      "qualification": "Pass for evident lifecycle, not high effects polish.",
+      "evidence": [
+        "The small impact haze/ring becomes less visible across 0.1–0.6 seconds. The old trail is faint while newer puffs stay brighter near the damaged aircraft.",
+        "Around the large event, particles change from 47 at 1.0/1.5 seconds to 17 at 2.0 seconds; no fire/ring remain at 2.0 seconds according to metadata. Images correspondingly show only faint scattered haze and the ongoing damaged-aircraft trail.",
+        "The trail persists through 3.0 seconds behind the 27%-hull aircraft; this is consistent with continued emission rather than proof old smoke fails to expire. Individual puffs remain regularly spaced dots instead of a continuous expanding plume."
+      ],
+      "recommendation": "Vary puff size/spacing and expand while lowering opacity. Review denser samples around 1.0–2.0 seconds if precise decay smoothness must be certified."
+    },
+    "wake_continuity": {
+      "accept": true,
+      "qualification": "Pass at sampled times.",
+      "evidence": [
+        "Carrier wake stays connected behind its far end as the ship shifts upward/right through early samples and leaves the top of the view.",
+        "Smaller ships retain their pale trailing wakes as they cross the screen; the lower/right ship at 2.0 seconds has a connected wake aligned behind its direction of travel.",
+        "No sampled disconnected wake fragments or reversed wake direction are evident in either profile. Wake shape remains paired blurred streaks, with limited turbulence or widening."
+      ],
+      "recommendation": "Preserve attachment; improve widening/dissipation and breakup for material realism. Sparse samples cannot rule out between-frame popping."
+    },
+    "camera_motion": {
+      "accept": true,
+      "qualification": "Pass for sampled trajectory/coherence; smooth interpolation cannot be established from these sparse stills.",
+      "evidence": [
+        "Player starts well left/below screen center, moves toward center over 0.1–0.6 seconds, and remains near center while heading turns from -0.4 toward 2.876 radians through 1.5 seconds.",
+        "Carrier and other world objects shift coherently while HUD anchors remain fixed. At 2.0 and 3.0 seconds player stays near the same central screen location as world scenery moves rightward.",
+        "Initial recentering is substantial: metadata camera moves approximately 54 units left and 37 down in the first 0.1 seconds. This may feel brisk, but the supplied samples alone do not justify a jitter or comfort claim."
+      ],
+      "recommendation": "If camera comfort matters, inspect continuous playback around initial recentering and the turn. No actual phone performance inference made."
+    },
+    "control_visibility": {
+      "accept": true,
+      "evidence": [
+        "Bomb 2/2 and Fire remain high-contrast and consistently placed on the right in all 18 captures. Hull and heat bars stay visible at upper left; objective text stays on dark backing.",
+        "A ship moves behind the translucent Bomb control near 3.0 seconds, but the label remains legible. Right-edge aircraft is partly obscured near 1.5 seconds, which affects world visibility more than button visibility.",
+        "The small 27% hull number and heat bar are readable at provided size; steering controls or touch feedback are not represented, so their usability cannot be judged."
+      ],
+      "recommendation": "Keep stable dark backing and test with actual touch interaction separately; sampled visual visibility passes."
+    }
+  },
+  "profile_comparison": "Both profiles preserve the same timing/state progression and essential flash/HUD/wake cues. Fallback is softer and omits much surface foam, reducing texture richness while keeping action readable. No timing values were interpreted as actual phone FPS.",
+  "priorities": [
+    "Improve large-versus-small impact differentiation before claiming polished motion effects.",
+    "Break up the dotted smoke trail into expanding overlapping puffs without hiding the aircraft.",
+    "Keep wake continuity and clear flash lifecycle; inspect continuous playback only for unresolved interpolation/comfort questions."
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "accept": false,
+  "scope": "Independent visual review of all 18 PNGs plus motion.json timestamps; acceptance means the requested motion cues are clearly communicated at displayed phone size, not a device-performance certification.",
+  "all_images_viewed": true,
+  "profiles": [
+    "phone",
+    "fallback"
+  ],
+  "sample_times_seconds": [
+    0,
+    0.1,
+    0.2,
+    0.4,
+    0.6,
+    1,
+    1.5,
+    2,
+    3
+  ],
+  "findings": [
+    {
+      "category": "hitflash",
+      "accept": true,
+      "evidence": "In both profiles at 0.1s and 0.2s the player becomes a bright white aircraft silhouette, clearly distinct from its gray 0s appearance. By 0.4s it returns to gray. Hull changes from 35% to 27% and the top objective becomes RETURN TO BASE.",
+      "files": [
+        "phone-006.png",
+        "phone-012.png",
+        "phone-024.png",
+        "fallback-006.png",
+        "fallback-012.png",
+        "fallback-024.png"
+      ]
+    },
+    {
+      "category": "impact_recognition",
+      "accept": false,
+      "evidence": "The 0.1s small impact is a thin amber ring with a tiny bright center. The event labelled large explosion at 1s remains essentially the same visual vocabulary: a somewhat larger thin ring with a tiny pale center, without a readily apparent flame mass or strong illumination. At 1.5s no substantial explosion silhouette remains. The samples show an impact, but do not communicate a convincing large blast.",
+      "files": [
+        "phone-006.png",
+        "phone-060.png",
+        "phone-090.png",
+        "fallback-006.png",
+        "fallback-060.png",
+        "fallback-090.png"
+      ],
+      "recommendation": "Give the large blast a clearly larger bright core and short-lived orange flame envelope, followed by a broader translucent smoke mass. Preserve the player silhouette; keep the ring subordinate to the blast."
+    },
+    {
+      "category": "smoke_fading",
+      "accept": false,
+      "evidence": "At 0.4–0.6s a dotted pale-gray trail curves behind the player; at 1.5–3s similar separated dots follow its new path. Old particles appear to diminish and no opaque persistent screen blockage appears, but the effect reads as evenly spaced beads rather than expanding fading smoke. Large-explosion smoke is too weak to distinguish confidently from aircraft trail and water detail.",
+      "files": [
+        "phone-024.png",
+        "phone-036.png",
+        "phone-090.png",
+        "phone-120.png",
+        "phone-180.png",
+        "fallback-024.png",
+        "fallback-036.png",
+        "fallback-090.png",
+        "fallback-120.png",
+        "fallback-180.png"
+      ],
+      "recommendation": "Vary puff size and spacing, expand puffs as they fade, and overlap a few low-opacity puffs so smoke reads as a plume. Keep old puffs faint and distinguish blast smoke from the continuous damage trail."
+    },
+    {
+      "category": "wake_continuity",
+      "accept": true,
+      "evidence": "Carrier wake remains attached and aligned behind the ship from 0 through 0.6s as the world shifts. The small ship entering below at 1s retains a coherent pale trailing wake at 1.5s and 2s. No isolated detached wake or reversal is visible in either profile.",
+      "limitation": "Sparse samples cannot rule out a transient between-frame discontinuity."
+    },
+    {
+      "category": "camera_motion",
+      "accept": true,
+      "evidence": "Player begins lower left, moves toward center over 0–0.6s, and stays near center through the turn at 1–1.5s and departure at 2–3s. World objects shift consistently around that tracked player and HUD remains fixed. Initial recentering is conspicuous but decreases across the early samples.",
+      "limitation": "This is a sampled sequence, not continuous playback; no claim of frame-to-frame smoothness or actual phone FPS."
+    },
+    {
+      "category": "control_visibility",
+      "accept": true,
+      "evidence": "Bomb 2/2 and Fire stay in the same right-side positions with readable white labels in all 18 frames. HUD and return-to-base text remain legible. At 3s a ship passes under the translucent Bomb panel, but the label and button outline remain readable.",
+      "limitation": "Visibility only; this sequence does not demonstrate touch targeting or steering input."
+    }
+  ],
+  "blocking_findings": [
+    "The labelled large explosion is visually too similar to a small impact.",
+    "Smoke fades without a convincing expanding plume and is difficult to distinguish from dotted damage trails."
+  ],
+  "nonblocking_findings": [
+    "Initial camera recentering is noticeable.",
+    "World objects can be seen through the Bomb button at 3s, but control contrast stays adequate."
+  ],
+  "limits": "Only supplied PNGs and motion.json were read; no source or key inspected. Simulation timestamps identify event order and elapsed simulation time. Runtime timing was not equated to real-device FPS."
+}
