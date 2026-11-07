@@ -1,0 +1,76 @@
+{
+  "accept": true,
+  "scope": "Pass for original sampled criteria: hit/impact recognition, smoke lifecycle, ship-wake continuity, camera tracking and primary controls. Shoreline material polish does not pass as natural foam.",
+  "inspected_images": 36,
+  "scenes": [
+    "fleet",
+    "coast"
+  ],
+  "profiles": [
+    "phone",
+    "fallback"
+  ],
+  "ticks": [
+    0,
+    6,
+    12,
+    24,
+    36,
+    60,
+    90,
+    120,
+    180
+  ],
+  "simulation_times_seconds": [
+    0,
+    0.1,
+    0.2,
+    0.4,
+    0.6,
+    1,
+    1.5,
+    2,
+    3
+  ],
+  "findings": {
+    "impact_recognition": {
+      "pass": true,
+      "evidence": "Both fleet and coast, in both profiles: white aircraft flash at 0.1/0.2 seconds, normal by 0.4; hull 35% to 27%. Small hit clearly differs from large orange/yellow filled burst at 1 second. Persistent cyan circle keeps player location clear over runway and sea."
+    },
+    "smoke_fading": {
+      "pass": true,
+      "evidence": "Small hit dwindles by 0.4\u20130.6; large burst at 1 second becomes sparse embers and smoke at 1.5, no bright fire by 2\u20133. Coast shows separate fading burst cloud and ongoing curved damage trail.",
+      "limitation": "Trail remains granular and rope-like; smoke has limited volume and partly merges into textured ocean. Coast makes the difference between large burst cloud and continuing trail easier to see."
+    },
+    "wake_continuity": {
+      "pass": true,
+      "evidence": "Fleet carrier and escorts retain stern-attached tapering wakes throughout visible sampled positions in both profiles. Repeated oval construction remains.",
+      "limitation": "Repeated oval wake stamps remain conspicuous, especially carrier. No ships in coastal sequence."
+    },
+    "camera_motion": {
+      "pass": true,
+      "evidence": "Fleet player recenters and tracks consistently; coast player remains near center while runway and rock groups move coherently through turn. Cyan ring remains centered in every sampled frame.",
+      "limitation": "Sparse nine-timestamp sampling per sequence cannot establish continuous interpolation or micro-jitter."
+    },
+    "control_visibility": {
+      "pass": true,
+      "evidence": "Bomb, Fire, hull/heat and objectives remain fixed and readable in all four sequences. Ship behind Bomb at 3 seconds does not hide label. Ring retains player location across deck, runway, sand and ocean.",
+      "limitation": "Fleet Hawk overlaps minimap edge at 2 seconds; coast Hawk label enters objective bar at 3 seconds. These secondary-label collisions persist although primary control text is usable."
+    },
+    "shoreline_material": {
+      "pass": false,
+      "evidence": "Coastal white strokes now vary more in length and taper, with broader broken sections near 0\u20130.6 seconds; they follow the scrolling coast. Nevertheless they still sit offshore as smooth isolated ribbons, without irregular foamy bodies or convincing shore wash. At 2\u20133 seconds visible strands become very faint or absent.",
+      "limitation": "Sparse frames do not establish a continuous wash cycle. Reduced rail regularity is a limited improvement, not polished natural surf."
+    }
+  },
+  "largest_remaining_visual_gaps": [
+    "Carrier darker rim restores depth, but deck illumination remains uniform; continue directional material shading.",
+    "Shore foam still smooth isolated offshore ribbons; needs irregular foam bodies attached to shore wash.",
+    "Granular rope-like smoke and repeated oval wakes lack natural material breakup.",
+    "Dense combat overlaps and equal impact flecks remain untested by this sparse fixture.",
+    "Hawk label still overlaps fleet minimap edge at 2 seconds and coast objective bar at 3 seconds."
+  ],
+  "limitations": "All 36 actual PNGs inspected and timestamps reviewed. No source/key inspected. No actual phone FPS inferred; sparse timestamps cannot establish continuous animation smoothness. Accept applies to original functional motion criteria; natural shoreline polish remains rejected.",
+  "reviewed_sequence": "motion-14",
+  "inspection": "All 36 motion-14 PNGs individually opened using view_image and all four sequence timestamps/events checked in motion.json."
+}

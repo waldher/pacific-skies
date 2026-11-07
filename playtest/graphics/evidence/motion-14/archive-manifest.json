@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "sourceHash": "d50257c4dabc43e7981386099c0500645e112e41cc2ec2d8254a1c2a5c4f9655",
+  "originalReportSha256": "cc7485ce5e6d39ee135d4d11dc9b7d336695a49e7879df6c4cef869fd1208d83",
+  "originalArtifact": {
+    "file": "motion.html",
+    "sha256": "76f28d2ffe962b3a877d73e079fbb7faca47194ff34e47544d972fee3a47486b",
+    "contains": "36 embedded PNGs: fleet and coastal sequences, nine timestamps each, both phone profiles"
+  },
+  "originalArtifactStored": false,
+  "reason": "Avoid duplicating all 36 PNG bytes in base64; original artifact hash is preserved unchanged in motion.json.",
+  "derivedPlayer": {
+    "file": "motion-player.html",
+    "sha256": "c1bd3cd0354bbce3e00446a1625fb1e4e7c68a972a3f4b15a38dcefe01d82a70",
+    "transformation": "Exact original HTML with each data:image/png;base64 URL replaced by its corresponding relative PNG filename. No frame data, scripts or timing altered."
+  },
+  "reviews": {
+    "motion-review-c.json": "a84bb5a2db88ee45c5cb422bc69fcc0e53cc6015e0dc855376035613315435ee",
+    "motion-review-a.json": "4e9456e87880da570ff7609f1fb773f9c4a3ada3819c4d3660ae44f9ba106d45",
+    "motion-review-b.json": "ba63a5173648b3171e883c3120e5ea037026c875148a7839c2f573ddf0ccab6e"
+  }
+}

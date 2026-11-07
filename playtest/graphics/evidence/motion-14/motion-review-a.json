@@ -1,0 +1,106 @@
+{
+  "accept": true,
+  "acceptance_scope": "Same core motion criteria as prior reviews; shoreline naturalism is assessed separately and remains below the reference quality.",
+  "all_images_viewed": 36,
+  "scenes": [
+    "fleet",
+    "coast"
+  ],
+  "profiles": [
+    "phone",
+    "fallback"
+  ],
+  "sample_times_seconds": [
+    0,
+    0.1,
+    0.2,
+    0.4,
+    0.6,
+    1,
+    1.5,
+    2,
+    3
+  ],
+  "findings": [
+    {
+      "category": "Impact recognition",
+      "accept": true,
+      "evidence": "Both scenes/profiles show white damage flash at.1/.2 and return to gray by.4. Compact orange impact differs from large fireball at1 second; fireball disperses by1.5.",
+      "files": [
+        "fleet-phone-006.png",
+        "fleet-fallback-024.png",
+        "coast-phone-060.png",
+        "coast-fallback-090.png"
+      ]
+    },
+    {
+      "category": "Smoke fading and continuity",
+      "accept": true,
+      "evidence": "Connected trail follows turn and older ends broaden/fade at2/3. Coast explosion plume at1.5 disperses by2; no opaque obstruction of player. Fine grain and separated distal traces remain.",
+      "files": [
+        "fleet-phone-090.png",
+        "fleet-fallback-180.png",
+        "coast-phone-090.png",
+        "coast-fallback-120.png"
+      ]
+    },
+    {
+      "category": "Wake continuity",
+      "accept": true,
+      "evidence": "Fleet wakes remain attached and taper across all sampled translations. Rounded repeating bands remain conspicuous but no rectangular detachment is seen.",
+      "files": [
+        "fleet-phone-000.png",
+        "fleet-phone-120.png",
+        "fleet-fallback-120.png"
+      ]
+    },
+    {
+      "category": "Camera and player tracking",
+      "accept": true,
+      "evidence": "Fleet initial recenter and coast scrolling preserve central player tracking through turn. Cyan ring remains centered; no sampled jump or ring detachment.",
+      "files": [
+        "fleet-phone-036.png",
+        "fleet-fallback-180.png",
+        "coast-phone-036.png",
+        "coast-fallback-180.png"
+      ]
+    },
+    {
+      "category": "Control visibility",
+      "accept": true,
+      "evidence": "HUD, minimap and buttons remain readable in both scenes and profiles. Escort behind Bomb at3 leaves label readable; coast action does not cover controls.",
+      "files": [
+        "fleet-fallback-180.png",
+        "coast-phone-120.png",
+        "coast-fallback-180.png"
+      ]
+    },
+    {
+      "category": "Shoreline continuity",
+      "accept": true,
+      "evidence": "Longer wisps remain aligned with coast while their coverage/visibility changes through samples: crests are prominent from0–1.5 and mostly faint at2/3. No detached shoreline block or geometry pop visible.",
+      "files": [
+        "coast-phone-000.png",
+        "coast-phone-060.png",
+        "coast-phone-120.png",
+        "coast-phone-180.png",
+        "coast-fallback-180.png"
+      ]
+    },
+    {
+      "category": "Shoreline naturalness",
+      "accept": false,
+      "blocking_core_motion": false,
+      "evidence": "Long soft tapered crests improve substantially on thin regular dashes. They still form narrow isolated streaks over a smooth translucent shallows band, without broad irregular foam breakup or textured wash on the sand. This remains a material/effects polish gap, not a new continuity blocker.",
+      "recommendation": "Vary crest width and lateral offset, use irregular overlapping patches and fade through uneven foam breakup rather than fading entire long strokes."
+    }
+  ],
+  "blockers": [],
+  "nonblocking": [
+    "Shoreline naturalness remains incomplete despite better temporal variation.",
+    "Smoke is grainy and wakes repeat scalloped bands.",
+    "Ocean ripples repeat and grass/sand/deck materials remain schematic.",
+    "Player ring identifies location but does not resolve overlapping aircraft silhouettes."
+  ],
+  "limits": "All36 supplied PNGs inspected independently, timestamps/events read. No source/key/other judges inspected. Sparse stills do not establish continuous playback smoothness or actual phone FPS. Acceptance is not material parity."
+}

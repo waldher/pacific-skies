@@ -9,13 +9,17 @@ judgments, not whole-game quality measurements.
 ## Published runtime checkpoint: candidate 14
 
 This draft checkpoint contains the exact runtime from tested source commit
-`e4d6b0525bdc9f8895e1542679632bc10c908e52`, with complete archived screenshots and
-motion evidence through candidate 13, candidate 14's raw ratings/identity key,
-and its full passing functional-test log. **Candidate 14 screenshot and motion PNG
-publication is pending a subsequent commit.** They have been reviewed locally,
-but are not yet attached in this checkpoint. The formal archival summary therefore
-stops at candidate 13; do not treat this as a complete candidate-14 gate record.
-No candidate 15 or later runtime or asset changes are included.
+`e4d6b0525bdc9f8895e1542679632bc10c908e52`, complete screenshot/motion archives through
+candidate 14, raw ratings/identity keys and its full passing functional-test log.
+Candidate 14 includes ten fixed-scene PNGs and 36 sampled-motion PNGs with original
+report/artifact hashes and a derived local player. No candidate 15 or later runtime
+is activated by this checkpoint.
+
+`tools/reference/source-history` preserves exact source trees through captured
+candidate 17 using content-addressed historical objects; these are archival inputs,
+not loaded game assets. All 33 source manifests verify. Candidate 3 and the early
+provisional transit state remain explicitly unresolved, without changed historical
+hashes or claims of exact reconstruction. See its README for verification commands.
 
 Candidate 14 scores 6.8775 / 7.1900 / 7.4850, against reference means
 8.285 / 8.340 / 8.215. Its +0.060 median improvement over candidate 13 is below
