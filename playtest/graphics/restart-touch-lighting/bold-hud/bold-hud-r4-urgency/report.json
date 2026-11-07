@@ -1,0 +1,166 @@
+{
+  "sourceHash": "11ac933e010de32aee032543789e59b836a4203e3cd8f921497a726563b32132",
+  "suiteHash": "20e98441f7a7cecc49c79b2cc9471670ff2f7a904656b4b27ad6eb871e30e3d3",
+  "seed": 1942,
+  "errors": [],
+  "results": [
+    {
+      "profile": {
+        "name": "phone",
+        "width": 852,
+        "height": 393,
+        "quality": 2
+      },
+      "visible": {
+        "hull": "27%",
+        "ordnance": "Bomb 2/2",
+        "mapVisible": true
+      },
+      "chartOpened": true,
+      "file": "phone.png",
+      "sha256": "9da8a67c0b051074499e747aab87870bb9f6ccc50f352f9d78556e5ef9799f82",
+      "transitions": {
+        "locked": {
+          "overheated": true,
+          "label": "GUNS HOT",
+          "hint": "COOLING",
+          "heat": "GUNS COOLING",
+          "firing": "false"
+        },
+        "shotLocksGuns": {
+          "overheated": true,
+          "label": "GUNS HOT",
+          "hint": "COOLING",
+          "heat": "GUNS COOLING",
+          "firing": "false"
+        },
+        "cooled": {
+          "overheated": false,
+          "label": "FIRE",
+          "hint": "HOLD RIGHT",
+          "heat": "HEAT",
+          "firing": "false"
+        }
+      }
+    },
+    {
+      "profile": {
+        "name": "fallback",
+        "width": 852,
+        "height": 393,
+        "quality": 4
+      },
+      "visible": {
+        "hull": "27%",
+        "ordnance": "Bomb 2/2",
+        "mapVisible": true
+      },
+      "chartOpened": true,
+      "file": "fallback.png",
+      "sha256": "c761c73c82f4ca6d8742a3c7ab1f8b7207424b4566b082f441faa0f76c528990",
+      "transitions": {
+        "locked": {
+          "overheated": true,
+          "label": "GUNS HOT",
+          "hint": "COOLING",
+          "heat": "GUNS COOLING",
+          "firing": "false"
+        },
+        "shotLocksGuns": {
+          "overheated": true,
+          "label": "GUNS HOT",
+          "hint": "COOLING",
+          "heat": "GUNS COOLING",
+          "firing": "false"
+        },
+        "cooled": {
+          "overheated": false,
+          "label": "FIRE",
+          "hint": "HOLD RIGHT",
+          "heat": "HEAT",
+          "firing": "false"
+        }
+      }
+    },
+    {
+      "profile": {
+        "name": "short-landscape",
+        "width": 640,
+        "height": 360,
+        "quality": 4
+      },
+      "visible": {
+        "hull": "27%",
+        "ordnance": "Bomb 2/2",
+        "mapVisible": true
+      },
+      "chartOpened": true,
+      "file": "short-landscape.png",
+      "sha256": "93ec4efcca3812dfcaaf6a13d6a8af577b7fa694e5d4ff5bca402ec8840c67ca",
+      "transitions": {
+        "locked": {
+          "overheated": true,
+          "label": "GUNS HOT",
+          "hint": "COOLING",
+          "heat": "GUNS COOLING",
+          "firing": "false"
+        },
+        "shotLocksGuns": {
+          "overheated": true,
+          "label": "GUNS HOT",
+          "hint": "COOLING",
+          "heat": "GUNS COOLING",
+          "firing": "false"
+        },
+        "cooled": {
+          "overheated": false,
+          "label": "FIRE",
+          "hint": "HOLD RIGHT",
+          "heat": "HEAT",
+          "firing": "false"
+        }
+      }
+    },
+    {
+      "profile": {
+        "name": "portrait",
+        "width": 320,
+        "height": 568,
+        "quality": 4
+      },
+      "visible": {
+        "hull": "27%",
+        "ordnance": "Bomb 2/2",
+        "mapVisible": true
+      },
+      "chartOpened": true,
+      "file": "portrait.png",
+      "sha256": "8c9bce662ae9936bccc81458d0c301f5767220b476c1c602791e22bdd1f58985",
+      "transitions": {
+        "locked": {
+          "overheated": true,
+          "label": "GUNS HOT",
+          "hint": "COOLING",
+          "heat": "GUNS COOLING",
+          "firing": "false"
+        },
+        "shotLocksGuns": {
+          "overheated": true,
+          "label": "GUNS HOT",
+          "hint": "COOLING",
+          "heat": "GUNS COOLING",
+          "firing": "false"
+        },
+        "cooled": {
+          "overheated": false,
+          "label": "FIRE",
+          "hint": "HOLD RIGHT",
+          "heat": "HEAT",
+          "firing": "false"
+        }
+      }
+    }
+  ],
+  "browser": "141.0.7390.37",
+  "sourceHashAfter": "11ac933e010de32aee032543789e59b836a4203e3cd8f921497a726563b32132"
+}

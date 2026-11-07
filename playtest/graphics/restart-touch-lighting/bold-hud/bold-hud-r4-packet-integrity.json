@@ -1,0 +1,30 @@
+{
+  "suiteHash": "68068d6fc3d154ab81b5c22ecd8832a2533367231b3cd07d68b93dc04fba3076",
+  "reports": {
+    "original-baseline": {
+      "sourceHash": "6a9bbae3c7f0741952c5830c4c1c3a5a1ece142b9129884353297e3c96bdc0ad",
+      "reportSha256": "5b2a6dc55d522cdcaf68a07beeb55d64b9bc17014ab5bc5c4626a9b5d15594d4",
+      "browser": "141.0.7390.37",
+      "dirty": true
+    },
+    "retained-six": {
+      "sourceHash": "61c5ca830e59baece895abdcc1d35c1fb082468616ac99e2cd9c16e6c1fd4514",
+      "reportSha256": "6c3a7df5e4d98ff29d468e7b69cfa008fdfbcdec3b0055f9375a33b12c0419ab",
+      "browser": "141.0.7390.37",
+      "dirty": true
+    },
+    "bold-hud-r3": {
+      "sourceHash": "c5ba3c48ae29f9ae26ecf54745ab4b172ae409a4052c60f42344d005c0db164d",
+      "reportSha256": "4f3cb72ba6669e6412bf18f074fd7109aa1b671340c7a40b1d1a0ead8c9733d3",
+      "browser": "141.0.7390.37",
+      "dirty": false
+    },
+    "bold-hud-r4": {
+      "sourceHash": "11ac933e010de32aee032543789e59b836a4203e3cd8f921497a726563b32132",
+      "reportSha256": "1f81fe593ee3e0cbd15147edb5799c24bbb056a8adbadf02a2b7ef1eaf40f519",
+      "browser": "141.0.7390.37",
+      "dirty": false
+    }
+  },
+  "images": 45
+}
