@@ -124,6 +124,8 @@
     .sortie-options + .sortie-options { margin-top:0; }
  #menu { padding:12px; } #menu-kicker { margin-bottom:7px; } #menu-title { font-size:28px; margin-bottom:10px; } #menu-summary { margin-bottom:10px; } #menu-instructions { gap:3px; margin-bottom:12px; } #toast { bottom:14px; } }
 
+  /* Short landscape phones: ordnance sits just above fire, clear of the chart. */
+  @media(max-height:350px) { #flight-controls { bottom:122px; } }
   #operations-panel[hidden], #map-open[hidden] { display:none; }
   #map-open { position:fixed; right:12px; top:12px; width:clamp(100px,30vw,140px); height:84px; z-index:3; background:transparent; border:1px solid #f6ecc955; border-radius:3px; cursor:pointer; touch-action:manipulation; }
   #map-open:focus-visible { outline:2px solid var(--accent); }

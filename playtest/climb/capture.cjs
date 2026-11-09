@@ -34,6 +34,7 @@ const HUDX = [
   X('x-arrived', 'hud-capture', { progress: 0 }),
   X('x-critical-portrait', 'hud-critical', {}, PORTRAIT), X('x-capture-portrait', 'hud-capture', {}, PORTRAIT), X('x-raid-portrait', 'hud-raid', {}, PORTRAIT),
   X('x-desktop-fight', 'hud-fight', { keyboard: true }),
+  X('x-small-critical', 'hud-critical', {}, { width: 320, height: 568 }), X('x-small-raid', 'hud-raid', {}, { width: 568, height: 320 }),
 ];
 const SHOTS = [...GRAPHICS, ...HUD, ...HUDX].filter(s => SET === 'all' ? s.set !== 'hudx' : SET === 'hud+' ? s.set.startsWith('hud') : s.set === SET);
 

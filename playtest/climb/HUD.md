@@ -119,6 +119,28 @@ inset is reserved directly from its canvas rectangle.
 Captures: `hud-raid` head and placard sit clear of the chart.
 Kept. 4.5 / 4.0 / 4.0 / 4.0.
 
+### 7 — base cue only when the base is far; gauge dims less
+Hypothesis: with controls measured properly the base cue stepped out from
+under the corner gauge and pointed at a runway one second away, which is
+noise. Show it only when the base is more than three quarters of a screen
+off. The dimmed gauge at 62 % opacity let bright fields through; now 80 %.
+Captures: `hud-transit` is wind, chevrons and one placard, nothing else.
+Kept. 4.5 / 4.0 / 4.0 / 4.0.
+
+### 8 — small screens (320×568, 568×320)
+Captures: at 320 wide with the player near the left edge there was no room
+for wind, so no bearing was drawn at all; on a 320-high landscape phone the
+ordnance placard overlapped the chart (also true on main).
+Change: chevrons are drawn at the ring even when the wind has no room; a
+`max-height:350px` rule moves ordnance down next to fire.
+Kept. 4.5 / 4.0 / 4.0 / 4.0.
+
+### 9 — placer reaches further; placard numbers in capitals
+Captures: in `hud-fight-portrait` the placard ran out of candidates and sat
+on an enemy's tail. The placer now tries up to 4.5× the base distance.
+"3s remaining" became "3s REMAINING" to match the plate.
+Kept. Final: 4.5 / 4.0 / 4.0 / 4.0, weighted 4.15.
+
 ## Rejected
 
 - Lens-shaped wind streaks with an offset shadow only (iteration 1): read as
@@ -134,4 +156,19 @@ Kept. 4.5 / 4.0 / 4.0 / 4.0.
 
 ## Still weak
 
-See the end of the final report in the commit that closes this climb.
+- The ring surrounds the aircraft; it is not built into the airframe as the
+  RIG is, and it cannot stop another aircraft's model drawing over the
+  player's. Doing better needs the 3D model, which was out of bounds.
+- Words still live on a plate. It is small and rides the wind's head, but it
+  is a label, and the corner gauge and chart are still permanent chrome.
+- Checked in stills and three time samples only: no on-device run, no motion
+  review, no frame-time measurement of the canvas HUD. The placer has no
+  hysteresis, so a placard may hop when an aircraft crosses its spot.
+- `hud-critical` reads RETURN TO BASE where main and the owner's attempt read
+  FIND THE ENEMY OUTPOST: the HUD anticipates the guidance's own next tick
+  when hull is under `navigation.repairHull`. Deliberate, but it means that
+  scene is not word-for-word comparable.
+- The condensed font stack falls back to the system face on the capture
+  machine; the Android/iOS condensed faces were not seen.
+- With a capture activated but at zero progress the site shows the arrival
+  ring under a CIRCLE TO CAPTURE placard for a moment (`x-arrived`).

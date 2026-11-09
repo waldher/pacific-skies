@@ -47,7 +47,7 @@ export function blocked(x, y, w, h) {
   for (let i = 0; i < used; i++) { const b = boxes[i]; if (x < b.x + b.w && x + w > b.x && y < b.y + b.h && y + h > b.y) return true; }
   return false;
 }
-const TRY_ANGLE = [0, .55, -.55, 1.1, -1.1, 1.7, -1.7, 2.4, -2.4, Math.PI], TRY_DIST = [1, 1.6, 2.3];
+const TRY_ANGLE = [0, .55, -.55, 1.1, -1.1, 1.7, -1.7, 2.4, -2.4, Math.PI], TRY_DIST = [1, 1.8, 3, 4.5];
 const spot = { x: 0, y: 0 };
 // Finds a free box of w×h pushed `dist` away from an anchor along `angle`,
 // swinging round the anchor when the straight spot is taken. Reserves it.

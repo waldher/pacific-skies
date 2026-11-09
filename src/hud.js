@@ -223,10 +223,10 @@ function drawGuidance(arrows, px, py) {
     const outer = Math.min(Wd.inner + span, d - (there ? HUD.site.orbit + 12 : 0), edgePoint(px, py, a, rightInset).t - 12);
     const windy = !capturing && outer - Wd.inner >= Wd.minRun, reach = (windy ? outer : Wd.inner) + 5;
     const hx = px + Math.cos(a) * reach, hy = py + Math.sin(a) * reach;
+    // Hard against an edge there is no room for wind; the chevrons alone still give the bearing.
+    if (windy || (!there && !capturing)) { drawChevrons(hx, hy, a, INK.gold, 7); keep(hx - 11, hy - 11, 22, 22); }
     if (windy) {
       drawWind(px, py, a, time, Wd.inner, outer, busy > .5 ? Wd.busyStreaks : Wd.streaks, 1 - busy * (1 - Wd.busyAlpha));
-      drawChevrons(hx, hy, a, INK.gold, 7);
-      keep(hx - 11, hy - 11, 22, 22);
       // rim cues and their labels stay out of the wind's lane
       for (const f of WIND_LANE) { const r = Wd.inner + (outer - Wd.inner) * f; keep(px + Math.cos(a) * r - 15, py + Math.sin(a) * r - 15, 30, 30); }
     }
