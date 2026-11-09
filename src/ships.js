@@ -4,6 +4,7 @@ import { game } from './state.js';
 import { explosion, splash } from './particles.js';
 import { notify } from './campaign.js';
 import { updateFleets } from './fleets.js';
+import { sfxShipGun, sfxShipSunk } from './audio.js';
 
 export function updateShips(dt) {
   updateFleets(game, dt);
@@ -22,6 +23,7 @@ export function updateShips(dt) {
       const rounds = s.team === 'jp' ? game.ebullets : game.bullets;
       rounds.push({ x: s.x, y: s.y, vx: Math.cos(s.gunAngle) * speed, vy: Math.sin(s.gunAngle) * speed,
         life: range / speed, fromShip: true, damage: CONFIG.ship.bulletDamage });
+      sfxShipGun(s.x, s.y);
     }
   }
 }
@@ -51,6 +53,7 @@ export function damageShip(s, amount = 1) {
     s.sinking = 0;
     game.score += CONFIG.ship.score;
     explosion(s.x, s.y, true); splash(s.x, s.y);
+    sfxShipSunk(s.x, s.y);
     notify(game, s.kind === 'carrier' ? 'Enemy carrier sunk · flight deck silenced' : 'Destroyer escort sunk');
   }
 }

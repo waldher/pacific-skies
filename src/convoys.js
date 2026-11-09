@@ -5,6 +5,7 @@ import { CONFIG } from './config.js';
 import { rand, TAU } from './util.js';
 import { explosion, splash } from './particles.js';
 import { notify } from './campaign.js';
+import { sfxShipSunk } from './audio.js';
 import { observedAt } from './intelligence.js';
 
 function segmentDistance(point, a, b) {
@@ -69,6 +70,7 @@ export function damageTransport(game, s, amount = 1) {
     s.sinking = 0;
     game.score += CONFIG.convoy.score;
     explosion(s.x, s.y, false); splash(s.x, s.y);
+    sfxShipSunk(s.x, s.y);
     notify(game, 'Supply transport sunk');
   }
 }

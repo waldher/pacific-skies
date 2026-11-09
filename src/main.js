@@ -24,6 +24,7 @@ import { requestCarrier } from './carrier.js';
 import { createRenderer } from './renderer.js';
 import { drawHud, drawMenus, hudArrows } from './hud.js';
 import { lerp, angDiff, rand, setSeed } from './util.js';
+import { audioFrame, audioDebug, sfxHit } from './audio.js';
 
 window.addEventListener('pagehide', () => saveCampaign(game));
 document.addEventListener?.('visibilitychange', () => { if (document.hidden) saveCampaign(game); });
@@ -59,6 +60,7 @@ function update(dt) {
       if (e.hp <= 0) continue;
       if (Math.hypot(b.x - e.x, b.y - e.y) < 18) {
         b.life = 0; e.hp--;
+        sfxHit(b.x, b.y, !b.fromShip);
         game.particles.push({ x: b.x, y: b.y, vx: rand(-40, 40), vy: rand(-40, 40), life: 0.2, max: 0.2, size: 3, kind: 'fire' });
         if (e.hp <= 0) {
           if (e.rescue) game.rescue.intercepts = (game.rescue.intercepts || 0) + 1;
@@ -80,6 +82,7 @@ function update(dt) {
     for (const s of game.convoys) {
       if (s.hp <= 0 || !hitsShip(b, s)) continue;
       b.life = 0; damageTransport(game, s, 1);
+      sfxHit(b.x, b.y, !b.fromShip, true);
       game.particles.push({ x: b.x, y: b.y, vx: rand(-40, 40), vy: rand(-40, 40), life: 0.2, max: 0.2, size: 3, kind: 'fire' });
       break;
     }
@@ -93,6 +96,7 @@ function update(dt) {
     if (b.life > 0) for (const ally of game.allies) {
       if (ally.hp <= 0 || Math.hypot(b.x - ally.x, b.y - ally.y) >= 15) continue;
       b.life = 0; ally.hp -= b.damage ?? CONFIG.enemy.bulletDamage; ally.hitFlash = .25;
+      sfxHit(b.x, b.y, false);
       if (ally.hp <= 0) { explosion(ally.x, ally.y, false); wingmanLost(ally); }
       break;
     }
@@ -154,12 +158,13 @@ function frame(now) {
   if (!contextLost) {
     update(dt);
     render(dt);
+    audioFrame(game, view);
   }
   requestAnimationFrame(frame);
 }
 // Debug/test API: the playtest harness (and console tinkering) reads
 // live state and drives input through this handle.
-window.__game = { sessionSummary: () => sessionSummary(game), game, CONFIG, startGame, recoverPilot, resumeCampaign, hasSavedCampaign, setSeed, keys, stick, fireTouch, view, angDiff, update, launchTorpedo, launchBomb: () => launchBomb(game), selectSortie: options => selectSortie(game, options), requestCarrier: () => requestCarrier(game), spawnConvoy: () => spawnConvoy(game), hudArrows: () => hudArrows(game) };
+window.__game = { sessionSummary: () => sessionSummary(game), game, CONFIG, startGame, recoverPilot, resumeCampaign, hasSavedCampaign, setSeed, keys, stick, fireTouch, view, angDiff, update, launchTorpedo, launchBomb: () => launchBomb(game), selectSortie: options => selectSortie(game, options), requestCarrier: () => requestCarrier(game), spawnConvoy: () => spawnConvoy(game), hudArrows: () => hudArrows(game), audio: audioDebug };
 
 
 const status = document.getElementById('loading');

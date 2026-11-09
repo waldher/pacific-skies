@@ -5,6 +5,7 @@ import { game } from './state.js';
 import { hitsShip, damageShip } from './ships.js';
 import { damageTransport } from './convoys.js';
 import { splash } from './particles.js';
+import { sfxTorpedoDrop, sfxTorpedoHit } from './audio.js';
 
 export function launchTorpedo() {
   const p = game.player, T = CONFIG.torpedo;
@@ -13,6 +14,7 @@ export function launchTorpedo() {
   game.torpedoes.push({ damage: CONFIG.aircraft[p.aircraft]?.torpedoDamage ?? T.damage, x: p.x, y: p.y, vx: Math.cos(p.a) * T.speed,
     vy: Math.sin(p.a) * T.speed, distance: 0, life: T.range / T.speed, wakeCd: 0 });
   splash(p.x, p.y);
+  sfxTorpedoDrop();
   return true;
 }
 
@@ -33,7 +35,7 @@ export function updateTorpedoes(dt) {
       if (s.team !== 'jp' || s.hp <= 0 || !hitsShip(t, s)) continue;
       if (s.kind === 'transport') damageTransport(game, s, t.damage ?? CONFIG.torpedo.damage);
       else damageShip(s, t.damage ?? CONFIG.torpedo.damage);
-      splash(t.x, t.y); t.life = 0; break;
+      splash(t.x, t.y); sfxTorpedoHit(t.x, t.y); t.life = 0; break;
     }
   }
   game.torpedoes = game.torpedoes.filter(t => t.life > 0);

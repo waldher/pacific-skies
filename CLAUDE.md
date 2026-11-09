@@ -57,7 +57,9 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 | `traffic.js` | instanced trucks, villagers and fishing boats living on loaded islands |
 | `sprites.js` | HUD `rr` rounded-rect helper |
 | `hud.js` | responsive HTML readouts/menus, canvas minimap and markers, touch UI |
-| `audio.js` | procedural sfx |
+| `audio.js` | mix bus (ducking, limiter, shared space), engine/wind/flyby loops, voice caps, the `sfx*` calls; no-op until `audioInit()` |
+| `audio-synth.js` | pure DSP: every one-shot bank and loop as Float32Arrays from a private PRNG (never `rand()`) |
+| `audio-worker.js` | module worker that runs the synthesis off the main thread |
 | `renderer.js` | Three.js scene, orthographic camera, lighting, instance lifecycle, adaptive quality ladder (`?quality=N` pins a level; failed levels are never retried) |
 | `aircraft.js` | GLB loading, geometry batching, banking, propeller animation, per-aircraft shadow receiver / blob |
 | `effects.js` | instanced tracers and batched particles |
@@ -139,6 +141,11 @@ events and sorties). `SEEDS=`, `PERSONAS=`, `MINUTES=` narrow a run (no
 ratchet). `npm run test:fun:sensitivity` breaks the game on purpose via
 `FUN_CONFIG` overrides and checks the right findings move; run it after
 editing a metric.
+
+`playtest/climb/audio-render.cjs` renders a fixed 45 s sortie and a sheet of
+isolated cues offline (no speakers needed), measures them and scores them
+(`audio-score.cjs`); run it before and after touching `CONFIG.audio` or
+`audio-synth.js`. Design notes and the climb log are in `playtest/climb/AUDIO.md`.
 
 When evaluating gameplay changes, look at the screenshots too —
 visual readability is part of the game being good.

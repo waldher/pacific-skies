@@ -15,7 +15,7 @@ export function explosion(x, y, big) {
     });
   }
   game.particles.push({ x, y, vx: 0, vy: 0, life: 0.3, max: 0.3, size: big ? 46 : 30, kind: 'ring' });
-  sfxBoom(big);
+  sfxBoom(big, x, y);
   game.shake = Math.min(game.shake + (big ? 10 : 5), 14);
 }
 

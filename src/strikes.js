@@ -3,6 +3,7 @@ import { enemyObserved } from './intelligence.js';
 import { CONFIG } from './config.js';
 import { rand, clamp, angDiff } from './util.js';
 import { explosion } from './particles.js';
+import { sfxEnemyGun, sfxShipGun } from './audio.js';
 
 function candidates(game) {
   return [...game.ships.filter(s => s.team === 'us' && s.kind === 'destroyer' && s.active !== false && s.hp > 0)
@@ -84,6 +85,7 @@ export function updateStrikes(game, dt) {
       const a = Math.atan2(enemy.y - asset.y, enemy.x - asset.x);
       game.bullets.push({ x: asset.x, y: asset.y, vx: Math.cos(a) * CONFIG.ship.bulletSpeed,
         vy: Math.sin(a) * CONFIG.ship.bulletSpeed, life: S.defenseRange / CONFIG.ship.bulletSpeed, fromShip: true });
+      sfxShipGun(asset.x, asset.y);
     }
   }
   for (const e of game.enemies) {
@@ -103,6 +105,7 @@ export function updateStrikes(game, dt) {
       if (engage && Math.abs(diff) < CONFIG.enemy.aimCone && e.fireCd <= 0) {
         e.fireCd = S.escortFireCooldown;
         game.ebullets.push({x:e.x,y:e.y,vx:Math.cos(e.a)*CONFIG.enemy.bulletSpeed,vy:Math.sin(e.a)*CONFIG.enemy.bulletSpeed,life:CONFIG.enemy.bulletLife});
+        sfxEnemyGun(e.x, e.y);
       }
       if (Math.hypot(asset.x - e.x, asset.y - e.y) <= S.attackRange) {
         if (!escorts && health(asset, base) > 0) {

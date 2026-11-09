@@ -11,6 +11,7 @@ import { CONFIG } from './config.js';
 import { game } from './state.js';
 import { damagePlayer, turnFactor } from './player.js';
 import { explosion } from './particles.js';
+import { sfxEnemyGun, sfxCollision } from './audio.js';
 import { clamp, angDiff, rand, lerp, TAU } from './util.js';
 
 export function spawnDefenders(territory) {
@@ -141,6 +142,7 @@ export function updateEnemies(dt) {
         vx: Math.cos(e.a) * E.bulletSpeed, vy: Math.sin(e.a) * E.bulletSpeed,
         life: E.bulletLife,
       });
+      sfxEnemyGun(e.x, e.y);
     }
     e.collideCd = Math.max(0, (e.collideCd || 0) - dt);
     if (player.flight === 'flying' && e.collideCd <= 0 && Math.hypot(player.x - e.x, player.y - e.y) < E.collision.radius) {
@@ -156,6 +158,7 @@ export function updateEnemies(dt) {
       game.collisions = (game.collisions || 0) + 1;
       for (let i = 0; i < 6; i++) game.particles.push({ x: player.x + dx / 2, y: player.y + dy / 2, vx: rand(-90, 90), vy: rand(-90, 90), life: .3, max: .3, size: 3, kind: 'fire' });
       damagePlayer(C.damage);
+      sfxCollision();
       if (e.hp <= 0) explosion(e.x, e.y, false);
     }
   }

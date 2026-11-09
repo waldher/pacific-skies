@@ -4,7 +4,7 @@ import { CONFIG } from './config.js';
 import { game, recoveryBases } from './state.js';
 import { saveCampaign } from './persistence.js';
 import { keys, stick, fireTouch } from './input.js';
-import { sfxGun, sfxOverheat } from './audio.js';
+import { sfxGun, sfxOverheat, sfxPlayerHit } from './audio.js';
 import { explosion } from './particles.js';
 import { clamp, lerp, angDiff, rand } from './util.js';
 
@@ -91,7 +91,7 @@ export function updatePlayer(dt) {
         life: P.bulletLife,
       });
     }
-    sfxGun();
+    sfxGun(player.aircraft, P.fireCooldown);
   }
 
   if (player.hp < P.smokeBelowHp) {
@@ -112,6 +112,7 @@ export function damagePlayer(amount) {
   const player = game.player;
   player.hp -= amount;
   player.hitFlash = 0.25;
+  sfxPlayerHit(amount);
   game.shake = Math.min(game.shake + 4, 14);
   if (player.hp <= 0) {
     player.hp = 0;
