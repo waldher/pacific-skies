@@ -5,7 +5,8 @@
 // scenes match codex/graphics-hill-climb's playtest/graphics.cjs so captures
 // from the two climbs can sit in the same judging packet.
 //
-//   CLIMB_OUT=dir  CLIMB_SET=graphics|hud|all  CLIMB_SAMPLES=60  node playtest/climb/capture.cjs
+//   CLIMB_OUT=dir  CLIMB_SET=graphics|hud|all  CLIMB_ONLY=phone-coast,hud-fight  CLIMB_SAMPLES=60
+//   node playtest/climb/capture.cjs
 const fs = require('node:fs'), path = require('node:path'), http = require('node:http');
 const { chromium } = require('playwright');
 const ROOT = path.resolve(__dirname, '../..');
@@ -19,7 +20,8 @@ const HUD = [
   ['hud-transit', PHONE], ['hud-fight', PHONE], ['hud-critical', PHONE], ['hud-capture', PHONE],
   ['hud-raid', PHONE], ['hud-landed', PHONE], ['hud-fight', PORTRAIT], ['hud-transit', PORTRAIT],
 ].map(([scene, view]) => ({ name: scene + (view === PORTRAIT ? '-portrait' : ''), scene, quality: 2, view, set: 'hud' }));
-const SHOTS = [...GRAPHICS, ...HUD].filter(s => SET === 'all' || s.set === SET);
+const ONLY = process.env.CLIMB_ONLY?.split(',');
+const SHOTS = [...GRAPHICS, ...HUD].filter(s => ONLY ? ONLY.includes(s.name) : SET === 'all' || s.set === SET);
 
 // Runs in the page. Everything is placed by hand; simulation stays frozen.
 async function stage({ scene }) {

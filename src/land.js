@@ -12,13 +12,14 @@ import { CONFIG } from './config.js';
 import { islandOutline, insidePolygon } from './surface.js';
 import { noise, noiseTexture, NOISE_GLSL } from './noise.js';
 import { TAU, hash2 } from './util.js';
+import { shadowMaterial, shadowMatrix } from './shadow.js';
 
 export const HILL_SCALE = .012;     // world units → hill-noise cells (≈83 units per cell)
 const FOREST_SCALE = .02;
 
 const BIOMES = {
-  jungle:    { sand: '#e6d7a4', low: '#3f7f3c', high: '#2c5a2f', patch: '#5c9a45', rock: '#5d6552', trees: ['#2e6d35', '#3b8342', '#27612c', '#4a8f3d'], palms: true, forest: .62, huts: 'thatch', road: '#8a7a58', mountains: true },
-  temperate: { sand: '#e3d49b', low: '#7aa650', high: '#537d3c', patch: '#a6bf66', rock: '#7a7468', trees: ['#4d8b3a', '#63a04a', '#8c9a3a', '#3f7a35'], palms: false, forest: .45, huts: 'house', road: '#5b5a57', fields: true, mountains: true, snow: true },
+  jungle:    { sand: '#e6d7a4', low: '#417a3a', high: '#2c5a2f', patch: '#5a9044', rock: '#5d6552', trees: ['#2e6d35', '#3b8342', '#27612c', '#4a8f3d'], palms: true, forest: .62, huts: 'thatch', road: '#8a7a58', mountains: true },
+  temperate: { sand: '#e0d2a0', low: '#6f9a48', high: '#4a7338', patch: '#93ad58', rock: '#7a7468', trees: ['#3f7a35', '#4f8c3c', '#6d8c36', '#35692f'], palms: false, forest: .45, huts: 'house', road: '#5b5a57', fields: true, mountains: true, snow: true },
   volcanic:  { sand: '#4d4945', low: '#4c7040', high: '#454240', patch: '#6a8150', rock: '#4a4744', trees: ['#2f6a37', '#3d7f44', '#356f3a'], palms: true, forest: .38, huts: 'thatch', road: '#6b625a', volcano: true },
   atoll:     { sand: '#f3ead0', low: '#b8c586', high: '#8ea86a', patch: '#d3d49a', rock: '#b5ad95', trees: ['#4d9a4b', '#5faa53', '#3f8a44'], palms: true, forest: .34, huts: 'thatch', road: '#cbb98e', palmOnly: true },
   desert:    { sand: '#ecd9a3', low: '#dcbd78', high: '#b98a55', patch: '#c9a465', rock: '#8f6a4c', trees: ['#6c7a3f', '#7b8746'], palms: true, forest: .1, huts: 'adobe', road: '#a88d62', dunes: true, oasis: true, scrub: true },
@@ -43,6 +44,8 @@ function rgb(hex) {
   return c;
 }
 const shade = ([r, g, b], f) => [r * f, g * f, b * f];
+// Ground direction across the sun's bearing: the widest line a spike's shadow fans out from.
+const SUN_ACROSS = (([x, , z]) => { const l = Math.hypot(x, z) || 1; return [-z / l, x / l]; })(CONFIG.render.sunOffset);
 const smoothstep = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
 // Region climate first, then the island's own roll: neighbours look related
@@ -96,6 +99,20 @@ export function offsetShore(points, distance) {
     return [p[0] + (n1[0] + n2[0]) * k, p[1] + (n1[1] + n2[1]) * k];
   });
 }
+// Closed Catmull-Rom through the physical coastline's vertices: the drawn
+// shore curves where the gameplay polygon has corners, and still passes
+// through every one of them.
+export function smoothShore(points, steps = 5) {
+  const n = points.length, out = [];
+  for (let i = 0; i < n; i++) {
+    const p0 = points[(i + n - 1) % n], p1 = points[i], p2 = points[(i + 1) % n], p3 = points[(i + 2) % n];
+    for (let k = 0; k < steps; k++) {
+      const t = k / steps, t2 = t * t, t3 = t2 * t;
+      out.push([0, 1].map(c => .5 * (2 * p1[c] + (p2[c] - p0[c]) * t + (2 * p0[c] - 5 * p1[c] + 4 * p2[c] - p3[c]) * t2 + (3 * p1[c] - p0[c] - 3 * p2[c] + p3[c]) * t3)));
+    }
+  }
+  return out;
+}
 function segmentDistance(x, y, a, b) {
   const dx = b[0] - a[0], dy = b[1] - a[1], l2 = dx * dx + dy * dy;
   const t = l2 ? Math.max(0, Math.min(1, ((x - a[0]) * dx + (y - a[1]) * dy) / l2)) : 0;
@@ -106,7 +123,16 @@ const polygonDistance = (x, y, points) => points.reduce((best, p, i) => Math.min
 // Vertex-coloured triangle soup with flat normals. Everything on an island
 // goes through one of these, so scenery is a single draw call.
 class Batch {
-  constructor() { this.n = 0; this.pos = new Float32Array(9 * 1024); this.col = new Float32Array(9 * 1024); this.nrm = new Float32Array(9 * 1024); }
+  constructor() { this.n = 0; this.pos = new Float32Array(9 * 1024); this.col = new Float32Array(9 * 1024); this.nrm = new Float32Array(9 * 1024); this.shadow = []; }
+  // Shadow casters are a much simpler shape than what is drawn: a crown is a
+  // hexagon and a spike, a house its roof and walls. shadow.js flattens them.
+  cast(...points) { for (let i = 1; i + 1 < points.length; i++) this.shadow.push(...points[0], ...points[i], ...points[i + 1]); }
+  castCone(x, y, base, radius, height, sides = 4) {
+    const ring = [];
+    for (let i = 0; i < sides; i++) { const a = (i + .5) / sides * TAU; ring.push([x + Math.cos(a) * radius, base, y + Math.sin(a) * radius]); }
+    this.cast(...ring);
+    this.cast([x, base + height, y], [x + SUN_ACROSS[0] * radius, base, y + SUN_ACROSS[1] * radius], [x - SUN_ACROSS[0] * radius, base, y - SUN_ACROSS[1] * radius]);
+  }
   grow() {
     const size = this.pos.length * 2;
     for (const key of ['pos', 'col', 'nrm']) { const next = new Float32Array(size); next.set(this[key]); this[key] = next; }
@@ -136,14 +162,16 @@ class Batch {
   }
   // Sides fade from `color` at the base to `top` at the apex; alternate faces
   // are slightly darker so the facets read from straight above.
-  cone(x, y, base, radius, height, segments, color, top = color, phase = 0) {
+  cone(x, y, base, radius, height, segments, color, top = color, phase = 0, casts = true) {
     const apex = [x, base + height, y], ref = [x, base - 1, y];
+    if (casts) this.castCone(x, y, base, radius, height);
     for (let i = 0; i < segments; i++) {
       const a0 = phase + i / segments * TAU, a1 = phase + (i + 1) / segments * TAU;
       const c = i % 2 ? color : shade(color, .9), t = i % 2 ? top : shade(top, .9);
       this.tri([x + Math.cos(a0) * radius, base, y + Math.sin(a0) * radius], [x + Math.cos(a1) * radius, base, y + Math.sin(a1) * radius], apex, c, ref, [c, c, t]);
     }
   }
+  // Flat on the ground: no shadow.
   disc(x, y, h, radius, segments, color, phase = 0) {
     const ref = [x, h - 1, y], pts = [];
     for (let i = 0; i < segments; i++) { const a = phase + i / segments * TAU; pts.push([x + Math.cos(a) * radius, h, y + Math.sin(a) * radius]); }
@@ -155,8 +183,10 @@ class Batch {
     const corner = (u, v, h) => [x + u * c - v * s, h, y + u * s + v * c];
     const hw = w / 2, hd = d / 2, t = base + height;
     this.face([corner(-hw, -hd, t), corner(hw, -hd, t), corner(hw, hd, t), corner(-hw, hd, t)], top, ref);
+    this.cast(corner(-hw, -hd, t), corner(hw, -hd, t), corner(hw, hd, t), corner(-hw, hd, t));
     for (const [u0, v0, u1, v1] of [[-hw, -hd, hw, -hd], [hw, -hd, hw, hd], [hw, hd, -hw, hd], [-hw, hd, -hw, -hd]]) {
       this.face([corner(u0, v0, base), corner(u1, v1, base), corner(u1, v1, t), corner(u0, v0, t)], wall, ref);
+      this.cast(corner(u0, v0, base), corner(u1, v1, base), corner(u1, v1, t), corner(u0, v0, t));
     }
   }
   // Gabled roof: ridge runs along the frame's x axis.
@@ -166,16 +196,19 @@ class Batch {
     const hw = w / 2 + 1, hd = d / 2 + 1;
     this.face([corner(-hw, -hd, base), corner(hw, -hd, base), corner(hw, 0, base + height), corner(-hw, 0, base + height)], color, ref);
     this.face([corner(-hw, 0, base + height), corner(hw, 0, base + height), corner(hw, hd, base), corner(-hw, hd, base)], shade(color, .8), ref);
+    this.cast(corner(-hw, -hd, base), corner(hw, -hd, base), corner(hw, 0, base + height), corner(-hw, 0, base + height));
+    this.cast(corner(-hw, 0, base + height), corner(hw, 0, base + height), corner(hw, hd, base), corner(-hw, hd, base));
   }
   // Five fronds radiating from a crown: reads as a palm from straight above.
   palm(x, y, base, radius, color, phase) {
     const crown = base + 9, ref = [x, base, y];
+    this.cast(...[0, 1, 2, 3].map(i => [x + Math.cos(phase + i * TAU / 4) * radius * .75, crown - 2, y + Math.sin(phase + i * TAU / 4) * radius * .75]));
     for (let i = 0; i < 6; i++) {
       const a = phase + i / 6 * TAU, wa = a + .28, wb = a - .28;
       const tip = [x + Math.cos(a) * radius, crown - 3, y + Math.sin(a) * radius];
       this.tri([x + Math.cos(wa) * 2.2, crown, y + Math.sin(wa) * 2.2], [x + Math.cos(wb) * 2.2, crown, y + Math.sin(wb) * 2.2], tip, i % 2 ? color : shade(color, .85), ref);
     }
-    this.disc(x, y, crown + .2, 2.4, 5, shade(color, .7));
+    this.face([0, 1, 2, 3, 4].map(i => [x + Math.cos(phase + i * TAU / 5) * 2.4, crown + .2, y + Math.sin(phase + i * TAU / 5) * 2.4]), shade(color, .7), [x, crown - 1, y]);
   }
   // Ribbon along a polyline, mitred at the joints.
   ribbon(points, width, h, color) {
@@ -187,6 +220,38 @@ class Batch {
       left.push([p[0] + nx, h, p[1] + ny]); right.push([p[0] - nx, h, p[1] - ny]);
     }
     for (let i = 0; i + 1 < points.length; i++) this.face([left[i], right[i], right[i + 1], left[i + 1]], color, ref);
+  }
+  // A tree crown as a clump of low cones: irregular from above, lit on the
+  // sunward facets, darker underneath.
+  canopy(x, y, base, radius, height, color, r) {
+    const a = r * 40, off = radius * .45;
+    this.castCone(x, y, base + height * .3, radius * 1.05, height * .7);
+    this.cone(x, y, base, radius * .88, height, 6, shade(color, .6), shade(color, 1.24), a, false);
+    if (r > .45) this.cone(x + Math.cos(a) * off, y + Math.sin(a) * off, base, radius * .66, height * .7, 4, shade(color, .55), shade(color, 1.1), a + 1, false);
+  }
+  // A mountain as three stacked rings of uneven radius: slopes that catch
+  // the sun on one side, from `foot` colour through `mid` to `cap`.
+  peak(x, y, base, radius, height, foot, mid, cap, seed) {
+    const n = 11, rings = [[1, 0, foot], [.66, .42, [(foot[0] + mid[0]) / 2, (foot[1] + mid[1]) / 2, (foot[2] + mid[2]) / 2]], [.3, .8, mid]].map(([k, h, color], level) => {
+      const points = [];
+      for (let i = 0; i < n; i++) { const a = seed + i / n * TAU, r = radius * k * (.82 + .36 * hash2(seed * 91 + i * 7.3 + level * 3, i * 1.7 + seed));
+        points.push([x + Math.cos(a) * r, base + height * h, y + Math.sin(a) * r]); }
+      return { points, color };
+    });
+    const apex = [x, base + height, y], ref = [x, base - 1, y];
+    for (let l = 0; l + 1 < rings.length; l++) for (let i = 0; i < n; i++) {
+      const j = (i + 1) % n, lo = rings[l], hi = rings[l + 1], tone = i % 2 ? 1 : .93;
+      this.tri(lo.points[i], lo.points[j], hi.points[j], null, ref, [shade(lo.color, tone), shade(lo.color, tone), shade(hi.color, tone)]);
+      this.tri(lo.points[i], hi.points[j], hi.points[i], null, ref, [shade(lo.color, tone), shade(hi.color, tone), shade(hi.color, tone)]);
+    }
+    for (let i = 0; i < n; i++) this.tri(rings[2].points[i], rings[2].points[(i + 1) % n], apex, null, ref, [mid, mid, cap]);
+    this.castCone(x, y, base, radius * .95, height * .55, 8); this.castCone(x, y, base + height * .5, radius * .5, height * .5, 6);
+  }
+  // Everything in `other` goes after this batch's own triangles.
+  append(other) {
+    while ((this.n + other.n) * 3 > this.pos.length) this.grow();
+    for (const key of ['pos', 'col', 'nrm']) this[key].set(other[key].subarray(0, other.n * 3), this.n * 3);
+    this.n += other.n;
   }
   build() {
     const geometry = new THREE.BufferGeometry();
@@ -211,8 +276,10 @@ function groundShader(shared) {
       skyLight: { value: new THREE.Color(L.sky).multiplyScalar(L.hemisphere) },
       groundLight: { value: new THREE.Color(L.ground).multiplyScalar(L.hemisphere) },
       low: { value: new THREE.Color() }, high: { value: new THREE.Color() }, patchColor: { value: new THREE.Color() }, rock: { value: new THREE.Color() },
+      floorColor: { value: new THREE.Color() }, earth: { value: new THREE.Color() }, forestEdge: { value: 2 },
       fields: { value: 0 }, dunes: { value: 0 }, relief: { value: 60 }, origin: { value: new THREE.Vector2() }, angle: { value: 0 },
-      cropA: { value: new THREE.Color('#d1b04e') }, cropB: { value: new THREE.Color('#9ab84f') }, cropC: { value: new THREE.Color('#a87f4c') }, cropD: { value: new THREE.Color('#4f8040') }, hedgeColor: { value: new THREE.Color('#2f4a24') },
+      clearAt: { value: [new THREE.Vector4(), new THREE.Vector4(), new THREE.Vector4()] }, clearSize: { value: [new THREE.Vector4(), new THREE.Vector4(), new THREE.Vector4()] },
+      cropA: { value: new THREE.Color('#c2a552') }, cropB: { value: new THREE.Color('#8fa94e') }, cropC: { value: new THREE.Color('#9a7648') }, cropD: { value: new THREE.Color('#567a3c') }, hedgeColor: { value: new THREE.Color('#2c4423') },
     },
     vertexShader: `varying vec2 worldXZ;
       void main() {
@@ -221,10 +288,11 @@ function groundShader(shared) {
         gl_Position = projectionMatrix * viewMatrix * world;
       }`,
     fragmentShader: `varying vec2 worldXZ;
-      uniform float time, cloudSpeed, cloudStrength, fields, dunes, relief, angle;
-      uniform vec2 wind, origin; uniform vec3 sunDir, sunLight, skyLight, groundLight, low, high, patchColor, rock, cropA, cropB, cropC, cropD, hedgeColor;
+      uniform float time, cloudSpeed, cloudStrength, fields, dunes, relief, angle, forestEdge;
+      uniform vec2 wind, origin; uniform vec3 sunDir, sunLight, skyLight, groundLight, low, high, patchColor, rock, floorColor, earth, cropA, cropB, cropC, cropD, hedgeColor;
+      uniform vec4 clearAt[3], clearSize[3];
       ${NOISE_GLSL}
-      const float HILL = ${HILL_SCALE};
+      const float HILL = ${HILL_SCALE}, FOREST = ${FOREST_SCALE};
       void main() {
         vec2 p = worldXZ;
         float ca = cos(angle), sa = sin(angle);
@@ -233,10 +301,15 @@ function groundShader(shared) {
         float hill = coarse.x;
         float h = hill * .72 + fine.x * .28;
         vec2 g = (coarse.yz * .72 + fine.yz * (.28 * 3.1)) * HILL;
-        float speck = vnoise2(p * .045);
+        vec4 wood = vnoise4(p * FOREST);                  // .a is the forest mask land.js plants trees by
+        vec4 grain = vnoise4(p * .21);                    // turf and soil texture, a few pixels across
         vec3 albedo = mix(low, high, smoothstep(.34, .8, h));
-        albedo = mix(albedo, patchColor, smoothstep(.55, .75, speck) * .55);
-        albedo = mix(albedo, rock, smoothstep(.76, .9, h));
+        albedo = mix(albedo, patchColor, smoothstep(.5, .78, wood.r) * .5);
+        // Under the canopy the ground is dark litter, so a forest reads as a
+        // mass with trees standing in it rather than cones on a lawn.
+        float canopy = smoothstep(.3, .7, wood.a) * (1.0 - smoothstep(.72, .88, h));
+        float floorMask = smoothstep(forestEdge - .1, forestEdge + .04, canopy);
+        float use = 0.0;
         if (fields > .5) {
           // Farmland: whole plots in the lowlands, each a rectangle of one crop with
           // a hedge around it. Deciding per plot (not per pixel) keeps hedges closed.
@@ -244,13 +317,35 @@ function groundShader(shared) {
           vec2 world = origin + mat2(ca, sa, -sa, ca) * centre;
           float farm = vnoise2(centre * .0045 + 7.3);
           float plotHill = vnoise(world * HILL) * .72 + vnoise(world * HILL * 3.1 + 5.0) * .28;
-          float use = step(.52, farm) * step(plotHill, .55);
+          use = step(.52, farm) * step(plotHill, .55);
           float pick = vnoise2(cell * 5.3 + 1.5);
           vec3 crop = pick < .3 ? cropA : pick < .55 ? cropB : pick < .8 ? cropC : cropD;
-          crop *= .9 + .1 * step(.5, fract(q.x / 6.0 + pick * 3.0));
-          float hedge = smoothstep(.0, .045, f.x) * smoothstep(.0, .045, f.y) * (1.0 - smoothstep(.955, 1.0, f.x)) * (1.0 - smoothstep(.955, 1.0, f.y));
+          // Furrows run along each plot; a few plots are ploughed across.
+          float furrow = fract((pick > .6 ? q.y : q.x) / 5.0 + pick * 3.0);
+          crop *= .86 + .2 * smoothstep(.15, .5, furrow) * (1.0 - smoothstep(.65, 1.0, furrow));
+          float hedge = smoothstep(.0, .05, f.x) * smoothstep(.0, .05, f.y) * (1.0 - smoothstep(.95, 1.0, f.x)) * (1.0 - smoothstep(.95, 1.0, f.y));
           albedo = mix(albedo, mix(hedgeColor, crop, hedge), use);
         }
+        albedo = mix(albedo, rock, smoothstep(.76, .9, h));
+        // Graded earth around installations: a rounded box in the station's frame.
+        float cleared = 0.0;
+        for (int i = 0; i < 3; i++) {
+          vec2 d = p - clearAt[i].xy, e = vec2(dot(d, vec2(-clearAt[i].w, clearAt[i].z)), dot(d, clearAt[i].zw));
+          vec2 o = abs(e) - clearSize[i].xy;
+          float sd = length(max(o, 0.0)) + min(max(o.x, o.y), 0.0) - clearSize[i].z;
+          cleared = max(cleared, (1.0 - smoothstep(-16.0, 12.0, sd + (wood.r - .5) * 44.0)) * step(.5, clearSize[i].z));
+          floorMask *= smoothstep(clearSize[i].w - 30.0, clearSize[i].w, length(d));
+        }
+        floorMask *= 1.0 - use;
+        if (floorMask > .02) {
+          // Canopy: crowns as lit bumps, so the 3D trees are the edge of a
+          // mass rather than every tree in it.
+          vec3 crown = vnoiseGrad(p * .105 + 9.0);
+          g = mix(g, crown.yz * .034, floorMask);
+          albedo = mix(albedo, floorColor * (.8 + crown.x * 1.5), floorMask);
+        }
+        albedo = mix(albedo, earth, cleared * .9);
+        albedo *= .86 + .28 * grain.r;
         if (dunes > .5) {
           float u = (q.x + vnoise(p * .02) * 45.0) * .12 + q.y * .01;
           albedo *= .94 + .06 * sin(u);
@@ -258,7 +353,8 @@ function groundShader(shared) {
         }
         vec3 n = normalize(vec3(-g.x * relief, 1.0, -g.y * relief));
         vec3 irradiance = mix(groundLight, skyLight, n.y * .5 + .5) + sunLight * max(dot(n, sunDir), 0.0);
-        vec3 color = albedo * irradiance * 0.3183;
+        // Hollows sit a little darker than crests.
+        vec3 color = albedo * irradiance * 0.3183 * (.84 + .3 * h);
         float cloud = vnoise((p + wind * time * cloudSpeed) * .0011);
         color *= 1.0 - smoothstep(.5, .78, cloud) * cloudStrength;
         gl_FragColor = vec4(color, 1.0);
@@ -287,7 +383,7 @@ export function createLand(scene, shared) {
   // Shallows: a turquoise skirt from the shoreline outward, fading with the
   // vertex alpha and broken up by the noise field so reefs read as reefs.
   const shallowsMaterial = new THREE.ShaderMaterial({
-    transparent: true, depthWrite: false,
+    transparent: true, depthWrite: false, side: THREE.DoubleSide, forceSinglePass: true,   // coasts wind either way
     uniforms: { noiseTex: { value: noiseTexture() }, color: { value: new THREE.Color(CONFIG.render.ocean.shallows) }, strength: { value: CONFIG.render.ocean.shallowsOpacity } },
     vertexShader: `attribute float fade; varying float vFade; varying vec2 worldXZ;
       void main() {
@@ -298,8 +394,8 @@ export function createLand(scene, shared) {
     fragmentShader: `varying float vFade; varying vec2 worldXZ; uniform vec3 color; uniform float strength;
       ${NOISE_GLSL}
       void main() {
-        float reef = .7 + .3 * vnoise2(worldXZ * .03);
-        float a = vFade * vFade * strength * reef;
+        float reef = .75 + .25 * vnoise2(worldXZ * .03);
+        float a = vFade * (.35 + .65 * vFade) * strength * reef;
         gl_FragColor = vec4(color, a);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
@@ -329,8 +425,11 @@ export function createLand(scene, shared) {
     const radius = t.radius, gx = (t.seed ?? t.id ?? 0) % 100003, gy = (t.id ?? 0) % 1009;
     const group = new THREE.Group();
     group.position.set(t.x, 0, t.y);
-    const shore = islandOutline(t);
+    // Scenery is placed against the physical coastline; what is drawn is its
+    // smoothed curve (`coast`), which passes through the same vertices.
+    const shore = islandOutline(t), coast = smoothShore(shore);
     const interior = t.shoreline ? insetShore(shore, Math.min(14, radius * .12)) : islandOutline(t, radius * .86, .12, 2);
+    const turf = t.shoreline ? insetShore(coast, Math.min(14, radius * .12)) : smoothShore(interior);
     const usable = insetShore(interior, 26);
     // Installations on this island keep a clear footprint; the scenery roads lead to them.
     const clears = holdings.map(h => ({ x: h.x - t.x, y: h.y - t.y, r: L.clearRadius[h.role] ?? 170, a: h.a ?? 0, role: h.role }));
@@ -352,13 +451,13 @@ export function createLand(scene, shared) {
     // Scaling about the centre keeps the outer skirt free of self-intersections
     // on these near-star-shaped coasts; a fixed outward offset crosses itself
     // at concave vertices and the overlaps show as bright rays.
-    const outer = islandOutline(t, radius * (1 + Math.min(CONFIG.render.ocean.shallowsRadius - 1, 240 / radius)), .22, 2);
-    group.add(flat(new THREE.ShapeGeometry(shapeOf(shore)), sandFor(B.sand), 3.5));
+    const outer = smoothShore(islandOutline(t, radius * (1 + Math.min(CONFIG.render.ocean.shallowsRadius - 1, 240 / radius)), .22, 2));
+    group.add(flat(new THREE.ShapeGeometry(shapeOf(coast)), sandFor(B.sand), 3.5));
     // The waterline is a gradient, not an edge: water laps a few units onto
     // the beach, then the shallows fade out to sea, with foam on the line.
-    const shallows = new THREE.Mesh(bandGeometry([insetShore(shore, 9), shore, outer], [0, 1, 0]), shallowsMaterial);
+    const shallows = new THREE.Mesh(bandGeometry([insetShore(coast, 9), coast, offsetShore(coast, -38), outer], [0, 1, .5, 0]), shallowsMaterial);
     shallows.position.y = 3.6; group.add(shallows);
-    const surf = new THREE.Mesh(bandGeometry([insetShore(shore, 3), shore, offsetShore(shore, -14)], [0, 1, 0]), shared.surfMaterial);
+    const surf = new THREE.Mesh(bandGeometry([insetShore(coast, 4), coast, offsetShore(coast, -16)], [0, 1, 0]), shared.surfMaterial);
     surf.position.y = 3.7; group.add(surf);
     const ground = groundTemplate.clone();
     ground.uniforms.noiseTex.value = noiseTexture();
@@ -368,10 +467,16 @@ export function createLand(scene, shared) {
     ground.uniforms.fields.value = B.fields ? 1 : 0; ground.uniforms.dunes.value = B.dunes ? 1 : 0;
     ground.uniforms.relief.value = B.dunes ? 40 : 60;
     ground.uniforms.origin.value.set(t.x, t.y); ground.uniforms.angle.value = t.a ?? 0;
-    const GROUND = 8.5;
-    group.add(flat(new THREE.ShapeGeometry(shapeOf(interior)), ground, GROUND));
+    ground.uniforms.floorColor.value.set(B.trees[0]).multiplyScalar(.62); ground.uniforms.earth.value.set(B.earth ?? '#928a5f');
+    ground.uniforms.forestEdge.value = 1 - B.forest;
+    ground.uniforms.clearAt.value = [0, 1, 2].map(i => { const c = clears[i]; return c ? new THREE.Vector4(c.x + t.x - Math.sin(c.a) * (c.role === 'airfield' ? 26 : 0), c.y + t.y + Math.cos(c.a) * (c.role === 'airfield' ? 26 : 0), Math.cos(c.a), Math.sin(c.a)) : new THREE.Vector4(); });
+    ground.uniforms.clearSize.value = [0, 1, 2].map(i => { const c = clears[i]; return !c ? new THREE.Vector4() : c.role === 'airfield' ? new THREE.Vector4(84, 150, 30, c.r) : new THREE.Vector4(18, 18, c.role === 'port' ? 60 : 70, c.r); });
+    const GROUND = CONFIG.render.groundHeight;
+    group.add(flat(new THREE.ShapeGeometry(shapeOf(turf)), ground, GROUND));
 
-    const batch = new Batch();
+    // `level` holds what lies flat (roads, squares, ponds) and is drawn first;
+    // `batch` what stands up. They merge into one draw.
+    const level = new Batch(), batch = new Batch();
     const villages = [], roads = [], traffic = { trucks: [], people: [], boats: [] };
     const blocked = []; // circles scenery keeps out of: villages, ponds, peaks
 
@@ -410,8 +515,8 @@ export function createLand(scene, shared) {
       }
       if (best) {
         const pond = 20 + rng() * 10;
-        batch.disc(best.x, best.y, GROUND + .25, pond + 9, 14, rgb('#d8c98d'), rng());
-        batch.disc(best.x, best.y, GROUND + .4, pond, 14, rgb('#3c9ea6'), rng());
+        level.disc(best.x, best.y, GROUND + .25, pond + 9, 14, rgb('#d8c98d'), rng());
+        level.disc(best.x, best.y, GROUND + .4, pond, 14, rgb('#3c9ea6'), rng());
         for (let i = 0; i < 7; i++) {
           const a = i / 7 * TAU + rng() * .5, r = pond + 8 + rng() * 10;
           batch.palm(best.x + Math.cos(a) * r, best.y + Math.sin(a) * r, GROUND, 9 + rng() * 3, rgb(B.trees[0]), rng() * TAU);
@@ -432,7 +537,7 @@ export function createLand(scene, shared) {
       if (entry && inside(entry.x, entry.y) && inside(approach.x, approach.y)) {
         nodes.push(approach);
         roads.push([[approach.x, approach.y], [entry.x, entry.y]]);
-        batch.ribbon(roads[roads.length - 1], L.roadWidth, GROUND + .3, rgb(B.road));
+        level.ribbon(roads[roads.length - 1], L.roadWidth, GROUND + .3, rgb(B.road));
       } else if (nodes.length) {
         const near = nodes[0], d = Math.hypot(near.x - c.x, near.y - c.y) || 1;
         const edge = { x: c.x + (near.x - c.x) / d * (c.r - 10), y: c.y + (near.y - c.y) / d * (c.r - 10) };
@@ -463,7 +568,8 @@ export function createLand(scene, shared) {
         }
         if (!ok) continue;
         points.push([b.x, b.y]);
-        batch.ribbon(points, L.roadWidth, GROUND + .3, rgb(B.road));
+        level.ribbon(points, L.roadWidth + 3, GROUND + .26, shade(rgb(B.road), .8));
+        level.ribbon(points, L.roadWidth, GROUND + .3, rgb(B.road));
         roads.push(points);
         // Villages line up along the road that serves them.
         for (const [node, neighbour] of [[a, b], [b, a]]) if (node.village && node.village.lane == null) node.village.lane = Math.atan2(neighbour.y - node.y, neighbour.x - node.x);
@@ -478,8 +584,8 @@ export function createLand(scene, shared) {
     for (const v of villages) {
       const houses = v.tiny ? 2 + Math.floor(rng() * 2) : v.coastal ? 5 + Math.floor(rng() * 4) : 6 + Math.floor(rng() * 7);
       const lane = v.lane ?? v.a + Math.PI / 2, c = Math.cos(lane), s = Math.sin(lane);
-      if (B.huts === 'house') batch.disc(v.x, v.y, GROUND + .2, 20, 9, rgb('#a99a72'), rng());
-      if (B.huts === 'adobe') batch.disc(v.x, v.y, GROUND + .2, 26, 8, rgb('#c7ad78'), rng());
+      if (B.huts === 'house') level.disc(v.x, v.y, GROUND + .2, 20, 9, rgb('#a99a72'), rng());
+      if (B.huts === 'adobe') level.disc(v.x, v.y, GROUND + .2, 26, 8, rgb('#c7ad78'), rng());
       let placed = 0;
       for (let i = 0; i < houses * 2 && placed < houses; i++) {
         const side = i % 2 ? 1 : -1, u = (Math.floor(i / 2) - (houses - 1) / 4) * 24 + (rng() - .5) * 6, vv = side * (19 + rng() * 7);
@@ -506,7 +612,7 @@ export function createLand(scene, shared) {
         // Pier out past the beach, with boats working the water off its end.
         const dx = v.shoreX - v.x, dy = v.shoreY - v.y, l = Math.hypot(dx, dy) || 1, ux = dx / l, uy = dy / l;
         const from = [v.shoreX - ux * 12, v.shoreY - uy * 12], to = [v.shoreX + ux * 46, v.shoreY + uy * 46];
-        batch.ribbon([from, to], 5, 4.2, rgb('#7d6b49'));
+        level.ribbon([from, to], 5, 4.2, rgb('#7d6b49'));
         for (const k of [.45, .8]) batch.box(from[0] + (to[0] - from[0]) * k, from[1] + (to[1] - from[1]) * k, 3.5, 1.4, 6.5, 1.2, Math.atan2(uy, ux), rgb('#5c4c34'));
         v.pier = { x: to[0], y: to[1], ux, uy };
         const boats = 1 + Math.floor(rng() * 2);
@@ -532,14 +638,12 @@ export function createLand(scene, shared) {
     for (const [i, p] of peaks.entries()) {
       const size = B.volcano ? Math.min(120, 40 + radius * .08) : Math.min(95, 20 + radius * .03) * (i ? .7 : 1);
       if (B.volcano) {
-        batch.cone(p.x, p.y, GROUND, size, size * .55, 10, rgb('#4a5a40'), rgb('#3a3634'), rng() * TAU);
-        batch.cone(p.x, p.y, GROUND + size * .3, size * .55, size * .28, 10, rgb('#3a3634'), rgb('#232120'), rng() * TAU);
-        batch.disc(p.x, p.y, GROUND + size * .58 + .3, size * .16, 8, rgb('#1b1817'));
-        batch.disc(p.x, p.y, GROUND + size * .58 + .5, size * .06, 6, rgb('#c0361a'));
+        batch.peak(p.x, p.y, GROUND, size, size * .6, rgb('#465a3c'), rgb('#3a3634'), rgb('#262220'), rng() * TAU);
+        batch.disc(p.x, p.y, GROUND + size * .6 + .3, size * .15, 8, rgb('#161312'));
+        batch.disc(p.x, p.y, GROUND + size * .6 + .5, size * .06, 6, rgb('#d1401c'));
       } else {
-        batch.cone(p.x, p.y, GROUND, size, size * .5, 9, shade(rgb(B.low), .9), rgb(B.high), rng() * TAU);
-        const top = B.snow && size > 70 ? rgb('#eef1f2') : shade(rgb(B.rock), 1.25);
-        batch.cone(p.x, p.y, GROUND + size * .27, size * .48, size * .25, 9, rgb(B.rock), top, rng() * TAU);
+        const top = B.snow && size > 70 ? rgb('#eef1f2') : shade(rgb(B.rock), 1.3);
+        batch.peak(p.x, p.y, GROUND, size, size * .62, shade(rgb(B.high), .85), rgb(B.rock), top, rng() * TAU);
       }
       blocked.push({ x: p.x, y: p.y, r: size + 6 });
     }
@@ -563,8 +667,8 @@ export function createLand(scene, shared) {
       trees++;
       const color = treeColors[Math.floor(r * treeColors.length)];
       if (B.palmOnly || (B.palms && (coast < 90 || r < .12))) batch.palm(jx, jy, GROUND, 8 + r * 5, color, r * TAU);
-      else if (B.acacia) { batch.cone(jx, jy, GROUND + 6, 9 + r * 5, 3, 6, color, shade(color, .85), r * TAU); batch.box(jx, jy, GROUND, 1.6, 1.6, 6, 0, rgb('#5a4630')); }
-      else batch.cone(jx, jy, GROUND, 7 + r * 5, 9 + r * 7, 6, color, shade(color, 1.18), r * TAU);
+      else if (B.acacia) { batch.cone(jx, jy, GROUND + 6, 9 + r * 5, 3, 6, shade(color, .7), shade(color, 1.15), r * TAU); batch.box(jx, jy, GROUND, 1.6, 1.6, 6, 0, rgb('#5a4630')); }
+      else batch.canopy(jx, jy, GROUND, 7.5 + r * 5, 10 + r * 7, color, r);
     }
     for (let i = 0; i < shore.length; i++) {
       if (rng() > .22) continue;
@@ -578,7 +682,17 @@ export function createLand(scene, shared) {
       batch.cone(x, y, GROUND, 5 + rng() * 9, 4 + rng() * 5, 5, rgb(B.rock), shade(rgb(B.rock), 1.25), rng() * TAU);
     }
 
-    if (batch.n) group.add(new THREE.Mesh(batch.build(), sceneryMaterial));
+    level.append(batch);
+    if (level.n) group.add(new THREE.Mesh(level.build(), sceneryMaterial));
+    const shadows = [...level.shadow, ...batch.shadow];
+    if (shadows.length) {
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(shadows), 3));
+      const shadow = new THREE.Mesh(geometry, shadowMaterial);
+      shadow.matrixAutoUpdate = false; shadow.frustumCulled = false; shadow.renderOrder = 4;
+      shadowMatrix(GROUND + .36, shadow.matrix);
+      group.add(shadow);
+    }
     group.userData = { radius, extent: t.extent ?? radius, biome: biomeName, villages: villages.length, roads: roads.length, trees, traffic };
     return group;
   }
@@ -589,7 +703,7 @@ export function createLand(scene, shared) {
       group.traverse(node => {
         if (!node.isMesh) return;
         node.geometry.dispose();
-        if (node.material.uniforms?.low) node.material.dispose();
+        if (node.material.uniforms?.low) node.material.dispose();   // per-island ground; the rest are shared
       });
     },
   };
