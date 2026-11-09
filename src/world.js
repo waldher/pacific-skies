@@ -75,7 +75,8 @@ export function createWorld(scene) {
         vec3 n = normalize(vec3(-g.x * 9.0, 1.0, -g.y * 9.0));
         // Slow tonal patches (currents, depth) and the drifting cloud shadows
         // share one low-frequency tap.
-        vec4 broad = vnoise4((p + wind * time * cloudSpeed) * .0011);
+        vec4 broad = vec4(.5);
+        if (detail > .5) broad = vnoise4((p + wind * time * cloudSpeed) * .0011);
         vec3 water = mix(deepColor, midColor, .25 + .5 * broad.a + (h - .5) * .5);
         // Sunlit wave faces brighten, faces turned away sink toward the deep colour.
         float lit = dot(n, sunDir) - sunDir.y;

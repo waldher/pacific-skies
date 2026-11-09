@@ -225,9 +225,9 @@ class Batch {
   // sunward facets, darker underneath.
   canopy(x, y, base, radius, height, color, r) {
     const a = r * 40, off = radius * .45;
-    this.castCone(x, y, base + height * .3, radius * 1.05, height * .7);
+    this.cast(...[0, 1, 2].map(i => [x + Math.cos(a + i * TAU / 3) * radius * 1.35, base + height * .45, y + Math.sin(a + i * TAU / 3) * radius * 1.35]));   // one triangle: 2,000 trees an island
     this.cone(x, y, base, radius * .88, height, 6, shade(color, .6), shade(color, 1.24), a, false);
-    if (r > .45) this.cone(x + Math.cos(a) * off, y + Math.sin(a) * off, base, radius * .66, height * .7, 4, shade(color, .55), shade(color, 1.1), a + 1, false);
+    if (r > .7) this.cone(x + Math.cos(a) * off, y + Math.sin(a) * off, base, radius * .66, height * .7, 4, shade(color, .55), shade(color, 1.1), a + 1, false);
   }
   // A mountain as three stacked rings of uneven radius: slopes that catch
   // the sun on one side, from `foot` colour through `mid` to `cap`.
@@ -277,7 +277,7 @@ function groundShader(shared) {
       groundLight: { value: new THREE.Color(L.ground).multiplyScalar(L.hemisphere) },
       low: { value: new THREE.Color() }, high: { value: new THREE.Color() }, patchColor: { value: new THREE.Color() }, rock: { value: new THREE.Color() },
       floorColor: { value: new THREE.Color() }, earth: { value: new THREE.Color() }, forestEdge: { value: 2 },
-      fields: { value: 0 }, dunes: { value: 0 }, relief: { value: 60 }, origin: { value: new THREE.Vector2() }, angle: { value: 0 },
+      relief: { value: 60 }, origin: { value: new THREE.Vector2() }, angle: { value: 0 },
       clearAt: { value: [new THREE.Vector4(), new THREE.Vector4(), new THREE.Vector4()] }, clearSize: { value: [new THREE.Vector4(), new THREE.Vector4(), new THREE.Vector4()] },
       cropA: { value: new THREE.Color('#b09a55') }, cropB: { value: new THREE.Color('#7f9449') }, cropC: { value: new THREE.Color('#8c6d47') }, cropD: { value: new THREE.Color('#4f6e3a') }, hedgeColor: { value: new THREE.Color('#2a3f23') },
     },
@@ -288,7 +288,7 @@ function groundShader(shared) {
         gl_Position = projectionMatrix * viewMatrix * world;
       }`,
     fragmentShader: `varying vec2 worldXZ;
-      uniform float time, cloudSpeed, cloudStrength, fields, dunes, relief, angle, forestEdge;
+      uniform float time, cloudSpeed, cloudStrength, relief, angle, forestEdge;
       uniform vec2 wind, origin; uniform vec3 sunDir, sunLight, skyLight, groundLight, low, high, patchColor, rock, floorColor, earth, cropA, cropB, cropC, cropD, hedgeColor;
       uniform vec4 clearAt[3], clearSize[3];
       ${NOISE_GLSL}
@@ -302,7 +302,6 @@ function groundShader(shared) {
         float h = hill * .72 + fine.x * .28;
         vec2 g = (coarse.yz * .72 + fine.yz * (.28 * 3.1)) * HILL;
         vec4 wood = vnoise4(p * FOREST);                  // .a is the forest mask land.js plants trees by
-        vec4 grain = vnoise4(p * .13);                    // turf and soil texture, a few pixels across
         vec3 albedo = mix(low, high, smoothstep(.34, .8, h));
         albedo = mix(albedo, patchColor, smoothstep(.5, .78, wood.r) * .5);
         // Under the canopy the ground is dark litter, so a forest reads as a
@@ -310,14 +309,14 @@ function groundShader(shared) {
         float canopy = smoothstep(.3, .7, wood.a) * (1.0 - smoothstep(.72, .88, h));
         float floorMask = smoothstep(forestEdge - .16, forestEdge + .06, canopy);
         float use = 0.0;
-        if (fields > .5) {
+        #ifdef FIELDS
+        {
           // Farmland: whole plots in the lowlands, each a rectangle of one crop with
           // a hedge around it. Deciding per plot (not per pixel) keeps hedges closed.
           vec2 cell = floor(q / 72.0), f = fract(q / 72.0), centre = (cell + .5) * 72.0;
           vec2 world = origin + mat2(ca, sa, -sa, ca) * centre;
           float farm = vnoise2(centre * .0045 + 7.3);
-          float plotHill = vnoise(world * HILL) * .72 + vnoise(world * HILL * 3.1 + 5.0) * .28;
-          use = step(.52, farm) * step(plotHill, .55);
+          use = step(.52, farm) * step(vnoise(world * HILL), .56);
           float pick = vnoise2(cell * 5.3 + 1.5);
           vec3 crop = pick < .3 ? cropA : pick < .55 ? cropB : pick < .8 ? cropC : cropD;
           // Furrows run along each plot; a few plots are ploughed across.
@@ -326,31 +325,33 @@ function groundShader(shared) {
           float hedge = smoothstep(.0, .05, f.x) * smoothstep(.0, .05, f.y) * (1.0 - smoothstep(.95, 1.0, f.x)) * (1.0 - smoothstep(.95, 1.0, f.y));
           albedo = mix(albedo, mix(hedgeColor, crop, hedge), use);
         }
+        #endif
         albedo = mix(albedo, rock, smoothstep(.76, .9, h));
         // Graded earth around installations: a rounded box in the station's frame.
         float cleared = 0.0;
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < CLEARS; i++) {                  // compiled per island: most have none
           vec2 d = p - clearAt[i].xy, e = vec2(dot(d, vec2(-clearAt[i].w, clearAt[i].z)), dot(d, clearAt[i].zw));
           vec2 o = abs(e) - clearSize[i].xy;
           float sd = length(max(o, 0.0)) + min(max(o.x, o.y), 0.0) - clearSize[i].z;
-          cleared = max(cleared, (1.0 - smoothstep(-16.0, 12.0, sd + (wood.r - .5) * 44.0)) * step(.5, clearSize[i].z));
+          cleared = max(cleared, (1.0 - smoothstep(-16.0, 12.0, sd + (wood.r - .5) * 44.0)) );
           floorMask *= smoothstep(clearSize[i].w - 30.0, clearSize[i].w, length(d));
         }
         floorMask *= 1.0 - use;
         if (floorMask > .02) {
           // Canopy: crowns as lit bumps, so the 3D trees are the edge of a
           // mass rather than every tree in it.
-          vec3 crown = vnoiseGrad(p * .06 + 9.0);
-          g = mix(g, crown.yz * .012, floorMask);
-          albedo = mix(albedo, floorColor * (1.0 + crown.x * .45), floorMask);
+          g = mix(g, fine.yz * .02, floorMask);              // crowns: the fine hill octave, steeper
+          albedo = mix(albedo, floorColor * (1.0 + fine.x * .45), floorMask);
         }
         albedo = mix(albedo, earth, cleared * .9);
-        albedo *= .94 + .12 * grain.r;
-        if (dunes > .5) {
+        albedo *= .93 + .14 * fine.x;                      // mottling from the tap already paid for
+        #ifdef DUNES
+        {
           float u = (q.x + vnoise(p * .02) * 45.0) * .12 + q.y * .01;
           albedo *= .94 + .06 * sin(u);
           g += mat2(ca, sa, -sa, ca) * (cos(u) * vec2(.12, .01)) * .02;
         }
+        #endif
         vec3 n = normalize(vec3(-g.x * relief, 1.0, -g.y * relief));
         vec3 irradiance = mix(groundLight, skyLight, n.y * .5 + .5) + sunLight * max(dot(n, sunDir), 0.0);
         // Hollows sit a little darker than crests.
@@ -394,8 +395,7 @@ export function createLand(scene, shared) {
     fragmentShader: `varying float vFade; varying vec2 worldXZ; uniform vec3 color; uniform float strength;
       ${NOISE_GLSL}
       void main() {
-        float reef = .75 + .25 * vnoise2(worldXZ * .03);
-        float a = vFade * (.35 + .65 * vFade) * strength * reef;
+        float a = vFade * (.35 + .65 * vFade) * strength;
         gl_FragColor = vec4(color, a);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
@@ -444,7 +444,7 @@ export function createLand(scene, shared) {
       const cx = (Math.floor((x * ca + y * sa) / 72) + .5) * 72, cy = (Math.floor((-x * sa + y * ca) / 72) + .5) * 72;
       const wx = t.x + cx * ca - cy * sa, wy = t.y + cx * sa + cy * ca;
       return noise(cx * .0045 + 7.3, cy * .0045 + 7.3, 1) > .52
-        && noise(wx * HILL_SCALE, wy * HILL_SCALE, 0) * .72 + noise(wx * HILL_SCALE * 3.1 + 5, wy * HILL_SCALE * 3.1 + 5, 0) * .28 < .55;
+        && noise(wx * HILL_SCALE, wy * HILL_SCALE, 0) < .56;
     };
 
     // Water skirts and beach.
@@ -464,7 +464,7 @@ export function createLand(scene, shared) {
     for (const key of ['time', 'wind', 'cloudSpeed', 'cloudStrength', 'sunDir']) ground.uniforms[key] = shared[key];
     ground.uniforms.low.value.set(B.low); ground.uniforms.high.value.set(B.high);
     ground.uniforms.patchColor.value.set(B.patch); ground.uniforms.rock.value.set(B.rock);
-    ground.uniforms.fields.value = B.fields ? 1 : 0; ground.uniforms.dunes.value = B.dunes ? 1 : 0;
+    ground.defines = { CLEARS: Math.min(3, clears.length), ...(B.fields && { FIELDS: 1 }), ...(B.dunes && { DUNES: 1 }) };
     ground.uniforms.relief.value = B.dunes ? 40 : 60;
     ground.uniforms.origin.value.set(t.x, t.y); ground.uniforms.angle.value = t.a ?? 0;
     ground.uniforms.floorColor.value.set(B.trees[0]).multiplyScalar(.6); ground.uniforms.earth.value.set(B.earth ?? '#857e58');
@@ -691,8 +691,10 @@ export function createLand(scene, shared) {
       const geometry = new THREE.BufferGeometry();
       geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(shadows), 3));
       const shadow = new THREE.Mesh(geometry, shadowMaterial);
-      shadow.matrixAutoUpdate = false; shadow.frustumCulled = false; shadow.renderOrder = 4;
+      shadow.matrixAutoUpdate = false; shadow.renderOrder = 4;
       shadowMatrix(GROUND + .36, shadow.matrix);
+      // Flattening only slides points along the ground, so the unflattened bounds padded by the longest shadow still cull correctly.
+      geometry.computeBoundingSphere(); geometry.boundingSphere.radius += 120;
       group.add(shadow);
     }
     group.userData = { radius, extent: t.extent ?? radius, biome: biomeName, villages: villages.length, roads: roads.length, trees, traffic };
