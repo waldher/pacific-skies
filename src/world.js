@@ -79,14 +79,14 @@ export function createWorld(scene) {
         vec3 water = mix(deepColor, midColor, .25 + .5 * broad.a + (h - .5) * .5);
         // Sunlit wave faces brighten, faces turned away sink toward the deep colour.
         float lit = dot(n, sunDir) - sunDir.y;
-        water *= 1.0 + lit * 1.5;
-        water += skyColor * smoothstep(.0, .12, 1.0 - n.y) * .35;
+        water *= 1.0 + lit * 1.15;
+        water += skyColor * smoothstep(.0, .12, 1.0 - n.y) * .22;
         if (detail > 1.5) {
           vec3 halfway = normalize(sunDir + vec3(0.0, 1.0, 0.0));
           float spec = pow(max(dot(n, halfway), 0.0), 900.0);
           water += glitter * spec * smoothstep(.55, .8, sparkle) * vec3(1.0, .96, .86);
           // Whitecaps: only the tallest crests break, as short streaks along them.
-          float crest = smoothstep(.8, .9, b.z) * smoothstep(.7, .84, a.z) * smoothstep(.45, .6, sparkle);
+          float crest = smoothstep(.82, .9, b.z) * smoothstep(.74, .86, a.z) * smoothstep(.5, .62, sparkle);
           water = mix(water, vec3(.84, .92, .94), foam * crest);
         }
         if (detail > .5) water *= 1.0 - smoothstep(.5, .78, broad.r) * cloudStrength;

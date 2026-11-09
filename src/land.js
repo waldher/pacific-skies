@@ -18,10 +18,10 @@ export const HILL_SCALE = .012;     // world units → hill-noise cells (≈83 u
 const FOREST_SCALE = .02;
 
 const BIOMES = {
-  jungle:    { sand: '#e6d7a4', low: '#417a3a', high: '#2c5a2f', patch: '#5a9044', rock: '#5d6552', trees: ['#2e6d35', '#3b8342', '#27612c', '#4a8f3d'], palms: true, forest: .62, huts: 'thatch', road: '#8a7a58', mountains: true },
-  temperate: { sand: '#e0d2a0', low: '#6f9a48', high: '#4a7338', patch: '#93ad58', rock: '#7a7468', trees: ['#3f7a35', '#4f8c3c', '#6d8c36', '#35692f'], palms: false, forest: .45, huts: 'house', road: '#5b5a57', fields: true, mountains: true, snow: true },
+  jungle:    { sand: '#e2d3a2', low: '#3b6e37', high: '#2a552d', patch: '#4f8140', rock: '#5d6552', trees: ['#2e6d35', '#3b8342', '#27612c', '#4a8f3d'], palms: true, forest: .62, huts: 'thatch', road: '#8a7a58', mountains: true },
+  temperate: { sand: '#e0d2a0', low: '#5f8340', high: '#446636', patch: '#7f9a50', rock: '#7a7468', trees: ['#3f7a35', '#4f8c3c', '#6d8c36', '#35692f'], palms: false, forest: .45, huts: 'house', road: '#5b5a57', fields: true, mountains: true, snow: true },
   volcanic:  { sand: '#4d4945', low: '#4c7040', high: '#454240', patch: '#6a8150', rock: '#4a4744', trees: ['#2f6a37', '#3d7f44', '#356f3a'], palms: true, forest: .38, huts: 'thatch', road: '#6b625a', volcano: true },
-  atoll:     { sand: '#f3ead0', low: '#b8c586', high: '#8ea86a', patch: '#d3d49a', rock: '#b5ad95', trees: ['#4d9a4b', '#5faa53', '#3f8a44'], palms: true, forest: .34, huts: 'thatch', road: '#cbb98e', palmOnly: true },
+  atoll:     { sand: '#ece2c6', low: '#a9b47c', high: '#84996a', patch: '#c2c38e', rock: '#b5ad95', trees: ['#4d9a4b', '#5faa53', '#3f8a44'], palms: true, forest: .34, huts: 'thatch', road: '#cbb98e', palmOnly: true },
   desert:    { sand: '#ecd9a3', low: '#dcbd78', high: '#b98a55', patch: '#c9a465', rock: '#8f6a4c', trees: ['#6c7a3f', '#7b8746'], palms: true, forest: .1, huts: 'adobe', road: '#a88d62', dunes: true, oasis: true, scrub: true },
   savanna:   { sand: '#e9d9a2', low: '#bcae5e', high: '#9c8c48', patch: '#d0c272', rock: '#8a7a5a', trees: ['#5d6e2f', '#6f7f35', '#54662a'], palms: false, forest: .24, huts: 'thatch', road: '#a08c5e', acacia: true, scrub: true },
 };
@@ -279,7 +279,7 @@ function groundShader(shared) {
       floorColor: { value: new THREE.Color() }, earth: { value: new THREE.Color() }, forestEdge: { value: 2 },
       fields: { value: 0 }, dunes: { value: 0 }, relief: { value: 60 }, origin: { value: new THREE.Vector2() }, angle: { value: 0 },
       clearAt: { value: [new THREE.Vector4(), new THREE.Vector4(), new THREE.Vector4()] }, clearSize: { value: [new THREE.Vector4(), new THREE.Vector4(), new THREE.Vector4()] },
-      cropA: { value: new THREE.Color('#c2a552') }, cropB: { value: new THREE.Color('#8fa94e') }, cropC: { value: new THREE.Color('#9a7648') }, cropD: { value: new THREE.Color('#567a3c') }, hedgeColor: { value: new THREE.Color('#2c4423') },
+      cropA: { value: new THREE.Color('#b09a55') }, cropB: { value: new THREE.Color('#7f9449') }, cropC: { value: new THREE.Color('#8c6d47') }, cropD: { value: new THREE.Color('#4f6e3a') }, hedgeColor: { value: new THREE.Color('#2a3f23') },
     },
     vertexShader: `varying vec2 worldXZ;
       void main() {
@@ -341,11 +341,11 @@ function groundShader(shared) {
           // Canopy: crowns as lit bumps, so the 3D trees are the edge of a
           // mass rather than every tree in it.
           vec3 crown = vnoiseGrad(p * .105 + 9.0);
-          g = mix(g, crown.yz * .034, floorMask);
-          albedo = mix(albedo, floorColor * (.8 + crown.x * 1.5), floorMask);
+          g = mix(g, crown.yz * .028, floorMask);
+          albedo = mix(albedo, floorColor * (.95 + crown.x * .7), floorMask);
         }
         albedo = mix(albedo, earth, cleared * .9);
-        albedo *= .86 + .28 * grain.r;
+        albedo *= .9 + .2 * grain.r;
         if (dunes > .5) {
           float u = (q.x + vnoise(p * .02) * 45.0) * .12 + q.y * .01;
           albedo *= .94 + .06 * sin(u);
@@ -467,7 +467,7 @@ export function createLand(scene, shared) {
     ground.uniforms.fields.value = B.fields ? 1 : 0; ground.uniforms.dunes.value = B.dunes ? 1 : 0;
     ground.uniforms.relief.value = B.dunes ? 40 : 60;
     ground.uniforms.origin.value.set(t.x, t.y); ground.uniforms.angle.value = t.a ?? 0;
-    ground.uniforms.floorColor.value.set(B.trees[0]).multiplyScalar(.62); ground.uniforms.earth.value.set(B.earth ?? '#928a5f');
+    ground.uniforms.floorColor.value.set(B.trees[0]).multiplyScalar(.6); ground.uniforms.earth.value.set(B.earth ?? '#857e58');
     ground.uniforms.forestEdge.value = 1 - B.forest;
     ground.uniforms.clearAt.value = [0, 1, 2].map(i => { const c = clears[i]; return c ? new THREE.Vector4(c.x + t.x - Math.sin(c.a) * (c.role === 'airfield' ? 26 : 0), c.y + t.y + Math.cos(c.a) * (c.role === 'airfield' ? 26 : 0), Math.cos(c.a), Math.sin(c.a)) : new THREE.Vector4(); });
     ground.uniforms.clearSize.value = [0, 1, 2].map(i => { const c = clears[i]; return !c ? new THREE.Vector4() : c.role === 'airfield' ? new THREE.Vector4(84, 150, 30, c.r) : new THREE.Vector4(18, 18, c.role === 'port' ? 60 : 70, c.r); });

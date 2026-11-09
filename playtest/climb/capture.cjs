@@ -20,8 +20,10 @@ const HUD = [
   ['hud-transit', PHONE], ['hud-fight', PHONE], ['hud-critical', PHONE], ['hud-capture', PHONE],
   ['hud-raid', PHONE], ['hud-landed', PHONE], ['hud-fight', PORTRAIT], ['hud-transit', PORTRAIT],
 ].map(([scene, view]) => ({ name: scene + (view === PORTRAIT ? '-portrait' : ''), scene, quality: 2, view, set: 'hud' }));
+// Unjudged spot checks of other islands and biomes: the five fixed scenes only ever show home.
+const ROAM = [0, 1, 2, 3, 4, 5, 6, 7].map(i => ({ name: `roam-${i}`, scene: `roam-${i}`, quality: 2, view: PHONE, set: 'roam' }));
 const ONLY = process.env.CLIMB_ONLY?.split(',');
-const SHOTS = [...GRAPHICS, ...HUD].filter(s => ONLY ? ONLY.includes(s.name) : SET === 'all' || s.set === SET);
+const SHOTS = [...GRAPHICS, ...HUD, ...ROAM].filter(s => ONLY ? ONLY.includes(s.name) : SET === 'all' || s.set === SET);
 
 // Runs in the page. Everything is placed by hand; simulation stays frozen.
 async function stage({ scene }) {
@@ -63,6 +65,18 @@ async function stage({ scene }) {
     site.activated = true; site.progress = CONFIG.conquest.captureSeconds * .6;
     g.waypoint = { x: site.x, y: site.y, name: site.name, siteId: site.id, role: site.role, owner: site.owner, auto: true };
     Object.assign(p, { x: x + 120, y: y + 60, a: 2.2 }); g.cam = { x: x + 40, y: y + 20 }; g.time = 12; g.messageTime = 0; g.shake = 0;
+  }
+  if (scene.startsWith('roam-')) {
+    // One island per biome, nearest home first; the view sits on its coast.
+    const lands = [...(g.terrain || g.territories)].sort((a, b) => Math.hypot(a.x - home.x, a.y - home.y) - Math.hypot(b.x - home.x, b.y - home.y));
+    const seen = new Set(), picks = [];
+    for (const t of lands) { g.cam = { x: t.x, y: t.y }; graphics.render(g, view, 0, 0, 0);
+      const biome = [...graphics.world.chunks].find(([key]) => key === t)?.[1].userData.biome + (t.radius > 500 ? '-big' : '');
+      if (!seen.has(biome)) { seen.add(biome); picks.push(t); } if (picks.length > 8) break; }
+    const t = picks[Number(scene.slice(5)) + 1] || picks[1];
+    x = t.x + Math.min(t.radius * .45, 260); y = t.y + Math.min(t.radius * .3, 120); g.cam = { x, y };
+    for (const site of g.territories) site.owner === 'us' || (g.intelligence.sites[site.id] = { ...site, seenAt: g.time });
+    Object.assign(p, { x: x - 75, y: y + 65 });
   }
   if (scene === 'hud-landed') { api.startGame(); api.update(0); g.time = 12; g.messageTime = 0; }
   if (graphics.prepare) await graphics.prepare(g, view);

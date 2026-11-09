@@ -16,7 +16,7 @@ const solid = hex => new THREE.MeshLambertMaterial({ color: hex });
 const rubbleMat = solid('#2b2a28'), dark = solid('#263743'), cabin = solid('#839296');
 const friend = new THREE.MeshBasicMaterial({ color: '#62ddba' });
 const hostile = new THREE.MeshBasicMaterial({ color: '#ee7964' });
-const HULL = '#3a4a57', BOOT = '#1a2229', STEEL = '#69757c', DECK = '#5d676b', WOOD = '#a08a5e', WOOD2 = '#8f7a52', SEAM = '#5e4f35';
+const HULL = '#2c3944', BOOT = '#141b21', STEEL = '#59656c', DECK = '#565f63', WOOD = '#8f7a52', WOOD2 = '#836f49', SEAM = '#54462f';
 const CABIN = '#8a979b', CABIN2 = '#a3aeb0', DARK = '#232d35', GUN = '#4b565d', WHITE = '#ece5bf', GLASS = '#1d2a33', SOOT = '#14181b';
 const FRIEND = '#62ddba', HOSTILE = '#ee7964', RUNWAY = '#454b4a', APRON = '#8b8b80', EARTH = '#a8996f';
 const FLAT = [-Math.PI / 2, 0, 0];
@@ -72,12 +72,11 @@ const disc = radius => { const shape = new THREE.Shape(); shape.absarc(0, 0, rad
 
 function carrierParts(enemy) {
   const L = CONFIG.carrier.length, W = CONFIG.carrier.width, parts = new Parts(), light = enemy ? HOSTILE : FRIEND;
-  parts.add(hullOutline(W * .84, L * .99, 2.5), BOOT, [0, 0, 0], FLAT);
-  parts.add(hullOutline(W * .88, L, 6.5), HULL, [0, 2.5, 0], FLAT);
-  // Gallery walkways hang just under the flight deck on both beams.
-  for (const x of [-1, 1]) parts.box([3, .8, L * .52], [x * (W / 2 + .6), 7.6, L * .12], STEEL);
-  parts.add(hullOutline(W, L * .97, 1.4), STEEL, [0, 9, 0], FLAT);
-  const DL = L * .95, DW = W - 3;
+  parts.add(hullOutline(W * .9, L * .99, 2.5), BOOT, [0, 0, 0], FLAT);
+  parts.add(hullOutline(W * .96, L, 6.5), HULL, [0, 2.5, 0], FLAT);
+  // The steel deck edge and its galleries frame the planking in dark grey.
+  parts.add(hullOutline(W, L * .985, 1.4), STEEL, [0, 9, 0], FLAT);
+  const DL = L * .94, DW = W - 9;
   parts.add(hullOutline(DW, DL, .7), WOOD, [0, 10.4, 0], FLAT);
   // Planking: broad alternate runs in a second tone, following the bow's taper.
   for (let x = -DW / 2 + 4, i = 0; x < DW / 2 - 2; x += 6.4, i++) {
@@ -93,18 +92,18 @@ function carrierParts(enemy) {
   for (const z of [46, 58, 70]) parts.box([DW - 12, .5, 1.3], [0, 11.4, z], DARK);
   // Paint: dashed centreline, edge lines, a ramp at the stern.
   for (let z = -98; z < 108; z += 22) parts.box([2.2, .1, 12], [0, 11.26, z], WHITE);
-  for (const x of [-24, 24]) parts.box([1.8, .1, 150], [x, 11.26, 28], '#d6cda6');
-  for (const x of [-21, -15, -9, 9, 15, 21]) parts.box([2.6, .1, 9], [x, 11.26, 107], WHITE);
+  for (const x of [-22, 22]) parts.box([1.6, .1, 150], [x, 11.26, 28], '#c9c09c');
+  for (const x of [-18, -12, -6, 6, 12, 18]) parts.box([2.6, .1, 9], [x, 11.26, 103], WHITE);
   if (enemy) { parts.mark(disc(13), [0, 11.3, -86], '#f3ede0'); parts.mark(disc(9.5), [0, 11.34, -86], '#c5312b'); }
   // Island: stepped bridge, raked funnel, tripod mast and radar.
-  const ix = W / 2 - 5;
-  parts.box([13, 10, 56], [ix, 16, -10], CABIN);
-  parts.box([11, 8, 26], [ix, 25, -22], CABIN2);
-  parts.box([11.4, 2.2, 22], [ix, 27, -23], GLASS);
-  parts.box([9, 5, 14], [ix, 31.5, -25], CABIN);
-  parts.cyl(5.4, 17, [ix, 29, 4], GUN, 4.6); parts.cyl(4.7, 1.4, [ix, 38, 4], SOOT);
-  parts.cyl(.7, 26, [ix, 43, -22], DARK, .5);
-  parts.box([15, .8, 1.2], [ix, 52, -22], CABIN2); parts.box([9, 4.5, .8], [ix, 56, -22], GUN);
+  const ix = W / 2 - 4;
+  parts.box([14, 12, 60], [ix, 17, -10], CABIN);
+  parts.box([12, 9, 28], [ix, 27.5, -22], CABIN2);
+  parts.box([12.4, 2.4, 24], [ix, 29.5, -23], GLASS);
+  parts.box([10, 6, 15], [ix, 35, -25], CABIN);
+  parts.cyl(6, 20, [ix, 33, 5], GUN, 5); parts.cyl(5.2, 1.6, [ix, 43.5, 5], SOOT);
+  parts.cyl(.8, 26, [ix, 51, -24], DARK, .5);
+  parts.box([16, .9, 1.4], [ix, 60, -24], CABIN2); parts.box([10, 5, .9], [ix, 64, -24], GUN);
   // Twin five-inch mounts fore and aft of the island, AA tubs down the port edge.
   for (const z of [-48, -40, 22, 30]) { parts.cyl(3.4, 4, [ix, 13, z], GUN); parts.box([1, 1, 9], [ix, 14.5, z + (z < 0 ? -5 : 5)], DARK); }
   for (let z = -70; z < 100; z += 21) { parts.cyl(2.6, 2.2, [-W / 2 - .5, 9.4, z], GUN); parts.box([.7, .7, 5], [-W / 2 - 2.4, 10.6, z], DARK, .9); }
@@ -140,6 +139,7 @@ function transportParts() {
   parts.cyl(1.9, 9, [0, 20, 23], DARK); parts.cyl(1.9, 1.5, [0, 23, 23], '#8c3b2c');
   return parts;
 }
+const deckCasters = new WeakMap();
 function turretMesh() {
   const mesh = new Parts().cyl(5.2, 4, [0, 0, 0], GUN, 4.6).box([1.1, 1.1, 15], [-1.7, .8, -9], DARK).box([1.1, 1.1, 15], [1.7, .8, -9], DARK).mesh();
   mesh.name = 'Turret';
@@ -154,6 +154,9 @@ function shipTemplate(kind, enemy = false) {
   const slab = new Parts().add(hullOutline(size.width, size.length * .97, kind === 'carrier' ? 11 : 9), DARK, [0, 0, 0], FLAT);
   if (kind === 'carrier') slab.box([13, 24, 56], [size.width / 2 - 5, 23, -10], DARK); else slab.box([size.width * .5, 12, size.length * .3], [0, 15, kind === 'transport' ? 18 : -8], DARK);
   casters.set(body.geometry, slab.geometry());
+  // What stands on the deck also shades the deck itself.
+  if (kind === 'carrier') deckCasters.set(body.geometry, new Parts().box([14, 26, 60], [size.width / 2 - 4, 24, -10], DARK).cyl(6, 34, [size.width / 2 - 4, 28, 5], DARK).geometry());
+  else if (kind === 'destroyer') deckCasters.set(body.geometry, new Parts().box([15, 14, 22], [0, 17, -14], DARK).cyl(3.4, 12, [0, 16, 0], DARK).cyl(3.4, 12, [0, 16, 14], DARK).geometry());
   if (kind === 'destroyer') for (const z of [-37, 38]) { const turret = turretMesh(); turret.position.set(0, 12, z); group.add(turret); }
   return group;
 }
@@ -259,7 +262,9 @@ export function createNavalScene(scene) {
           const wake = new THREE.Mesh(wakeGeometry, wakeMaterial); wake.renderOrder = 2;
           const shadow = createShadow(casters.get(root.getObjectByName('Body').geometry));
           root.add(shadow);
-          ships.set(s, { root, wake, shadow, turrets: root.children.filter(node => node.name === 'Turret') }); scene.add(root, wake);
+          const onDeck = deckCasters.get(root.getObjectByName('Body').geometry), deckShadow = onDeck && createShadow(onDeck);
+          if (deckShadow) root.add(deckShadow);
+          ships.set(s, { root, wake, shadow, deckShadow, turrets: root.children.filter(node => node.name === 'Turret') }); scene.add(root, wake);
         }
         const v = ships.get(s), sink = s.hp <= 0 ? s.sinking / CONFIG.ship.sinkingSeconds : 0;
         v.root.visible = shipObserved(game, s);
@@ -268,6 +273,7 @@ export function createNavalScene(scene) {
         for (const turret of v.turrets) turret.rotation.y = -(s.gunAngle ?? s.a) + s.a;
         v.root.updateMatrixWorld(true);
         projectShadow(v.shadow, v.root.matrixWorld, .35);
+        if (v.deckShadow) { projectShadow(v.deckShadow, v.root.matrixWorld, s.kind === 'carrier' ? 11.5 : 10.6); v.deckShadow.visible = sink === 0; }
         v.shadow.visible = sink < .3;
         // The wake quad starts a little ahead of the bow and trails well astern.
         const W = CONFIG.render.wake;

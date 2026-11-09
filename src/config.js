@@ -8,13 +8,13 @@ export const CONFIG = {
     bankResponse: 8,
     propellerSpeed: 55,      // radians/s
     sunOffset: [-300, 640, -360], // sun position relative to the camera; shadows and ocean lighting share it
-    lighting: { sky: '#bcd9f2', ground: '#4a5560', hemisphere: 1.7, sun: '#ffeccb', sunIntensity: 3.0 },
+    lighting: { sky: '#b4cfe8', ground: '#465058', hemisphere: 1.35, sun: '#ffe9c4', sunIntensity: 2.7 },
     // The camera looks straight down but heights lean up-screen by this many
     // pixels per unit, so walls, masts and hillsides show a face. Ground
     // positions are untouched: sea-level x,y still maps 1:1 to the screen.
     oblique: .42,
     groundHeight: 8.5,       // island interior above the sea
-    shadow: { color: '#06131f', opacity: .34 },
+    shadow: { color: '#040f1a', opacity: .42 },
     tracer: { seconds: .038, width: 4 },   // streak length as flight time, and glow width in px
     wake: { width: 2.2, length: 2.9, lead: .08 },   // wake quad in ship beams / lengths; lead ahead of the bow
     quality: {
@@ -46,12 +46,12 @@ export const CONFIG = {
       wind: [14, 6],           // ripple drift, world units/s
       cloudSpeed: 2.5,         // cloud shadows drift at wind × this
       cloudStrength: .2,       // how much cloud shadows darken the sea (0..1)
-      glitter: .5,             // sun sparkle intensity
-      foam: .4,                // whitecap strength
+      glitter: .45,            // sun sparkle intensity
+      foam: .3,                // whitecap strength
       surf: .55,               // shoreline foam ring opacity
-      deep: '#0a3352', mid: '#16658a', sky: '#2c5d78', shallows: '#3fc0b4',
+      deep: '#062740', mid: '#0e4a6b', sky: '#1d4a66', shallows: '#36aaa0',
       shallowsRadius: 1.9,     // lagoon fade-out distance, in island radii
-      shallowsOpacity: .9,     // strength of the turquoise skirt at the shoreline
+      shallowsOpacity: .8,     // strength of the turquoise skirt at the shoreline
     },
     land: {
       // Island scenery. Everything is authored in world units (1 ≈ one CSS
