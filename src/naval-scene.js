@@ -230,7 +230,11 @@ export function createNavalScene(scene) {
   tall.box([11, 20, 11], [tx, G + 10, tz], '#b9b4a0'); tall.box([14, 5, 14], [tx, G + 22.5, tz], GLASS); tall.box([16, 1.2, 16], [tx, G + 25.6, tz], '#7c4f3d');
   for (const [x, z] of [[58, 112], [70, 112], [64, 124]]) { tall.cyl(5, 8, [width / 2 + x - 40, G + 4, z], '#b5b8b2'); tall.cyl(5, .6, [width / 2 + x - 40, G + 8.3, z], '#8d918c'); }
   for (const z of [-98, -86, 96]) for (const x of [64, 73]) tall.box([7, 4.5, 7], [width / 2 + x, G + 2.2, z], (x + z) % 2 ? '#6c7350' : '#7a6a48');
-  for (const z of [-34, 32]) { tall.box([20, 3.5, 2.6], [-width / 2 - 20, G + 1.7, z - 8], '#9c9070'); tall.box([2.6, 3.5, 16], [-width / 2 - 30, G + 1.7, z], '#9c9070'); tall.box([20, 3.5, 2.6], [-width / 2 - 20, G + 1.7, z + 8], '#9c9070'); }
+  // Dispersal pens across the runway: a hardstand inside a low earth bank.
+  for (const z of [-40, 36]) {
+    ground.box([24, .3, 22], [-width / 2 - 21, G + .45, z], '#6e6d62');
+    for (const [w, d, ox, oz] of [[28, 4, 0, -13], [28, 4, 0, 13], [4, 30, -14, 0]]) tall.box([w, 4, d], [-width / 2 - 21 + ox, G + 2, z + oz], '#7d7552');
+  }
   tall.cyl(.5, 13, [-width / 2 - 9, G + 6.5, length / 2 - 30], DARK); tall.box([7, 2, 2], [-width / 2 - 5.5, G + 12.5, length / 2 - 30], '#e8743b');
   const tallGeometry = tall.geometry();
   const runwayGeometry = mergeGeometries([ground.geometry(), tallGeometry]);

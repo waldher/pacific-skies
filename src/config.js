@@ -8,7 +8,7 @@ export const CONFIG = {
     bankResponse: 8,
     propellerSpeed: 55,      // radians/s
     sunOffset: [-300, 640, -360], // sun position relative to the camera; shadows and ocean lighting share it
-    lighting: { sky: '#b4cfe8', ground: '#465058', hemisphere: 1.35, sun: '#ffe9c4', sunIntensity: 2.7 },
+    lighting: { sky: '#b4cfe8', ground: '#465058', hemisphere: 1.5, sun: '#ffe9c4', sunIntensity: 2.8 },
     // The camera looks straight down but heights lean up-screen by this many
     // pixels per unit, so walls, masts and hillsides show a face. Ground
     // positions are untouched: sea-level x,y still maps 1:1 to the screen.
@@ -47,7 +47,7 @@ export const CONFIG = {
       cloudSpeed: 2.5,         // cloud shadows drift at wind × this
       cloudStrength: .2,       // how much cloud shadows darken the sea (0..1)
       glitter: .45,            // sun sparkle intensity
-      foam: .3,                // whitecap strength
+      foam: .1,                // pale bloom on the tallest crests
       surf: .55,               // shoreline foam ring opacity
       deep: '#062740', mid: '#0e4a6b', sky: '#1d4a66', shallows: '#36aaa0',
       shallowsRadius: 1.9,     // lagoon fade-out distance, in island radii

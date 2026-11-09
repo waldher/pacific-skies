@@ -61,8 +61,8 @@ export function createWorld(scene) {
         vec2 p = worldXZ, w = normalize(wind);
         mat2 toWind = mat2(w.x, -w.y, w.y, w.x), fromWind = mat2(w.x, w.y, -w.y, w.x);
         vec2 q = toWind * p;
-        vec4 a = swell(q, vec2(.046, .019), .22);
-        vec4 b = swell(R1 * q + 31.0, vec2(.098, .047), .42);
+        vec4 a = swell(q, vec2(.04, .026), .22);
+        vec4 b = swell(R1 * q + 31.0, vec2(.09, .06), .42);
         float h = a.z * .6 + b.z * .4, sparkle = b.w;
         vec2 g = a.xy * .6 + (R1T * b.xy) * .4;
         if (detail > .5) {
@@ -85,9 +85,8 @@ export function createWorld(scene) {
           vec3 halfway = normalize(sunDir + vec3(0.0, 1.0, 0.0));
           float spec = pow(max(dot(n, halfway), 0.0), 900.0);
           water += glitter * spec * smoothstep(.55, .8, sparkle) * vec3(1.0, .96, .86);
-          // Whitecaps: only the tallest crests break, as short streaks along them.
-          float crest = smoothstep(.82, .9, b.z) * smoothstep(.74, .86, a.z) * smoothstep(.5, .62, sparkle);
-          water = mix(water, vec3(.84, .92, .94), foam * crest);
+          // Breaking crests: a faint pale bloom on the tallest water, never a hard fleck.
+          water += vec3(.5, .62, .66) * foam * smoothstep(.72, .95, a.z) * smoothstep(.6, .95, b.z);
         }
         if (detail > .5) water *= 1.0 - smoothstep(.5, .78, broad.r) * cloudStrength;
         gl_FragColor = vec4(water, 1.0);

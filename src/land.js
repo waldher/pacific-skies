@@ -302,13 +302,13 @@ function groundShader(shared) {
         float h = hill * .72 + fine.x * .28;
         vec2 g = (coarse.yz * .72 + fine.yz * (.28 * 3.1)) * HILL;
         vec4 wood = vnoise4(p * FOREST);                  // .a is the forest mask land.js plants trees by
-        vec4 grain = vnoise4(p * .21);                    // turf and soil texture, a few pixels across
+        vec4 grain = vnoise4(p * .13);                    // turf and soil texture, a few pixels across
         vec3 albedo = mix(low, high, smoothstep(.34, .8, h));
         albedo = mix(albedo, patchColor, smoothstep(.5, .78, wood.r) * .5);
         // Under the canopy the ground is dark litter, so a forest reads as a
         // mass with trees standing in it rather than cones on a lawn.
         float canopy = smoothstep(.3, .7, wood.a) * (1.0 - smoothstep(.72, .88, h));
-        float floorMask = smoothstep(forestEdge - .1, forestEdge + .04, canopy);
+        float floorMask = smoothstep(forestEdge - .16, forestEdge + .06, canopy);
         float use = 0.0;
         if (fields > .5) {
           // Farmland: whole plots in the lowlands, each a rectangle of one crop with
@@ -340,12 +340,12 @@ function groundShader(shared) {
         if (floorMask > .02) {
           // Canopy: crowns as lit bumps, so the 3D trees are the edge of a
           // mass rather than every tree in it.
-          vec3 crown = vnoiseGrad(p * .105 + 9.0);
-          g = mix(g, crown.yz * .028, floorMask);
-          albedo = mix(albedo, floorColor * (.95 + crown.x * .7), floorMask);
+          vec3 crown = vnoiseGrad(p * .06 + 9.0);
+          g = mix(g, crown.yz * .012, floorMask);
+          albedo = mix(albedo, floorColor * (1.0 + crown.x * .45), floorMask);
         }
         albedo = mix(albedo, earth, cleared * .9);
-        albedo *= .9 + .2 * grain.r;
+        albedo *= .94 + .12 * grain.r;
         if (dunes > .5) {
           float u = (q.x + vnoise(p * .02) * 45.0) * .12 + q.y * .01;
           albedo *= .94 + .06 * sin(u);
@@ -642,8 +642,10 @@ export function createLand(scene, shared) {
         batch.disc(p.x, p.y, GROUND + size * .6 + .3, size * .15, 8, rgb('#161312'));
         batch.disc(p.x, p.y, GROUND + size * .6 + .5, size * .06, 6, rgb('#d1401c'));
       } else {
-        const top = B.snow && size > 70 ? rgb('#eef1f2') : shade(rgb(B.rock), 1.3);
-        batch.peak(p.x, p.y, GROUND, size, size * .62, shade(rgb(B.high), .85), rgb(B.rock), top, rng() * TAU);
+        // A massif: the summit and two shoulders, so it reads as a ridge rather than one cone.
+        const top = B.snow && size > 70 ? rgb('#eef1f2') : shade(rgb(B.rock), 1.3), foot = shade(rgb(B.high), .8), turn = rng() * TAU;
+        for (const [k, a] of [[.62, turn + 2.4], [.5, turn + 4.6]]) batch.peak(p.x + Math.cos(a) * size * .62, p.y + Math.sin(a) * size * .62, GROUND, size * k, size * k * .6, foot, rgb(B.rock), shade(rgb(B.rock), 1.2), a);
+        batch.peak(p.x, p.y, GROUND, size * .82, size * .66, foot, rgb(B.rock), top, turn);
       }
       blocked.push({ x: p.x, y: p.y, r: size + 6 });
     }

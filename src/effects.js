@@ -61,17 +61,21 @@ export function createEffects(scene, renderer) {
         if (r > 1.0) discard;
         vec4 o;
         if (kind < .5) {
-          // Fire: gaussian core, hottest in the middle and when new.
-          float heat = exp(-r * r * 3.0) * (.25 + t * .85);
-          vec3 flame = mix(vec3(.75, .12, .02), vec3(1.0, .55, .12), smoothstep(.15, .5, heat));
-          flame = mix(flame, vec3(1.0, .9, .62), smoothstep(.6, 1.0, heat));
-          o = vec4(flame * heat * 1.4, heat * .3);
+          // Fire: a flickering core, hottest in the middle and when new.
+          float lick = vnoise(c * 1.4 + vData.z * 53.0);
+          float heat = exp(-r * r * (2.6 + lick * 2.4)) * (.2 + t * .9) * (.7 + .5 * vData.z);
+          vec3 flame = mix(vec3(.7, .1, .02), vec3(1.0, .5, .1), smoothstep(.12, .45, heat));
+          flame = mix(flame, vec3(1.0, .88, .55), smoothstep(.6, 1.0, heat));
+          o = vec4(flame * heat * 1.4, heat * .35);
         } else if (kind < 1.5) {
-          // Smoke: a ragged puff, lit from the sun side, thinning as it ages.
-          float n = vnoise(c * .9 + vData.z * 37.0);
-          float a = (1.0 - smoothstep(.3 + n * .35, .7 + n * .3, r)) * min(1.0, t * 1.6) * .55;
-          float lit = .5 + .5 * dot(c, -sun) * .8;
-          vec3 smoke = mix(vec3(.07, .07, .08), vec3(.34, .32, .31), lit * (1.0 - t * .5));
+          // Smoke: no outline at all, just density that falls off from a
+          // centre pushed around by noise, so overlapping puffs make one cloud.
+          vec4 n = vnoise4(c * .8 + vData.z * 37.0);
+          vec2 d = c + (vec2(n.r, n.a) - .5) * .9;
+          float density = exp(-dot(d, d) * 3.4) * (1.0 - smoothstep(.75, 1.0, r));
+          float a = density * min(1.0, t * 1.8) * .7;
+          float lit = .5 + .4 * dot(c, -sun);
+          vec3 smoke = mix(vec3(.035, .035, .04), vec3(.2, .185, .17), lit * (1.0 - t * .6));
           o = vec4(smoke * a, a);
         } else if (kind < 2.5) {
           // Shock ring with a flash inside while it is young.
@@ -126,7 +130,7 @@ export function createEffects(scene, renderer) {
         const p = game.particles[i], t = Math.max(0, Math.min(1, p.life / p.max)), kind = KIND[p.kind] ?? 0;
         positions[i * 3] = p.x; positions[i * 3 + 1] = kind === 3 ? 1.5 : p.low ? 14 : high; positions[i * 3 + 2] = p.y;
         // Sprites fade out toward their rim, so each is drawn larger than the old hard discs.
-        sizes[i] = p.size * (kind === 3 ? 4.4 - 2 * t : kind === 2 ? 3.6 - 2 * t : kind === 1 ? 4.6 - 2 * t : 1.5 + 1.9 * t);
+        sizes[i] = p.size * (kind === 3 ? 4.4 - 2 * t : kind === 2 ? 3.6 - 2 * t : kind === 1 ? 5 - 2 * t : 1.5 + 1.9 * t);
         data[i * 3] = kind; data[i * 3 + 1] = t; data[i * 3 + 2] = (p.size * 7.31 + i * .137) % 1;
       }
       geometry.setDrawRange(0, n);
