@@ -56,7 +56,8 @@ is live at https://waldher.github.io/pacific-skies/ within minutes.
 | `land.js` | island scenery: biomes, relief-shaded ground shader, shallows skirt, forests/villages/roads/peaks as one vertex-coloured batch per island |
 | `traffic.js` | instanced trucks, villagers and fishing boats living on loaded islands |
 | `sprites.js` | HUD `rr` rounded-rect helper |
-| `hud.js` | responsive HTML readouts/menus, canvas minimap and markers, touch UI |
+| `hud.js` | in-flight HUD: status ring on the aircraft, wind guidance, rim cues, HTML placards/menus, chart inset, touch UI |
+| `hud-marks.js` | canvas primitives for the HUD: halo text, placards, label placer with keep-out boxes, ring, wind, site and rim marks |
 | `audio.js` | procedural sfx |
 | `renderer.js` | Three.js scene, orthographic camera, lighting, instance lifecycle, adaptive quality ladder (`?quality=N` pins a level; failed levels are never retried) |
 | `aircraft.js` | GLB loading, geometry batching, banking, propeller animation, per-aircraft shadow receiver / blob |

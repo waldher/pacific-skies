@@ -5,8 +5,7 @@
 // scenes match codex/graphics-hill-climb's playtest/graphics.cjs so captures
 // from the two climbs can sit in the same judging packet.
 //
-//   CLIMB_OUT=dir  CLIMB_SET=graphics|hud|all  CLIMB_ONLY=phone-coast,hud-fight  CLIMB_SAMPLES=60
-//   node playtest/climb/capture.cjs
+//   CLIMB_OUT=dir  CLIMB_SET=graphics|hud|hudx|hud+|roam|all  CLIMB_ONLY=name,name  CLIMB_SAMPLES=60  node playtest/climb/capture.cjs
 const fs = require('node:fs'), path = require('node:path'), http = require('node:http');
 const { chromium } = require('playwright');
 const ROOT = path.resolve(__dirname, '../..');
@@ -20,13 +19,30 @@ const HUD = [
   ['hud-transit', PHONE], ['hud-fight', PHONE], ['hud-critical', PHONE], ['hud-capture', PHONE],
   ['hud-raid', PHONE], ['hud-landed', PHONE], ['hud-fight', PORTRAIT], ['hud-transit', PORTRAIT],
 ].map(([scene, view]) => ({ name: scene + (view === PORTRAIT ? '-portrait' : ''), scene, quality: 2, view, set: 'hud' }));
+// Extra HUD checks (CLIMB_SET=hudx, or hud+ for both). Each restages one of the
+// fixed scenes above and then applies a tweak; the eight fixtures are untouched.
+const X = (name, scene, tweak, view = PHONE) => ({ name, scene, tweak, quality: 2, view, set: 'hudx' });
+const HUDX = [
+  X('x-fight-t1', 'hud-fight', { time: 12.45 }), X('x-fight-t2', 'hud-fight', { time: 12.9 }),
+  X('x-transit-runway', 'hud-transit', { over: 'runway' }), X('x-transit-sand', 'hud-transit', { over: 'sand' }),
+  X('x-transit-behind', 'hud-transit', { behind: true }),
+  X('x-state-a', 'hud-raid', { hp: 100, heat: .3, calm: true }), X('x-state-b', 'hud-raid', { hp: 60, heat: .6, calm: true }),
+  X('x-state-c', 'hud-raid', { hp: 35, heat: .9, calm: true }), X('x-state-d', 'hud-raid', { hp: 15, heat: .8, overheated: true, calm: true }),
+  X('x-overlap', 'hud-fight', { overlap: true }), X('x-bank', 'hud-fight', { bank: true }),
+  X('x-fight-white', 'hud-fight', { ground: '#f4f1e6' }), X('x-critical-white', 'hud-critical', { ground: '#f4f1e6' }),
+  X('x-critical-black', 'hud-critical', { ground: '#04090c' }), X('x-capture-white', 'hud-capture', { ground: '#f4f1e6' }),
+  X('x-arrived', 'hud-capture', { progress: 0 }),
+  X('x-critical-portrait', 'hud-critical', {}, PORTRAIT), X('x-capture-portrait', 'hud-capture', {}, PORTRAIT), X('x-raid-portrait', 'hud-raid', {}, PORTRAIT),
+  X('x-desktop-fight', 'hud-fight', { keyboard: true }),
+  X('x-small-critical', 'hud-critical', {}, { width: 320, height: 568 }), X('x-small-raid', 'hud-raid', {}, { width: 568, height: 320 }),
+];
 // Unjudged spot checks of other islands and biomes: the five fixed scenes only ever show home.
 const ROAM = [0, 1, 2, 3, 4, 5, 6, 7].map(i => ({ name: `roam-${i}`, scene: `roam-${i}`, quality: 2, view: PHONE, set: 'roam' }));
 const ONLY = process.env.CLIMB_ONLY?.split(',');
-const SHOTS = [...GRAPHICS, ...HUD, ...ROAM].filter(s => ONLY ? ONLY.includes(s.name) : SET === 'all' || s.set === SET);
+const SHOTS = [...GRAPHICS, ...HUD, ...HUDX, ...ROAM].filter(s => ONLY ? ONLY.includes(s.name) : SET === 'all' ? s.set === 'graphics' || s.set === 'hud' : SET === 'hud+' ? s.set.startsWith('hud') : s.set === SET);
 
 // Runs in the page. Everything is placed by hand; simulation stays frozen.
-async function stage({ scene }) {
+async function stage({ scene, tweak }) {
   const api = window.__game, { game: g, graphics, view, CONFIG } = api;
   api.setSeed(1942); api.startGame();
   api.update(0);                                   // lets guidance pick its first objective
@@ -79,11 +95,25 @@ async function stage({ scene }) {
     Object.assign(p, { x: x - 75, y: y + 65 });
   }
   if (scene === 'hud-landed') { api.startGame(); api.update(0); g.time = 12; g.messageTime = 0; }
+  if (tweak) {
+    if (tweak.hp != null) p.hp = tweak.hp;
+    if (tweak.heat != null) p.heat = tweak.heat;
+    p.overheated = !!tweak.overheated || p.overheated;
+    if (tweak.calm) g.enemies.length = 0;
+    if (tweak.over) { const o = tweak.over === 'runway' ? [0, 0] : [150, 150]; p.x = home.x + o[0]; p.y = home.y + o[1]; g.cam = { x: p.x + 60, y: p.y - 30 }; }
+    if (tweak.behind && g.waypoint) p.a = Math.atan2(g.waypoint.y - p.y, g.waypoint.x - p.x) + Math.PI;
+    if (tweak.overlap) { Object.assign(g.allies[0], { x: p.x + 16, y: p.y + 12 }); Object.assign(g.enemies[0], { x: p.x - 14, y: p.y - 18 }); }
+    if (tweak.progress != null) { const site = g.territories.find(t => t.id === g.waypoint.siteId); site.progress = tweak.progress; }
+    if (tweak.ground) { document.getElementById('world').style.visibility = 'hidden'; document.body.style.background = tweak.ground; }
+    if (tweak.keyboard) window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyW' })), window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyW' }));
+  }
   if (graphics.prepare) await graphics.prepare(g, view);
   for (let i = 0; i < 12; i++) graphics.render(g, view, 1 / 60, 0, 0);
   for (let i = 0; i < 30; i++) { g.time = 12 + i / 60; graphics.render(g, view, 1 / 60, 0, 0); }
   g.time = 12;
   for (const v of graphics.aircraft.values()) for (const prop of v.propellers) prop.rotation.z = 0;
+  if (tweak?.bank) { api.render(0); for (let i = 1; i <= 20; i++) { g.time = 12 + i / 60; p.a -= 3 / 60; api.render(0); } }
+  if (tweak?.time) g.time = tweak.time;
   api.render(0);
   return { drawCalls: graphics.diagnostics.drawCalls, triangles: graphics.diagnostics.triangles };
 }
@@ -120,7 +150,7 @@ function timing(samples) {
       page.on('console', m => { if (m.type() === 'error' && /THREE|GL_|Shader|WebGL/.test(m.text())) report.errors.push(`${shot.name}: ${m.text()}`); });
       await page.goto(`http://127.0.0.1:${server.address().port}/?quality=${shot.quality}&manualFrames=1`);
       await page.waitForFunction(() => window.__game?.rendering?.ready || window.__game?.rendering?.error);
-      const info = await page.evaluate(stage, { scene: shot.scene });
+      const info = await page.evaluate(stage, { scene: shot.scene, tweak: shot.tweak });
       await page.screenshot({ path: path.join(OUT, shot.name + '.png') });
       const t = shot.set === 'graphics' ? await page.evaluate(timing, SAMPLES) : {};
       report.shots.push({ name: shot.name, ...info, ...t });

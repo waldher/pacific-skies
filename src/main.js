@@ -30,7 +30,7 @@ document.addEventListener?.('visibilitychange', () => { if (document.hidden) sav
 let graphics;
 let contextLost = false;
 // Deterministic capture mode (playtest/climb): the harness steps frames itself.
-const manualFrames = /[?&]manualFrames\b/.test(location.search);
+const manualFrames = typeof location !== 'undefined' && /[?&]manualFrames\b/.test(location.search);
 
 function update(dt) {
   if (game.paused) return;
