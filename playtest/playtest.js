@@ -139,7 +139,7 @@ function check(name, ok, detail) {
       graphics.quality.set(i);
       graphics.render(game, view, 0, 0, 0);
       const L = CONFIG.render.quality.levels[i];
-      results.push(graphics.diagnostics.quality === i && graphics.renderer.shadowMap.enabled === L.shadows
+      results.push(graphics.diagnostics.quality === i
         && graphics.diagnostics.pixelRatio === Math.min(view.DPR, L.pixelRatio));
     }
     graphics.quality.set(1);

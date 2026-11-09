@@ -4,28 +4,61 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { CONFIG } from './config.js';
 import { angDiff, clamp } from './util.js';
+import { onHull, onLand } from './surface.js';
+import { createShadow, projectShadow, shadowOffset, casters } from './shadow.js';
 
+// One vertex-coloured Lambert mesh per part: a whole airframe is a single
+// draw however many paint colours the GLB uses (a Corsair has twelve).
+const paint = new THREE.MeshLambertMaterial({ vertexColors: true });
 function batchMeshes(source, relativeTo) {
-  const groups = new Map();
+  const geometries = [];
   const inverse = new THREE.Matrix4().copy(relativeTo.matrixWorld).invert();
   source.traverse(node => {
     if (!node.isMesh) return;
-    const geometry = node.geometry.clone();
+    const geometry = node.geometry.index ? node.geometry.toNonIndexed() : node.geometry.clone();
+    for (const name of Object.keys(geometry.attributes)) if (name !== 'position' && name !== 'normal') geometry.deleteAttribute(name);
     geometry.applyMatrix4(new THREE.Matrix4().multiplyMatrices(inverse, node.matrixWorld));
-    const key = node.material.uuid;
-    if (!groups.has(key)) groups.set(key, { material: node.material, geometries: [] });
-    groups.get(key).geometries.push(geometry);
+    const { r, g, b } = node.material.color, colors = new Float32Array(geometry.attributes.position.count * 3);
+    for (let i = 0; i < colors.length; i += 3) { colors[i] = r; colors[i + 1] = g; colors[i + 2] = b; }
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    geometries.push(geometry);
   });
-  const result = new THREE.Group();
-  for (const { material, geometries } of groups.values()) {
-    const merged = mergeGeometries(geometries);
-    if (!merged) throw new Error('Aircraft geometry could not be combined.');
-    const mesh = new THREE.Mesh(merged, material);
-    mesh.castShadow = true;
-    result.add(mesh);
-    geometries.forEach(geometry => geometry.dispose());
+  const merged = mergeGeometries(geometries);
+  if (!merged) throw new Error('Aircraft geometry could not be combined.');
+  geometries.forEach(geometry => geometry.dispose());
+  return new THREE.Mesh(merged, paint);
+}
+
+// The airframe's plan-view silhouette as a few dozen flat strips: a shadow
+// caster two orders of magnitude lighter than the mesh, and still exact
+// enough that a P-38's twin booms cast two shadows.
+function silhouette(geometry, rows = 56) {
+  const p = geometry.attributes.position, box = new THREE.Box3().setFromBufferAttribute(p);
+  const step = (box.max.z - box.min.z) / rows, spans = Array.from({ length: rows }, () => []);
+  for (let i = 0; i < p.count; i += 3) {
+    const t = [0, 1, 2].map(k => [p.getX(i + k), p.getZ(i + k)]);
+    const z0 = Math.min(t[0][1], t[1][1], t[2][1]), z1 = Math.max(t[0][1], t[1][1], t[2][1]);
+    for (let r = Math.max(0, Math.floor((z0 - box.min.z) / step)); r < rows && box.min.z + r * step < z1; r++) {
+      const z = box.min.z + (r + .5) * step; let lo = Infinity, hi = -Infinity;
+      for (let e = 0; e < 3; e++) {
+        const [ax, az] = t[e], [bx, bz] = t[(e + 1) % 3];
+        if ((az > z) === (bz > z)) continue;
+        const x = ax + (bx - ax) * (z - az) / (bz - az); lo = Math.min(lo, x); hi = Math.max(hi, x);
+      }
+      if (hi > lo) spans[r].push([lo, hi]);
+    }
   }
-  return result;
+  const quads = [];
+  spans.forEach((row, r) => {
+    row.sort((a, b) => a[0] - b[0]);
+    let run = null;
+    const flush = () => { if (run) { const z = box.min.z + r * step; quads.push(run[0], 0, z, run[1], 0, z + step, run[1], 0, z, run[0], 0, z, run[0], 0, z + step, run[1], 0, z + step); } };
+    for (const span of row) { if (run && span[0] <= run[1] + step * .5) run[1] = Math.max(run[1], span[1]); else { flush(); run = [...span]; } }
+    flush();
+  });
+  const flat = new THREE.BufferGeometry();
+  flat.setAttribute('position', new THREE.BufferAttribute(new Float32Array(quads), 3));
+  return flat;
 }
 
 export async function loadAircraft() {
@@ -40,7 +73,9 @@ export async function loadAircraft() {
     if (!airframe || !propeller) throw new Error(`${name} is missing its airframe or propeller.`);
     const template = new THREE.Group();
     template.name = name;
-    template.add(batchMeshes(airframe, scene));
+    const body = batchMeshes(airframe, scene);
+    body.name = 'Body'; casters.set(body.geometry, silhouette(body.geometry));
+    template.add(body);
     for (const source of propellers) {
       const prop = batchMeshes(source, source);
       prop.name = source.name;
@@ -60,77 +95,53 @@ export async function loadAircraft() {
   return templates;
 }
 
-// Each aircraft carries its own small shadow receiver under it, so the
-// shadow map is only sampled over a few thousand pixels rather than the
-// whole screen. When shadows are off (lowest quality) the same quad draws
-// a soft dark blob instead, keeping the altitude cue.
-const receiverGeometry = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
-const shadowMaterial = new THREE.ShadowMaterial({ opacity: .24, depthWrite: false });
-const blobMaterial = new THREE.ShaderMaterial({
-  transparent: true, depthWrite: false,
-  vertexShader: `varying vec2 vUv;
-    void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-  fragmentShader: `varying vec2 vUv;
-    void main() {
-      float d = length((vUv - .5) * vec2(2.3, 3.4));
-      gl_FragColor = vec4(0.0, 0.0, 0.0, .22 * (1.0 - smoothstep(.35, 1.0, d)));
-    }`,
-});
-const RECEIVER_SIZE = 140, BLOB_SIZE = 64;
-// Where a point at flight height casts its shadow, from the shared sun offset.
-const [sunX, sunY, sunZ] = CONFIG.render.sunOffset;
-const shadowShift = [-sunX * CONFIG.render.flightHeight / sunY, -sunZ * CONFIG.render.flightHeight / sunY];
+// Shadows are the airframe's silhouette, flattened along the sun onto the
+// surface below (see shadow.js): it turns and banks with the aircraft, on
+// every quality level, for one small draw.
+const overShip = (game, x, y) => [...game.ships, ...(game.convoys || [])].find(s => s.hp > 0 && s.active !== false && onHull({ x, y }, s));
 
-export function setShadowMode(visual, shadows) {
-  visual.shadow.material = shadows ? shadowMaterial : blobMaterial;
-  visual.shadow.receiveShadow = shadows;
-  const size = shadows ? RECEIVER_SIZE : BLOB_SIZE;
-  visual.shadow.scale.set(size, 1, size);
-}
-
-export function createAircraft(template, entity, shadows = true) {
+export function createAircraft(template, entity) {
   const root = new THREE.Group();
   const model = template.clone(true);
   const ownedMaterials = [];
+  // Friendly aircraft flash when hit, so each owns its paint; enemies share one.
   if (template.name !== 'Mitsubishi_Zero') {
-    const copies = new Map();
-    model.traverse(node => {
-      if (!node.isMesh) return;
-      if (!copies.has(node.material)) { const copy = node.material.clone(); copies.set(node.material, copy); ownedMaterials.push(copy); }
-      node.material = copies.get(node.material);
-    });
+    const own = paint.clone(); ownedMaterials.push(own);
+    model.traverse(node => { if (node.isMesh) node.material = own; });
   }
   root.add(model);
   // Altitude marks the surface under the aircraft, not its fuselage center.
   const clearance = Math.max(0, -new THREE.Box3().setFromObject(model).min.y) + .5;
-  const shadow = new THREE.Mesh(receiverGeometry, shadowMaterial);
-  shadow.position.y = .1;
-  const visual = { root, model, clearance, shadow, ownedMaterials, propeller: model.getObjectByName('Propeller'), propellers: model.children.filter(node => node.name.startsWith('Propeller')), heading: entity.a, bank: 0 };
-  setShadowMode(visual, shadows);
-  return visual;
+  const body = model.getObjectByName('Body');
+  const shadow = createShadow(casters.get(body.geometry));
+  return { root, model, body, clearance, shadow, ownedMaterials, propeller: model.getObjectByName('Propeller'), propellers: model.children.filter(node => node.name.startsWith('Propeller')), heading: entity.a, bank: 0 };
 }
 
-export function updateAircraft(visual, entity, dt, turnRate, flash = false) {
+export function updateAircraft(visual, entity, dt, turnRate, flash, game) {
   const R = CONFIG.render;
   const rate = dt > 0 ? angDiff(visual.heading, entity.a) / dt : 0;
   const target = entity.flight && entity.flight !== 'flying' ? 0 : -clamp(rate / turnRate, -1, 1) * R.bankAngle;
   visual.bank += (target - visual.bank) * (1 - Math.exp(-R.bankResponse * dt));
   if (entity.flight && entity.flight !== 'flying') visual.bank = 0;
   visual.heading = entity.a;
-  visual.root.position.set(entity.x, (entity.altitude ?? R.flightHeight) + visual.clearance, entity.y);
+  const altitude = entity.altitude ?? R.flightHeight;
+  visual.root.position.set(entity.x, altitude + visual.clearance, entity.y);
   visual.root.rotation.y = -entity.a - Math.PI / 2;
-  visual.shadow.position.set(entity.x + shadowShift[0], .1, entity.y + shadowShift[1]);
-  visual.shadow.rotation.y = visual.root.rotation.y;
-  visual.shadow.visible = entity.flight !== 'landed';
   visual.model.rotation.z = visual.bank;
   visual.propellers.forEach((prop, i) => {
     prop.rotation.z = (prop.rotation.z + (i ? -1 : 1) * dt * R.propellerSpeed * (entity.flight === 'landed' ? .12 : 1)) % (Math.PI * 2);
   });
+  // The shadow lands on whatever is under it: a deck, the island, or the sea.
+  const [sx, sy] = shadowOffset(altitude), gx = entity.x + sx, gy = entity.y + sy;
+  const ship = overShip(game, gx, gy);
+  const surface = ship ? (ship.kind === 'carrier' ? CONFIG.carrier.deckHeight : 11) : onLand({ x: gx, y: gy }, game.terrain || game.territories || []) ? R.groundHeight + 1.4 : 0;
+  visual.root.updateMatrixWorld(true);
+  projectShadow(visual.shadow, visual.body.matrixWorld, Math.min(surface + .4, altitude));
+  visual.shadow.visible = altitude > surface + 1.5;
   // Friendly aircraft own their flash materials; enemy materials stay shared.
-  if (visual.flash !== flash) {
-    visual.model.traverse(node => {
-      if (node.isMesh) node.material.emissive.setHex(flash ? 0xffffff : 0x000000);
-    });
+  flash = !!flash;
+  if (visual.flash !== flash && visual.ownedMaterials.length) {
+    visual.ownedMaterials[0].emissive.setHex(flash ? 0xffffff : 0x000000);
     visual.flash = flash;
   }
 }

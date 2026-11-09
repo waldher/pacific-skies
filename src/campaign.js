@@ -5,6 +5,7 @@ import { AIRCRAFT, aircraftUnlocked } from './aircraft-types.js';
 import { CONFIG } from './config.js';
 import { availableBases, canUseAircraft, resolveBase } from './bases.js';
 import { rand } from './util.js';
+import { sfxSignal } from './audio.js';
 
 export function createCampaign() {
   const theater = generateTheater();
@@ -32,7 +33,7 @@ export function defenders(game, territory) {
   return game.enemies.filter(e => e.territory === territory.id && e.hp > 0 && !e.strike).length
     + game.airfields.filter(f => f.territory === territory.id && f.owner === 'enemy' && f.hp > 0).length;
 }
-export function notify(game, message) { game.message = message; game.messageTime = CONFIG.conquest.messageDuration; }
+export function notify(game, message) { game.message = message; game.messageTime = CONFIG.conquest.messageDuration; sfxSignal('radio'); }
 
 function beginRescue(game) {
   const c = game.ships[0];
@@ -65,18 +66,18 @@ export function updateCampaign(game, dt, activate) {
     if (game.player.baseId === carrierBase.id && game.player.flight !== 'flying') {
       relocateGroundedPlayer(game);
     }
-    notify(game, 'Carrier lost');
+    notify(game, 'Carrier lost'); sfxSignal('loss');
   }
   if (game.rescue.status === 'retry') { game.rescue.timer -= dt; if (game.rescue.timer <= 0) beginRescue(game); }
   if (game.rescue.status === 'active' && !game.rescue.launched && Math.hypot(game.player.x - carrier.x, game.player.y - carrier.y) < R.rescueStartRadius) launchRescueAttack(game);
   if (game.rescue.status === 'active' && game.rescue.launched && !game.enemies.some(e => e.rescue && e.hp > 0) && game.rescue.intercepts < R.rescueIntercepts) {
     game.rescue.status = 'retry'; game.rescue.timer = R.rescueRetry;
-    notify(game, 'Rescue failed — try again');
+    notify(game, 'Rescue failed — try again'); sfxSignal('loss');
   }
   if (game.rescue.status === 'active' && carrier.hp > 0 && game.rescue.intercepts >= R.rescueIntercepts && !game.enemies.some(e => e.rescue && e.hp > 0)
     && Math.hypot(game.player.x - carrier.x, game.player.y - carrier.y) < R.rescueRadius) {
     game.rank = 2; game.rescue.status = 'complete'; carrierBase.available = true;
-    notify(game, 'Carrier rescued — landing available');
+    notify(game, 'Carrier rescued — landing available'); sfxSignal('capture');
   }
   for (const id of Object.keys(AIRCRAFT)) {
     if (aircraftUnlocked(game, id) && !game.unlockedAircraft.includes(id)) {
@@ -99,6 +100,7 @@ export function updateCampaign(game, dt, activate) {
         const field = game.airfields.find(f => f.territory === t.id), base = game.bases.find(b => b.territory === t.id);
         if (field) { field.owner = 'us'; field.maxHp = Math.max(field.maxHp, C.outpostHp); field.hp = field.maxHp * C.capturedIntegrityFraction; base.owner = 'us'; base.available = true; }
         notify(game, field ? 'Airfield captured — land here to rearm' : t.role === 'port' ? 'Port captured — fleet repairs available' : 'Radar captured — new targets on map');
+        sfxSignal('capture');
       }
     } else t.progress = 0;
   }
@@ -137,7 +139,7 @@ function updateHoldings(game, dt) {
       if (field) { field.owner = 'enemy'; field.maxHp = CONFIG.airfield.hp; field.hp = field.maxHp; field.launchTimer = rand(CONFIG.strike.intervalMin, CONFIG.strike.intervalMax); }
       if (base) { base.owner = 'enemy'; base.available = false; }
       if (base && game.player.baseId === base.id && game.player.flight !== 'flying') relocateGroundedPlayer(game);
-      notify(game, `${t.name} overrun — retake the island`);
+      notify(game, `${t.name} overrun — retake the island`); sfxSignal('loss');
       continue;
     }
     t.established = Math.min(C.establishSeconds, (t.established || 0) + dt);

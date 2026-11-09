@@ -7,23 +7,32 @@ export const CONFIG = {
     bankAngle: Math.PI / 5,  // maximum visual bank, independent of flight physics
     bankResponse: 8,
     propellerSpeed: 55,      // radians/s
-    sunOffset: [-240, 800, -320], // sun position relative to the camera; shadows and ocean lighting share it
-    lighting: { sky: '#c5e6ff', ground: '#506273', hemisphere: 2.2, sun: '#fff0d2', sunIntensity: 2.5 },
+    sunOffset: [-300, 640, -360], // sun position relative to the camera; shadows and ocean lighting share it
+    lighting: { sky: '#b4cfe8', ground: '#465058', hemisphere: 1.5, sun: '#ffe9c4', sunIntensity: 2.8 },
+    // The camera looks straight down but heights lean up-screen by this many
+    // pixels per unit, so walls, masts and hillsides show a face. Ground
+    // positions are untouched: sea-level x,y still maps 1:1 to the screen.
+    oblique: .42,
+    groundHeight: 8.5,       // island interior above the sea
+    shadow: { color: '#040f1a', opacity: .42 },
+    tracer: { seconds: .038, width: 4 },   // streak length as flight time, and glow width in px
+    wake: { width: 2.2, length: 2.9, lead: .08 },   // wake quad in ship beams / lengths; lead ahead of the bow
     quality: {
       // Adaptive quality ladder, best first. The renderer steps down while
       // frames stay slow and back up only into levels that never failed.
+      // Shadows are planar projections (shadow.js), so every level has them.
       // pixelRatio caps the device ratio (below 1 the world renders soft but
       // the HUD stays crisp); ocean is the shader detail (2 full, 1 no
       // glitter/whitecaps, 0 two octaves, no clouds).
       // Pin a level for testing with ?quality=N in the URL.
       levels: [
-        { pixelRatio: 2, ocean: 2, shadows: true },
-        { pixelRatio: 1.5, ocean: 2, shadows: false },
+        { pixelRatio: 2, ocean: 2 },
+        { pixelRatio: 1.5, ocean: 2 },
         // Native 1:1 is where cheap tablets start: the top-down world is
         // authored at one unit per CSS pixel, so nothing is lost.
-        { pixelRatio: 1, ocean: 2, shadows: false },
-        { pixelRatio: .8, ocean: 1, shadows: false },
-        { pixelRatio: .65, ocean: 0, shadows: false },
+        { pixelRatio: 1, ocean: 2 },
+        { pixelRatio: .8, ocean: 1 },
+        { pixelRatio: .65, ocean: 0 },
       ],
       start: 1,
       touchStart: 2,
@@ -37,12 +46,12 @@ export const CONFIG = {
       wind: [14, 6],           // ripple drift, world units/s
       cloudSpeed: 2.5,         // cloud shadows drift at wind × this
       cloudStrength: .2,       // how much cloud shadows darken the sea (0..1)
-      glitter: .6,             // sun sparkle intensity
-      foam: .7,                // whitecap density
+      glitter: .45,            // sun sparkle intensity
+      foam: .1,                // pale bloom on the tallest crests
       surf: .55,               // shoreline foam ring opacity
-      deep: '#0f4468', mid: '#1c6b8a', shallows: '#39aeb0',
+      deep: '#062740', mid: '#0e4a6b', sky: '#1d4a66', shallows: '#36aaa0',
       shallowsRadius: 1.9,     // lagoon fade-out distance, in island radii
-      shallowsOpacity: .6,     // strength of the turquoise skirt at the shoreline
+      shallowsOpacity: .8,     // strength of the turquoise skirt at the shoreline
     },
     land: {
       // Island scenery. Everything is authored in world units (1 ≈ one CSS
@@ -168,4 +177,119 @@ export const CONFIG = {
   },
   score: { kill: 100, aceKill: 250 },
   camera: { lead: 60 },       // px the camera leads ahead of the nose
+  // In-flight HUD. Presentation only: nothing here changes how the game plays.
+  hud: {
+    // Status ring worn by the player's aircraft; it turns with the heading.
+    // Aft arc = hull in cells, fore arc = gun heat. Angles are half-arcs in radians.
+    rig: { radius: 31, width: 5.5, cells: 5, cellGap: 3, hullHalfArc: 1.9, heatHalfArc: .82, heatWidth: 4,
+      worn: 60, low: 35,           // hull % where the arc turns amber, then critical
+      heatWarn: .7,                // heat where the fore arc gains its limit stops
+      bankSquash: .2, bankResponse: 7, pulse: 7 },
+    // Guiding wind: streaks that blow from the aircraft toward the objective.
+    wind: { streaks: 5, inner: 44, spanShare: .22, spanMin: 70, spanMax: 120, length: 56, lane: 8,
+      speed: .55, thickness: 2.9, busyStreaks: 4, busyAlpha: .85, minRun: 26 },
+    site: { ring: 24, orbit: 34, ticks: 12, orbitSpeed: 1.1 },
+    // A fight is "busy" with a live enemy this close (px); secondary cues then recede.
+    busy: { range: 420, fade: 5 },
+    edge: { margin: 22, baseBeyond: .75 },   // base cue appears once it is this share of the screen away
+    keepout: { refreshFrames: 20, pad: 6 },
+    pipper: { range: 650, cone: 1.1, radius: 7 },
+  },
+  // Sound. Everything is synthesised (src/audio-synth.js) and mixed on one bus
+  // (src/audio.js). Measure a change with playtest/climb/audio-render.cjs
+  // before and after; the reasoning behind these numbers is in playtest/climb/AUDIO.md.
+  audio: {
+    master: .9,
+    sampleRate: 32000,        // synthesis rate of every buffer: 16 kHz of bandwidth, a third less work than 48 k
+    seed: 1942,               // private stream; audio never touches the gameplay RNG
+    updateHz: 30,             // engine/wind parameter updates per second
+    pausedBed: .15,           // engine level behind the paused chart
+    gunTailAfter: 1.7,        // fire cooldowns of silence before the burst's tail plays
+    // gain, send into the shared space, voice cap; `bed` categories sit under the ducker
+    bus: {
+      engine: { gain: .16, send: .04, bed: true },
+      wind: { gain: .12, send: 0, bed: true },
+      world: { gain: .75, send: .3, cap: 8, bed: true },      // other aircraft, distant guns
+      guns: { gain: .2, send: .1, cap: 4 },
+      hits: { gain: .7, send: .12, cap: 6 },
+      weapons: { gain: .95, send: .32, cap: 7 },              // explosions, ordnance in the world
+      danger: { gain: 1, send: .1, cap: 6 },                  // incoming fire, damage taken
+      cockpit: { gain: .6, send: .05, cap: 5 },               // own airframe: releases, wheels, switches
+      signal: { gain: .5, send: .2, cap: 4 },                 // bells, radio, siren
+    },
+    limiter: { threshold: -8, knee: 6, ratio: 20, attack: .003, release: .2, ceiling: .97, clipKnee: .8 },
+    space: { seconds: .9, decay: .2, wet: .6 },               // generated impulse response; seconds 0 disables it
+    duck: { attack: .012, release: .22 },
+    vary: { rate: .03, gain: .12 },                           // per-play pitch and level spread
+    world: { ref: 700, cull: 2800, pan: .8, panWidth: .6, airRef: 600, airHz: 9000 },
+    nearMiss: { radius: 70 },
+    hull: { rattle: .8 },                                     // loose-airframe chatter at zero hull
+    wind: { gain: .55, ground: .02, tone: [500, 2600], buffet: .9 },
+    // relRef: relative speed (units/s) at which another aircraft is at full level; relFloor: level of one holding station
+    flyby: { slots: 3, range: 520, ref: 260, gain: .9, relRef: 220, relFloor: .1, relSmooth: .25, enemyRate: 1.05, allyRate: .9, soundSpeed: 1500, maxClosure: 700, layout: 'zero' },
+    engine: {
+      // playbackRate of the engine loops (1 = the layout's `rev` crank revolutions/s)
+      rate: { idle: .42, brake: .78, boost: 1.08, takeoff: 1.12, lead: .05, sag: .03 },
+      spool: .28, groundSpool: .5, accelRef: 250,
+      exhaust: [.3, 1], prop: .9, tone: [650, 4200],          // gains and low-pass (Hz) from idle to full power
+      bodyHz: 170, bodyDb: 4,
+      roughMisfire: .3, roughMix: .75,                       // a hurt engine drops cylinders
+      // cyl: cylinders, rev: crank rev/s at rate 1, uneven: cylinder-to-cylinder spread, pipe: exhaust resonance Hz
+      layouts: {
+        radial18: { cyl: 18, rev: 40, blades: 3, uneven: .38, pipe: 205 },
+        radial14: { cyl: 14, rev: 38, blades: 3, uneven: .42, pipe: 220 },
+        radial9: { cyl: 9, rev: 37, blades: 3, uneven: .5, pipe: 190 },
+        v12: { cyl: 12, rev: 48, blades: 3, uneven: .12, pipe: 260 },
+        merlin: { cyl: 12, rev: 50, blades: 4, uneven: .14, pipe: 280 },
+        zero: { cyl: 14, rev: 42, blades: 3, uneven: .4, pipe: 240 },
+      },
+      aircraft: {
+        corsair: { layout: 'radial18', pitch: 1, guns: 'heavy' },
+        p38: { layout: 'v12', pitch: 1, twin: .985, guns: 'heavy' },   // two engines never quite in step
+        dauntless: { layout: 'radial9', pitch: 1, guns: 'light' },
+        avenger: { layout: 'radial14', pitch: 1, guns: 'light' },
+        p51: { layout: 'merlin', pitch: 1, guns: 'heavy' },
+      },
+    },
+    build: { gapMs: 12, first: ['gunHeavy', 'takeoffRoll', 'ui', 'radio', 'hitDealt', 'hitTaken', 'enemyGun', 'whiz', 'boomSmall', 'gunTail', 'objective'] },
+    // cue → bank, category and level. duck: [bed gain, seconds held]. near: no
+    // distance attenuation. every: minimum seconds between plays. urgent: synthesise
+    // on the spot if the bank is not ready. steal: take the oldest voice at the cap.
+    cues: {
+      gun: { bank: 'gunHeavy', cat: 'guns', gain: 1, duck: [.6, .2], urgent: true, steal: true, detune: .02 },
+      gunLight: { cat: 'guns', gain: .9, duck: [.65, .3], urgent: true, steal: true, detune: .02 },
+      gunTail: { cat: 'guns', gain: .8 },
+      overheat: { cat: 'cockpit', gain: 1, duck: [.6, .5] },
+      gunReady: { cat: 'cockpit', gain: .8 },
+      hitDealt: { cat: 'hits', gain: .85, near: true, urgent: true, steal: true, detune: .05 },
+      hitHull: { cat: 'hits', gain: .85, near: true, steal: true, detune: .05 },
+      hitFar: { bank: 'hitDealt', cat: 'world', gain: .45, every: .05 },
+      hitTaken: { cat: 'danger', gain: 1, duck: [.35, .35], urgent: true, steal: true },
+      collision: { cat: 'danger', gain: 1, duck: [.3, .6] },
+      enemyGun: { cat: 'danger', gain: .95, every: .04, steal: true },
+      whiz: { cat: 'danger', gain: .8, urgent: true, detune: .08 },
+      allyGun: { bank: 'gunHeavy', cat: 'world', gain: .4, lp: 2400, every: .08 },
+      shipGun: { cat: 'world', gain: 1, every: .05 },
+      boomSmall: { cat: 'weapons', gain: .85, duck: [.7, .3] },
+      boomBig: { cat: 'weapons', gain: 1, duck: [.45, .6] },
+      debrisLand: { cat: 'weapons', gain: .7 },
+      debrisShip: { cat: 'weapons', gain: .7 },
+      bombWater: { cat: 'weapons', gain: .9, duck: [.6, .4] },
+      shipSink: { cat: 'weapons', gain: .8 },
+      torpedoHit: { cat: 'weapons', gain: 1, duck: [.45, .6] },
+      bombRelease: { cat: 'cockpit', gain: .8 },
+      torpedoDrop: { cat: 'cockpit', gain: .85 },
+      arrestWire: { cat: 'cockpit', gain: 1, duck: [.6, .5] },
+      touchdown: { cat: 'cockpit', gain: 1, duck: [.6, .5] },
+      takeoffRoll: { cat: 'cockpit', gain: .8 },
+      playerDown: { cat: 'danger', gain: .8 },
+      capture: { cat: 'signal', gain: 1, every: 1 },
+      objective: { cat: 'signal', gain: .6, every: 3 },
+      loss: { cat: 'signal', gain: 1, every: 2 },
+      victory: { bank: 'capture', cat: 'signal', gain: 1 },   // eight bells: the capture pair, four times
+      radio: { cat: 'signal', gain: .7, every: 1.2 },
+      raid: { cat: 'signal', gain: .9, every: 20 },
+      ui: { cat: 'cockpit', gain: .7, every: .04, urgent: true },
+    },
+  },
 };

@@ -1,5 +1,6 @@
 // Canvas setup, resize handling, and world→screen transform.
 import { game } from './state.js';
+import { CONFIG } from './config.js';
 
 export const cvs = document.getElementById('c');
 export const ctx = cvs.getContext('2d');
@@ -16,6 +17,7 @@ function resize() {
 window.addEventListener('resize', resize);
 resize();
 
-export function w2s(x, y) {
-  return [x - game.cam.x + view.W / 2, y - game.cam.y + view.H / 2];
+// `height` is world altitude: the 3D view leans heights up-screen (renderer.js).
+export function w2s(x, y, height = 0) {
+  return [x - game.cam.x + view.W / 2, y - game.cam.y + view.H / 2 - height * CONFIG.render.oblique];
 }

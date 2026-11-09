@@ -11,11 +11,11 @@ export function explosion(x, y, big) {
       x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s,
       life: rand(0.35, big ? 1.0 : 0.7), max: 1,
       size: rand(2, big ? 7 : 5),
-      kind: rand(0, 1) < 0.55 ? 'fire' : 'smoke',
+      kind: rand(0, 1) < 0.55 ? 'fire' : 'smoke', low: big,   // big blasts are on the surface, not at flight height
     });
   }
-  game.particles.push({ x, y, vx: 0, vy: 0, life: 0.3, max: 0.3, size: big ? 46 : 30, kind: 'ring' });
-  sfxBoom(big);
+  game.particles.push({ x, y, vx: 0, vy: 0, life: 0.3, max: 0.3, size: big ? 46 : 30, kind: 'ring', low: big });
+  sfxBoom(big, x, y);
   game.shake = Math.min(game.shake + (big ? 10 : 5), 14);
 }
 

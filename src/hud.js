@@ -1,10 +1,12 @@
-// Responsive text readouts; world markers and touch controls stay on canvas.
+// In-flight HUD: status worn by the aircraft, guidance as wind, and the HTML
+// instruments and placards at the edges. Marks are drawn by hud-marks.js.
 import { objectiveFor, flightPresentation, coursePhase } from './objectives.js';
 import { ctx, view, w2s } from './canvas.js';
 import { game } from './state.js';
 import { hasSavedCampaign } from './persistence.js';
 import { stick, fireTouch, isTouchDevice } from './input.js';
-import { rr } from './sprites.js';
+import { INK, font, textWidth, inkText, resetKeepouts, keep, placeLabel, edgePoint, placard, placardWidth, placardHeight,
+  drawRig, drawWind, drawChevrons, drawSiteMark, drawBaseCue, drawRaidCue, drawEnemyArrow, drawBar } from './hud-marks.js';
 import { AIRCRAFT, aircraftUnlocked } from './aircraft-types.js';
 import { aircraftPreviews } from './aircraft-previews.js';
 import { availableBases, canUseAircraft, selectSortie, resolveBase } from './bases.js';
@@ -15,120 +17,157 @@ import { clamp, angDiff, TAU } from './util.js';
 import { installationKnown, shipObserved, enemyObserved, observedAt, flightSeconds } from './intelligence.js';
 import { drawTheaterMap } from './operations.js';
 
-export function drawHud() {
-  const { W, H } = view, player = game.player;
-  drawNavigation();
-  for (const ship of [...game.ships, ...(game.convoys || [])]) {
-    if (ship.hp <= 0 || ship.active === false || !shipObserved(game, ship)) continue;
-    const [sx, sy] = w2s(ship.x, ship.y);
-    if (sx < -100 || sx > W + 100 || sy < -150 || sy > H + 150) continue;
-    ctx.textAlign = 'center'; ctx.font = '700 11px monospace';
-    ctx.fillStyle = ship.team === 'us' ? '#83edcb' : '#ffad91';
-    if(ship.team==='jp' && ship.kind==='carrier')ctx.fillText('CARRIER',sx,sy-ship.length/2-18);
-    if(ship.kind==='transport')ctx.fillText('CONVOY',sx,sy-ship.length/2-18);
-    if (ship.team === 'jp') {
-      ctx.fillStyle = '#172e3a'; rr(sx - 23, sy + 26, 46, 4, 2);
-      ctx.fillStyle = '#ed876c'; rr(sx - 23, sy + 26, 46 * ship.hp / ship.maxHp, 4, 2);
+const HUD = CONFIG.hud;
+const onScreen = (sx, sy, m) => sx > m && sx < view.W - m && sy > m && sy < view.H - m;
+
+// Touch controls and corner instruments are HTML; their boxes are read now and
+// then (never per frame) so canvas labels can stay out from under them.
+const CONTROL_IDS = ['stats', 'torpedo-action', 'fire-indicator', 'carrier-action', 'toast', 'sortie-panel'];
+const controlBoxes = [];
+let controlAge = 0, controlKey = '';
+function keepControls() {
+  const key = `${view.W}x${view.H}:${game.player.flight}:${isTouchDevice}`;
+  if (key !== controlKey || --controlAge <= 0) {
+    controlKey = key; controlAge = HUD.keepout.refreshFrames; controlBoxes.length = 0;
+    showControls();   // the boxes must be laid out before they can be measured
+    for (const id of CONTROL_IDS) {
+      const r = document.getElementById(id)?.getBoundingClientRect();
+      if (r && r.width > 0) controlBoxes.push(r);
     }
   }
+  const pad = HUD.keepout.pad;
+  for (const r of controlBoxes) keep(r.x - pad, r.y - pad, r.width + pad * 2, r.height + pad * 2);
+}
+
+// How crowded the fight around the player is, 0..1, eased so cues fade and do not pop.
+let busy = 0, bank = 0, lastTime = -1, lastHeading = 0;
+function pace() {
+  const p = game.player, dt = game.time - lastTime, step = dt > 0 && dt < .25;
+  let target = 0;
+  if (p.flight === 'flying') for (const e of game.enemies) {
+    if (e.hp > 0 && Math.hypot(e.x - p.x, e.y - p.y) < HUD.busy.range && enemyObserved(game, e)) { target = 1; break; }
+  }
+  busy = step ? busy + (target - busy) * Math.min(1, dt * HUD.busy.fade) : target;
+  // The ring leans with the aircraft: bank follows the turn rate as the model's does.
+  const lean = step && p.flight === 'flying' ? clamp(angDiff(lastHeading, p.a) / dt / CONFIG.player.turnRate, -1, 1) : 0;
+  bank = step ? bank + (lean - bank) * Math.min(1, dt * HUD.rig.bankResponse) : 0;
+  lastTime = game.time; lastHeading = p.a;
+}
+
+export function drawHud() {
+  const { W, H } = view, player = game.player, flying = player.flight === 'flying';
+  const [px, py] = w2s(player.x, player.y, player.altitude ?? CONFIG.render.flightHeight), ring = HUD.rig.radius + 12;
+  pace();
+  resetKeepouts();
+  keepControls();
+  keep(px - ring, py - ring, ring * 2, ring * 2);
+  drawChart();
+  // The lead pipper is found first so no label is ever placed over it.
+  let mark = null, best = HUD.pipper.range, lx = 0, ly = 0;
+  if (flying) {
+    for (const e of game.enemies) {
+      if (e.hp <= 0 || !enemyObserved(game, e)) continue;
+      const d = Math.hypot(e.x - player.x, e.y - player.y);
+      if (d < best && Math.abs(angDiff(player.a, Math.atan2(e.y - player.y, e.x - player.x))) < HUD.pipper.cone) { best = d; mark = e; }
+    }
+    if (mark) {
+      const t = best / CONFIG.player.bulletSpeed, v = mark.v ?? mark.speed;
+      [lx, ly] = w2s(mark.x + Math.cos(mark.a) * v * t, mark.y + Math.sin(mark.a) * v * t, CONFIG.render.flightHeight);
+      keep(lx - 14, ly - 14, 28, 28);
+    }
+  }
+  // Labels keep off every aircraft in view, friend or foe.
+  for (const list of [game.enemies, game.allies]) for (const f of list) {
+    if (f.hp <= 0) continue;
+    const [sx, sy] = w2s(f.x, f.y, f.altitude ?? CONFIG.render.flightHeight);
+    if (sx > -20 && sx < W + 20 && sy > -20 && sy < H + 20) keep(sx - 20, sy - 20, 40, 40);
+  }
+  for (const ship of game.ships) drawShipMark(ship);
+  for (const ship of game.convoys || []) drawShipMark(ship);
   for (const field of game.airfields || []) {
     const holding = game.territories.find(t => t.id === field.territory || t === field.territory);
     if (field.owner !== 'us' && (!holding || !observedAt(game, holding))) continue;
     const [sx, sy] = w2s(field.x, field.y);
     if (sx < -80 || sx > W + 80 || sy < -80 || sy > H + 80) continue;
-    ctx.textAlign = 'center'; ctx.font = '700 10px system-ui';
-    ctx.fillStyle = field.owner === 'us' ? '#82dfbc' : '#ffad91';
-    if(field.owner!=='us')ctx.fillText(field.hp>0?'AIRFIELD':'DISABLED',sx,sy-62);
-    if (field.hp > 0 && (field.owner !== 'us' || field.hp < field.maxHp)) {
-      ctx.fillStyle = '#172e3a'; rr(sx - 23, sy - 55, 46, 4, 2);
-      ctx.fillStyle = field.owner === 'us' ? '#82dfbc' : '#ed876c'; rr(sx - 23, sy - 55, 46 * field.hp / field.maxHp, 4, 2);
-    }
+    const ours = field.owner === 'us';
+    if (!ours) inkText(field.hp > 0 ? 'AIRFIELD' : 'DISABLED', sx, sy - 62, 10, INK.red);
+    if (field.hp > 0 && (!ours || field.hp < field.maxHp)) drawBar(sx - 23, sy - 56, 46, field.hp / field.maxHp, ours ? INK.teal : INK.red);
   }
-  for (const territory of game.territories.filter(t => t.role && t.role !== 'airfield' && (t.owner === 'us' || observedAt(game,t)))) {
+  for (const territory of game.territories) {
+    if (!territory.role || territory.role === 'airfield' || !(territory.owner === 'us' || observedAt(game, territory))) continue;
     const [sx, sy] = w2s(territory.x, territory.y);
     if (sx < -80 || sx > W + 80 || sy < -80 || sy > H + 80) continue;
-    ctx.textAlign = 'center'; ctx.font = '700 10px system-ui';
-    ctx.fillStyle = territory.owner === 'us' ? '#82dfbc' : '#ffad91';
-    ctx.fillText(roleNames[territory.role].toUpperCase(), sx, sy - 40);
-    if (territory.maxIntegrity && territory.integrity > 0) {
-      ctx.fillStyle = '#172e3a'; rr(sx - 23, sy - 33, 46, 4, 2);
-      ctx.fillStyle = territory.owner === 'us' ? '#82dfbc' : '#ed876c';
-      rr(sx - 23, sy - 33, 46 * territory.integrity / territory.maxIntegrity, 4, 2);
-    }
+    const ours = territory.owner === 'us';
+    inkText(roleNames[territory.role].toUpperCase(), sx, sy - 40, 10, ours ? INK.teal : INK.red);
+    if (territory.maxIntegrity && territory.integrity > 0) drawBar(sx - 23, sy - 34, 46, territory.integrity / territory.maxIntegrity, ours ? INK.teal : INK.red);
   }
-  // Wingmen wear their call signs; a lead pipper marks where to shoot the nearest fighter.
+  // Wingmen wear their call signs.
   for (const f of game.allies) {
     if ((f.role ?? 'wing') !== 'wing' || f.hp <= 0 || !f.name) continue;
-    const [sx, sy] = w2s(f.x, f.y);
+    const [sx, sy] = w2s(f.x, f.y, f.altitude ?? CONFIG.render.flightHeight);
     if (sx < -20 || sx > W + 20 || sy < -20 || sy > H + 20) continue;
-    ctx.textAlign = 'center'; ctx.font = '600 9px system-ui'; ctx.fillStyle = '#9fe6cf';
-    ctx.fillText(f.name + (f.kills >= CONFIG.airWar.wing.veteranKills ? ' ★' : ''), sx, sy + 30);
+    inkText(f.name.toUpperCase() + (f.kills >= CONFIG.airWar.wing.veteranKills ? ' ★' : ''), sx, sy + 33, 9, INK.teal);
   }
-  if (player.flight === 'flying') {
-    let mark = null, best = 650;
-    for (const e of game.enemies) {
-      if (e.hp <= 0 || !enemyObserved(game, e)) continue;
-      const d = Math.hypot(e.x - player.x, e.y - player.y);
-      if (d < best && Math.abs(angDiff(player.a, Math.atan2(e.y - player.y, e.x - player.x))) < 1.1) { best = d; mark = e; }
-    }
-    if (mark) {
-      const t = best / CONFIG.player.bulletSpeed, v = mark.v ?? mark.speed;
-      const [lx, ly] = w2s(mark.x + Math.cos(mark.a) * v * t, mark.y + Math.sin(mark.a) * v * t);
-      ctx.strokeStyle = 'rgba(255,214,122,.9)'; ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.arc(lx, ly, 6, 0, TAU); ctx.stroke();
-      ctx.fillStyle = 'rgba(255,214,122,.9)'; ctx.fillRect(lx - 1, ly - 1, 2, 2);
-    }
+  // A lead pipper marks where to shoot the nearest fighter.
+  if (mark) {
+    const r = HUD.pipper.radius;
+    ctx.strokeStyle = INK.case; ctx.lineWidth = 4.5; ctx.beginPath(); ctx.arc(lx, ly, r, 0, TAU); ctx.stroke();
+    ctx.strokeStyle = INK.gold; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(lx, ly, r, 0, TAU); ctx.stroke();
+    ctx.fillStyle = INK.case; ctx.fillRect(lx - 2.5, ly - 2.5, 5, 5); ctx.fillStyle = INK.gold; ctx.fillRect(lx - 1.5, ly - 1.5, 3, 3);
   }
-  // off-screen enemy arrows
-  ctx.fillStyle = 'rgba(255,120,90,0.9)';
+  const arrows = hudArrows(game), raid = arrows.find(a => a.kind === 'raid');
+  // Off-screen enemies sit on the rim; a raid formation is one cue, not one arrow each.
   for (const e of game.enemies) {
     if (!enemyObserved(game, e)) continue;
-    const [sx, sy] = w2s(e.x, e.y);
+    const [sx, sy] = w2s(e.x, e.y, CONFIG.render.flightHeight);
     if (sx > -10 && sx < W + 10 && sy > -10 && sy < H + 10) {
-      if (e.strikeRole && e.phase !== 'retreat') {
-        ctx.font = '650 9px system-ui'; ctx.textAlign = 'center'; ctx.fillStyle = '#ffbd83';
-        ctx.fillText(e.strikeRole === 'torpedo' ? 'TORPEDO' : e.strikeRole === 'bomber' ? 'BOMBER' : 'ESCORT', sx, sy + 24);
-      }
+      if (e.strikeRole && e.phase !== 'retreat') inkText(e.strikeRole === 'torpedo' ? 'TORPEDO' : e.strikeRole === 'bomber' ? 'BOMBER' : 'ESCORT', sx, sy + 26, 9, INK.amber);
       continue;
     }
-    const dx = sx - W / 2, dy = sy - H / 2;
-    const m = 26;
+    if (raid && e.strike && e.phase !== 'retreat') continue;
+    const dx = sx - W / 2, dy = sy - H / 2, m = 22;
     const t = Math.min(
       Math.abs((dx > 0 ? W - m - W / 2 : m - W / 2) / (dx || 1e-6)),
       Math.abs((dy > 0 ? H - m - H / 2 : m - H / 2) / (dy || 1e-6))
     );
-    const px = W / 2 + dx * t, py = H / 2 + dy * t, a = Math.atan2(dy, dx);
-    ctx.save(); ctx.translate(px, py); ctx.rotate(a);
-    ctx.beginPath(); ctx.moveTo(10, 0); ctx.lineTo(-6, -6); ctx.lineTo(-6, 6); ctx.closePath(); ctx.fill();
-    ctx.restore();
+    drawEnemyArrow(W / 2 + dx * t, H / 2 + dy * t, Math.atan2(dy, dx));
   }
+  if (flying) drawGuidance(arrows, px, py);
+  // The aircraft's own status goes on last, over everything.
+  if (game.mode === 'play') drawRig(px, py, player.a, clamp(player.hp / CONFIG.player.hp, 0, 1), player.heat || 0, !!player.overheated, game.time, bank, !flying);
 
-  // touch controls
-  if (isTouchDevice) {
-    if (stick.active) {
-      ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.arc(stick.ax, stick.ay, 56, 0, TAU); ctx.stroke();
-      ctx.fillStyle = 'rgba(255,255,255,0.45)';
-      ctx.beginPath(); ctx.arc(stick.ax + stick.dx, stick.ay + stick.dy, 24, 0, TAU); ctx.fill();
-    }
-
+  if (isTouchDevice && stick.active) {
+    ctx.strokeStyle = INK.case; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(stick.ax, stick.ay, 56, 0, TAU); ctx.stroke();
+    ctx.strokeStyle = 'rgba(246,236,201,.55)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(stick.ax, stick.ay, 56, 0, TAU); ctx.stroke();
+    ctx.fillStyle = 'rgba(246,236,201,.5)';
+    ctx.beginPath(); ctx.arc(stick.ax + stick.dx, stick.ay + stick.dy, 24, 0, TAU); ctx.fill();
   }
 }
 
-function drawNavigation() {
-  const { W, H } = view, p = game.player;
+function drawShipMark(ship) {
+  if (ship.hp <= 0 || ship.active === false || !shipObserved(game, ship)) return;
+  const { W, H } = view, [sx, sy] = w2s(ship.x, ship.y);
+  if (sx < -100 || sx > W + 100 || sy < -150 || sy > H + 150) return;
+  const colour = ship.team === 'us' ? INK.teal : INK.red;
+  if (ship.team === 'jp' && ship.kind === 'carrier') inkText('CARRIER', sx, sy - ship.length / 2 - 18, 11, colour);
+  if (ship.kind === 'transport') inkText('CONVOY', sx, sy - ship.length / 2 - 18, 11, colour);
+  if (ship.team === 'jp') drawBar(sx - 23, sy + 26, 46, ship.hp / ship.maxHp, INK.red);
+}
+
+// The chart inset is an instrument: a plate, the plot, and its name.
+function drawChart() {
+  const { W } = view;
   const mw = Math.min(140, Math.max(100, W * .3)), mh = 84, mx = W - mw - 12, my = 12;
-  ctx.fillStyle = 'rgba(8,27,39,.88)'; rr(mx, my, mw, mh, 10);
-  drawTheaterMap(ctx, game, {x:mx, y:my, w:mw, h:mh});
-  ctx.textAlign='right'; ctx.font='600 9px system-ui'; ctx.fillStyle='#adc6ca'; ctx.fillText('MAP ↗', mx+mw-7,my+mh-5);
-  drawArrows();
+  keep(mx - HUD.keepout.pad, my - HUD.keepout.pad, mw + HUD.keepout.pad * 2, mh + HUD.keepout.pad * 2);
+  ctx.fillStyle = INK.plate; ctx.fillRect(mx, my, mw, mh);
+  drawTheaterMap(ctx, game, { x: mx, y: my, w: mw, h: mh });
+  const tw = textWidth('CHART', 9) + 10;
+  ctx.fillStyle = INK.plate; ctx.fillRect(mx + mw - tw - 1, my + mh - 14, tw, 13);
+  ctx.font = font(9); ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = INK.cream; ctx.fillText('CHART', mx + mw - 6, my + mh - 4);
 }
 
-// Guidance arrows, as on a modern flight HUD: gold for the current objective,
-// teal for the nearest base you can land at, red for a raid on a friendly
-// base (pointing at its nearest attacker). Each sits on a ring around the
-// player, off-screen targets only; an objective you have reached is a ring.
-const ARROWS = { objective: '#edce91', base: '#82dfbc', raid: '#ff8a6b' };
+// Guidance cues: gold for the current objective, teal for the nearest base you
+// can land at, red for a raid on a friendly base (its nearest attacker).
 export function hudArrows(game) {
   const p = game.player, arrows = [];
   if (!p || game.mode !== 'play' || p.flight !== 'flying') return arrows;
@@ -150,40 +189,74 @@ export function hudArrows(game) {
   }
   return arrows;
 }
-function drawArrows() {
-  const { W, H } = view, [px, py] = w2s(game.player.x, game.player.y);
-  const arrows = hudArrows(game), headings = [];
-  arrows.forEach((arrow, i) => {
-    const [sx, sy] = w2s(arrow.x, arrow.y);
-    ctx.save(); ctx.strokeStyle = ctx.fillStyle = ARROWS[arrow.kind]; ctx.lineWidth = 1.5;
-    if (arrow.kind === 'objective' && arrow.arrived) {
-      // A ring at the objective; it fills clockwise as a capture progresses.
-      ctx.globalAlpha = .55; ctx.beginPath(); ctx.arc(sx, sy, 18, 0, TAU); ctx.stroke();
-      if (arrow.progress > 0) { ctx.globalAlpha = .95; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.arc(sx, sy, 18, -Math.PI / 2, -Math.PI / 2 + TAU * arrow.progress); ctx.stroke(); }
-      ctx.globalAlpha = .9; ctx.font = '650 9px system-ui'; ctx.textAlign = 'center'; ctx.fillText(arrow.label, sx, sy + 32);
-      if (arrow.sub) { ctx.font = '600 8px system-ui'; ctx.fillText(arrow.sub, sx, sy + 42); }
-      ctx.restore(); return;
+
+// One strong cue for the objective, worn close to the aircraft: wind blowing
+// toward it in transit, a plotted ring on arrival, a filling stopwatch while a
+// capture runs. Base and raid bearings ride the rim of the playfield, smaller,
+// and the base bearing drops its words while a fight is on.
+const WIND_LANE = [.15, .5, .85];
+// Placard numbers: capitals like the rest of the plate, but seconds keep their small "s".
+const stamped = new Map();
+function stamp(sub) {
+  let out = stamped.get(sub);
+  if (out === undefined) { if (stamped.size > 80) stamped.clear(); out = sub.toUpperCase().replace(/(\d)S\b/g, '$1s'); stamped.set(sub, out); }
+  return out;
+}
+const limpHome = { kind: 'objective', x: 0, y: 0, label: 'RETURN TO BASE', sub: '', arrived: false, progress: 0 };
+function drawGuidance(arrows, px, py) {
+  const p = game.player, Wd = HUD.wind, time = game.time;
+  let objective = null, base = null, raid = null;
+  for (const a of arrows) { if (a.kind === 'objective') objective = a; else if (a.kind === 'base') base = a; else raid = a; }
+  // A crippled aircraft is sent home by the guidance on its next tick; the wind turns at once.
+  const limping = p.hp < CONFIG.navigation.repairHull;
+  if (limping && base && (!game.waypoint || (game.waypoint.auto && !game.waypoint.returning))) {
+    limpHome.x = base.x; limpHome.y = base.y; limpHome.sub = base.sub; objective = limpHome; base = null;
+  }
+  const rightInset = HUD.edge.margin;   // the rim steps in by itself wherever a control sits
+  if (objective) {
+    const [sx, sy] = w2s(objective.x, objective.y), dx = sx - px, dy = sy - py, d = Math.hypot(dx, dy), a = Math.atan2(dy, dx);
+    const there = objective.arrived && onScreen(sx, sy, 24), capturing = there && objective.progress > 0;
+    const size = busy > .5 ? 10 : 11, alpha = 1 - busy * .12;
+    if (there) { drawSiteMark(sx, sy, capturing ? objective.progress : -1, time); keep(sx - 30, sy - 30, 60, 60); }
+    const span = clamp(Math.min(view.W, view.H) * Wd.spanShare, Wd.spanMin, Wd.spanMax);
+    // The wind stops short of the site ring and of the playfield's edge, so its head is always in view.
+    const outer = Math.min(Wd.inner + span, d - (there ? HUD.site.orbit + 12 : 0), edgePoint(px, py, a, rightInset).t - 12);
+    const windy = !capturing && outer - Wd.inner >= Wd.minRun, reach = (windy ? outer : Wd.inner) + 5;
+    const hx = px + Math.cos(a) * reach, hy = py + Math.sin(a) * reach;
+    // Hard against an edge there is no room for wind; the chevrons alone still give the bearing.
+    if (windy || (!there && !capturing)) { drawChevrons(hx, hy, a, INK.gold, 7); keep(hx - 11, hy - 11, 22, 22); }
+    if (windy) {
+      drawWind(px, py, a, time, Wd.inner, outer, busy > .5 ? Wd.busyStreaks : Wd.streaks, 1 - busy * (1 - Wd.busyAlpha));
+      // rim cues and their labels stay out of the wind's lane
+      for (const f of WIND_LANE) { const r = Wd.inner + (outer - Wd.inner) * f; keep(px + Math.cos(a) * r - 15, py + Math.sin(a) * r - 15, 30, 30); }
     }
-    // On-screen targets need no arrow; the raid's attackers already carry labels.
-    if (arrow.kind !== 'objective' && sx > 20 && sx < W - 20 && sy > 20 && sy < H - 20) { ctx.restore(); return; }
-    const dx = sx - px, dy = sy - py, d = Math.hypot(dx, dy), a = Math.atan2(dy, dx);
-    // Each arrow has its own ring; two pointing the same way stack outward so their labels stay apart.
-    const stacked = headings.filter(h => Math.abs(angDiff(h, a)) < .5).length; headings.push(a);
-    const radius = Math.min(W * .3, H * .2) + i * 14 + stacked * 30;
-    const x = px + dx * Math.min(1, radius / (d || 1)), y = py + dy * Math.min(1, radius / (d || 1));
-    ctx.translate(x, y); ctx.rotate(a);
-    ctx.beginPath(); ctx.moveTo(-5, -5); ctx.lineTo(3, 0); ctx.lineTo(-5, 5);
-    if (arrow.kind === 'raid') { ctx.closePath(); ctx.fill(); } else ctx.stroke();
-    ctx.rotate(-a);
-    if (arrow.label) {
-      // A stacked arrow labels above its chevron, the one beneath it below.
-      const above = stacked % 2 === 1, ly = above ? (arrow.sub ? -20 : -10) : 18;
-      ctx.font = '650 9px system-ui'; ctx.textAlign = 'center';
-      ctx.fillText(arrow.label, 0, ly);
-      if (arrow.sub) { ctx.font = '600 8px system-ui'; ctx.fillText(arrow.sub, 0, ly + 10); }
+    // The placard sits at the head of the wind, or under the site once it is in view.
+    const sub = stamp(objective.sub || ''), w = placardWidth(objective.label, sub, size), h = placardHeight(size);
+    const at = there ? placeLabel(w, h, sx, sy, Math.PI / 2, HUD.site.orbit + 10) : placeLabel(w, h, hx, hy, a, 18);
+    ctx.globalAlpha = alpha; placard(objective.label, sub, at.x, at.y, size, INK.gold); ctx.globalAlpha = 1;
+  }
+  if (raid) {
+    const [sx, sy] = w2s(raid.x, raid.y, CONFIG.render.flightHeight);
+    if (!onScreen(sx, sy, 20)) {
+      const a = Math.atan2(sy - py, sx - px), e = edgePoint(px, py, a, rightInset), ex = e.x, ey = e.y;
+      drawRaidCue(ex, ey, a, time); keep(ex - 16, ey - 16, 32, 32);
+      const w = placardWidth(raid.label, raid.sub, 10), h = placardHeight(10), at = placeLabel(w, h, ex, ey, a + Math.PI, 26);
+      placard(raid.label, raid.sub, at.x, at.y, 10, INK.red, true);
     }
-    ctx.restore();
-  });
+  }
+  if (base) {
+    const [sx, sy] = w2s(base.x, base.y);
+    // A base just past the edge of the screen needs no bearing: you can still see where you came from.
+    if (!onScreen(sx, sy, 20) && Math.hypot(sx - px, sy - py) > Math.max(view.W, view.H) * HUD.edge.baseBeyond) {
+      const a = Math.atan2(sy - py, sx - px), e = edgePoint(px, py, a, rightInset), ex = e.x, ey = e.y;
+      const quiet = busy > .5 && !limping;
+      drawBaseCue(ex, ey, a, quiet ? .6 : 1, limping); keep(ex - 14, ey - 14, 28, 28);
+      if (!quiet) {
+        const label = 'BASE ' + stamp(base.sub), w = textWidth(label, 10) + 4, at = placeLabel(w, 12, ex, ey, a + Math.PI, 16);
+        inkText(label, at.x + w / 2, at.y + 10, 10, INK.teal);
+      }
+    }
+  }
 }
 
 const el = id => document.getElementById(id);
@@ -267,18 +340,43 @@ function drawSortie(p, playing) {
 
 
 
+// Which in-flight instruments and controls are on screen. Shared with the
+// canvas HUD, which measures them to keep its labels clear.
+const show = (id, visible) => { const node = el(id); if (node.hidden === visible) node.hidden = !visible; };
+function showControls() {
+  const playing = game.mode === 'play', flight = game.player?.flight;
+  show('flight-hud', playing); show('flight-controls', playing);
+  show('fire-indicator', playing && isTouchDevice && flight === 'flying');
+  show('carrier-action', playing && flight === 'landed'); show('torpedo-action', playing && flight === 'flying');
+}
+
 export function drawMenus() {
   const playing = game.mode === 'play', p = game.player;
   drawSortie(p, playing);
-  el('flight-hud').hidden = !playing;
-  el('flight-controls').hidden = !playing;
+  showControls();
   el('menu').hidden = playing;
-  el('fire-indicator').hidden = !playing || !isTouchDevice || p?.flight !== 'flying';
-  el('fire-indicator').dataset.firing = String(fireTouch.active);
+  const fire = el('fire-indicator');
+  fire.dataset.firing = String(fireTouch.active);
   if (playing) {
     text('score-value', game.score.toLocaleString());
+    // Corner gauge and fire placard repeat what the aircraft's ring shows, in words.
+    const rig = CONFIG.hud.rig, hot = p.heat >= rig.heatWarn, lock = !!p.overheated, stats = el('stats');
+    const hull = p.hp <= rig.low ? 'low' : p.hp <= rig.worn ? 'worn' : 'ok', guns = lock ? 'lock' : hot ? 'hot' : 'ok';
+    if (stats.dataset.hull !== hull) stats.dataset.hull = hull;
+    if (stats.dataset.guns !== guns) stats.dataset.guns = guns;
+    // Nothing to report: the placard dims until hull or guns need watching.
+    const quiet = String(hull === 'ok' && p.hp >= CONFIG.player.hp && p.heat <= .04);
+    if (stats.dataset.quiet !== quiet) stats.dataset.quiet = quiet;
     text('hull-value', `${Math.ceil(p.hp)}%`);
-    el('hull-value').style.color = p.hp > 35 ? '#82dfbc' : '#f18f7c';
+    text('guns-value', lock ? 'Locked' : hot ? 'Hot' : p.heat > .04 ? 'Warm' : 'Cool');
+    if (!fire.hidden) {
+      const state = lock ? 'lock' : fireTouch.active ? 'firing' : 'ready';
+      if (fire.dataset.state !== state) fire.dataset.state = state;
+      if (fire.dataset.heat !== guns) fire.dataset.heat = guns;
+      text('fire-label', lock ? 'Guns hot' : 'Fire');
+      text('fire-sub', lock ? 'Cooling' : fireTouch.active ? 'Firing' : 'Hold');
+      el('fire-heat').style.width = `${clamp(p.heat, 0, 1) * 100}%`;
+    }
     if (el('island-pips').children.length !== game.territories.length) el('island-pips').replaceChildren(...game.territories.map(() => document.createElement('i')));
     text('campaign-label', `Campaign · ${game.territories.filter(t=>t.owner==='us').length}/${game.territories.length} secured`);
     text('rank-value', ['Cadet', 'Lieutenant', 'Naval aviator'][Math.min(game.rank || 0, 2)]);
@@ -292,9 +390,7 @@ export function drawMenus() {
     Array.from(el('island-pips').children).forEach((pip, i) => { pip.style.background = game.territories[i]?.owner === 'us' ? '#82dfbc' : '#36505c'; });
     text('islands-value', `${game.territories.filter(t => t.owner === 'us').length} / ${game.territories.length}`);
     el('health-fill').style.width = `${clamp(p.hp / CONFIG.player.hp, 0, 1) * 100}%`;
-    el('health-fill').style.background = p.hp > 35 ? '#82dfbc' : '#f18f7c';
     el('heat-fill').style.width = `${p.heat * 100}%`;
-    el('heat-fill').style.background = p.overheated ? '#f18f7c' : '#e5b76f';
     // One line at the bottom: the landing hint while lining up, otherwise the latest message
     // (not deck status, which the landed panel already shows).
     const hint = p.flight === 'flying' && p.landingHint;
@@ -302,13 +398,16 @@ export function drawMenus() {
     el('toast').hidden = !hint && !message; text('toast', hint || message);
     const action = carrierAction(game), button = el('carrier-action');
     button.textContent = (isTouchDevice ? '' : 'L · ') + action.label;
-    button.disabled = !action.enabled; button.hidden = p.flight !== 'landed';
-    const torpedo = el('torpedo-action'); torpedo.hidden = p.flight !== 'flying';
+    button.disabled = !action.enabled;
+    const torpedo = el('torpedo-action');
     const bombing = p.loadout === 'bombs', ammo = bombing ? p.bombAmmo : p.torpedoAmmo;
     const cooldown = bombing ? p.bombCd : p.torpedoCd, name = bombing ? 'Bomb' : 'Torpedo';
     const capacity = bombing ? (CONFIG.bomb?.capacity || 2) : CONFIG.torpedo.capacity;
     torpedo.disabled = cooldown > 0 || !ammo;
-    torpedo.textContent = (isTouchDevice || cooldown > 0 || !ammo ? '' : 'T · ') + `${name} ${ammo || 0}/${capacity}` + (cooldown > 0 ? ` · ${Math.ceil(cooldown)}s` : '');
+    const label = (isTouchDevice || cooldown > 0 || !ammo ? '' : 'T · ') + `${name} ${ammo || 0}/${capacity}` + (cooldown > 0 ? ` · ${Math.ceil(cooldown)}s` : '');
+    if (torpedo.textContent !== label) torpedo.textContent = label;
+    const rounds = '●'.repeat(ammo || 0) + '○'.repeat(Math.max(0, capacity - (ammo || 0)));
+    if (torpedo.dataset.rounds !== rounds) torpedo.dataset.rounds = rounds;
     return;
   }
   drawSessionReport();

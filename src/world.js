@@ -3,10 +3,11 @@
 // The ocean is one screen-sized plane; everything that makes it look like
 // water happens in its fragment shader from the shared noise texture, so the
 // cost is a fixed handful of texture taps per pixel:
-//   ripples   three ridged octaves drifting with the wind
-//   lighting  the wave slope from the noise gradient, lit by the sun
-//   glitter   a tight specular lobe masked by fast high-frequency noise
-//   whitecaps crests gated by a noise stretched along the wind
+//   swell     two noise layers stretched across the wind, marching downwind
+//   chop      a finer cross sea on top
+//   lighting  the wave slope from the noise gradient: sunlit faces, sky sheen
+//   glitter   a specular lobe masked by the spare noise channel
+//   whitecaps the tallest crests break into short streaks
 //   clouds    a low-frequency layer darkening the sea as it drifts
 // Shallows are geometry (a fading skirt around each shoreline in land.js),
 // not a per-pixel island loop. The `detail` uniform drops glitter, whitecaps,
@@ -40,50 +41,55 @@ export function createWorld(scene) {
       noiseTex: { value: noiseTexture() }, time: shared.time, detail: { value: 2 },
       wind: shared.wind, sunDir: shared.sunDir, cloudSpeed: shared.cloudSpeed, cloudStrength: shared.cloudStrength,
       glitter: { value: O.glitter }, foam: { value: O.foam },
-      deepColor: { value: new THREE.Color(O.deep) }, midColor: { value: new THREE.Color(O.mid) },
+      deepColor: { value: new THREE.Color(O.deep) }, midColor: { value: new THREE.Color(O.mid) }, skyColor: { value: new THREE.Color(O.sky) },
     },
     vertexShader: WORLD_VERTEX,
     fragmentShader: `varying vec2 worldXZ;
       uniform float time, detail, cloudSpeed, cloudStrength, glitter, foam;
-      uniform vec2 wind; uniform vec3 sunDir, deepColor, midColor;
+      uniform vec2 wind; uniform vec3 sunDir, deepColor, midColor, skyColor;
       ${NOISE_GLSL}
-      // Ridged noise with its gradient, so the wave normal is analytic; .w is the
-      // second noise field from the same tap, free for masks.
-      vec4 ridge(vec2 p) { vec4 s = vnoise4(p); float v = s.r * 2.0 - 1.0; return vec4(1.0 - abs(v), -sign(v) * (s.gb - .5) * 6.0, s.a); }
-      const mat2 R1 = mat2(.866, .5, -.5, .866), R2 = mat2(.5, .866, -.866, .5); // 30° and 60°
-      const mat2 R1T = mat2(.866, -.5, .5, .866), R2T = mat2(.5, -.866, .866, .5);
+      const mat2 R1 = mat2(.940, .342, -.342, .940), R1T = mat2(.940, -.342, .342, .940);   // 20°
+      const mat2 R2 = mat2(.766, -.643, .643, .766), R2T = mat2(.766, .643, -.643, .766);   // -40°
+      // Swell: noise stretched across the wind, so crests are long lines that
+      // march downwind. xy is the height gradient per world unit, .z the height,
+      // .w the spare noise field from the same tap.
+      vec4 swell(vec2 q, vec2 freq, float speed) {
+        vec4 s = vnoise4(q * freq - vec2(time * speed, 0.0));
+        return vec4((s.gb - .5) * 3.0 * freq, s.r, s.a);
+      }
       void main() {
-        vec2 p = worldXZ, drift = wind * time;
-        // Ripples: three ridged octaves, each rotated so the noise grid never lines up.
-        vec4 o1 = ridge((p + drift) * .011);
-        vec4 o2 = ridge(R1 * (p - drift * .7) * .026);
-        float h1 = o1.x, h = h1 * .55 + o2.x * .45, twinkle = o2.w;
-        vec2 g = o1.yz * (.55 * .011) + (R1T * o2.yz) * (.45 * .026);
+        vec2 p = worldXZ, w = normalize(wind);
+        mat2 toWind = mat2(w.x, -w.y, w.y, w.x), fromWind = mat2(w.x, w.y, -w.y, w.x);
+        vec2 q = toWind * p;
+        vec4 a = swell(q, vec2(.04, .026), .22);
+        vec4 b = swell(R1 * q + 31.0, vec2(.09, .06), .42);
+        float h = a.z * .6 + b.z * .4, sparkle = b.w;
+        vec2 g = a.xy * .6 + (R1T * b.xy) * .4;
         if (detail > .5) {
-          vec4 o3 = ridge(R2 * (p + drift * 1.6) * .058);
-          twinkle = o3.w;
-          h = h1 * .45 + o2.x * .33 + o3.x * .22;
-          g = o1.yz * (.45 * .011) + (R1T * o2.yz) * (.33 * .026) + (R2T * o3.yz) * (.22 * .058);
+          // Chop: a fine cross sea that roughens the swell faces.
+          vec4 c = swell(R2 * q + 77.0, vec2(.21, .12), .7);
+          h = a.z * .5 + b.z * .3 + c.z * .2; sparkle = c.w;
+          g = a.xy * .5 + (R1T * b.xy) * .3 + (R2T * c.xy) * .2;
         }
-        vec3 water = mix(deepColor, midColor, .15 + h * .7);
-        // Lit waves and sun glitter from the wave slope.
-        vec3 n = normalize(vec3(-g.x * 10.0, 1.0, -g.y * 10.0));
-        water *= .82 + .3 * max(dot(n, sunDir), 0.0);
+        g = fromWind * g;
+        vec3 n = normalize(vec3(-g.x * 9.0, 1.0, -g.y * 9.0));
+        // Slow tonal patches (currents, depth) and the drifting cloud shadows
+        // share one low-frequency tap.
+        vec4 broad = vec4(.5);
+        if (detail > .5) broad = vnoise4((p + wind * time * cloudSpeed) * .0011);
+        vec3 water = mix(deepColor, midColor, .25 + .5 * broad.a + (h - .5) * .5);
+        // Sunlit wave faces brighten, faces turned away sink toward the deep colour.
+        float lit = dot(n, sunDir) - sunDir.y;
+        water *= 1.0 + lit * 1.15;
+        water += skyColor * smoothstep(.0, .12, 1.0 - n.y) * .22;
         if (detail > 1.5) {
           vec3 halfway = normalize(sunDir + vec3(0.0, 1.0, 0.0));
-          // Sparkle mask rides the finest octave's spare channel: no extra tap.
-          float sparkle = smoothstep(.88, .99, twinkle) * (.55 + .45 * sin(time * 5.0 + twinkle * 40.0));
-          water += glitter * pow(max(dot(n, halfway), 0.0), 400.0) * sparkle * vec3(1.0, .96, .85);
-          // Whitecaps: sparse flecks stretched along the wind, clustered on the big swell crests (h1).
-          vec2 w = normalize(wind), along = vec2(dot(p, w), dot(p, vec2(-w.y, w.x)));
-          float fleck = vnoise2(along * vec2(.045, .16) + vec2(-time * .3, 13.0));
-          water = mix(water, vec3(.9, .95, .97), foam * smoothstep(.9, .96, fleck) * smoothstep(.7, .95, h1));
+          float spec = pow(max(dot(n, halfway), 0.0), 900.0);
+          water += glitter * spec * smoothstep(.55, .8, sparkle) * vec3(1.0, .96, .86);
+          // Breaking crests: a faint pale bloom on the tallest water, never a hard fleck.
+          water += vec3(.5, .62, .66) * foam * smoothstep(.72, .95, a.z) * smoothstep(.6, .95, b.z);
         }
-        if (detail > .5) {
-          // Cloud shadows drifting over everything.
-          float cloud = vnoise((p + drift * cloudSpeed) * .0011);
-          water *= 1.0 - smoothstep(.5, .78, cloud) * cloudStrength;
-        }
+        if (detail > .5) water *= 1.0 - smoothstep(.5, .78, broad.r) * cloudStrength;
         gl_FragColor = vec4(water, 1.0);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
@@ -95,7 +101,7 @@ export function createWorld(scene) {
 
   // Surf: a foam band on each waterline (geometry in land.js), pulsing and broken up by noise.
   const surfMaterial = new THREE.ShaderMaterial({
-    transparent: true, depthWrite: false,
+    transparent: true, depthWrite: false, side: THREE.DoubleSide, forceSinglePass: true,
     uniforms: { noiseTex: { value: noiseTexture() }, time: shared.time, strength: { value: O.surf } },
     vertexShader: `attribute float fade; varying float vFade; varying vec2 worldXZ;
       void main() {

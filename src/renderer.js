@@ -6,20 +6,24 @@
 // while retaining ocean detail. It requires sustained headroom before stepping
 // back up, so short hitches do not cause oscillation, and never back into a
 // level that already failed. ?quality=N pins a level.
+//
+// Projection: straight down, sheared so height leans up-screen (CONFIG.render
+// .oblique). Sea-level positions keep their 1:1 screen mapping; canvas.js's
+// w2s applies the same lean for anything drawn at altitude.
 import * as THREE from 'three';
 import { enemyObserved } from './intelligence.js';
 import { CONFIG } from './config.js';
-import { loadAircraft, createAircraft, updateAircraft, setShadowMode } from './aircraft.js';
+import { loadAircraft, createAircraft, updateAircraft } from './aircraft.js';
 import { createWorld } from './world.js';
 import { createNavalScene } from './naval-scene.js';
 import { createEffects } from './effects.js';
 import { renderAircraftPreviews } from './aircraft-previews.js';
 
+const CAMERA_HEIGHT = 1000;
+
 export async function createRenderer(canvas) {
   const touchDevice = window.matchMedia?.('(pointer: coarse)').matches ?? false;
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !touchDevice, powerPreference: 'high-performance' });
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !touchDevice, stencil: true, powerPreference: 'high-performance' });
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   const scene = new THREE.Scene();
@@ -31,12 +35,6 @@ export async function createRenderer(canvas) {
   const hemisphere = new THREE.HemisphereLight(LIGHT.sky, LIGHT.ground, LIGHT.hemisphere);
   scene.add(hemisphere);
   const sun = new THREE.DirectionalLight(LIGHT.sun, LIGHT.sunIntensity);
-  sun.castShadow = true;
-  sun.shadow.mapSize.set(1024, 1024);
-  sun.shadow.bias = -.0002;
-  sun.shadow.normalBias = .2;
-  sun.shadow.camera.near = 1;
-  sun.shadow.camera.far = 2200;
   scene.add(sun, sun.target);
   const world = createWorld(scene);
   const effects = createEffects(scene, renderer);
@@ -64,12 +62,6 @@ export async function createRenderer(canvas) {
     state.level = index;
     const L = level();
     world.setDetail(L.ocean);
-    if (renderer.shadowMap.enabled !== L.shadows) {
-      renderer.shadowMap.enabled = L.shadows;
-      // Shadow support is compiled into materials; make them rebuild.
-      scene.traverse(node => { if (node.isMesh) node.material.needsUpdate = true; });
-    }
-    for (const visual of aircraft.values()) setShadowMode(visual, L.shadows);
     lastRatio = 0;
     state.hold = Q.hold; state.slow = 0; state.fast = 0;
     diagnostics.quality = index;
@@ -112,9 +104,10 @@ export async function createRenderer(canvas) {
     camera.left = -view.W / 2; camera.right = view.W / 2;
     camera.top = view.H / 2; camera.bottom = -view.H / 2;
     camera.updateProjectionMatrix();
-    const range = Math.max(view.W, view.H) / 2 + 220;
-    Object.assign(sun.shadow.camera, { left: -range, right: range, top: range, bottom: -range });
-    sun.shadow.camera.updateProjectionMatrix();
+    // Lean heights up-screen: view-space y gains oblique × world height. The
+    // camera sits CAMERA_HEIGHT up, so world height = view z + CAMERA_HEIGHT.
+    camera.projectionMatrix.multiply(new THREE.Matrix4().set(1, 0, 0, 0, 0, 1, CONFIG.render.oblique, CONFIG.render.oblique * CAMERA_HEIGHT, 0, 0, 1, 0, 0, 0, 0, 1));
+    camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
     lastW = view.W; lastH = view.H; lastRatio = ratio;
     diagnostics.pixelRatio = ratio;
   }
@@ -135,7 +128,7 @@ export async function createRenderer(canvas) {
     render(game, view, dt, shakeX, shakeY) {
       adapt();
       resize(view);
-      camera.position.set(game.cam.x - shakeX, 1000, game.cam.y - shakeY);
+      camera.position.set(game.cam.x - shakeX, CAMERA_HEIGHT, game.cam.y - shakeY);
       camera.lookAt(game.cam.x - shakeX, 0, game.cam.y - shakeY);
       const [sx, sy, sz] = CONFIG.render.sunOffset;
       sun.position.set(game.cam.x + sx, sy, game.cam.y + sz);
@@ -146,7 +139,7 @@ export async function createRenderer(canvas) {
       for (const [entity, visual] of aircraft) {
         if (live.has(entity) && visual.aircraftType === (entity.aircraft || (entity === game.player || entity.team === 'us' ? 'us' : 'jp'))) continue;
         scene.remove(visual.root, visual.shadow);
-        // Geometry stays shared; friendly flash materials belong to each instance.
+        // Geometry stays shared; a friendly's flash material belongs to the instance.
         for (const material of visual.ownedMaterials) material.dispose();
         aircraft.delete(entity);
       }
@@ -154,13 +147,13 @@ export async function createRenderer(canvas) {
         const player = entity === game.player;
         if (!aircraft.has(entity)) {
           const kind = entity.aircraft || (player || entity.team === 'us' ? 'us' : 'jp');
-          const visual = createAircraft(templates[kind] || templates.us, entity, level().shadows);
+          const visual = createAircraft(templates[kind] || templates.us, entity);
           visual.aircraftType = kind;
           aircraft.set(entity, visual); scene.add(visual.root, visual.shadow);
         }
         updateAircraft(aircraft.get(entity), entity, dt,
           player ? CONFIG.player.turnRate : entity.turn,
-          (player || entity.team === 'us') && entity.hitFlash > .12);
+          (player || entity.team === 'us') && entity.hitFlash > .12, game);
       }
       naval.update(game);
       effects.update(game);

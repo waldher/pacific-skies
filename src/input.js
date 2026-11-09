@@ -1,7 +1,7 @@
 // Keyboard + touch input. Left half of the screen is a virtual
 // stick, right half is the fire button.
 import { view } from './canvas.js';
-import { audioInit } from './audio.js';
+import { audioInit, sfxUi } from './audio.js';
 import { game, startGame, recoverPilot, resumeCampaign } from './state.js';
 import { hasSavedCampaign } from './persistence.js';
 import { launchBomb } from './bombs.js';
@@ -32,6 +32,8 @@ export function initInput(cvs) {
   // their touch capabilities until the first contact.
   window.addEventListener('pointerdown', e => { if (e.pointerType === 'touch' || e.pointerType === 'pen') isTouchDevice = true; }, true);
   touchMedia?.addEventListener('change', e => { if (e.matches) isTouchDevice = true; });
+  // Every button, menu or HUD, answers with a cockpit switch.
+  document.addEventListener?.('click', e => { if (e.target?.closest?.('button,select,summary')) { audioInit(); sfxUi(); } }, true);
   const torpedoButton = document.getElementById('torpedo-action');
   // Secondary touches do not reliably generate clicks while the steering thumb
   // remains down. Fire on pointerdown, without stealing the stick's capture.
