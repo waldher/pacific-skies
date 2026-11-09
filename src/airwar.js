@@ -16,6 +16,7 @@ import { leadPoint, headOn, closing } from './enemies.js';
 import { damageShip } from './ships.js';
 import { explosion } from './particles.js';
 import { notify } from './campaign.js';
+import { sfxAllyGun } from './audio.js';
 
 const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const flying = f => f.hp > 0 && (!f.flight || f.flight === 'flying');
@@ -60,6 +61,7 @@ function attack(f, target, dt, gunnery = CONFIG.airWar.gunnery) {
     game.bullets.push({ x: f.x + Math.cos(f.a) * 22, y: f.y + Math.sin(f.a) * 22,
       vx: Math.cos(f.a) * CONFIG.player.bulletSpeed, vy: Math.sin(f.a) * CONFIG.player.bulletSpeed,
       life: CONFIG.player.bulletLife, fromShip: true, fromAlly: true, pilot: f.name });
+    sfxAllyGun(f.x, f.y);
   }
 }
 

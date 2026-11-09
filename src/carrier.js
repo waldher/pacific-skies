@@ -3,6 +3,7 @@ import { CONFIG } from './config.js';
 import { clamp, angDiff, lerp } from './util.js';
 import { notify } from './campaign.js';
 import { availableBases, canUseAircraft, resolveBase } from './bases.js';
+import { sfxLanding, sfxTakeoff } from './audio.js';
 
 export function carrierAction(game) {
   const p = game.player;
@@ -19,6 +20,7 @@ export function requestCarrier(game) {
     p.sortieScore = game.playerMerit || 0;
     p.departure = { x: p.x, y: p.y };
     notify(game, 'Launching — good hunting');
+    sfxTakeoff();
   }
 }
 
@@ -106,6 +108,7 @@ export function checkDeckLanding(game, previous) {
     p.arrival = { x: p.x, y: p.y, a: p.a, speed: p.speed };
     p.altitude = groundHeight;
     notify(game, c.kind === 'carrier' ? 'Wire caught — landing' : 'Runway reached — landing');
+    sfxLanding(c.kind === 'carrier');
     return;
   }
 }

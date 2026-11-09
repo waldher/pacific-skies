@@ -5,6 +5,7 @@ import { damageShip } from './ships.js';
 import { damageTransport } from './convoys.js';
 import { explosion, splash } from './particles.js';
 import { notify } from './campaign.js';
+import { sfxBombRelease, sfxBombImpact } from './audio.js';
 
 export function launchBomb(game) {
   const p = game.player, B = CONFIG.bomb, A = CONFIG.aircraft[p?.aircraft] || {};
@@ -14,6 +15,7 @@ export function launchBomb(game) {
   const drift = A.bombDriftSpeed ?? B.driftSpeed, fall = A.bombFallSeconds ?? B.fallSeconds;
   game.bombs.push({ x: p.x, y: p.y, vx: Math.cos(p.a) * drift,
     vy: Math.sin(p.a) * drift, life: fall, maxLife: fall, damage: A.bombDamage ?? B.damage, blastRadius: A.bombBlastRadius ?? B.blastRadius });
+  sfxBombRelease(fall);
   return true;
 }
 
@@ -24,7 +26,7 @@ export function updateBombs(game, dt) {
     const step = Math.min(dt, b.life);
     b.x += b.vx * step; b.y += b.vy * step; b.life -= dt;
     if (b.life > 0) continue;
-    let hit = false;
+    let hit = false, hull = false;
     const land = onLand(b, game.terrain || game.territories), damage = b.damage ?? B.damage;
     for (const f of game.airfields) {
       if (!land || f.owner !== 'enemy' || f.hp <= 0 || Math.hypot(f.x - b.x, f.y - b.y) > (b.blastRadius ?? B.blastRadius)) continue;
@@ -39,10 +41,11 @@ export function updateBombs(game, dt) {
       if (s.hp <= 0 || s.active === false || !onHull(b, s)) continue;
       if (s.kind === 'transport') damageTransport(game, s, damage);
       else if (s.team === 'jp') damageShip(s, damage);
-      hit = true; break;
+      hit = hull = true; break;
     }
     if (hit || land) explosion(b.x, b.y, true);
     else splash(b.x, b.y);
+    sfxBombImpact(hull ? 'ship' : land ? 'land' : 'water', b.x, b.y);
   }
   game.bombs = game.bombs.filter(b => b.life > 0);
 }
