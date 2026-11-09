@@ -168,4 +168,22 @@ export const CONFIG = {
   },
   score: { kill: 100, aceKill: 250 },
   camera: { lead: 60 },       // px the camera leads ahead of the nose
+  // In-flight HUD. Presentation only: nothing here changes how the game plays.
+  hud: {
+    // Status ring worn by the player's aircraft; it turns with the heading.
+    // Aft arc = hull in cells, fore arc = gun heat. Angles are half-arcs in radians.
+    rig: { radius: 31, width: 5.5, cells: 5, cellGap: 3, hullHalfArc: 1.9, heatHalfArc: .82, heatWidth: 4,
+      worn: 60, low: 35,           // hull % where the arc turns amber, then critical
+      heatWarn: .7,                // heat where the fore arc gains its limit stops
+      bankSquash: .2, bankResponse: 7, pulse: 7 },
+    // Guiding wind: streaks that blow from the aircraft toward the objective.
+    wind: { streaks: 5, inner: 44, spanShare: .22, spanMin: 70, spanMax: 120, length: 56, lane: 8,
+      speed: .55, thickness: 2.9, busyStreaks: 4, busyAlpha: .85, minRun: 26 },
+    site: { ring: 24, orbit: 34, ticks: 12, orbitSpeed: 1.1 },
+    // A fight is "busy" with a live enemy this close (px); secondary cues then recede.
+    busy: { range: 420, fade: 5 },
+    edge: { margin: 22, baseBeyond: .75 },   // base cue appears once it is this share of the screen away
+    keepout: { refreshFrames: 20, pad: 6 },
+    pipper: { range: 650, cone: 1.1, radius: 7 },
+  },
 };

@@ -29,6 +29,8 @@ window.addEventListener('pagehide', () => saveCampaign(game));
 document.addEventListener?.('visibilitychange', () => { if (document.hidden) saveCampaign(game); });
 let graphics;
 let contextLost = false;
+// Deterministic capture mode (playtest/climb): the harness steps frames itself.
+const manualFrames = typeof location !== 'undefined' && /[?&]manualFrames\b/.test(location.search);
 
 function update(dt) {
   if (game.paused) return;
@@ -159,7 +161,7 @@ function frame(now) {
 }
 // Debug/test API: the playtest harness (and console tinkering) reads
 // live state and drives input through this handle.
-window.__game = { sessionSummary: () => sessionSummary(game), game, CONFIG, startGame, recoverPilot, resumeCampaign, hasSavedCampaign, setSeed, keys, stick, fireTouch, view, angDiff, update, launchTorpedo, launchBomb: () => launchBomb(game), selectSortie: options => selectSortie(game, options), requestCarrier: () => requestCarrier(game), spawnConvoy: () => spawnConvoy(game), hudArrows: () => hudArrows(game) };
+window.__game = { render, manualFrames, sessionSummary: () => sessionSummary(game), game, CONFIG, startGame, recoverPilot, resumeCampaign, hasSavedCampaign, setSeed, keys, stick, fireTouch, view, angDiff, update, launchTorpedo, launchBomb: () => launchBomb(game), selectSortie: options => selectSortie(game, options), requestCarrier: () => requestCarrier(game), spawnConvoy: () => spawnConvoy(game), hudArrows: () => hudArrows(game) };
 
 
 const status = document.getElementById('loading');
@@ -192,7 +194,7 @@ async function boot() {
     initInput(cvs);
     initOperations(game);
     last = performance.now();
-    requestAnimationFrame(frame);
+    if (!manualFrames) requestAnimationFrame(frame);
   } catch (error) {
     window.__game.rendering.error = String(error);
     statusText.textContent = 'Unable to load the 3D game. Check your connection and that WebGL 2 is enabled, then retry.';
